@@ -1,0 +1,20 @@
+{
+  "nodes": [
+    { "id": "n1", "labels": ["环节"], "properties": { "name": "大模型" } },
+    { "id": "n2", "labels": ["公司"], "properties": { "name": "科大讯飞" } },
+    { "id": "n3", "labels": ["产品"], "properties": { "name": "讯飞星火" } },
+    { "id": "n4", "labels": ["政策"], "properties": { "name": "人工智能发展规划" } },
+    { "id": "n5", "labels": ["投资"], "properties": { "name": "A轮融资" } },
+    { "id": "n6", "labels": ["交易"], "properties": { "name": "政府采购AI平台" } }
+  ],
+  "relationships": [
+    { "id": "r1", "source": "n2", "target": "n1", "type": "参与环节", "properties": {} },
+    { "id": "r2", "source": "n3", "target": "n1", "type": "产品对应环节", "properties": {} },
+    { "id": "r3", "source": "n2", "target": "n3", "type": "拥有产品", "properties": {} },
+    { "id": "r4", "source": "n4", "target": "n1", "type": "涉及环节", "properties": {} },
+    { "id": "r5", "source": "n5", "target": "n2", "type": "被投资方", "properties": { "金额": "5000万元" } },
+    { "id": "r6", "source": "n5", "target": "n1", "type": "涉及环节", "properties": {} },
+    { "id": "r7", "source": "n6", "target": "n2", "type": "采购方", "properties": {} },
+    { "id": "r8", "source": "n6", "target": "n1", "type": "涉及环节", "properties": {} }
+  ]
+}

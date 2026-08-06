@@ -1,0 +1,226 @@
+<!-- 2. 图谱详情视图 -->
+<div id="view-graph" class="absolute inset-0 bg-gray-100 flex flex-row relative">
+
+
+    
+    <!-- 视图切换按钮组 (绝对定位，右上角，Z轴置顶) -->
+    <div class="absolute top-0 right-0 z-[60] flex gap-1">
+        <!-- 技术路线按钮（仅在量子科技+旭日图模式下显示） -->
+        <button id="switch-to-techroute-btn" onclick="openTechRouteViewer()" class="hidden bg-teal-600 hover:bg-teal-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-road text-xs"></i>
+            <span>技术路线</span>
+        </button>
+        <button id="switch-to-graph-btn" onclick="switchToGraph()" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-project-diagram text-xs"></i>
+            <span>知识图谱</span>
+        </button>
+        <button id="switch-to-sunburst-btn" onclick="switchToSunburst()" class="bg-orange-600 hover:bg-orange-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-sun text-xs"></i>
+            <span>旭日图</span>
+        </button>
+        <button id="switch-to-mindmap-btn" onclick="switchToMindmap()" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-sitemap text-xs"></i>
+            <span>思维导图</span>
+        </button>
+        <button id="switch-to-chain-btn" onclick="switchToChainPanorama()" class="bg-cyan-600 hover:bg-cyan-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-layer-group text-xs"></i>
+            <span>产业链全景</span>
+        </button>
+        <!-- 旭日图放大按钮 -->
+        <button id="sunburst-zoom-btn" onclick="toggleSunburstFullscreen()" class="hidden bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-expand text-xs"></i>
+            <span>放大</span>
+        </button>
+        <!-- 旭日图退出放大按钮 -->
+        <button id="sunburst-exit-zoom-btn" onclick="exitSunburstFullscreen()" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-compress text-xs"></i>
+            <span>退出</span>
+        </button>
+        <!-- 旭日图截图按钮（全屏模式显示） -->
+        <button id="sunburst-screenshot-btn" onclick="captureSunburstScreenshot()" class="hidden bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-camera text-xs"></i>
+            <span>截图</span>
+        </button>
+        <!-- 思维导图放大按钮 -->
+        <button id="mindmap-zoom-btn" onclick="toggleMindmapFullscreen()" class="hidden bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-expand text-xs"></i>
+            <span>放大</span>
+        </button>
+        <!-- 思维导图退出放大按钮 -->
+        <button id="mindmap-exit-zoom-btn" onclick="exitMindmapFullscreen()" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-compress text-xs"></i>
+            <span>退出</span>
+        </button>
+        <!-- 思维导图截图按钮（全屏模式显示） -->
+        <button id="mindmap-screenshot-btn" onclick="captureMindmapScreenshot()" class="hidden bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-camera text-xs"></i>
+            <span>截图</span>
+        </button>
+        <!-- 产业链全景放大 / 退出 / 截图（与思维导图一致，全屏时顶栏可能被遮挡，另在 body 上挂一层按钮） -->
+        <button id="chain-zoom-btn" onclick="toggleChainPanoramaFullscreen()" class="hidden bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-expand text-xs"></i>
+            <span>放大</span>
+        </button>
+        <button id="chain-exit-zoom-btn" onclick="exitChainPanoramaFullscreen()" class="hidden bg-red-600 hover:bg-red-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-compress text-xs"></i>
+            <span>退出</span>
+        </button>
+        <button id="chain-screenshot-btn" onclick="captureChainPanoramaScreenshot()" class="hidden bg-purple-600 hover:bg-purple-500 text-white px-3 py-1.5 rounded-md shadow transition flex items-center gap-1.5 text-sm">
+            <i class="fas fa-camera text-xs"></i>
+            <span>截图</span>
+        </button>
+    </div>
+
+    <!-- 左侧固定侧边栏 -->
+    <div id="graph-sidebar" class="w-96 flex-shrink-0 bg-white/95 backdrop-blur border-r border-gray-300 flex flex-col z-30 p-4 pb-24 overflow-y-auto max-h-screen h-full min-h-0 shadow-xl">
+
+        <!-- 搜索框 (移动到节点统计上方，一直显示) -->
+        <div class="mb-4">
+            <div class="relative group">
+                <!-- 注意：这里的搜索现在由前端 JS 在内存中对 JSON 数据进行过滤 -->
+                <input type="text" id="node-search" placeholder="全局搜索节点 (内存检索)..."
+                    class="w-full bg-white/95 text-gray-800 border-2 border-blue-500 rounded-full pl-12 pr-4 py-3 text-base focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-500/30 shadow-xl transition-all placeholder-gray-500"
+                    oninput="handleSearchInput(this.value)" onkeydown="if(event.key === 'Enter') handleSearchInput(this.value)">
+                <i class="fas fa-search absolute left-5 top-4 text-blue-500 text-lg"></i>
+                <!-- 搜索建议列表 -->
+                <div id="search-suggestions" class="hidden absolute w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-xl z-[61] text-sm text-gray-800 overflow-hidden"></div>
+            </div>
+        </div>
+
+        <!-- 图谱统计信息面板 -->
+        <div class="bg-gray-50 rounded p-3 mb-4 border border-gray-300 shadow-sm">
+            <div class="text-xs text-gray-600 uppercase mb-2 font-bold tracking-wider flex items-center gap-2">
+                <i class="fas fa-chart-pie"></i> 节点统计 (Statistics)
+            </div>
+            <div class="flex justify-between items-center text-sm font-mono border-b border-gray-300 pb-2 mb-2">
+                <span class="text-gray-700">JSON 节点总数:</span>
+                <span id="stat-total-nodes" class="text-blue-600 font-bold">...</span>
+            </div>
+            <div class="flex justify-between items-center text-sm font-mono">
+                <span class="text-gray-700">当前视图节点:</span>
+                <span id="stat-current-nodes" class="text-green-600 font-bold">0</span>
+            </div>
+        </div>
+
+        <div id="panel-legend">
+            <div class="flex justify-between items-center border-b border-gray-300 pb-2 mb-4">
+                <h3 class="text-gray-800 font-bold text-sm uppercase tracking-wider flex items-center gap-2">
+                    <i class="fas fa-list"></i> 图谱图例
+                </h3>
+                <div class="flex gap-2 flex-wrap">
+                    <button onclick="showSkeletonGraph()" class="text-xs bg-purple-600 hover:bg-purple-500 text-white px-2 py-1 rounded transition">仅看骨架</button>
+                    <button onclick="reloadGraphData()" class="text-xs bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded transition">刷新图谱</button>
+                    <button onclick="resetGraph()" class="text-xs bg-gray-600 hover:bg-gray-500 text-white px-2 py-1 rounded transition">重置全图</button>
+                </div>
+            </div>
+            <div id="graph-legend" class="space-y-1"></div>
+        </div>
+
+        <div id="panel-properties" class="hidden animate-fade-in mt-4 pt-4 border-t border-gray-300">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-gray-800 font-bold text-sm uppercase tracking-wider flex items-center gap-2">
+                    <i class="fas fa-info-circle"></i> 属性详情
+                </h3>
+                <button onclick="showLegendPanel()" class="text-xs text-blue-600 hover:text-blue-500 underline">返回图例</button>
+            </div>
+            <div id="node-properties-content" class="bg-gray-50 rounded p-3 text-sm text-gray-700 font-mono break-words space-y-2 shadow-sm">
+                <div class="text-center text-gray-500 italic py-4">点击节点查看详情</div>
+            </div>
+        </div>
+
+        <!-- 数据导入 -->
+        <div class="mt-6 bg-gray-50 rounded p-4 border border-gray-300 shadow-sm space-y-3">
+            <div class="flex justify-between items-center">
+                <div class="text-sm text-gray-800 font-bold flex items-center gap-2"><i class="fas fa-file-upload"></i> 数据导入</div>
+                <button onclick="resetImportSelections()" class="text-xs text-gray-600 hover:text-gray-800 underline">清空选择</button>
+            </div>
+            <div class="space-y-2">
+                <input type="file" id="graph-import-file" class="text-xs text-gray-700 w-full" onchange="handleGraphImportUpload(event)">
+                <div class="flex gap-2">
+                    <button onclick="triggerGraphImport()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-2 rounded shadow">
+                        <i class="fas fa-magic mr-1"></i> 解析预览
+                    </button>
+                    <button onclick="commitGraphImport()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-2 rounded shadow">
+                        <i class="fas fa-check mr-1"></i> 确认入图
+                    </button>
+                </div>
+                <div id="graph-import-status" class="text-xs text-gray-600">上传文件后点击解析预览。</div>
+            </div>
+            <div class="border-t border-gray-300 pt-3">
+                <div class="text-xs text-gray-600 mb-2">候选节点</div>
+                <div id="graph-import-nodes" class="max-h-48 overflow-y-auto space-y-1 text-xs text-gray-700"></div>
+            </div>
+            <div class="border-t border-gray-300 pt-3">
+                <div class="text-xs text-gray-600 mb-2">候选关系</div>
+                <div id="graph-import-links" class="max-h-48 overflow-y-auto space-y-1 text-xs text-gray-700"></div>
+            </div>
+        </div>
+
+        <div class="mt-auto pt-4 border-t border-gray-300">
+            <div class="text-xs text-gray-600 mb-2 font-semibold">VISUALIZATION CONTROLS</div>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="zoomToFitAndCenter()" class="p-2 bg-gray-600 hover:bg-gray-500 rounded transition text-white text-xs shadow">
+                    <i class="fas fa-expand mb-1 block"></i> 适应居中
+                </button>
+                <button onclick="if(Graph) Graph.d3ReheatSimulation()" class="p-2 bg-gray-600 hover:bg-gray-500 rounded transition text-white text-xs shadow">
+                    <i class="fas fa-sync mb-1 block"></i> 重新布局
+                </button>
+            </div>
+            <div class="mt-3">
+                <button onclick="downloadGraphJson()" class="w-full text-center bg-blue-600 hover:bg-blue-500 text-white text-xs px-3 py-2 rounded shadow">
+                    <i class="fas fa-download mr-1"></i> 导出图谱 JSON
+                </button>
+                <div id="graph-export-status" class="text-[11px] text-gray-600 mt-1"></div>
+            </div>
+            <div class="mt-3 space-y-1">
+                <div class="text-xs text-gray-600 font-semibold">导入图谱 JSON</div>
+                <input type="file" accept=".json" multiple class="text-xs text-gray-700 w-full" onchange="handleGraphJsonUpload(event)">
+                <div class="flex gap-2">
+                    <button onclick="uploadGraphJson()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-2 rounded shadow">
+                        <i class="fas fa-plus mr-1"></i> 合并入当前图谱
+                    </button>
+                    <button onclick="uploadGraphJsonReplace()" class="flex-1 bg-red-600 hover:bg-red-500 text-white text-xs px-3 py-2 rounded shadow">
+                        <i class="fas fa-exchange-alt mr-1"></i> 覆盖当前图谱
+                    </button>
+                </div>
+                <div id="graph-json-status" class="text-[11px] text-gray-600"></div>
+            </div>
+            <div class="mt-3 space-y-1">
+                <div class="text-xs text-gray-600 font-semibold">备份当前图谱</div>
+                <button onclick="backupGraph()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-xs px-3 py-2 rounded shadow">
+                    <i class="fas fa-archive mr-1"></i> 备份到 /backups
+                </button>
+                <div id="graph-backup-status" class="text-[11px] text-gray-600"></div>
+            </div>
+            <div class="mt-2 text-[10px] text-gray-500 text-center">
+                单击: 查看属性 | <span class="text-green-600 font-bold">拖拽: 移动节点</span><br>
+                Mode: Force Directed (JSON Data)
+            </div>
+        </div>
+    </div>
+
+    <!-- 缩放把手（绝对定位，不参与flex布局） -->
+    <div id="graph-sidebar-handle" class="absolute cursor-pointer flex items-center justify-center transition-colors bg-white/80 hover:bg-gray-200 rounded border border-gray-300 shadow-sm" 
+         style="top: 50%; transform: translateY(-50%); left: 384px; width: 18px; height: 56px; z-index: 40;" 
+         onclick="toggleGraphSidebar()"
+         title="收起侧边栏">
+        <i id="graph-sidebar-handle-icon" class="fas fa-chevron-left text-gray-500 text-xs pointer-events-none"></i>
+    </div>
+
+    <!-- 右侧：图谱画布 -->
+    <div id="graph-container" class="flex-1 relative h-full overflow-hidden bg-white"></div>
+
+    <!-- 旭日图容器 -->
+    <div id="sunburst-container" class="flex-1 relative overflow-hidden bg-white hidden">
+        <!-- 旭日图画布 -->
+        <div id="sunburst-chart" class="w-full" style="flex: 1;"></div>
+    </div>
+
+    <!-- 思维导图容器 -->
+    <div id="mindmap-container" class="flex-1 relative overflow-hidden bg-white hidden">
+        <!-- Markmap SVG 容器 -->
+        <svg id="mindmap-svg" style="width:100%;height:100%;flex:1"></svg>
+    </div>
+
+    {% include 'components/chain_panorama.html' %}
+</div>

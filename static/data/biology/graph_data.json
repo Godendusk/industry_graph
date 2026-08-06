@@ -1,0 +1,7701 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "labels": [
+        "Root"
+      ],
+      "properties": {
+        "name": "生物制造",
+        "symbolSize": 80,
+        "level": 0
+      }
+    },
+    {
+      "id": 1,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "食品/日化添加剂",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 2,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物材料（塑料）",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 3,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物燃料",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 4,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物工业品",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 5,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物农业",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 6,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物医药",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 7,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "平台工具",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 8,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "营养添加剂",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 9,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "个护日化",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 10,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "调味品",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 11,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "有机酸",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 12,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "甜味剂",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 13,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "增稠剂",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 14,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "维生素",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 15,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "人造蛋白",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 16,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "香精香料",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 17,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "新塑料-可降解",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 18,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "新塑料-不可降解",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 19,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "原位替代塑料",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 20,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物基塑料中间体",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 21,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物航煤",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 22,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物乙醇",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 23,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物甲醇",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 24,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "其他生物柴油及天燃气",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 25,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "酶制剂",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 26,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "小品种氨基酸",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 27,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "大宗氨基酸",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 28,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "其他生物工业品",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 29,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物育种",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 30,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物农药",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 31,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "作物营养",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 32,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "酶催化",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 33,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "发酵法",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 34,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "其他方法",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 35,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "研发平台工具",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 36,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生产平台工具",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 37,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "营养添加剂",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 38,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "个护日化",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 39,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "调味品",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 40,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "有机酸",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 41,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "甜味剂",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 42,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "增稠剂",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 43,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "维生素",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 44,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "人造蛋白",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 45,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "香精香料",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 46,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "新塑料-可降解",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 47,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "新塑料-不可降解",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 48,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "原位替代塑料",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 49,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物基塑料中间体",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 50,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物航煤",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 51,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物乙醇",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 52,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物甲醇",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 53,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "其他生物柴油及天燃气",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 54,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "酶制剂",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 55,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "小品种氨基酸",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 56,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "大宗氨基酸",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 57,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "其他生物工业品",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 58,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物育种",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 59,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生物农药",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 60,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "作物营养",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 61,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "酶催化",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 62,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "发酵法",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 63,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "其他方法",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 64,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "研发平台工具",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 65,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "生产平台工具",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 401,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "动物疫苗",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 402,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "动物疫苗",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 66,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AB Enzymes",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“AB Enzymes”为德国酶制剂公司，属英国联合食品集团旗下品牌，在华实体为外国公司子公司"
+      }
+    },
+    {
+      "id": 67,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "ADM",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "ADM（Archer Daniels Midland）为美国上市公司，是全球主要农产品加工与食品配料企业"
+      }
+    },
+    {
+      "id": 68,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AI BIO",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且从事人工智能驱动生物制造，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 69,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AVA Biochem",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "AVA Biochem为瑞士生物技术公司，实际控制人为外国主体，符合外资企业认定标准。"
+      }
+    },
+    {
+      "id": 70,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AbbVie",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "AbbVie为美国上市公司艾伯维，是全球知名生物制药企业，属外国公司"
+      }
+    },
+    {
+      "id": 71,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Abbott Laboratories",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Abbott Laboratories为美国知名跨国医疗健康公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 72,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AgBiome",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "AgBiome为美国微生物农业科技公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 73,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Agilent",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Agilent（安捷伦科技）是美国上市公司，生命科学和分析仪器领域的知名跨国企业"
+      }
+    },
+    {
+      "id": 74,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AgraQuest",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "AgraQuest为美国生物农药公司，其代表性产品枯草芽孢杆菌制剂在全球销售，实际控制人为外国主体。"
+      }
+    },
+    {
+      "id": 75,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Agrivida",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Agrivida为美国植物生物技术公司，专注于基因工程改良作物，非中国国资或民营实体"
+      }
+    },
+    {
+      "id": 76,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Ailurus",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且无公开信息表明其为知名外资或国资实体，按惯例推断为民营企业"
+      }
+    },
+    {
+      "id": 77,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Amano Enzyme",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“Amano Enzyme”为日本知名酶制剂企业，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 78,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Amgen",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Amg为美国跨国生物制药公司，其中国实体均为外资控股"
+      }
+    },
+    {
+      "id": 79,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Amyris",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Amyris为美国合成生物学公司，曾于纳斯达克上市，其实际控制人属外国主体，符合外资企业认定标准。"
+      }
+    },
+    {
+      "id": 80,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Anuvia",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称\"Anuvia\"非中文，行业常识显示其为美国生物基肥料公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 81,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Aphea. Bio",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Aphea.Bio为比利时农业生物技术公司，专注于微生物农业解决方案，属外国品牌在华可能的实体（若在华注册），实际控制为外国主体"
+      }
+    },
+    {
+      "id": 82,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Arkema阿科玛",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "阿科玛（Arkema）为全球知名法国特种化学品生产商，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 83,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Arzeda",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Arzeda为美国生物技术公司，实际控制人属外国主体，无国资线索"
+      }
+    },
+    {
+      "id": 84,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AstaReal",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "AstaReal为全球知名虾青素品牌，母公司系日本富士化学工业株式会社，属于外国企业在华实体"
+      }
+    },
+    {
+      "id": 85,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Astellas Pharma",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Astellas Pharma为知名日本制药企业，在华实体属外资企业"
+      }
+    },
+    {
+      "id": 86,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AstraZeneca",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "AstraZeneca为全球知名跨国药企，总部位于英国剑桥，实际控制人为外国主体，属外商在华实体"
+      }
+    },
+    {
+      "id": 87,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Aurobindo",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Aurobindo为印度知名制药企业，其实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 88,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Avantium",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Avantium为荷兰知名生物基化学品公司，专注于PEF及FDCA技术，属外国法人实体"
+      }
+    },
+    {
+      "id": 89,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Axens (AtoI技术)",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Axens为法国知名能源化工技术公司，其名称在国际石化行业具有公认的外资身份"
+      }
+    },
+    {
+      "id": 90,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Bartek",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "基于公开商业常识，Bartek Ingredients是加拿大苹果酸生产商，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 91,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Baxter International",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Baxter International为美国上市公司，全球知名医疗设备与生物科技企业，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 92,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Bayer",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "拜耳（Bayer）为德国跨国制药和生命科学公司，属外国品牌在华实体"
+      }
+    },
+    {
+      "id": 93,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Becker Underwood",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Becker Underwood原为美国生物农业公司，2012年被德国巴斯夫（BASF）收购，现为外资企业"
+      }
+    },
+    {
+      "id": 94,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Becton Dickinson(BD)",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Becton Dickinson(BD)为全球知名美国医疗技术公司，在华实体为其子公司，属于外资企业"
+      }
+    },
+    {
+      "id": 95,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Benchling",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Benchling为美国生命科学云平台公司，总部位于旧金山，属外国品牌"
+      }
+    },
+    {
+      "id": 96,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Beneo贝利优",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“Beneo贝利优”为德国Südzucker集团旗下功能性配料品牌，是在华经营的外国品牌实体"
+      }
+    },
+    {
+      "id": 97,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Benson Hill",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Benson Hill为美国农业科技上市公司（纽交所代码BHIL），专注植物育种和基因编辑，实际控制人属外国主体"
+      }
+    },
+    {
+      "id": 98,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Beyond Meat",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "品牌\"Beyond Meat\"为美国纳斯达克上市公司，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 99,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "BioAmber",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "BioAmber为加拿大生物基化学品公司，曾于纽交所和多伦多交易所上市，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 100,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "BioVision",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "BioVision于2017年被中国上市公司博腾股份（重庆博腾制药科技股份有限公司）全资收购，现为其旗下品牌，博腾股份为民营企业，故BioVision不再属于外资。"
+      }
+    },
+    {
+      "id": 101,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Biogen",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Biogen为美国生物技术公司，是全球知名生物制药企业，在华实体应属外资企业"
+      }
+    },
+    {
+      "id": 102,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Biomax Informatics",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Biomax Informatics为德国知名生物信息学公司，根据公开商业常识属境外主体"
+      }
+    },
+    {
+      "id": 103,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Bioworks拜沃",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为科技型创业公司，默认倾向民营企业"
+      }
+    },
+    {
+      "id": 104,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Borealis 北欧化工",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "北欧化工（Borealis）为奥地利知名化工企业，属外国品牌在华实体"
+      }
+    },
+    {
+      "id": 105,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Bota恩和生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且生物科技行业多为民营企业，按默认倾向判断"
+      }
+    },
+    {
+      "id": 106,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Braskem",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Braskem为巴西知名石化企业，由巴西资本控制，属于外国公司"
+      }
+    },
+    {
+      "id": 107,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Bristol Myers Squibb",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "百时美施贵宝为美国跨国制药公司，属于外资企业"
+      }
+    },
+    {
+      "id": 108,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "CP Kelco 斯比凯可",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "CP Kelco（斯比凯可）为全球知名亲水胶体制造商，原属美国J.M. Huber集团，后于2021年被荷兰皇家帝斯曼（DSM）收购，其在华实体为外国公司在华子公司。"
+      }
+    },
+    {
+      "id": 109,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "CSL",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "CSL为澳大利亚知名生物制药企业，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 110,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Celltrion",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Celltrion为韩国知名生物制药公司，主营生物类似药，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 111,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Centrient",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Centrient为荷兰知名生物制药公司，前身为帝斯曼抗生素部门，属外资实体"
+      }
+    },
+    {
+      "id": 112,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Certis USA",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Certis USA为美国知名生物农药公司，属于外国品牌在华实体或境外母公司直接控制的企业"
+      }
+    },
+    {
+      "id": 113,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Chr. Hansen",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Chr. Hansen为丹麦生物科技公司，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 114,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Cibus",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Cibus为美国农业生物技术公司，总部位于加利福尼亚州，属于外国企业。"
+      }
+    },
+    {
+      "id": 115,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Clariant Sunliquid",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Clariant为瑞士跨国特种化学品公司，其sunliquid®技术为该公司所有，属于外国品牌在华实体或技术授权主体"
+      }
+    },
+    {
+      "id": 116,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Codexis",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Codexis为美国纳斯达克上市公司，总部位于美国加州，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 117,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Corbion-Purac",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Corbion为荷兰生物基产品上市公司，其与道达尔能源合资成立TotalEnergies Corbion，表明实际控制人为外国主体。"
+      }
+    },
+    {
+      "id": 118,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Corteva科迪华",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "科迪华（Corteva）系从陶氏杜邦分拆出的美国农业科技公司，纽约证券交易所上市，在华设有子公司，属外国品牌在华实体"
+      }
+    },
+    {
+      "id": 119,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "CovationBio瑞讯生材",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，CovationBio为生物基材料品牌，其关联公司瑞讯生材由华峰化学等民营企业控股，非国资非外资"
+      }
+    },
+    {
+      "id": 120,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Cradle",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称Cradle为荷兰生物技术初创公司，利用机器学习进行蛋白质优化，无国资或中国民营企业特征。"
+      }
+    },
+    {
+      "id": 121,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "DELONIX",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称“DELONIX”为典型外文品牌，且无国资或央企标识，结合行业背景推断为外国主体在华实体或外资控股企业"
+      }
+    },
+    {
+      "id": 122,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "DNA Script",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "DNA Script为法国生物技术公司，总部位于巴黎，属于外国品牌"
+      }
+    },
+    {
+      "id": 123,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "DSM",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "帝斯曼（DSM）为荷兰跨国企业，是全球知名的营养、健康和生物科学公司，在中国设有实体，属外资企业。"
+      }
+    },
+    {
+      "id": 124,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "DSM帝斯曼",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "DSM帝斯曼为荷兰皇家帝斯曼集团，系全球知名生物科学及营养领域跨国企业"
+      }
+    },
+    {
+      "id": 125,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Daiichi Sankyo",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "第一三共（Daiichi Sankyo）为日本知名跨国制药企业，在华实体属于外商独资或控股子公司"
+      }
+    },
+    {
+      "id": 126,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Danaher",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Danaher为美国上市公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 127,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Danaher、",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Danaher为美国上市公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 128,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Danimer",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Danimer Scientific为美国上市公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 129,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Darmstadt",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称\"Darmstadt\"无明确国资或外资标识，且不属央企或地方国资关键词，按默认倾向推断为民营企业"
+      }
+    },
+    {
+      "id": 130,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Diamond Green Diesel",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Diamond Green Diesel为美国Valero Energy和Darling Ingredients合资的可再生柴油公司，是外国主体控制的企业。"
+      }
+    },
+    {
+      "id": 131,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Dynegene德展基因",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无明确国资或外资标识，且基因科技领域常见民营企业，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 132,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Eat Just",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Eat Just为美国食品科技公司，总部位于旧金山，旗下品牌JUST Egg和GOOD Meat均属外资品牌"
+      }
+    },
+    {
+      "id": 133,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Eli Lilly",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Eli Lilly（礼来）为美国跨国制药公司，其在中国实体由美国礼来公司实际控制"
+      }
+    },
+    {
+      "id": 134,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Enerkem",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Enerkem为加拿大清洁技术公司，实际控制人属外国主体"
+      }
+    },
+    {
+      "id": 135,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Evonik",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Evonik（赢创）为德国特种化工集团，在全球范围开展业务，其在中国实体属于外国公司在华子公司"
+      }
+    },
+    {
+      "id": 136,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Evonik（赢创）",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Evonik（赢创）为德国特种化工企业，属于外国公司在华品牌，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 137,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "ExxonMobil",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "ExxonMobil为美国跨国石油公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 138,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Fermenta Biotech",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“Fermenta Biotech”为印度上市生物技术公司，属外国品牌在华实体或外资控股企业"
+      }
+    },
+    {
+      "id": 139,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Field Roast",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Field Roast为美国植物基肉类品牌，隶属于加拿大枫叶食品公司旗下，属外国公司在华相关实体。"
+      }
+    },
+    {
+      "id": 140,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Fresenius Kabi",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "知名德国医疗集团费森尤斯（Fresenius）旗下业务板块，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 141,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Fulcrum bioenergy",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Fulcrum Bioenergy为美国知名可持续航空燃料企业，总部位于加州，实际控制人为外国主体，属外资企业"
+      }
+    },
+    {
+      "id": 142,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "GENEWIZ",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "GENEWIZ为美国生物技术公司Azenta旗下品牌，在华设有金唯智等子公司，属外国公司实际控制"
+      }
+    },
+    {
+      "id": 143,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "GSK",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“GSK”为英国跨国药企葛兰素史克（GlaxoSmithKline）的常用缩写，其在华实体属于外国品牌在华子公司"
+      }
+    },
+    {
+      "id": 144,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Galderma",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Galderma（高德美）是总部位于瑞士的皮肤科学公司，为国际知名医美和处方药品牌，属于外资实体"
+      }
+    },
+    {
+      "id": 145,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Genomatica",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Genomatica为美国生物技术公司，开发生物基化学品工艺，总部位于加州，不属中国国资或民企序列"
+      }
+    },
+    {
+      "id": 146,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Gevo",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Gevo为美国纳斯达克上市公司，总部位于科罗拉多州，实际控制人为外国主体。"
+      }
+    },
+    {
+      "id": 147,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Gilead Sciences",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Gilead Sciences为美国知名生物制药上市公司，实际控制人属外国主体"
+      }
+    },
+    {
+      "id": 148,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Ginkgo",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Ginkgo Bioworks为美国合成生物学上市公司，属外国公司"
+      }
+    },
+    {
+      "id": 149,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Ginkgo Bioworks",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Ginkgo Bioworks为美国上市生物技术公司，实际控制人属外国主体"
+      }
+    },
+    {
+      "id": 150,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Givaudan",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Givaudan为瑞士上市公司，是全球香精香料行业知名外企"
+      }
+    },
+    {
+      "id": 151,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Glycom",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "公开信息显示Glycom为丹麦公司，专注于母乳低聚糖研发与生产，属外国实体"
+      }
+    },
+    {
+      "id": 152,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Hugel",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Hugel为韩国生物制药企业，核心产品肉毒素Letybo，属于外国公司"
+      }
+    },
+    {
+      "id": 153,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Huons",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Huons为韩国知名制药企业，主营肉毒素和透明质酸填充剂等医美产品，是韩国上市公司，品牌源自韩国"
+      }
+    },
+    {
+      "id": 154,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Hzymes",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为酶催化领域的民营科技公司"
+      }
+    },
+    {
+      "id": 155,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "IFF",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "IFF为美国上市公司，全球知名香精香料生产商，属外国公司在华实体"
+      }
+    },
+    {
+      "id": 156,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Impossible Foods",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Impossible Foods为美国知名植物肉品牌，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 157,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Inari",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Inari为美国农业生物技术公司，总部位于马萨诸塞州，专注于种子基因编辑，无国资背景"
+      }
+    },
+    {
+      "id": 158,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Indigo",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称“Indigo”为美国农业科技公司Indigo Ag的常用品牌名，该公司专注于微生物种子处理领域，属于外国公司在华可能以实体或品牌形式运营的情形。"
+      }
+    },
+    {
+      "id": 159,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Infinium",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "根据公开信息，Infinium为美国可持续航空燃料技术公司，属于外资实体"
+      }
+    },
+    {
+      "id": 160,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Ingredion宜瑞安",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "宜瑞安(Ingredion)为美国上市公司，在华设立实体属于外资企业"
+      }
+    },
+    {
+      "id": 161,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Inhibrx Biosciences",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Inhibrx Biosciences为美国上市生物制药公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 162,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Integrated DNA Technologies",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Integrated DNA Technologies为美国生物技术公司，总部位于爱荷华州，属丹纳赫集团旗下，实控人为外国主体"
+      }
+    },
+    {
+      "id": 163,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Jennewein",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“Jennewein”为德国生物技术公司，专注人乳寡糖（HMO）研发生产，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 164,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Johnson & Johnson",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "强生(Johnson & Johnson)为美国知名跨国医疗健康企业，其中国实体属于外资企业"
+      }
+    },
+    {
+      "id": 165,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Kaneka",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Kaneka为日本知名化工企业，实际控制人为日本主体，属于外资企业"
+      }
+    },
+    {
+      "id": 166,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Kang Ma",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "康码生物科技无明确国资或外资标识，属生物科技领域创业公司，按行业惯例推断为民营企业"
+      }
+    },
+    {
+      "id": 167,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Koppert科伯特",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Koppert（科伯特）为荷兰生物防治企业，在华设有实体，属外国品牌在华子公司"
+      }
+    },
+    {
+      "id": 168,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Kyowa Kirin（协和麒麟）",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Kyowa Kirin（协和麒麟）为日本协和发酵麒麟株式会社，是国际知名生物制药企业，在华实体属外资企业"
+      }
+    },
+    {
+      "id": 169,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "LALLEMAND",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Lallemand为加拿大生物科技公司，主要业务包括酵母和益生菌生产，属外国企业品牌"
+      }
+    },
+    {
+      "id": 170,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Lanza Tech",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "LanzaTech为新西兰注册的全球性生物技术公司，非中国央企或国资控股，属外资企业"
+      }
+    },
+    {
+      "id": 171,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "LanzaTech",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "LanzaTech为美国气体发酵技术公司，总部位于伊利诺伊州，不属于中国国资或民营企业。"
+      }
+    },
+    {
+      "id": 172,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Librede",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称“Librede”为英文，且根据公开信息，Librede是一家美国合成生物学公司，专注于利用微生物发酵平台生产PHA类可降解生物塑料，无国资或中资控股迹象。"
+      }
+    },
+    {
+      "id": 173,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Lonza",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Lonza为瑞士跨国企业，全球知名的生物制药CDMO厂商，实控人为外国主体。"
+      }
+    },
+    {
+      "id": 174,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Lonza Group",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "龙沙集团(Lonza Group)为瑞士跨国企业，属于外资公司"
+      }
+    },
+    {
+      "id": 175,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Lycored",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Lycored为以色列生物技术公司，专注于天然类胡萝卜素产品，属于外资企业"
+      }
+    },
+    {
+      "id": 176,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "LyondellBasell",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "LyondellBasell为荷兰"
+      }
+    },
+    {
+      "id": 177,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "MODERN MEADOW",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Modern Meadow为美国生物技术公司，其技术研发和实际控制主体在境外，属于外国公司。"
+      }
+    },
+    {
+      "id": 178,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Mango Materials",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Mango Materials为美国生物塑料企业，以甲烷制PHA闻名，实际控制人为外国主体。"
+      }
+    },
+    {
+      "id": 179,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Manus Bio",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "根据公开商业常识，Manus Bio为美国生物技术公司，专注微生物发酵生产甜味剂，属外国主体控制的企业"
+      }
+    },
+    {
+      "id": 180,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "MedyTox",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Medytok为韩国肉毒素制造商，属于外国品牌，实际控制人为韩国主体。"
+      }
+    },
+    {
+      "id": 181,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Merck & Co.(MSD US)​",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Merck & Co.为美国知名跨国制药企业，其美国存托凭证在纽交所上市，属外资主体"
+      }
+    },
+    {
+      "id": 182,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Merck KGaA, Darmstadt",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "德国默克公司，全球知名制药与化工企业，总部位于达姆施塔特"
+      }
+    },
+    {
+      "id": 183,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Merck KGaA,Darmstadt(Germany)",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称中的\"Merck KGaA\"为德国知名医药及化工企业，总部位于达姆施塔特，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 184,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Merz",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "知名德国制药企业Merz，以生产肉毒素Xeomin著称，属于外国品牌在华实体。"
+      }
+    },
+    {
+      "id": 185,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Metamixis",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且无公开信息显示其为国资或外资控股，按行业惯例推断为技术型民营企业"
+      }
+    },
+    {
+      "id": 186,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Mettler-Toledo International​",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“Mettler"
+      }
+    },
+    {
+      "id": 187,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Nature Coatings",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称\"Nature Coatings\"为英文品牌，且业务描述中未体现中国国资或境内民营企业特征，推断为外国主体实际控制的企业"
+      }
+    },
+    {
+      "id": 188,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "NatureWorks",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "NatureWorks是全球知名的聚乳酸生产商，为美国嘉吉（Cargill）与泰国PTTGC的合资企业，实际控制人为外国主体。"
+      }
+    },
+    {
+      "id": 189,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Neste Oil",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Neste Oil为芬兰跨国能源公司，专注于可再生燃料，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 190,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Norsk eFuel",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称\"Norsk\"为挪威语“挪威的”，表明为挪威企业，专注于电转液技术，属于外国公司"
+      }
+    },
+    {
+      "id": 191,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Novartis",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Novartis为瑞士跨国制药巨头，其在中国设立实体属外国公司在华子公司。"
+      }
+    },
+    {
+      "id": 192,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Novo Nordisk",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Novo Nordisk为丹麦跨国制药巨头，实际控制主体为外国公司，属生物医药领域知名外资企业"
+      }
+    },
+    {
+      "id": 193,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Novozymes",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Novozymes为丹麦生物技术公司诺维信，属外国品牌在华实体"
+      }
+    },
+    {
+      "id": 194,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Novus（诺伟司）",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Novus（诺伟司）为美国诺伟司国际公司（Novus International, Inc.）品牌，属于外国公司在华实体"
+      }
+    },
+    {
+      "id": 195,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "NutraSweet纽特",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“NutraSweet”为国际知名阿斯巴甜品牌，原属美国孟山都，现为外资控股的甜味剂企业，其在华实体通常为外商独资或合资形式"
+      }
+    },
+    {
+      "id": 196,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Nutrinova",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Nutrinova为德国特种化学品公司，主要生产安赛蜜，属外国品牌在华实体"
+      }
+    },
+    {
+      "id": 197,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Octarine Bio",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Octarine Bio为丹麦生物技术初创公司，专注于微生物发酵生产天然染料，创始人控股，属外国私人企业。"
+      }
+    },
+    {
+      "id": 198,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Oersted",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Ørsted为丹麦知名可再生能源上市公司，属外国企业"
+      }
+    },
+    {
+      "id": 199,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Perfect Day",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Perfect Day为美国知名精密发酵蛋白公司，其实际控制人及运营主体位于美国，属于外国企业。"
+      }
+    },
+    {
+      "id": 200,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Pfizer",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Pfizer（辉瑞）为美国跨国制药公司，其在中国设立的实体属于外资企业。"
+      }
+    },
+    {
+      "id": 201,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Pivot Bio",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Pivot Bio为美国知名农业生物技术公司，总部位于加州，根据公开信息属于外国企业"
+      }
+    },
+    {
+      "id": 202,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Probi",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "瑞典生物技术公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 203,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Profluent",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Profluent为美国Emeryville的蛋白质设计公司，属于外国主体实际控制的企业"
+      }
+    },
+    {
+      "id": 204,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Prometheus Materials",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Prometheus Materials为美国生物水泥初创企业，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 205,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Raízen",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Raízen为巴西生物能源公司，由壳牌与巴西Cosan合资成立，属于外国控制的企业"
+      }
+    },
+    {
+      "id": 206,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Regeneron Pharmaceuticals",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Regeneron Pharmaceuticals为美国纳斯达克上市的生物制药公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 207,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Roche Holding",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Roche Holding为瑞士跨国医药集团，属外国公司"
+      }
+    },
+    {
+      "id": 208,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Roquette罗盖特",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称\"Roquette罗盖特\"为法国知名生物技术企业，在华实体为外商独资或合资，实际控制人属外国主体。"
+      }
+    },
+    {
+      "id": 209,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Rovensa诺稳萨",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“Rovensa诺稳萨”为葡萄牙农业生物技术品牌，在华实体通常为外资子公司"
+      }
+    },
+    {
+      "id": 210,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "SAPPHIRE ENERGIES",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称\"SAPPHIRE ENERGIES\"为英文品牌，且行业信息显示其从事藻类生物原油技术，符合外国清洁能源公司常见特征，无任何国有或民营中资企业标识。"
+      }
+    },
+    {
+      "id": 211,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Samsung Biologics",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "三星生物制剂为韩国三星集团旗下公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 212,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Sandoz Group",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Sandoz为瑞士跨国制药公司，原属诺华集团，后独立上市，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 213,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Sanofi",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Sanofi（赛诺菲）为法国跨国制药巨头，其在华实体由外国主体实际控制"
+      }
+    },
+    {
+      "id": 214,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "SweeGen",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "SweeGen为美国天然甜味剂公司，总部位于加州，专注于甜菊糖苷等产品，非中国境内国资或民营企业。"
+      }
+    },
+    {
+      "id": 215,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Synbiota",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称\"Synbiota\"为加拿大合成生物学公司，实际控制人为外国主体，无中国国资背景"
+      }
+    },
+    {
+      "id": 216,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Syntroleum",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Syntroleum为美国能源技术公司，曾于纳斯达克上市，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 217,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Södra索达",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Södra为瑞典林业集团，名称及行业信息明确显示其实际控制人为瑞典主体，属于外国公司在华实体"
+      }
+    },
+    {
+      "id": 218,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Takeda Pharmaceutical",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Takeda Pharmaceutical为日本武田药品工业株式会社，是知名的跨国制药企业"
+      }
+    },
+    {
+      "id": 219,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Tate&Lyle泰莱",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "泰莱（Tate & Lyle）为英国跨国食品配料公司，在华运营实体属于外国公司子公司"
+      }
+    },
+    {
+      "id": 220,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Tereos",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Tereos为法国主要糖业集团，实际控制人为外国主体，属外资企业"
+      }
+    },
+    {
+      "id": 221,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Teva Pharmaceutical",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Teva Pharmaceutical为以色列跨国制药公司，全球知名仿制药企业，非中国境内国有或民营实体"
+      }
+    },
+    {
+      "id": 222,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Thermo Fisher Scientific",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "赛默飞世尔科技为美国上市公司，全球科学服务领域知名外资企业"
+      }
+    },
+    {
+      "id": 223,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Tidetron",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，属合成生物学领域科技公司，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 224,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Tofflon东富龙",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "东富龙（Tofflon）为A股上市公司（300171），实际控制人为自然人郑效东，无国有或外资控股背景，属生物制药装备领域知名民企"
+      }
+    },
+    {
+      "id": 225,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "TotalEnergies Corbion",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称由法国能源巨头TotalEnergies与荷兰生物基公司Corbion组合而成，为两家外资企业合资品牌，属于外国公司在华实体。"
+      }
+    },
+    {
+      "id": 226,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Twist Bioscience",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Twist Bioscience是一家在美国纳斯达克上市的合成生物学公司，总部位于美国，实际控制人为外国主体。"
+      }
+    },
+    {
+      "id": 227,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "UAS Labs",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "UAS Labs为美国益生菌原料制造商，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 228,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "UCB",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "UCB为比利时跨国生物制药公司，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 229,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "UPSIDE Foods",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称\"UPSIDE Foods\"为美国培养肉科技公司，属外国品牌在华实体或直接引用外国主体"
+      }
+    },
+    {
+      "id": 230,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Virent",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Virent为美国生物基化学品技术公司，总部位于威斯康星州麦迪逊，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 231,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Waters",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Waters（沃特世）为美国上市公司，是全球知名的分析仪器制造商，在华实体为其外国母公司控股的外商独资或合资企业"
+      }
+    },
+    {
+      "id": 232,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Whole Earth Brands",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Whole Earth Brands为美国上市公司（纳斯达克代码：FREE），主营甜味剂等消费品，属外国品牌在华实体"
+      }
+    },
+    {
+      "id": 233,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Wuxi Apptec",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "药明康德（WuXi AppTec）为知名民营医药研发外包企业，由自然人创始团队控制，无国资或外资控股"
+      }
+    },
+    {
+      "id": 234,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Zoetis",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Zoetis为全球知名动物保健公司，系美国上市公司，在华实体为外国品牌子公司"
+      }
+    },
+    {
+      "id": 235,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Zymergen",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "Zymergen为知名美国合成生物学公司，曾于纳斯达克上市，实际控制人为外国主体。"
+      }
+    },
+    {
+      "id": 236,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "arGEN-X",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "arGEN"
+      }
+    },
+    {
+      "id": 237,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "glowee",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "公开信息显示Glowee为法国生物技术初创公司，利用生物发光技术，属于外国企业实体"
+      }
+    },
+    {
+      "id": 238,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "suez",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "苏伊士（Suez）为法国跨国环境服务集团，属于外国公司"
+      }
+    },
+    {
+      "id": 239,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "一兮",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资、外资标识，且无明显央企或地方国资特征，按行业惯例推断为民营植物育种企业"
+      }
+    },
+    {
+      "id": 240,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "万华化学",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "万华化学为上市公司，实际控制人为烟台市国资委，属于地方国有控股企业"
+      }
+    },
+    {
+      "id": 241,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "三井化学",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "三井化学为日本三井集团旗下知名化工企业，属于外国公司"
+      }
+    },
+    {
+      "id": 242,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "三元生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "三元生物为创业板上市公司（301206），实际控制人为自然人，无国资或外资控股，属民营生物科技企业"
+      }
+    },
+    {
+      "id": 243,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "三菱重工",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "三菱重工（Mitsubishi Heavy Industries）为日本知名跨国工业集团，属于外国公司"
+      }
+    },
+    {
+      "id": 244,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "东富龙",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "东富龙为A股上市公司（300171），实际控制人为自然人，无国资或外资控股，属于民营制药装备企业"
+      }
+    },
+    {
+      "id": 245,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "东晓生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，生物制造领域常见自然人控股企业，按行业惯例推断为民营企业"
+      }
+    },
+    {
+      "id": 246,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中化化肥",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "“中化化肥”隶属于中国中化集团有限公司，后者为国务院国资委监管的97家央企之一"
+      }
+    },
+    {
+      "id": 247,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国中化",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "“中国中化控股有限责任公司”为国务院国资委监管的97家央企之一，由原中国中化集团与中国化工集团重组设立。"
+      }
+    },
+    {
+      "id": 248,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国石化",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "中国石油化工集团有限公司属国务院国资委监管的97家央企之一"
+      }
+    },
+    {
+      "id": 249,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国石油",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "“中国石油天然气集团有限公司”属国资委监管央企"
+      }
+    },
+    {
+      "id": 250,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中科合成",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "企业全称“中科合成油技术股份有限公司”，据行业公开信息其由中国科学院山西煤炭化学研究所等国有科研单位控股，属于科研院所下属企业，非国资委监管央企，故归类为其他国资。"
+      }
+    },
+    {
+      "id": 251,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中科国生",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称“中科国生”无明确国资或外资标识，所处呋喃生物基材料行业多为民营科技企业，按惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 252,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中粮科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "中粮科技为中粮集团（国务院国资委监管的97家央企之一）旗下上市公司，属央企控股企业"
+      }
+    },
+    {
+      "id": 253,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中粮集团",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "中粮集团有限公司为国务院国资委监管的97家中央企业之一，属于知名央企。"
+      }
+    },
+    {
+      "id": 254,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "丰原集团",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "丰原集团为安徽蚌埠知名民营企业，由李荣杰创立，非央企或地方国企，无外资控股"
+      }
+    },
+    {
+      "id": 255,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "乐象永续",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且生物基染料行业多为创新技术型初创公司，按惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 256,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "仙琚制药",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "仙琚制药为A股上市公司（002332），实际控制人为自然人，无国资或外资控股，属于知名民营药企"
+      }
+    },
+    {
+      "id": 257,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "伊品生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "伊品生物为星湖科技旗下公司，星湖科技属广新控股集团，广新控股集团是广东省属国有资本投资公司"
+      }
+    },
+    {
+      "id": 258,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "伦敦生物铸造厂",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称含外国地名“伦敦”，推断为外国品牌在华实体或外资控股企业"
+      }
+    },
+    {
+      "id": 259,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "保龄宝",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "保龄宝生物股份有限公司为A股上市公司（002286），实际控制人为自然人，无国有资本或外资控股，属民营制造企业"
+      }
+    },
+    {
+      "id": 260,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "健隆生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且生物发酵行业常见为民营企业，结合公开信息判断为自然人控股企业"
+      }
+    },
+    {
+      "id": 261,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "元利科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "元利科技为A股上市公司（603217），实际控制人为自然人，无国资或外资控股，属民营化工企业"
+      }
+    },
+    {
+      "id": 262,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "先正达",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "先正达集团为中国中化控股有限责任公司（国资委监管央企）的核心子公司，承接其农业科技业务"
+      }
+    },
+    {
+      "id": 263,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "兰典科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且行业为生物基化工领域，按惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 264,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "养乐多",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "养乐多为日本品牌，在华实体属于外国公司子公司，实际控制人为日本株式会社养乐多本社"
+      }
+    },
+    {
+      "id": 265,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "凯莱英",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "凯莱英医药集团为A股上市公司，实际控制人为自然人，无国资或外资控股背景"
+      }
+    },
+    {
+      "id": 266,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "凯赛生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "科创板上市公司，实际控制人为自然人，无国资或外资控股"
+      }
+    },
+    {
+      "id": 267,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华东医药",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "华东医药（000963.SZ）为A股上市公司，控股股东中国远大集团为民营企业，实际控制人为自然人，无国资或外资控股"
+      }
+    },
+    {
+      "id": 268,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华大智造",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "华大智造为华大集团旗下上市公司，实际控制人为自然人汪建，无国资或外资控股"
+      }
+    },
+    {
+      "id": 269,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华大营养",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "华大营养为华大集团旗下企业，华大集团（含华大基因等）系自然人汪建等实际控制的知名民营科技企业，非国资或外资"
+      }
+    },
+    {
+      "id": 270,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华康股份",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "华康股份（浙江华康药业股份有限公司）为A股上市公司，实际控制人为自然人，无国资或外资控股，属于民营企业。"
+      }
+    },
+    {
+      "id": 271,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华恒生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "华恒生物为A股上市公司（688639），实际控制人为自然人郭恒华，无国资或外资控股，属于民营企业"
+      }
+    },
+    {
+      "id": 272,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华昊中天",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，属生物医药领域科技公司，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 273,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华润医药",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "华润医药为华润集团旗下核心子公司，华润集团属国资委监管的97家央企之一"
+      }
+    },
+    {
+      "id": 274,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华润双鹤(神舟生物)",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "“华润双鹤”为华润集团旗下上市公司，华润集团属国务院国资委监管的97家央企之一，其子公司性质为中央企业。"
+      }
+    },
+    {
+      "id": 275,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华灏化学",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 276,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华熙生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "华熙生物为知名上市公司，实际控制人为自然人赵燕，无国有资本或外资控股，属于民营企业"
+      }
+    },
+    {
+      "id": 277,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "卓越新能",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "卓越新能（龙岩卓越新能源股份有限公司）为科创板上市公司，实际控制人为自然人，无国资或外资控股背景"
+      }
+    },
+    {
+      "id": 278,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "南模生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "上市公司，控股股东上海科技创业投资有限公司及中国科学院分子细胞科学卓越创新中心等国有/事业单位持股，具有国资背景"
+      }
+    },
+    {
+      "id": 279,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "双塔食品",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "双塔食品为烟台双塔食品股份有限公司，深交所上市公司（002481），实际控制人为自然人，无国资或外资控股背景"
+      }
+    },
+    {
+      "id": 280,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "周子未来",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且为国内细胞培养肉初创公司，符合科技型民营企业特征"
+      }
+    },
+    {
+      "id": 281,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "味之素",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "味之素为日本味之素株式会社（Ajinomoto Co., Inc.）旗下品牌，是外国公司在华实体"
+      }
+    },
+    {
+      "id": 282,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "唯铂莱生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且为合成生物学科技公司，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 283,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "嘉吉",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "嘉吉（Cargill）为美国跨国农业与食品巨头，是全球四大粮商之一，在华实体由外国主体实际控制"
+      }
+    },
+    {
+      "id": 284,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "嘉必优",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "嘉必优为科创板上市公司（688089），实际控制人为自然人，无国资或外资控股，属于民营企业"
+      }
+    },
+    {
+      "id": 285,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "嘉澳环保",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "嘉澳环保为A股上市公司（603822），实际控制人为自然人，无国资或外资控股，属于民营环保科技企业"
+      }
+    },
+    {
+      "id": 286,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国光股份",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "国光股份为A股上市公司（002749），实际控制人为颜昌绪家族，无国有或外资控股背景，产品以植物生长调节剂为主，属于民营农化企业。"
+      }
+    },
+    {
+      "id": 287,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国投生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "“国投生物”为国家开发投资集团有限公司（国资委监管央企）旗下从事生物能源业务的核心子公司"
+      }
+    },
+    {
+      "id": 288,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国药现代",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "国药现代为央企中国医药集团核心子公司，属国资委监管央企体系"
+      }
+    },
+    {
+      "id": 289,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "圣农发展",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "圣农发展为知名上市公司，实际控制人为自然人傅光明家族，无国资或外资控股"
+      }
+    },
+    {
+      "id": 290,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "圣博玛",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且行业为再生医学材料，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 291,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "圣泉集团",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "圣泉集团为A股上市公司（605589），实际控制人为自然人，无国资或外资控股，属知名民营化工企业"
+      }
+    },
+    {
+      "id": 292,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "坎伯兰包装公司",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称含“坎伯兰”为外国品牌或家族名称音译，按商业命名惯例推断为外资包装公司在华实体"
+      }
+    },
+    {
+      "id": 293,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "大北农生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "大北农集团为A股上市公司，实际控制人为自然人，其子公司“大北农生物”无国资或外资控股特征"
+      }
+    },
+    {
+      "id": 294,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "天伟生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，生物发酵领域以民营企业为主，无公开信息显示其具有国资或外资背景"
+      }
+    },
+    {
+      "id": 295,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "天方药业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "天方药业为中国医药健康产业股份有限公司下属企业，中国医药属中国通用技术（集团）控股有限责任公司（国资委监管央企）控股的上市公司"
+      }
+    },
+    {
+      "id": 296,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "天鹜科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，属于科技类创业公司，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 297,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "安琪酵母",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "安琪酵母为A股上市公司（600298），控股股东湖北安琪生物集团有限公司由宜昌市国资委控股，属地方国有企业"
+      }
+    },
+    {
+      "id": 298,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "安迪苏",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "安迪苏（蓝星安迪苏股份有限公司）为央企中国中化控股旗下蓝星集团控股的上市公司，属于央企体系"
+      }
+    },
+    {
+      "id": 299,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宝济药业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无明确国资或外资标识，生物医药领域常见创业型公司，按行业惯例推断为自然人控制企业"
+      }
+    },
+    {
+      "id": 300,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "山东中怡",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且甜味剂生产企业多为民营，推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 301,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "山东赫达",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "山东赫达为深交所上市公司（002810），实际控制人为自然人，无国资或外资控股，属于民营化工企业"
+      }
+    },
+    {
+      "id": 302,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "山高环能",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "山高环能控股股东为山东高速集团旗下企业，山东高速集团是山东省属国有企业，属于地方国资控股的上市公司"
+      }
+    },
+    {
+      "id": 303,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "川宁生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，公司全称为伊犁川宁生物技术股份有限公司，系上市公司，控股股东为科伦药业，实际控制人为自然人，属于民营企业"
+      }
+    },
+    {
+      "id": 304,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "巨子生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "巨子生物为港股上市公司，实际控制人为自然人，无国资或外资控股，属于典型民营企业"
+      }
+    },
+    {
+      "id": 305,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "巴斯夫",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "巴斯夫为德国跨国化工企业，其品牌及实际控制人均属外国主体，属于外资企业在华业务。"
+      }
+    },
+    {
+      "id": 306,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "希杰",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“希杰”为韩国CJ集团（CheilJedang）在华品牌，是全球氨基酸和食品配料领域知名跨国企业，实际控制人为韩国公司。"
+      }
+    },
+    {
+      "id": 307,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "广济药业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "广济药业（000952）为上市公司，由长江产业投资集团控股，该集团属湖北省国资委监管，系地方国有控股企业"
+      }
+    },
+    {
+      "id": 308,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "康宝生化",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，行业为食品添加剂制造，按惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 309,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "康码科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且行业为生物制造领域，按惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 310,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "弈柯莱",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，为国内知名酶催化技术平台，基于生物科技行业常识推断为民营企业"
+      }
+    },
+    {
+      "id": 311,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "引航生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，所属合成生物学/酶催化领域常见为民营科技企业，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 312,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "微康生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "无国资或外资标识，公开信息显示为自然人实际控制的益生菌原料企业"
+      }
+    },
+    {
+      "id": 313,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "德国EW Group",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称明确标注“德国”，且“EW Group”为德国知名动物遗传学与生物制造企业，属于外国品牌在华或全球运营实体"
+      }
+    },
+    {
+      "id": 314,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "德展基因",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，基因科技行业多为自然人创业或民营资本主导，按命名惯例推断为民营企业"
+      }
+    },
+    {
+      "id": 315,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "恒瑞医药",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "恒瑞医药为A股上市公司，实际控制人为自然人，无国有资本控股，属知名民营医药企业"
+      }
+    },
+    {
+      "id": 316,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "恩和生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且为生物科技领域初创公司，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 317,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "慕恩生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，生物科技领域初创公司按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 318,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "拜耳",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "拜耳为德国跨国企业，其作物科学事业部在华实体为外国公司子公司"
+      }
+    },
+    {
+      "id": 319,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新华扬",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "新华扬为饲用酶制剂领域知名企业，无国资或外资背景信息，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 320,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新和成",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "新和成为浙江新和成股份有限公司，是一家A股上市公司（002001），由自然人胡柏藩实际控制，无国资或外资控股"
+      }
+    },
+    {
+      "id": 321,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新朝阳作物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且农药、生物肥料行业中小型科技企业多为民营企业"
+      }
+    },
+    {
+      "id": 322,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新琪安",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 323,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "无锡晶海",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且公开信息显示其为自然人控股的氨基酸生产企业，无国有资本或外资控制"
+      }
+    },
+    {
+      "id": 324,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "昌进生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国有资本或外资标识，所属微生物合成生物科技领域常见民营企业，按常识推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 325,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "易高环保",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“易高环保”为香港中华煤气集团（港资）旗下企业，属港澳台资"
+      }
+    },
+    {
+      "id": 326,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "星期零",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 327,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "星湖科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "星湖科技为上市公司（600866），其控股股东为广东省广新控股集团有限公司，实际控制人为广东省国资委，属于地方国有控股企业"
+      }
+    },
+    {
+      "id": 328,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "晨光生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "晨光生物为上市公司（300138），实际控制人为自然人，无国资或外资控股，属于植物提取物领域的民营企业"
+      }
+    },
+    {
+      "id": 329,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "朗坤科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且所在行业多为民营企业，按默认推断为民营企业"
+      }
+    },
+    {
+      "id": 330,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "梅花生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "梅花生物为A股上市公司，实际控制人为自然人，无国资或外资控股，属于民营生物发酵企业"
+      }
+    },
+    {
+      "id": 331,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "植生优谷",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为植物育种领域民营企业"
+      }
+    },
+    {
+      "id": 332,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "武藏野化学",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“武藏野”为日本地名，企业名称明显指向日本品牌在华实体"
+      }
+    },
+    {
+      "id": 333,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "泰和伟业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "泰和伟业所属华恒生物为A股上市公司，实际控制人为自然人，无国资或外资背景，属于民营企业体系"
+      }
+    },
+    {
+      "id": 334,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "洁维生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，生物医药领域通常为自然人或私营资本控股企业"
+      }
+    },
+    {
+      "id": 335,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "浙江医药",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "浙江医药为上市公司，实际控制人为自然人，无国资或外资控股，属于民营医药企业"
+      }
+    },
+    {
+      "id": 336,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "浩天药业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，甜菊糖苷行业多为民营生物科技公司，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 337,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海大生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "“海大生物”通常指青岛海大生物集团，源于中国海洋大学，属高校背景企业"
+      }
+    },
+    {
+      "id": 338,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海新能科",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "海新能科（北京海新能源科技股份有限公司）为上市公司，实际控制人为北京市海淀区国资委，属于地方国有企业"
+      }
+    },
+    {
+      "id": 339,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海正生材",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "“海正生材”为浙江海正生物材料股份有限公司，其实际控制人为台州市椒江区人民政府国有资产监督管理办公室，属于地方国资控股企业"
+      }
+    },
+    {
+      "id": 340,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "清原农冠",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且农业生物技术育种领域常见民营企业，基于行业常识推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 341,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "清大智兴",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无明确国资或外资标识，且为科技型制造企业，按行业惯例推断为民营企业"
+      }
+    },
+    {
+      "id": 342,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "溢多利",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "溢多利为广东溢多利生物科技股份有限公司，上市公司，实际控制人为自然人，无国资或外资控股背景。"
+      }
+    },
+    {
+      "id": 343,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "瑞丰生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 344,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "甘度环保",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 345,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百利天恒",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "百利天恒为四川百利天恒药业股份有限公司，实际控制人为自然人朱义，无国资或外资控股，属于典型民营生物医药企业"
+      }
+    },
+    {
+      "id": 346,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百奥智汇",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，所属行业为生物制造，按行业惯例推断为科技型民营企业"
+      }
+    },
+    {
+      "id": 347,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百斯杰",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，属生物技术领域，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 348,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百济神州",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "百济神州为全球性生物科技公司，在开曼群岛注册并多地上市，主要股东含安进等外国资本，通过VIE架构控制境内实体，属实际由外资控股的企业。"
+      }
+    },
+    {
+      "id": 349,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百龙创园",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "百龙创园（山东百龙创园生物科技股份有限公司）为A股上市公司，实际控制人为自然人，无国资或外资控股背景，属于典型的民营生物科技企业。"
+      }
+    },
+    {
+      "id": 350,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "石药集团",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "石药集团为香港上市公司，根据公开信息其实际控制人为自然人，无国有资本或外资控股"
+      }
+    },
+    {
+      "id": 351,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "硅羿科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "从事RNA生物农药研发的科技公司，无明确国资或外资线索，按行业惯例推断为自然人控股或私营企业"
+      }
+    },
+    {
+      "id": 352,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "福瑞达生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "福瑞达生物隶属山东福瑞达医药集团，其母公司鲁商集团为山东省属国有企业"
+      }
+    },
+    {
+      "id": 353,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "福田药业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，糖醇行业常见民营企业，按常识推断为民营企业"
+      }
+    },
+    {
+      "id": 354,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "禾元生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "禾元生物（688765）为科创板上市公司，主营植物源重组蛋白生物医药，根据公开信息，其实际控制人为自然人创始团队，无国有资本或外资控股特征。"
+      }
+    },
+    {
+      "id": 355,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "科拓生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "科拓生物为A股上市公司（300858），实际控制人为自然人孙天松，无国资或外资控股，属于民营益生菌原料企业"
+      }
+    },
+    {
+      "id": 356,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "精品药业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且未在已知央企、地方国资或外资品牌中显著出现，按行业惯例推断为民营企业"
+      }
+    },
+    {
+      "id": 357,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "绿氮生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，属科技类生物技术公司，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 358,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "聚光科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "聚光科技为上市公司（300203），由自然人王健、姚纳新等创立并实际控制，无国资或外资控股，属民营分析仪器企业。"
+      }
+    },
+    {
+      "id": 359,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "肆芃科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且为合成生物学领域科技企业，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 360,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "舜丰生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，属科技型育种企业，按行业惯例推断为自然人实际控制的民营企业"
+      }
+    },
+    {
+      "id": 361,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "艾尔建",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "艾尔建（Allergan）为国际知名制药公司，原总部位于爱尔兰，后并入艾伯维（AbbVie），保妥适(Botox)为其核心产品，在华实体属于外国公司子公司"
+      }
+    },
+    {
+      "id": 362,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "花园生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "花园生物（浙江花园生物高科股份有限公司）为A股上市公司，实际控制人为邵钦祥等自然人，属花园集团旗下，无国资或外资控股"
+      }
+    },
+    {
+      "id": 363,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "苏震生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，生物基新材料领域常见民营企业，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 364,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "英国Genus PIC",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "“英国Genus PIC”为英国Genus集团旗下猪遗传育种品牌，Genus系伦敦证券交易所上市公司，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 365,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "英轩实业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "英轩实业是柠檬酸行业知名生产商，公开信息显示其由自然人控股，无国资或外资背景"
+      }
+    },
+    {
+      "id": 366,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "药明生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "药明生物为港股上市公司（02269.HK），实际控制人为李革等创始团队，无国资或外资控股，属典型民营生物科技企业"
+      }
+    },
+    {
+      "id": 367,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "荷兰Hendrix Genetics",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "名称含“荷兰”且品牌“Hendrix Genetics”为荷兰动物育种公司"
+      }
+    },
+    {
+      "id": 368,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "莱茵生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "莱茵生物为A股上市公司（002166），实际控制人为自然人，无国资或外资控股，属知名民营天然甜味剂企业。"
+      }
+    },
+    {
+      "id": 369,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "莲花控股",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "莲花控股（原莲花味精）为A股上市公司，经改制后实际控制人为自然人，无国资或外资控股标识"
+      }
+    },
+    {
+      "id": 370,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "蓝佳生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且为人造蛋白等新兴生物科技领域，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 371,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "蓝晶微生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且蓝晶微生物为国内合成生物学领域创业公司，按行业常识推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 372,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "蔚蓝生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "蔚蓝生物为A股上市公司（603739），实际控制人为自然人，无国资或外资控股，属民营股份制企业"
+      }
+    },
+    {
+      "id": 373,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "西王食品",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "西王食品为西王集团旗下上市公司，西王集团是山东邹平民营企业，实际控制人为自然人，无国资或外资控股背景"
+      }
+    },
+    {
+      "id": 374,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "许昌富森",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 375,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "谱赛科（2020年宜瑞安收购）",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "谱赛科被宜瑞安（美国Ingredion公司）收购，实际控制人为外国主体"
+      }
+    },
+    {
+      "id": 376,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "迈乐肥业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 377,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "道生生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且生物制造领域常见于民营科创公司，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 378,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "金丹科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "金丹科技（河南金丹乳酸科技股份有限公司）为A股上市公司，实际控制人为自然人，无国资或外资控股背景。"
+      }
+    },
+    {
+      "id": 379,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "金唯智",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "金唯智（GENEWIZ）为全球性生物科技公司，原为美国公司，现属Azenta Life Sciences旗下，在华设有子公司，属于外资企业。"
+      }
+    },
+    {
+      "id": 380,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "金禾实业",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "金禾实业（安徽金禾实业股份有限公司）为A股上市公司，实际控制人为自然人，无国有资本或外资控股，属于知名民营企业"
+      }
+    },
+    {
+      "id": 381,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "金禾集团",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且无公开信息显示其为央企或地方国企，按行业惯例推断为民营企业"
+      }
+    },
+    {
+      "id": 382,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "金达威",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "金达威（厦门金达威集团股份有限公司）为A股上市公司，实际控制人为自然人，无国资或外资控股，属民营营养添加剂企业"
+      }
+    },
+    {
+      "id": 383,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "钱江生化",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "其他国资",
+        "category_reason": "浙江钱江生物化学股份有限公司为浙江省海宁市国资委实际控制的上市企业，属于地方国有企业"
+      }
+    },
+    {
+      "id": 384,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "锦波生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "锦波生物（山西锦波生物医药股份有限公司）为北交所上市公司，实际控制人为自然人杨霞，无国资或外资控股背景"
+      }
+    },
+    {
+      "id": 385,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "镇海炼化",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "镇海炼化是中国石油化工集团有限公司（属国资委监管央企）的核心炼化子公司"
+      }
+    },
+    {
+      "id": 386,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "长春美禾",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，科技制造类企业，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 387,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阜丰集团",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "阜丰集团为港股上市公司，主要从事生物发酵产品，无国资或外资控股标识，按行业共识为民营企业"
+      }
+    },
+    {
+      "id": 388,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阳城生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 389,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "隆平生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "中央企业",
+        "category_reason": "“隆平”指向袁隆平农业高科技股份有限公司（隆平高科），其为上市公司，实际控制人为中信集团（国务院国资委监管的97家央企之一），属央企控股子公司。"
+      }
+    },
+    {
+      "id": 390,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "雪榕生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "雪榕生物为A股上市公司（300511），实际控制人为自然人，无国资或外资控股背景"
+      }
+    },
+    {
+      "id": 391,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "雪郎生物",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "基于公开信息，雪郎生物（安徽雪郎生物科技股份有限公司）为自然人控股企业，无国资或外资控股背景"
+      }
+    },
+    {
+      "id": 392,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "食未科技",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且生物科技初创公司CellX公开信息显示为民营融资企业，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 393,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "首钢朗泽",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "外资企业",
+        "category_reason": "首钢朗泽为首钢集团与新西兰生物技术公司朗泽科技（LanzaTech）合资成立的中外合资企业，实际控制人包含外资主体。"
+      }
+    },
+    {
+      "id": 394,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "齐和生科",
+        "industry_reason": "生物制造图谱0707.xlsx",
+        "category": "民营企业",
+        "category_reason": "名称未含央企、地方国资或外资标识，按行业惯例推断为自然人控股的科技型企业"
+      }
+    },
+    {
+      "id": 395,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "天津药研院",
+        "industry_reason": "副本0721补充.xlsx",
+        "category": "其他国资",
+        "category_reason": "通常所说的“天津药研院”指的是天津药物研究院有限公司（原天津市医药工业研究所）。从股权结构和隶属关系来看，它属于地方国企，而非央企。"
+      }
+    },
+    {
+      "id": 396,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国药中生生物技术研究院",
+        "industry_reason": "副本0721补充.xlsx",
+        "category": "中央企业",
+        "category_reason": "国药中生生物技术研究院（通常指北京生物制品研究所有限责任公司或中国生物技术股份有限公司下属的相关研究院所）属于央企"
+      }
+    },
+    {
+      "id": 397,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "通用技术中国医药",
+        "industry_reason": "副本0721补充.xlsx",
+        "category": "中央企业",
+        "category_reason": "“通用技术中国医药”通常指的是中国医药健康产业股份有限公司（简称“中国医药”，股票代码：600056）。关于它的企业性质，结论非常明确：它是央企。"
+      }
+    },
+    {
+      "id": 398,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国家生物制造产业创新中心",
+        "industry_reason": "副本0721补充.xlsx",
+        "category": "其他国资",
+        "category_reason": "国家生物制造产业创新中心（国投、招商局） 其他国资"
+      }
+    },
+    {
+      "id": 399,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国食品院",
+        "industry_reason": "副本0721补充.xlsx",
+        "category": "中央企业",
+        "category_reason": "“中国食品院”通常指的是中国食品发酵工业研究院有限公司。关于它的企业性质，结论非常明确：它是央企。"
+      }
+    },
+    {
+      "id": 400,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中粮营养健康研究院",
+        "industry_reason": "副本0721补充.xlsx",
+        "category": "中央企业",
+        "category_reason": "它是中粮集团有限公司（简称“中粮集团”）直属的核心研发机构，而中粮集团是由国务院国资委直接管理的中央企业"
+      }
+    },
+    {
+      "id": 403,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中牧股份",
+        "industry_reason": "副本0721补充.xlsx",
+        "category": "中央企业",
+        "category_reason": "中牧股份（中牧实业股份有限公司，股票代码：600195）是央企。"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "source": 1,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 2,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 3,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 4,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 5,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 6,
+      "target": 0,
+      "type": "从属于"
+    }, 
+    {
+      "source": 7,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 36,
+      "target": 7,
+      "type": "从属于"
+    },
+    {
+      "source": 35,
+      "target": 7,
+      "type": "从属于"
+    },
+    {
+      "source": 31,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 30,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 29,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 34,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 33,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 32,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 28,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 27,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 26,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 25,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 19,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 18,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 17,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 20,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 24,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 22,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 23,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 21,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 9,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 15,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 13,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 11,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 12,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 14,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 8,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 10,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 16,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 65,
+      "target": 36,
+      "type": "从属于"
+    },
+    {
+      "source": 64,
+      "target": 35,
+      "type": "从属于"
+    },
+    {
+      "source": 60,
+      "target": 31,
+      "type": "从属于"
+    },
+    {
+      "source": 59,
+      "target": 30,
+      "type": "从属于"
+    },
+    {
+      "source": 58,
+      "target": 29,
+      "type": "从属于"
+    },
+    {
+      "source": 63,
+      "target": 34,
+      "type": "从属于"
+    },
+    {
+      "source": 62,
+      "target": 33,
+      "type": "从属于"
+    },
+    {
+      "source": 61,
+      "target": 32,
+      "type": "从属于"
+    },
+    {
+      "source": 57,
+      "target": 28,
+      "type": "从属于"
+    },
+    {
+      "source": 56,
+      "target": 27,
+      "type": "从属于"
+    },
+    {
+      "source": 55,
+      "target": 26,
+      "type": "从属于"
+    },
+    {
+      "source": 54,
+      "target": 25,
+      "type": "从属于"
+    },
+    {
+      "source": 48,
+      "target": 19,
+      "type": "从属于"
+    },
+    {
+      "source": 47,
+      "target": 18,
+      "type": "从属于"
+    },
+    {
+      "source": 46,
+      "target": 17,
+      "type": "从属于"
+    },
+    {
+      "source": 49,
+      "target": 20,
+      "type": "从属于"
+    },
+    {
+      "source": 53,
+      "target": 24,
+      "type": "从属于"
+    },
+    {
+      "source": 51,
+      "target": 22,
+      "type": "从属于"
+    },
+    {
+      "source": 52,
+      "target": 23,
+      "type": "从属于"
+    },
+    {
+      "source": 50,
+      "target": 21,
+      "type": "从属于"
+    },
+    {
+      "source": 38,
+      "target": 9,
+      "type": "从属于"
+    },
+    {
+      "source": 44,
+      "target": 15,
+      "type": "从属于"
+    },
+    {
+      "source": 42,
+      "target": 13,
+      "type": "从属于"
+    },
+    {
+      "source": 40,
+      "target": 11,
+      "type": "从属于"
+    },
+    {
+      "source": 41,
+      "target": 12,
+      "type": "从属于"
+    },
+    {
+      "source": 43,
+      "target": 14,
+      "type": "从属于"
+    },
+    {
+      "source": 37,
+      "target": 8,
+      "type": "从属于"
+    },
+    {
+      "source": 39,
+      "target": 10,
+      "type": "从属于"
+    },
+    {
+      "source": 45,
+      "target": 16,
+      "type": "从属于"
+    },
+    {
+      "source": 66,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 67,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 67,
+      "target": 42,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 68,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 68,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 69,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 70,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 71,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 72,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 73,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 73,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 74,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 75,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 76,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 76,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 77,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 78,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 79,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 80,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 81,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 82,
+      "target": 47,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 83,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 83,
+      "target": 61,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 84,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 85,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 86,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 87,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 88,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 88,
+      "target": 47,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 89,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 90,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 91,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 92,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 92,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 92,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 93,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 94,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 94,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 95,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 95,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 96,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 97,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 98,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 99,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 100,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 101,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 102,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 102,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 103,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 104,
+      "target": 48,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 105,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 106,
+      "target": 48,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 106,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 107,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 108,
+      "target": 42,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 109,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 110,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 111,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 112,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 113,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 114,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 115,
+      "target": 51,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 116,
+      "target": 61,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 117,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 117,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 118,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 119,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 119,
+      "target": 47,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 120,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 120,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 121,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 121,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 122,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 122,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 123,
+      "target": 47,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 124,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 124,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 124,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 124,
+      "target": 42,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 124,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 124,
+      "target": 61,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 124,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 125,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 126,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 126,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 127,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 128,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 129,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 130,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 131,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 132,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 133,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 134,
+      "target": 52,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 135,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 135,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 136,
+      "target": 56,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 137,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 138,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 139,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 140,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 140,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 141,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 142,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 143,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 144,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 145,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 145,
+      "target": 47,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 146,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 147,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 149,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 149,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 149,
+      "target": 61,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 148,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 150,
+      "target": 45,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 151,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 152,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 153,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 154,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 154,
+      "target": 61,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 155,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 155,
+      "target": 45,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 155,
+      "target": 42,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 156,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 157,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 158,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 159,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 160,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 161,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 162,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 162,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 163,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 164,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 165,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 166,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 167,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 168,
+      "target": 56,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 169,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 170,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 171,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 172,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 174,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 174,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 173,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 175,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 176,
+      "target": 48,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 177,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 178,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 179,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 180,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 181,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 182,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 183,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 184,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 185,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 185,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 186,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 187,
+      "target": 57,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 188,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 188,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 189,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 189,
+      "target": 53,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 190,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 191,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 192,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 192,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 192,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 193,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 193,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 193,
+      "target": 61,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 193,
+      "target": 57,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 194,
+      "target": 55,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 195,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 196,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 197,
+      "target": 57,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 198,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 199,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 200,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 201,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 202,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 203,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 203,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 204,
+      "target": 57,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 205,
+      "target": 51,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 206,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 207,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 208,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 209,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 210,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 211,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 212,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 213,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 214,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 215,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 215,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 216,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 217,
+      "target": 52,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 218,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 219,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 220,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 221,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 222,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 222,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 223,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 224,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 225,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 226,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 226,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 227,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 228,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 229,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 230,
+      "target": 48,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 231,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 231,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 232,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 233,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 233,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 234,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 234,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 235,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 236,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 237,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 238,
+      "target": 57,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 239,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 240,
+      "target": 48,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 240,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 241,
+      "target": 48,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 242,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 243,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 244,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 245,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 246,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 247,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 248,
+      "target": 48,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 248,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 248,
+      "target": 53,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 249,
+      "target": 48,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 249,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 249,
+      "target": 53,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 250,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 251,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 251,
+      "target": 47,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 252,
+      "target": 51,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 253,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 254,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 254,
+      "target": 55,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 254,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 255,
+      "target": 57,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 256,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 257,
+      "target": 47,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 258,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 259,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 260,
+      "target": 42,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 261,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 262,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 262,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 262,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 263,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 264,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 265,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 266,
+      "target": 47,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 267,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 268,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 269,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 270,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 271,
+      "target": 56,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 272,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 273,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 274,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 275,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 276,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 277,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 278,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 278,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 279,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 280,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 281,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 281,
+      "target": 55,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 281,
+      "target": 39,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 281,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 282,
+      "target": 57,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 283,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 283,
+      "target": 42,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 284,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 285,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 286,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 287,
+      "target": 52,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 287,
+      "target": 51,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 288,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 289,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 290,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 291,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 291,
+      "target": 52,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 292,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 293,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 294,
+      "target": 42,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 295,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 296,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 296,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 297,
+      "target": 39,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 298,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 298,
+      "target": 55,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 299,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 300,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 301,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 302,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 303,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 304,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 305,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 305,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 305,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 306,
+      "target": 55,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 306,
+      "target": 39,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 306,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 307,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 308,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 309,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 310,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 310,
+      "target": 61,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 311,
+      "target": 61,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 312,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 313,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 314,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 315,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 316,
+      "target": 61,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 317,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 318,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 319,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 320,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 320,
+      "target": 55,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 321,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 321,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 322,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 323,
+      "target": 56,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 324,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 324,
+      "target": 45,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 325,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 326,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 327,
+      "target": 55,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 327,
+      "target": 39,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 327,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 328,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 329,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 330,
+      "target": 55,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 330,
+      "target": 39,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 330,
+      "target": 42,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 330,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 331,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 332,
+      "target": 56,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 333,
+      "target": 56,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 334,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 334,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 335,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 335,
+      "target": 62,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 335,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 336,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 337,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 338,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 339,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 340,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 341,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 342,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 342,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 343,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 344,
+      "target": 57,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 345,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 346,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 347,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 348,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 349,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 349,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 350,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 351,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 352,
+      "target": 56,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 353,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 354,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 355,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 356,
+      "target": 56,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 357,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 358,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 358,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 359,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 360,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 361,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 362,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 363,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 363,
+      "target": 47,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 364,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 365,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 366,
+      "target": 65,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 367,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 368,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 369,
+      "target": 39,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 370,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 371,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 372,
+      "target": 54,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 373,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 374,
+      "target": 39,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 375,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 376,
+      "target": 60,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 377,
+      "target": 57,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 378,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 378,
+      "target": 46,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 379,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 380,
+      "target": 41,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 381,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 382,
+      "target": 43,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 382,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 383,
+      "target": 59,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 384,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 385,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 386,
+      "target": 49,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 387,
+      "target": 42,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 387,
+      "target": 37,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 387,
+      "target": 55,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 387,
+      "target": 38,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 387,
+      "target": 39,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 388,
+      "target": 56,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 389,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 390,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 391,
+      "target": 40,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 392,
+      "target": 44,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 393,
+      "target": 50,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 394,
+      "target": 58,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 395,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 396,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 397,
+      "target": 63,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 398,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 399,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    },
+    {
+      "source": 400,
+      "target": 64,
+      "type": "参与环节",
+      "seed": 1
+    }, 
+    {
+      "source": 401,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 402,
+      "target": 401,
+      "type": "从属于"
+    },
+    {
+      "source":403,
+      "target": 402, 
+      "type": "参与环节"
+
+    }
+  ]
+}

@@ -1,0 +1,5154 @@
+{
+    "nodes": [
+      {
+        "id": 0,
+        "labels": [
+          "Root"
+        ],
+        "properties": {
+          "name": "新型储能",
+          "level": 0
+        }
+      },
+      {
+        "id": 1,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "上游（原材料与生产设备）",
+          "level": 1
+        }
+      },
+      {
+        "id": 2,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电化学储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 3,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电芯原材料：正极材料",
+          "level": 3
+        }
+      },
+      {
+        "id": 4,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "磷酸盐正极材料"
+        }
+      },
+      {
+        "id": 5,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "湖南裕能",
+          "company_profile": "全球磷酸盐正极材料出货量第一的龙头企业，与宁德时代、比亚迪等主流储能电池企业达成深度合作",
+          "category": "民营企业",
+          "category_reason": "“湖南裕能”为A股上市公司（股票代码：301358），主营业务为锂离子电池正极材料，根据其公开的股权结构及行业常识，其实际控制人为自然人，无国资或外资控股背景。"
+        }
+      },
+      {
+        "id": 6,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "纳米磷酸铁锂正极材料"
+        }
+      },
+      {
+        "id": 7,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "德方纳米",
+          "company_profile": "依托独创的液相法技术生产纳米磷酸铁锂等正极材料，并通过与亿纬锂能、派能科技等头部企业深度合作",
+          "category": "民营企业",
+          "category_reason": "德方纳米为深圳证券交易所创业板上市公司（股票代码：300769），主营业务为锂离子电池材料研发制造，属于新能源行业，其控股股东及实际控制人为自然人，无公开信息表明其属于国资或外资控股。"
+        }
+      },
+      {
+        "id": 8,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "锂离子动力与储能电池的上游关键材料"
+        }
+      },
+      {
+        "id": 9,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "万润能源",
+          "company_profile": "专注于锂离子动力与储能电池的上游关键材料领域",
+          "category": "民营企业",
+          "category_reason": "名称“万润能源”无国资或外资标识，且“能源”行业存在大量民营企业，按命名惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 10,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "磷酸铁锂正极材料、磷酸锰铁锂正极材料、钠离子电池正极材料"
+        }
+      },
+      {
+        "id": 11,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "融通高科",
+          "company_profile": "专注于为电化学储能领域提供磷酸铁锂、磷酸锰铁锂及钠离子电池等新能源电池正极材料，已进入宁德时代等头部企业供应链",
+          "category": "民营企业",
+          "category_reason": "“融通高科”名称无国资或外资标识，且非国资委名录内央企，按行业惯例推断为自然人控股的科技类企业"
+        }
+      },
+      {
+        "id": 12,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "磷酸铁锂、钠电正极"
+        }
+      },
+      {
+        "id": 13,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "容百科技",
+          "company_profile": "提供覆盖磷酸铁锂、钠电正极等多元化储能材料，并已与宁德时代等行业龙头签下长期供货协议",
+          "category": "民营企业",
+          "category_reason": "容百科技为公开上市的锂电池正极材料制造商，无国资或外资控股标识，按行业惯例推断为自然人/员工持股平台控制的民营企业"
+        }
+      },
+      {
+        "id": 14,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "高镍三元、钴酸锂"
+        }
+      },
+      {
+        "id": 15,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "天津巴莫",
+          "company_profile": "核心产品（如高镍三元、钴酸锂等）是各类储能电池的关键组成部分，并已广泛应用于新能源汽车及国际储能市场",
+          "category": "民营企业",
+          "category_reason": "“天津巴莫”为锂电池正极材料制造商，无国资或外资标识，按行业惯例推断为自然人/私营企业控股"
+        }
+      },
+      {
+        "id": 16,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "磷酸铁锂、三元材料、固态储氢"
+        }
+      },
+      {
+        "id": 17,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "厦钨新能",
+          "company_profile": "提供磷酸铁锂、三元材料、固态储氢等核心材料，服务于从电网储能、通信储能到氢能存储等多元化储能市场",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，且“厦钨新能”为厦门钨业股份有限公司（厦门市属国有控股上市公司）旗下专业从事锂离子电池正极材料研发与生产的子公司，其最终控制人为厦门市国资委，但根据核心判断原则，其母公司厦门钨业属于地方国企，因此该公司应归类为“其他国资”。"
+        }
+      },
+      {
+        "id": 18,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "磷酸铁锂正极材料、正极材料解决方案"
+        }
+      },
+      {
+        "id": 19,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "南通瑞翔",
+          "company_profile": "专注于为储能电池提供高安全、高性能的磷酸铁锂及多元化的正极材料解决方案",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 20,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电芯原材料：负极材料",
+          "level": 3
+        }
+      },
+      {
+        "id": 21,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "长循环人造石墨负极材料"
+        }
+      },
+      {
+        "id": 22,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "杉杉科技",
+          "company_profile": "为电芯头部客户提供适配大容量储能电芯的长循环人造石墨负极材料，市场占有率较高",
+          "category": "民营企业",
+          "category_reason": "“杉杉科技”为知名民营企业杉杉集团旗下子公司，主营锂电材料，无国资或外资控股标识"
+        }
+      },
+      {
+        "id": 23,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能人造石墨负极材料"
+        }
+      },
+      {
+        "id": 24,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "贝特瑞",
+          "company_profile": "核心产品储能人造石墨负极材料已广泛应用于电网及户用储能项目，并获得宁德时代、比亚迪等主流厂商的认可",
+          "category": "民营企业",
+          "category_reason": "“贝特瑞”为新能源电池材料行业知名上市公司（股票代码：835185），其控股股东为自然人，无国资或外资控股的公开信息"
+        }
+      },
+      {
+        "id": 25,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "锂电池负极材料、储能电池负极材料"
+        }
+      },
+      {
+        "id": 26,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中科星城",
+          "company_profile": "国内锂电池负极材料头部企业，其业务聚焦于为储能电池提供高性能负极材料",
+          "category": "民营企业",
+          "category_reason": "“中科星城”名称无国资或外资标识，且不属于公众熟知的央企或地方国企，按行业惯例推断为自然人控股的科技类企业"
+        }
+      },
+      {
+        "id": 27,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "长循环人造石墨负极材料"
+        }
+      },
+      {
+        "id": 28,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "尚太科技",
+          "company_profile": "开发了针对新型大电芯、复杂温宽等储能场景的长循环人造石墨负极材料，销售规模显著提升",
+          "category": "民营企业",
+          "category_reason": "“尚太科技”为A股上市公司（股票代码：001301），主营业务为锂离子电池负极材料，根据公开信息其实际控制人为自然人，无国资或外资控股背景"
+        }
+      },
+      {
+        "id": 29,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "人造石墨、硅基、硬碳"
+        }
+      },
+      {
+        "id": 30,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "凯金新能源",
+          "company_profile": "专注于为储能电池提供人造石墨、硅基及硬碳（用于钠离子电池）等关键材料",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 31,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "涂覆隔膜、负极材料"
+        }
+      },
+      {
+        "id": 32,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "璞泰来",
+          "company_profile": "实现涂覆隔膜在储能领域的突破以及负极材料等产品在储能客户中的导入",
+          "category": "民营企业",
+          "category_reason": "“璞泰来”为A股上市公司（股票代码603659），主营业务为锂离子电池材料，属于自然人控股的民营企业"
+        }
+      },
+      {
+        "id": 33,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电芯原材料：电解液",
+          "level": 3
+        }
+      },
+      {
+        "id": 34,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "电解液"
+        }
+      },
+      {
+        "id": 35,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "天赐材料",
+          "company_profile": "全球电解液龙头企业",
+          "category": "民营企业",
+          "category_reason": "“天赐材料”为A股上市公司（股票代码：002709），主营业务为锂离子电池材料，根据公开信息其实际控制人为自然人，属于民营化工企业。"
+        }
+      },
+      {
+        "id": 36,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电芯原材料：隔膜",
+          "level": 3
+        }
+      },
+      {
+        "id": 37,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "锂电隔膜"
+        }
+      },
+      {
+        "id": 38,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "恩捷股份",
+          "company_profile": "全球锂电隔膜龙头企业",
+          "category": "民营企业",
+          "category_reason": "“恩捷股份”为A股上市公司云南恩捷新材料股份有限公司的简称，其实际控制人为自然人，属于民营企业"
+        }
+      },
+      {
+        "id": 39,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "锂离子电池隔膜"
+        }
+      },
+      {
+        "id": 40,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "星源材质",
+          "company_profile": "锂离子电池隔膜专业供应商",
+          "category": "民营企业",
+          "category_reason": "“星源材质”为A股上市公司（股票代码：300568），主营业务为锂离子电池隔膜，根据公开信息，其实际控制人为自然人，无国资或外资控股背景。"
+        }
+      },
+      {
+        "id": 41,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电池生产设备",
+          "level": 3
+        }
+      },
+      {
+        "id": 42,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "锂电池充放电检测设备、化成设备"
+        }
+      },
+      {
+        "id": 43,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "杭可科技",
+          "company_profile": "锂电池充放电检测设备、化成设备等后端生产装备",
+          "category": "民营企业",
+          "category_reason": "“杭可科技”为A股上市公司（股票代码688006），主营业务为锂离子电池后处理系统，其控股股东及实际控制人为自然人曹骥、曹政父子，无国资或外资控股背景，属于典型的自然人控制的上市民营企业。"
+        }
+      },
+      {
+        "id": 44,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "涂布机、卷绕机、叠片机"
+        }
+      },
+      {
+        "id": 45,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "先导智能",
+          "company_profile": "锂电池全工序智能装备（涂布机、卷绕机、叠片机等）",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 46,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "锂电设备、真空镀膜设备、半导体设备"
+        }
+      },
+      {
+        "id": 47,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "北方华创",
+          "company_profile": "锂电设备、真空镀膜设备、半导体设备等",
+          "category": "民营企业",
+          "category_reason": "“北方华创”为A股上市公司（股票代码002371），其实际控制人为自然人及员工持股平台，无国资或外资控股，属于知名的半导体设备制造商。"
+        }
+      },
+      {
+        "id": 48,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "涂布机、辊压机、分条机"
+        }
+      },
+      {
+        "id": 49,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "赢合科技",
+          "company_profile": "锂电池自动化生产设备（涂布机、辊压机、分条机等）",
+          "category": "民营企业",
+          "category_reason": "“赢合科技”为A股上市公司（股票代码：300457），其实际控制人为自然人，主营业务为锂电池自动化生产设备，无国资或外资控股的公开常识信息。"
+        }
+      },
+      {
+        "id": 50,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "超导磁储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 51,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "超导材料与磁体",
+          "level": 3
+        }
+      },
+      {
+        "id": 52,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "低温超导材料、高温超导材料、超导磁体"
+        }
+      },
+      {
+        "id": 53,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "西部超导",
+          "company_profile": "国内超导材料领域的代表性企业，从事低温超导材料和高温超导材料的研发与生产，产品覆盖超导磁体制造环节。",
+          "category": "民营企业",
+          "category_reason": "“西部超导”为A股上市公司（股票代码：688122），其控股股东为自然人及员工持股平台，无国资或外资控股背景"
+        }
+      },
+      {
+        "id": 54,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "可控核聚变高温强场磁体、超导电力设备、高速磁悬浮列车超导磁体"
+        }
+      },
+      {
+        "id": 55,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "翌曦科技",
+          "company_profile": "深耕高温超导行业，主攻可控核聚变高温强场磁体、超导电力设备、高速磁悬浮列车超导磁体等核心技术",
+          "category": "民营企业",
+          "category_reason": "名称“翌曦科技”无国资或外资标识，且未在广泛公开的央企名录或知名外资品牌中出现，按行业惯例推断为自然人控股的科技类企业"
+        }
+      },
+      {
+        "id": 56,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "风电轻量化超导发电机、磁控直拉超导磁体"
+        }
+      },
+      {
+        "id": 57,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "岩超聚能",
+          "company_profile": "致力于AI加速聚变能源与超导应用开发，布局风电轻量化超导发电机、磁控直拉超导磁体等领域",
+          "category": "民营企业",
+          "category_reason": "名称“岩超聚能”无任何国资或外资标识，且不属于公众熟知的央企、地方国企或外资品牌，按行业惯例推断为自然人控股的科技或能源类私营企业"
+        }
+      },
+      {
+        "id": 58,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "超级电容储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 59,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电容原材料：电极",
+          "level": 3
+        }
+      },
+      {
+        "id": 60,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "超级电容用活性炭、电极材料"
+        }
+      },
+      {
+        "id": 61,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "北海星石",
+          "company_profile": "超级电容用活性炭等电极材料",
+          "category": "民营企业",
+          "category_reason": "名称“北海星石”无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 62,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "多孔碳电极材料"
+        }
+      },
+      {
+        "id": 63,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "阿佩克斯",
+          "company_profile": "多孔碳等电极材料",
+          "category": "民营企业",
+          "category_reason": "名称“阿佩克斯”无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 64,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电容原材料：电解液",
+          "level": 3
+        }
+      },
+      {
+        "id": 65,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "锂离子电池电解液、超级电容器电解液"
+        }
+      },
+      {
+        "id": 66,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "新宙邦",
+          "company_profile": "锂离子电池电解液、超级电容器电解液",
+          "category": "民营企业",
+          "category_reason": "“新宙邦”为A股上市公司（股票代码：300037），主营业务为电子化学品和功能材料，根据公开信息及行业常识，其实际控制人为自然人，无国资或外资控股背景。"
+        }
+      },
+      {
+        "id": 67,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "超级电容器电解液、关键材料"
+        }
+      },
+      {
+        "id": 68,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "国泰超威",
+          "company_profile": "超级电容器电解液及关键材料",
+          "category": "民营企业",
+          "category_reason": "名称“国泰超威”无国资或外资标识，且“超威”为国内知名电池品牌，其母公司为民营上市公司，按行业惯例推断为民营企业"
+        }
+      },
+      {
+        "id": 69,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电容原材料：隔膜",
+          "level": 3
+        }
+      },
+      {
+        "id": 70,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "薄膜电容、超导磁体电源储能系统"
+        }
+      },
+      {
+        "id": 71,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "王子新材",
+          "company_profile": "薄膜电容及超导磁体电源储能系统",
+          "category": "民营企业",
+          "category_reason": "“王子新材”为A股上市公司（股票代码：002735），根据公开信息，其实际控制人为自然人王进军，无国资或外资控股背景。"
+        }
+      },
+      {
+        "id": 72,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "氢能储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 73,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "氢气制备",
+          "level": 3
+        }
+      },
+      {
+        "id": 74,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "光伏发电、绿氢炼化"
+        }
+      },
+      {
+        "id": 75,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中石化",
+          "company_profile": "贯通光伏发电到绿氢炼化全产业链",
+          "category": "中央企业",
+          "category_reason": "“中国石油化工集团有限公司”（简称中石化）是国务院国资委监管的97家中央企业之一"
+        }
+      },
+      {
+        "id": 76,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "煤基氢能、CCS、二氧化碳捕集与封存"
+        }
+      },
+      {
+        "id": 77,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国神华",
+          "company_profile": "在煤基氢能及CCS（二氧化碳捕集与封存）领域拥有深厚技术积累",
+          "category": "中央企业",
+          "category_reason": "“中国神华”是国务院国资委监管的97家中央企业之一，全称为“中国神华能源股份有限公司”，为知名上市央企"
+        }
+      },
+      {
+        "id": 78,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "绿氢装备、绿电+绿氢"
+        }
+      },
+      {
+        "id": 79,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "隆基氢能",
+          "company_profile": "专注大规模绿氢装备，主攻“绿电+绿氢”技术路线",
+          "category": "民营企业",
+          "category_reason": "“隆基氢能”为知名光伏企业隆基绿能（民营企业）的子公司，从事氢能业务，无国资或外资控股标识"
+        }
+      },
+      {
+        "id": 80,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "碱性电解槽、PEM电解槽、PWM制氢电源、智慧氢能管理系统"
+        }
+      },
+      {
+        "id": 81,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "阳光氢能",
+          "company_profile": "专注可再生能源电解水制氢，核心产品包括碱性/PEM电解槽、PWM制氢电源及智慧氢能管理系统。",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 82,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "中游（制造与系统集成）",
+          "level": 1
+        }
+      },
+      {
+        "id": 83,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电化学储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 84,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心部件：储能电池/电芯",
+          "level": 3
+        }
+      },
+      {
+        "id": 85,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "587Ah大电芯、天恒储能系统、9MWh TENER Stack解决方案"
+        }
+      },
+      {
+        "id": 86,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "宁德时代",
+          "company_profile": "全球储能电芯龙头，市占率超26%居全球第一，587Ah大电芯量产引领技术迭代，天恒储能系统及9MWh TENER Stack解决方案领先",
+          "category": "民营企业",
+          "category_reason": "宁德时代为全球知名的动力电池制造商，由自然人曾毓群等实际控制，无国资或外资控股背景，是典型的民营企业"
+        }
+      },
+      {
+        "id": 87,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "大储电芯"
+        }
+      },
+      {
+        "id": 88,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "海辰储能",
+          "company_profile": "大储赛道主力企业，2025年全球出货量排名第二，技术迭代与大电芯量产进展迅速",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 89,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "大储电芯"
+        }
+      },
+      {
+        "id": 90,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "亿纬锂能",
+          "company_profile": "大储电芯头部企业，大储行业Top5成员，技术迭代进展迅速",
+          "category": "民营企业",
+          "category_reason": "惠州亿纬锂能股份有限公司为深圳证券交易所上市公司，其实际控制人为自然人，属于公众熟知的动力电池行业民营企业"
+        }
+      },
+      {
+        "id": 91,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "刀片电池储能系统"
+        }
+      },
+      {
+        "id": 92,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "比亚迪",
+          "company_profile": "垂直整合优势突出，刀片电池储能系统体积利用率提升50%，海外大单布局沙特、智利等市",
+          "category": "民营企业",
+          "category_reason": "比亚迪为全球知名的新能源汽车与电池制造商，由自然人王传福创立并实际控制，无国有资本或外资控股，属于公众广泛知晓的民营企业。"
+        }
+      },
+      {
+        "id": 93,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "户用储能电芯"
+        }
+      },
+      {
+        "id": 94,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "瑞浦兰钧",
+          "company_profile": "户用储能电芯特色企业，2025年全球出货量Top10",
+          "category": "民营企业",
+          "category_reason": "瑞浦兰钧为知名动力电池制造商，无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 95,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "大储电芯"
+        }
+      },
+      {
+        "id": 96,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中创新航",
+          "company_profile": "大储行业Top5成员，紧跟电芯技术迭代",
+          "category": "民营企业",
+          "category_reason": "“中创新航”为知名动力电池制造商，无国资或外资标识，按行业惯例推断为自然人/员工持股平台控股企业"
+        }
+      },
+      {
+        "id": 97,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "欧洲制造布局"
+        }
+      },
+      {
+        "id": 98,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "国轩高科",
+          "company_profile": "欧洲制造布局特色企业，2025年新进入全球Top10榜单",
+          "category": "民营企业",
+          "category_reason": "国轩高科为A股上市公司，公开信息显示其实际控制人为自然人，无国资或外资控股背景"
+        }
+      },
+      {
+        "id": 99,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能电池"
+        }
+      },
+      {
+        "id": 100,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "鹏辉能源",
+          "company_profile": "储能电池重要供应商，2025年新晋全球Top10榜单",
+          "category": "民营企业",
+          "category_reason": "“鹏辉能源”为A股上市公司（股票代码：300438），主营业务为锂离子电池制造，根据公开信息其实际控制人为自然人，属于新能源领域的民营企业。"
+        }
+      },
+      {
+        "id": 101,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心部件：电池管理系统（BMS）",
+          "level": 3
+        }
+      },
+      {
+        "id": 102,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能BMS"
+        }
+      },
+      {
+        "id": 103,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能BMS、IGBT"
+        }
+      },
+      {
+        "id": 104,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "弗迪电池（比亚迪）",
+          "company_profile": "储能BMS（光储一体化），垂直整合，自主IGBT配套，自给率100%",
+          "category": "民营企业",
+          "category_reason": "“弗迪电池”为比亚迪股份有限公司（民营企业）旗下专注于电池业务的子公司"
+        }
+      },
+      {
+        "id": 105,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能BMS"
+        }
+      },
+      {
+        "id": 106,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "高特电子",
+          "company_profile": "国内新型储能BMS领域龙头企业，专业第三方BMS厂商",
+          "category": "民营企业",
+          "category_reason": "名称“高特电子”无国资或外资标识，按行业惯例推断为自然人控股的科技类企业"
+        }
+      },
+      {
+        "id": 107,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "电池管理系统"
+        }
+      },
+      {
+        "id": 108,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "科工电子",
+          "company_profile": "电池管理系统专业制造企业",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 109,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "智能组串式储能BMS"
+        }
+      },
+      {
+        "id": 110,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "华为数字能源",
+          "company_profile": "智能组串式储能BMS，ICT技术赋能，AI预测与鸿蒙OS调度",
+          "category": "民营企业",
+          "category_reason": "“华为”为全球知名的中国民营科技企业，其下属业务单元“华为数字能源”无国资或外资控股信息"
+        }
+      },
+      {
+        "id": 111,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "商用车BMS、多簇储能均衡"
+        }
+      },
+      {
+        "id": 112,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "亿能电子",
+          "company_profile": "商用车BMS市占率超40%，储能聚焦大储，多簇储能均衡效率＞98%",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 113,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心部件：储能变流器（PCS）",
+          "level": 3
+        }
+      },
+      {
+        "id": 114,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "PCS、储能系统"
+        }
+      },
+      {
+        "id": 115,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "阳光电源",
+          "company_profile": "全球PCS龙头，海外大型储能及户用储能领域表现出色，全球储能系统出货量位居前列",
+          "category": "民营企业",
+          "category_reason": "阳光电源为A股上市公司（股票代码：300274），主营业务为光伏逆变器等新能源设备，其实际控制人为自然人，属于公众熟知的民营新能源企业。"
+        }
+      },
+      {
+        "id": 116,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能PCS"
+        }
+      },
+      {
+        "id": 117,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "科华数据",
+          "company_profile": "国内市场储能PCS出货量位居榜首",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 118,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "高压级联PCS"
+        }
+      },
+      {
+        "id": 119,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "上能电气",
+          "company_profile": "国内大储PCS头部企业，产品广泛应用于“光伏+储能”项目，高压级联PCS效率达98.8%",
+          "category": "民营企业",
+          "category_reason": "“上能电气”为A股上市公司（股票代码：300827），主营业务为光伏逆变器等电力电子设备，根据公开信息其实际控制人为自然人，无国资或外资控股背景"
+        }
+      },
+      {
+        "id": 120,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能变流器"
+        }
+      },
+      {
+        "id": 121,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "南瑞继保",
+          "company_profile": "储能变流器制造代表企业",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 122,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "国内PCS"
+        }
+      },
+      {
+        "id": 123,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "索英电气",
+          "company_profile": "国内PCS市场重要企业",
+          "category": "民营企业",
+          "category_reason": "名称“索英电气”无国资或外资标识，按行业惯例推断为自然人控股的科技制造类企业"
+        }
+      },
+      {
+        "id": 124,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "国内PCS"
+        }
+      },
+      {
+        "id": 125,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "盛弘股份",
+          "company_profile": "国内PCS市场重要企业",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 126,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心部件：能量管理系统（EMS）",
+          "level": 3
+        }
+      },
+      {
+        "id": 127,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "电力系统自动化、EMS解决方案、电网侧储能管理"
+        }
+      },
+      {
+        "id": 128,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "国电南瑞",
+          "company_profile": "电力系统自动化及EMS解决方案，面向电网侧储能管理",
+          "category": "中央企业",
+          "category_reason": "“国电南瑞”是国务院国资委监管的中央企业国家电网有限公司的核心上市公司和产业单位"
+        }
+      },
+      {
+        "id": 129,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "全场景分布式站级储能EMS"
+        }
+      },
+      {
+        "id": 130,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "智光电气（智光一创）",
+          "company_profile": "新一代全场景分布式站级储能EMS，已完成总容量10GWh项目交付",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 131,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "EMS制造"
+        }
+      },
+      {
+        "id": 132,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "派能科技",
+          "company_profile": "EMS制造代表企业",
+          "category": "民营企业",
+          "category_reason": "“派能科技”为上海证券交易所科创板上市公司（股票代码：688063），其实际控制人为自然人，主营业务为储能电池系统，属于新能源科技行业，无国资或外资控股的公开信息。"
+        }
+      },
+      {
+        "id": 133,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "EMS制造"
+        }
+      },
+      {
+        "id": 134,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "平高电气",
+          "company_profile": "EMS制造代表企业",
+          "category": "中央企业",
+          "category_reason": "“平高电气”为上市公司“河南平高电气股份有限公司”的简称，其控股股东为“平高集团有限公司”，后者是国务院国资委监管的中央企业“中国电气装备集团有限公司”的核心成员企业"
+        }
+      },
+      {
+        "id": 135,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能EMS"
+        }
+      },
+      {
+        "id": 136,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "阿特斯",
+          "company_profile": "自研储能EMS，内嵌削峰填谷、需量管理等多种运行控制模式",
+          "category": "民营企业",
+          "category_reason": "名称“阿特斯”无国资或外资标识，且为光伏行业知名民营企业（阿特斯阳光电力集团）"
+        }
+      },
+      {
+        "id": 137,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "BMS、EMS"
+        }
+      },
+      {
+        "id": 138,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "精控能源",
+          "company_profile": "新一代BMS与场站级EMS，以系统性创新回应行业安全与智能化需求",
+          "category": "民营企业",
+          "category_reason": "名称“精控能源”无国资或外资标识，且不属于已知的央企或地方国资体系，按行业惯例推断为自然人控股的科技或制造类企业"
+        }
+      },
+      {
+        "id": 139,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "集成与建设：储能系统集成",
+          "level": 3
+        }
+      },
+      {
+        "id": 140,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能系统"
+        }
+      },
+      {
+        "id": 141,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "海博思创",
+          "company_profile": "全球储能系统集成商前三强，中国大陆累计储能装机及签约项目规模排名第一",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 142,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能系统"
+        }
+      },
+      {
+        "id": 143,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能系统"
+        }
+      },
+      {
+        "id": 144,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国中车（中车株洲所）",
+          "company_profile": "全球储能系统集成商前列，2025年国内储能系统出货量排名第一",
+          "category": "中央企业",
+          "category_reason": "“中国中车”为国务院国资委监管的97家中央企业之一，其下属研究所属于央企体系"
+        }
+      },
+      {
+        "id": 145,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能系统"
+        }
+      },
+      {
+        "id": 146,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "远景能源",
+          "company_profile": "全球储能系统集成商前列，2025年国内排名从第五升至第三",
+          "category": "民营企业",
+          "category_reason": "“远景能源”为知名风电及储能设备制造商，属自然人控股的科技型企业，无公开国资或外资控股信息"
+        }
+      },
+      {
+        "id": 147,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "智能组串式储能系统"
+        }
+      },
+      {
+        "id": 148,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "华为",
+          "company_profile": "智能组串式储能系统解决方案，全球储能系统集成商前列",
+          "category": "民营企业",
+          "category_reason": "华为技术有限公司为全球知名的通信与科技企业，由员工持股平台全资所有，无国有资本或外资控股，是典型的民营企业"
+        }
+      },
+      {
+        "id": 149,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能系统集成"
+        }
+      },
+      {
+        "id": 150,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "587Ah电芯、7MWh储能系统"
+        }
+      },
+      {
+        "id": 151,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "天合储能",
+          "company_profile": "基于587Ah电芯开发7MWh系统，储能系统集成重要企业",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 152,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能系统"
+        }
+      },
+      {
+        "id": 153,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "融和元储",
+          "company_profile": "2025年国内储能系统出货量排名第五，新晋入榜企业",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，且“融和元储”不属于已知的央企、地方国企体系或外国品牌，按行业惯例推断为自然人控股的储能科技类企业"
+        }
+      },
+      {
+        "id": 154,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能系统集成、电池制造"
+        }
+      },
+      {
+        "id": 155,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "南都电源",
+          "company_profile": "储能系统集成代表企业，电池制造与系统集成一体化",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 156,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能系统"
+        }
+      },
+      {
+        "id": 157,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "科陆电子",
+          "company_profile": "储能系统出货量全球Top10企业",
+          "category": "民营企业",
+          "category_reason": "名称“科陆电子”无国资或外资标识，且非国资委央企名录或地方国企常见命名模式，按行业惯例推断为自然人控股的科技类企业"
+        }
+      },
+      {
+        "id": 158,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "集成与建设：储能系统安装",
+          "level": 3
+        }
+      },
+      {
+        "id": 159,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "电力工程设计、储能系统安装"
+        }
+      },
+      {
+        "id": 160,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "永福股份",
+          "company_profile": "电力工程设计与储能系统安装服务",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 161,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "电力变压器、储能系统工程安装"
+        }
+      },
+      {
+        "id": 162,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "特变电工",
+          "company_profile": "电力变压器及储能系统工程安装",
+          "category": "民营企业",
+          "category_reason": "特变电工股份有限公司为A股上市公司，其股权结构分散，无国有资本或外资控股，实际控制人为自然人，属于大型民营装备制造企业。"
+        }
+      },
+      {
+        "id": 163,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "低压电器、储能系统安装服务"
+        }
+      },
+      {
+        "id": 164,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "正泰电器",
+          "company_profile": "低压电器及储能系统安装服务",
+          "category": "民营企业",
+          "category_reason": "“正泰电器”为A股上市公司（股票代码：601877），其实际控制人为自然人南存辉，属于知名的民营低压电器及新能源企业"
+        }
+      },
+      {
+        "id": 165,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "大型储能电站EPC总承包、施工安装"
+        }
+      },
+      {
+        "id": 166,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国电建",
+          "company_profile": "大型储能电站EPC总承包及施工安装",
+          "category": "中央企业",
+          "category_reason": "“中国电建”是国务院国资委监管的97家中央企业之一，全称为中国电力建设集团有限公司"
+        }
+      },
+      {
+        "id": 167,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "电力工程规划设计、储能系统建设安装"
+        }
+      },
+      {
+        "id": 168,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国能建",
+          "company_profile": "电力工程规划设计及储能系统建设安装",
+          "category": "中央企业",
+          "category_reason": "“中国能建”全称为中国能源建设集团有限公司，是国务院国资委监管的97家中央企业之一"
+        }
+      },
+      {
+        "id": 169,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "压缩空气储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 170,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心设备：大型空气压缩机",
+          "level": 3
+        }
+      },
+      {
+        "id": 171,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "大型压缩机组、空气压缩机组"
+        }
+      },
+      {
+        "id": 172,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "陕鼓集团",
+          "company_profile": "核心设备为大型压缩机组，空气压缩机组综合效率达88%，具备10MW-660MW全工况设备制造能力，签订多个百兆瓦级项目的压缩机组订单",
+          "category": "其他国资",
+          "category_reason": "“陕鼓集团”是西安陕鼓动力股份有限公司的母公司，为陕西省西安市属国有大型装备制造企业集团"
+        }
+      },
+      {
+        "id": 173,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心设备：离心压缩机",
+          "level": 3
+        }
+      },
+      {
+        "id": 174,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩空气储能压缩机组成套设备、离心压缩机、轴流压缩机"
+        }
+      },
+      {
+        "id": 175,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "沈鼓集团",
+          "company_profile": "主要提供压缩空气储能压缩机组成套设备，特别是离心压缩机与轴流压缩机",
+          "category": "其他国资",
+          "category_reason": "“沈鼓集团”是沈阳鼓风机集团股份有限公司的简称，为辽宁省属重点国有装备制造企业"
+        }
+      },
+      {
+        "id": 176,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心设备：空气透平机",
+          "level": 3
+        }
+      },
+      {
+        "id": 177,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "空气透平、膨胀机、发电机、电动机、熔盐储罐"
+        }
+      },
+      {
+        "id": 178,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "上海电气",
+          "company_profile": "核心设备为空气透平（膨胀机），并提供发电机、电动机及熔盐储罐等",
+          "category": "其他国资",
+          "category_reason": "“上海电气”为上海市属国有控股的大型装备制造集团，是公众广泛知晓的地方国企"
+        }
+      },
+      {
+        "id": 179,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "透平膨胀机、空气透平"
+        }
+      },
+      {
+        "id": 180,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "东方电气",
+          "company_profile": "由旗下东方汽轮机提供透平膨胀机和空气透平",
+          "category": "中央企业",
+          "category_reason": "“东方电气”为国务院国资委监管的97家中央企业之一（中国东方电气集团有限公司）"
+        }
+      },
+      {
+        "id": 181,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心设备：油气换热器",
+          "level": 3
+        }
+      },
+      {
+        "id": 182,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩空气储能电站换热设备、换热系统"
+        }
+      },
+      {
+        "id": 183,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "哈尔滨电气",
+          "company_profile": "核心业务是为压缩空气储能电站提供全套换热设备（换热系统）",
+          "category": "中央企业",
+          "category_reason": "“哈尔滨电气”是国务院国资委监管的97家中央企业之一“哈尔滨电气集团有限公司”的简称"
+        }
+      },
+      {
+        "id": 184,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心设备：膨胀机",
+          "level": 3
+        }
+      },
+      {
+        "id": 185,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩机、透平机、膨胀机"
+        }
+      },
+      {
+        "id": 186,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "金灵通",
+          "company_profile": "具备为项目提供压缩机、透平机（膨胀机） 的设计、制造和调试能力",
+          "category": "民营企业",
+          "category_reason": "名称“金灵通”无国资或外资标识，且非公众熟知的央企或外资品牌，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 187,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "低温技术、空分设备"
+        }
+      },
+      {
+        "id": 188,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "四川空分",
+          "company_profile": "专业的低温技术及空分设备制造商",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 189,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "系统集成与工程建设",
+          "level": 3
+        }
+      },
+      {
+        "id": 190,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩空气储能系统"
+        }
+      },
+      {
+        "id": 191,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中储国能（北京）",
+          "company_profile": "全球百兆瓦级先进压缩空气储能领域的开拓者与引领者",
+          "category": "民营企业",
+          "category_reason": "名称含“国能”但非国资委97家央企名录内，且无外资或地方国资典型标识，按命名惯例推断为自然人控股或民营资本运营企业"
+        }
+      },
+      {
+        "id": 192,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩空气储能系统、储能电站设计承包、EPC总承包"
+        }
+      },
+      {
+        "id": 193,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩空气储能系统"
+        }
+      },
+      {
+        "id": 194,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩空气储能系统、液化空气储能系统、压缩CO₂储能系统"
+        }
+      },
+      {
+        "id": 195,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "嘉泰新能",
+          "company_profile": "压缩气体储能领域新锐系统集成商，聚焦压缩空气储能及液化空气/压缩CO₂储能系统工艺优化",
+          "category": "民营企业",
+          "category_reason": "名称“嘉泰新能”无国资或外资标识，且不在国资委央企名录及常见地方国企、外资品牌之列，按行业惯例推断为自然人/私营资本控股的能源科技类企业"
+        }
+      },
+      {
+        "id": 196,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩空气储能领域控制系统集成解决方案"
+        }
+      },
+      {
+        "id": 197,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "科远智慧",
+          "company_profile": "压缩空气储能领域控制系统集成解决方案提供商",
+          "category": "民营企业",
+          "category_reason": "“科远智慧”为A股上市公司（股票代码：002380），其控股股东和实际控制人为自然人，无国资或外资控股背景"
+        }
+      },
+      {
+        "id": 198,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "飞轮储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 199,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心部件",
+          "level": 3
+        }
+      },
+      {
+        "id": 200,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "飞轮储能设备"
+        }
+      },
+      {
+        "id": 201,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "沈阳微控",
+          "company_profile": "全球领先的磁轴承及高速动力机械技术体系，年产1.1万台飞轮储能设备",
+          "category": "民营企业",
+          "category_reason": "“沈阳微控”名称无国资或外资标识，按行业惯例推断为自然人控股的科技或制造类企业"
+        }
+      },
+      {
+        "id": 202,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "磁悬浮飞轮核心部件"
+        }
+      },
+      {
+        "id": 203,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "坎德拉新能源",
+          "company_profile": "磁悬浮飞轮核心部件供应商",
+          "category": "民营企业",
+          "category_reason": "名称“坎德拉新能源”无国资或外资标识，且新能源行业存在大量民营企业，按命名惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 204,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "三代碳纤维飞轮"
+        }
+      },
+      {
+        "id": 205,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "罗特尼克",
+          "company_profile": "三代碳纤维飞轮产品开发",
+          "category": "民营企业",
+          "category_reason": "名称“罗特尼克”无国资或外资标识，且不属于已知的央企、地方国企或知名外资品牌，按行业惯例推断为自然人控股的科技或制造类企业"
+        }
+      },
+      {
+        "id": 206,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "飞轮储能系统"
+        }
+      },
+      {
+        "id": 207,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "亨利科技",
+          "company_profile": "飞轮储能系统研发、设计、制造、系统集成一体化",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 208,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "系统集成",
+          "level": 3
+        }
+      },
+      {
+        "id": 209,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "系统集成，电网调频、算力中心"
+        }
+      },
+      {
+        "id": 210,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "飞轮储能系统"
+        }
+      },
+      {
+        "id": 211,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "飞轮储能系统"
+        }
+      },
+      {
+        "id": 212,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "重力储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 213,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "核心设备",
+          "level": 3
+        }
+      },
+      {
+        "id": 214,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "100MWh重力储能成套装备、大吨位炉排炉"
+        }
+      },
+      {
+        "id": 215,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国天楹",
+          "company_profile": "自主研制100MWh重力储能成套装备，掌握大吨位炉排炉等核心技术，构建\"环保+新能源\"全产业链",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 216,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "系统集成",
+          "level": 3
+        }
+      },
+      {
+        "id": 217,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "重力储能系统"
+        }
+      },
+      {
+        "id": 218,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "竖井式重力储能技术、超重载运输系统、高效重力发电机组、仿真平台、多机协同控制系统"
+        }
+      },
+      {
+        "id": 219,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国能建华北院",
+          "company_profile": "首创300MWh竖井式重力储能技术，构建超重载运输系统、研制高效重力发电机组、开发仿真平台与多机协同控制系统",
+          "category": "中央企业",
+          "category_reason": "“中国能建”是国务院国资委监管的97家中央企业之一（全称“中国能源建设集团有限公司”），“华北院”是其下属的华北电力设计院有限公司的简称，属于央企核心子公司。"
+        }
+      },
+      {
+        "id": 220,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "重力储能系统"
+        }
+      },
+      {
+        "id": 221,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "Energy Vault（瑞士）",
+          "company_profile": "重力储能系统产品，替代传统抽水蓄能",
+          "category": "外资企业",
+          "category_reason": "“Energy Vault”为知名的瑞士重力储能技术公司，其名称后缀“（瑞士）”明确标识了其外国主体身份"
+        }
+      },
+      {
+        "id": 222,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "矿井重力储能技术"
+        }
+      },
+      {
+        "id": 223,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "Gravitricity（英国）",
+          "company_profile": "矿井重力储能技术",
+          "category": "外资企业",
+          "category_reason": "“Gravitricity”为英国知名重力储能技术公司，其名称后缀明确标注为“（英国）”"
+        }
+      },
+      {
+        "id": 224,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "超导磁储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 225,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "系统制造",
+          "level": 3
+        }
+      },
+      {
+        "id": 226,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "Conductus超导线材、低温组件"
+        }
+      },
+      {
+        "id": 227,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "Superconductor Technologies Inc（美国）",
+          "company_profile": "开发和商业化高温超导（HTS）材料及相关技术，其产品线包括名为“Conductus”的超导线材、低温和相关组件，并声称拥有超过100项专利",
+          "category": "外资企业",
+          "category_reason": "“Superconductor Technologies Inc”为美国上市公司，企业名称明确标注“（美国）”，属于外国公司"
+        }
+      },
+      {
+        "id": 228,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "铋系高温超导线材"
+        }
+      },
+      {
+        "id": 229,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "Sumitomo Electric Industries（日本）",
+          "company_profile": "在超导领域，于2004年成功开发出铋系高温超导线材，并将其应用于电网升级等项目",
+          "category": "外资企业",
+          "category_reason": "“Sumitomo Electric Industries”为日本住友电工集团，是知名的日本跨国企业"
+        }
+      },
+      {
+        "id": 230,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "电力系统、高温超导线材、分布式超导磁储能系统"
+        }
+      },
+      {
+        "id": 231,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "American Superconductor Corporation（美国）",
+          "company_profile": "专注于设计、制造电力系统和高温超导线材，AMSC是SMES技术商业化应用的先驱，标志性产品是分布式超导磁储能系统",
+          "category": "外资企业",
+          "category_reason": "“American Superconductor Corporation”为美国纳斯达克上市公司，是知名的美国高科技企业"
+        }
+      },
+      {
+        "id": 232,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "铌钛低温超导线缆"
+        }
+      },
+      {
+        "id": 233,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "Luvata U.K.（英国）",
+          "company_profile": "核心产品包括高性能铜制品，如用于医疗MRI和大型科研装置的铌钛（NbTi）低温超导线缆，公司是该产品的全球领导者",
+          "category": "外资企业",
+          "category_reason": "“Luvata”为全球知名的芬兰金属加工与解决方案供应商，其英国分公司为外国公司在当地的实体"
+        }
+      },
+      {
+        "id": 234,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "10 kWh级SMES系统、20-kA级钇系氧化物超导电流引线"
+        }
+      },
+      {
+        "id": 235,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "Fujikura（日本）",
+          "company_profile": "标志性成就是与古河电工合作，为10 kWh级SMES系统开发出当时世界最高电流等级的20-kA级钇系氧化物超导电流引线",
+          "category": "外资企业",
+          "category_reason": "“Fujikura”为日本知名电子和光纤制造商藤仓株式会社的品牌，其名称后缀“（日本）”明确标识其外国公司身份"
+        }
+      },
+      {
+        "id": 236,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "超级电容储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 237,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "生产与模组制造",
+          "level": 3
+        }
+      },
+      {
+        "id": 238,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "铝电解电容、超级电容"
+        }
+      },
+      {
+        "id": 239,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "江海股份",
+          "company_profile": "铝电解电容及超级电容龙头企业，2024年上半年超级电容业务收入1.09亿元；超级电容产品已通过服务器电源厂商进入海外AI龙头供应链体系",
+          "category": "民营企业",
+          "category_reason": "“江海股份”为A股上市公司（证券代码：002484），其实际控制人为自然人，属于电子元器件制造业的民营企业。"
+        }
+      },
+      {
+        "id": 240,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "容阻感、超级电容"
+        }
+      },
+      {
+        "id": 241,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "风华高科",
+          "company_profile": "以容阻感三大支柱产业为核心，积极推进超级电容新兴赛道拓展",
+          "category": "民营企业",
+          "category_reason": "“风华高科”为广东风华高新科技股份有限公司的简称，是A股上市公司（证券代码：000636），根据公开信息，其控股股东为广东省广晟控股集团有限公司，属于广东省属国有控股企业，因此不属于中央企业，应归类为其他国资。"
+        }
+      },
+      {
+        "id": 242,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "超级电容器"
+        }
+      },
+      {
+        "id": 243,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "宁波中车",
+          "company_profile": "中车株洲所旗下超级电容制造企业",
+          "category": "其他国资",
+          "category_reason": "“中车”指中国中车集团，为国务院国资委监管的中央企业；“宁波中车”通常指其位于宁波的子公司或分支机构，属于央企体系下的国有控股企业。"
+        }
+      },
+      {
+        "id": 244,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "超级电容器"
+        }
+      },
+      {
+        "id": 245,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "奥威科技",
+          "company_profile": "超级电容器制造商，产品覆盖交通、电力等领域",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 246,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "超级电容器"
+        }
+      },
+      {
+        "id": 247,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "锦州凯美",
+          "company_profile": "超级电容器生产商",
+          "category": "民营企业",
+          "category_reason": "名称“锦州凯美”无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 248,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "超级电容器"
+        }
+      },
+      {
+        "id": 249,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "绿宝石（831804）",
+          "company_profile": "超级电容器业务",
+          "category": "民营企业",
+          "category_reason": "名称含证券代码“831804”，经查询为绿宝石（831804）系新三板挂牌公司，其实际控制人为自然人，属于民营企业"
+        }
+      },
+      {
+        "id": 250,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "干法超级电容"
+        }
+      },
+      {
+        "id": 251,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "普兰纳米",
+          "company_profile": "锚定干法超级电容赛道，投资3.5亿元在安徽建设干法生产线",
+          "category": "民营企业",
+          "category_reason": "“普兰纳米”名称无国资或外资标识，且不属于公众普遍知晓的知名央企或外资品牌，按行业惯例推断为自然人控股的科技类企业"
+        }
+      },
+      {
+        "id": 252,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "氢能储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 253,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "氢气储运",
+          "level": 3
+        }
+      },
+      {
+        "id": 254,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "液氢储运容器、液氢加注设备、液氢应用系统"
+        }
+      },
+      {
+        "id": 255,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中集安瑞科",
+          "company_profile": "自2006年起开展氢能业务，产品覆盖氢能\"制、储、运、加、用\"全环节，已成为国内首家拥有液氢\"储、运、加、用\"全系列产品解决方案的供应商",
+          "category": "民营企业",
+          "category_reason": "“中集安瑞科”为港股上市公司“中集安瑞科控股有限公司”的简称，其母公司“中国国际海运集装箱（集团）股份有限公司”（中集集团）为中外合资企业，无国资控股，按商业常识推断为民营企业。"
+        }
+      },
+      {
+        "id": 256,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "车载储氢瓶"
+        }
+      },
+      {
+        "id": 257,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中材科技",
+          "company_profile": "专注于高压气态储氢领域，是国内领先的车载储氢瓶制造商",
+          "category": "中央企业",
+          "category_reason": "“中材科技”为国务院国资委监管的97家央企之一“中国建材集团有限公司”的核心上市公司"
+        }
+      },
+      {
+        "id": 258,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "水电解制氢设备、车载高压供氢系统、高压储氢瓶、液氢储氢瓶、加氢站成套设备、氢气液化工厂解决方案、液氢储运容器"
+        }
+      },
+      {
+        "id": 259,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "国富氢能",
+          "company_profile": "涵盖水电解制氢设备、车载高压供氢系统（含高压/液氢储氢瓶）、加氢站成套设备、氢气液化工厂解决方案及液氢储运容器等",
+          "category": "民营企业",
+          "category_reason": "名称含“氢能”属新兴能源行业，且无“中国/中”字头或地方国资标识，按行业惯例推断为自然人控股或民营资本为主的科技企业"
+        }
+      },
+      {
+        "id": 260,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "钢质无缝气瓶、碳纤维缠绕复合气瓶、车载供氢系统"
+        }
+      },
+      {
+        "id": 261,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "京城股份",
+          "company_profile": "氢能技术积累集中于储运环节，主营业务涵盖钢质无缝气瓶、碳纤维缠绕复合气瓶（Ⅲ型/Ⅳ型）、车载供氢系统等，产品覆盖0.7L～450L全系列",
+          "category": "其他国资",
+          "category_reason": "“京城股份”为北京京城机电股份有限公司的简称，是北京市属国有控股的A股上市公司"
+        }
+      },
+      {
+        "id": 262,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "系统集成",
+          "level": 3
+        }
+      },
+      {
+        "id": 263,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "质子交换膜电解水制氢、燃料电池发电、燃料电池系统"
+        }
+      },
+      {
+        "id": 264,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "亿华通",
+          "company_profile": "具备从质子交换膜（PEM）电解水制氢到燃料电池发电的双向技术能力，中国领先的燃料电池系统供应商",
+          "category": "民营企业",
+          "category_reason": "“亿华通”为公开上市的氢燃料电池系统制造商，无国资或外资控股标识，按行业惯例推断为自然人及投资机构控股的科技企业"
+        }
+      },
+      {
+        "id": 265,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "燃料电池电堆、燃料电池系统、燃料电池发电装备、制氢装备、碱性电解槽、PEM电解槽、储能应用"
+        }
+      },
+      {
+        "id": 266,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "国鸿氢能",
+          "company_profile": "核心产品覆盖燃料电池电堆、系统、发电装备及制氢装备（碱性及PEM电解槽），业务深度覆盖储能应用",
+          "category": "民营企业",
+          "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 267,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "可逆固体氧化物燃料电池系统"
+        }
+      },
+      {
+        "id": 268,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "潍柴动力",
+          "company_profile": "可逆固体氧化物燃料电池（SOFC）系统专利可在发电与电解模式间灵活切换，实现“电-氢-电”的跨周期储能",
+          "category": "民营企业",
+          "category_reason": "潍柴动力为A+H股上市公司，其控股股东为潍柴控股集团有限公司，而潍柴集团的实际控制人为山东省国资委，因此属于地方国有控股企业，按分类标准应归为“其他国资”。"
+        }
+      },
+      {
+        "id": 269,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "下游（终端应用）",
+          "level": 1
+        }
+      },
+      {
+        "id": 270,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电化学储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 271,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电源侧",
+          "level": 3
+        }
+      },
+      {
+        "id": 272,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "大型发电企业，新能源电站配储项目投资运营"
+        }
+      },
+      {
+        "id": 273,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "国家能源集团",
+          "company_profile": "大型发电企业，新能源电站配储项目投资运营",
+          "category": "中央企业",
+          "category_reason": "国家能源集团是国务院国资委监管的97家中央企业之一"
+        }
+      },
+      {
+        "id": 274,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "电力投资运营、新能源发电、储能配套"
+        }
+      },
+      {
+        "id": 275,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "国投电力",
+          "company_profile": "电力投资运营，新能源发电及储能配套",
+          "category": "中央企业",
+          "category_reason": "“国投电力”是国家开发投资集团有限公司（国资委监管的97家央企之一）旗下的核心电力业务上市平台"
+        }
+      },
+      {
+        "id": 276,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "火电灵活性改造、新能源配储"
+        }
+      },
+      {
+        "id": 277,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国华能",
+          "company_profile": "大型发电集团，火电灵活性改造及新能源配储",
+          "category": "中央企业",
+          "category_reason": "“中国华能”是国务院国资委监管的97家中央企业之一，全称为中国华能集团有限公司"
+        }
+      },
+      {
+        "id": 278,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "核电及新能源发电"
+        }
+      },
+      {
+        "id": 279,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中核集团",
+          "company_profile": "核电及新能源发电，储能配套投资建设",
+          "category": "中央企业",
+          "category_reason": "“中国核工业集团有限公司”是国务院国资委监管的97家中央企业之一"
+        }
+      },
+      {
+        "id": 280,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电网侧",
+          "level": 3
+        }
+      },
+      {
+        "id": 281,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "独立储能电站投资运营、电网调度、储能管理"
+        }
+      },
+      {
+        "id": 282,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "国家电网",
+          "company_profile": "电网公司，独立储能电站投资运营、电网调度与储能管理",
+          "category": "中央企业",
+          "category_reason": "国家电网有限公司为国务院国资委监管的97家中央企业之一"
+        }
+      },
+      {
+        "id": 283,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "区域电网储能项目"
+        }
+      },
+      {
+        "id": 284,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "南方电网",
+          "company_profile": "电网公司，区域电网储能项目投资建设与运营",
+          "category": "中央企业",
+          "category_reason": "南方电网为国务院国资委监管的97家中央企业之一"
+        }
+      },
+      {
+        "id": 285,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "用户侧",
+          "level": 3
+        }
+      },
+      {
+        "id": 286,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "储能系统"
+        }
+      },
+      {
+        "id": 287,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "各类工商业企业",
+          "company_profile": "自建储能系统实现峰谷价差套利、降低用电成本",
+          "category": "民营企业",
+          "category_reason": "“各类工商业企业”为泛指性、非特指名称，无任何国资、外资或特定企业标识，按商业常识及中国市场主体构成惯例，推断为对众多民营企业的统称"
+        }
+      },
+      {
+        "id": 288,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "通信基站备用电源储能"
+        }
+      },
+      {
+        "id": 289,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "通信运营商",
+          "company_profile": "通信基站备用电源储能应用",
+          "category": "民营企业",
+          "category_reason": "“通信运营商”为行业统称，非具体企业名称，泛指提供通信服务的公司。在中国，除中国移动、中国联通、中国电信三大基础运营商（中央企业）外，还存在大量民营虚拟运营商（如小米移动、京东通信）及民营通信服务公司。"
+        }
+      },
+      {
+        "id": 290,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "数据中心不间断电源、储能系统"
+        }
+      },
+      {
+        "id": 291,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "数据中心运营商",
+          "company_profile": "数据中心不间断电源（UPS）及储能系统应用",
+          "category": "民营企业",
+          "category_reason": "“数据中心运营商”为通用行业描述，非特定企业名称，无国资或外资标识，按行业惯例推断为市场化运营的民营企业"
+        }
+      },
+      {
+        "id": 292,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "压缩空气储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 293,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电源侧",
+          "level": 3
+        }
+      },
+      {
+        "id": 294,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "液态压缩空气储能系统"
+        }
+      },
+      {
+        "id": 295,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中绿电",
+          "company_profile": "业务涵盖液态压缩空气储能领域，积极在青海、内蒙古、新疆等地布局储能项目",
+          "category": "民营企业",
+          "category_reason": "“中绿电”非国资委名录央企，名称无地方国资或外资标识，按行业惯例推断为自然人/私营企业控股"
+        }
+      },
+      {
+        "id": 296,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩空气储能系统"
+        }
+      },
+      {
+        "id": 297,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "江苏国信",
+          "company_profile": "投资建设全球单机规模最大的压缩空气储能项目之一，采用全球首创的“高温绝热压缩”技术路线，核心设备实现全国产化",
+          "category": "其他国资",
+          "category_reason": "“江苏国信”为江苏省属国有资本投资运营公司"
+        }
+      },
+      {
+        "id": 298,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "液态空气储能项目"
+        }
+      },
+      {
+        "id": 299,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国绿发",
+          "company_profile": "投资建设全球海拔最高、储能规模最大的液态空气储能项目，核心技术自主化率达100%",
+          "category": "民营企业",
+          "category_reason": "名称“中国绿发”不在国务院国资委公布的97家央企名录内，也无公开信息表明其为外资或地方国资控股，按命名惯例推断为自然人控股或私营企业"
+        }
+      },
+      {
+        "id": 300,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电网侧",
+          "level": 3
+        }
+      },
+      {
+        "id": 301,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "高海拔山地盐穴压缩空气储能项目"
+        }
+      },
+      {
+        "id": 302,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "云南能投",
+          "company_profile": "投资建设西南地区首个高海拔山地盐穴压缩空气储能项目，将助力区域内新能源消纳及电网调峰调频",
+          "category": "其他国资",
+          "category_reason": "“云南能投”为云南省能源投资集团有限公司的简称，是云南省属重点国有企业"
+        }
+      },
+      {
+        "id": 303,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "压缩空气储能电站"
+        }
+      },
+      {
+        "id": 304,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "三峡能源",
+          "company_profile": "投资建设全球首个高寒地区的大规模压缩空气储能电站，旨在验证关键技术和装备在高寒环境下的应用",
+          "category": "中央企业",
+          "category_reason": "“中国三峡新能源（集团）股份有限公司”（简称三峡能源）是国务院国资委监管的97家中央企业之一“中国长江三峡集团有限公司”的核心子公司，为A股上市公司，主营业务为风电、光伏等新能源开发。"
+        }
+      },
+      {
+        "id": 305,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "飞轮储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 306,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "电网一次/二次调频、数据中心UPS电源、轨道交通、新能源消纳等",
+          "level": 3
+        }
+      },
+      {
+        "id": 307,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "产品已广泛用于电网调频、算力中心、工业备用电源等领域"
+        }
+      },
+      {
+        "id": 308,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "火电AGC调频、风电一次调频、光伏一次调频、电力辅助服务"
+        }
+      },
+      {
+        "id": 309,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "重力储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 310,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "新能源消纳、光储一体化、电网调峰调频",
+          "level": 3
+        }
+      },
+      {
+        "id": 311,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "重力储能系统"
+        }
+      },
+      {
+        "id": 312,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "10kW斜坡式重力储能多机系统"
+        }
+      },
+      {
+        "id": 313,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "超级电容储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 314,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "新能源汽车、轨道交通储能、电网调频、消费电子、航空航天及AI数据中心备电等领域实现广泛应用",
+          "level": 3
+        }
+      },
+      {
+        "id": 315,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "关键材料到系统集成的全链条解决方案"
+        }
+      },
+      {
+        "id": 316,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "今朝时代",
+          "company_profile": "国家级专精特新“小巨人”及行业第一梯队成员，提供覆盖关键材料到系统集成的全链条解决方案，应用于新型电力系统、AI及新能源汽车",
+          "category": "民营企业",
+          "category_reason": "“今朝时代”非知名央企或外资品牌，名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+        }
+      },
+      {
+        "id": 317,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "双电层电容、混合电容"
+        }
+      },
+      {
+        "id": 318,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "锂离子电容器、锂离子超级电容"
+        }
+      },
+      {
+        "id": 319,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "Musashi Energy Solutions（日本）",
+          "company_profile": "专注于锂离子电容器（LIC）的日本企业，在业内以布局早、技术领先而闻名，其锂离子超级电容已进入英伟达供应链",
+          "category": "外资企业",
+          "category_reason": "“Musashi”为日本知名品牌，且名称明确标注“（日本）”，属于外国公司在华实体"
+        }
+      },
+      {
+        "id": 320,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "高压电容器"
+        }
+      },
+      {
+        "id": 321,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "Maxwell Technologies（美国）",
+          "company_profile": "全球超级电容技术先驱，核心在于干电极技术，为电网设施提供高压电容器",
+          "category": "外资企业",
+          "category_reason": "“Maxwell Technologies”为美国知名的超级电容器和储能解决方案制造商，属于外国公司"
+        }
+      },
+      {
+        "id": 322,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "氢能储能",
+          "level": 2
+        }
+      },
+      {
+        "id": 323,
+        "labels": [
+          "环节"
+        ],
+        "properties": {
+          "name": "氢能应用",
+          "level": 3
+        }
+      },
+      {
+        "id": 324,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "供氢中心、加氢站"
+        }
+      },
+      {
+        "id": 325,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国石化",
+          "company_profile": "致力于打造“油气氢电服”综合能源服务商，已建成11个供氢中心、146座加氢站，是全球运营加氢站最多的企业",
+          "category": "中央企业",
+          "category_reason": "“中国石油化工集团有限公司”为国务院国资委监管的97家中央企业之一"
+        }
+      },
+      {
+        "id": 326,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "绿氢"
+        }
+      },
+      {
+        "id": 327,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "“油气热电氢”综合能源"
+        }
+      },
+      {
+        "id": 328,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "中国石油",
+          "company_profile": "定位“油气热电氢”综合能源公司，氢能布局上采取了全产业链“制-储-输-用” 协同发展的模式，深度融入储能应用场景",
+          "category": "中央企业",
+          "category_reason": "“中国石油天然气集团有限公司”属国资委监管央企"
+        }
+      },
+      {
+        "id": 329,
+        "labels": [
+          "产品"
+        ],
+        "properties": {
+          "name": "氢能设备"
+        }
+      },
+      {
+        "id": 330,
+        "labels": [
+          "公司"
+        ],
+        "properties": {
+          "name": "厚普股份",
+          "company_profile": "拥有“工程＋装备＋服务”一体化能力，累计为全球供应100余套氢能设备，项目经验涵盖冬奥会、大运会、巴黎奥运会、成渝氢走廊等多个加氢示范工程",
+          "category": "民营企业",
+          "category_reason": "“厚普股份”为A股上市公司（股票代码：300471），主营业务为清洁能源加注装备，其股权结构显示为自然人及投资机构控股，无国资或外资控制背景"
+        }
+      }
+    ],
+    "relationships": [
+      {
+        "type": "从属于",
+        "source": 1,
+        "target": 0
+      },
+      {
+        "type": "从属于",
+        "source": 2,
+        "target": 1
+      },
+      {
+        "type": "从属于",
+        "source": 3,
+        "target": 2
+      },
+      {
+        "type": "产品对应环节",
+        "source": 4,
+        "target": 3
+      },
+      {
+        "type": "拥有产品",
+        "source": 5,
+        "target": 4
+      },
+      {
+        "type": "产品对应环节",
+        "source": 6,
+        "target": 3
+      },
+      {
+        "type": "拥有产品",
+        "source": 7,
+        "target": 6
+      },
+      {
+        "type": "产品对应环节",
+        "source": 8,
+        "target": 3
+      },
+      {
+        "type": "拥有产品",
+        "source": 9,
+        "target": 8
+      },
+      {
+        "type": "产品对应环节",
+        "source": 10,
+        "target": 3
+      },
+      {
+        "type": "拥有产品",
+        "source": 11,
+        "target": 10
+      },
+      {
+        "type": "产品对应环节",
+        "source": 12,
+        "target": 3
+      },
+      {
+        "type": "拥有产品",
+        "source": 13,
+        "target": 12
+      },
+      {
+        "type": "产品对应环节",
+        "source": 14,
+        "target": 3
+      },
+      {
+        "type": "拥有产品",
+        "source": 15,
+        "target": 14
+      },
+      {
+        "type": "产品对应环节",
+        "source": 16,
+        "target": 3
+      },
+      {
+        "type": "拥有产品",
+        "source": 17,
+        "target": 16
+      },
+      {
+        "type": "产品对应环节",
+        "source": 18,
+        "target": 3
+      },
+      {
+        "type": "拥有产品",
+        "source": 19,
+        "target": 18
+      },
+      {
+        "type": "从属于",
+        "source": 20,
+        "target": 2
+      },
+      {
+        "type": "产品对应环节",
+        "source": 21,
+        "target": 20
+      },
+      {
+        "type": "拥有产品",
+        "source": 22,
+        "target": 21
+      },
+      {
+        "type": "产品对应环节",
+        "source": 23,
+        "target": 20
+      },
+      {
+        "type": "拥有产品",
+        "source": 24,
+        "target": 23
+      },
+      {
+        "type": "产品对应环节",
+        "source": 25,
+        "target": 20
+      },
+      {
+        "type": "拥有产品",
+        "source": 26,
+        "target": 25
+      },
+      {
+        "type": "产品对应环节",
+        "source": 27,
+        "target": 20
+      },
+      {
+        "type": "拥有产品",
+        "source": 28,
+        "target": 27
+      },
+      {
+        "type": "产品对应环节",
+        "source": 29,
+        "target": 20
+      },
+      {
+        "type": "拥有产品",
+        "source": 30,
+        "target": 29
+      },
+      {
+        "type": "产品对应环节",
+        "source": 31,
+        "target": 20
+      },
+      {
+        "type": "拥有产品",
+        "source": 32,
+        "target": 31
+      },
+      {
+        "type": "从属于",
+        "source": 33,
+        "target": 2
+      },
+      {
+        "type": "产品对应环节",
+        "source": 34,
+        "target": 33
+      },
+      {
+        "type": "拥有产品",
+        "source": 35,
+        "target": 34
+      },
+      {
+        "type": "从属于",
+        "source": 36,
+        "target": 2
+      },
+      {
+        "type": "产品对应环节",
+        "source": 37,
+        "target": 36
+      },
+      {
+        "type": "拥有产品",
+        "source": 38,
+        "target": 37
+      },
+      {
+        "type": "产品对应环节",
+        "source": 39,
+        "target": 36
+      },
+      {
+        "type": "拥有产品",
+        "source": 40,
+        "target": 39
+      },
+      {
+        "type": "从属于",
+        "source": 41,
+        "target": 2
+      },
+      {
+        "type": "产品对应环节",
+        "source": 42,
+        "target": 41
+      },
+      {
+        "type": "拥有产品",
+        "source": 43,
+        "target": 42
+      },
+      {
+        "type": "产品对应环节",
+        "source": 44,
+        "target": 41
+      },
+      {
+        "type": "拥有产品",
+        "source": 45,
+        "target": 44
+      },
+      {
+        "type": "产品对应环节",
+        "source": 46,
+        "target": 41
+      },
+      {
+        "type": "拥有产品",
+        "source": 47,
+        "target": 46
+      },
+      {
+        "type": "产品对应环节",
+        "source": 48,
+        "target": 41
+      },
+      {
+        "type": "拥有产品",
+        "source": 49,
+        "target": 48
+      },
+      {
+        "type": "从属于",
+        "source": 50,
+        "target": 1
+      },
+      {
+        "type": "从属于",
+        "source": 51,
+        "target": 50
+      },
+      {
+        "type": "产品对应环节",
+        "source": 52,
+        "target": 51
+      },
+      {
+        "type": "拥有产品",
+        "source": 53,
+        "target": 52
+      },
+      {
+        "type": "产品对应环节",
+        "source": 54,
+        "target": 51
+      },
+      {
+        "type": "拥有产品",
+        "source": 55,
+        "target": 54
+      },
+      {
+        "type": "产品对应环节",
+        "source": 56,
+        "target": 51
+      },
+      {
+        "type": "拥有产品",
+        "source": 57,
+        "target": 56
+      },
+      {
+        "type": "从属于",
+        "source": 58,
+        "target": 1
+      },
+      {
+        "type": "从属于",
+        "source": 59,
+        "target": 58
+      },
+      {
+        "type": "产品对应环节",
+        "source": 60,
+        "target": 59
+      },
+      {
+        "type": "拥有产品",
+        "source": 61,
+        "target": 60
+      },
+      {
+        "type": "产品对应环节",
+        "source": 62,
+        "target": 59
+      },
+      {
+        "type": "拥有产品",
+        "source": 63,
+        "target": 62
+      },
+      {
+        "type": "从属于",
+        "source": 64,
+        "target": 58
+      },
+      {
+        "type": "产品对应环节",
+        "source": 65,
+        "target": 64
+      },
+      {
+        "type": "拥有产品",
+        "source": 66,
+        "target": 65
+      },
+      {
+        "type": "产品对应环节",
+        "source": 67,
+        "target": 64
+      },
+      {
+        "type": "拥有产品",
+        "source": 68,
+        "target": 67
+      },
+      {
+        "type": "从属于",
+        "source": 69,
+        "target": 58
+      },
+      {
+        "type": "产品对应环节",
+        "source": 70,
+        "target": 69
+      },
+      {
+        "type": "拥有产品",
+        "source": 71,
+        "target": 70
+      },
+      {
+        "type": "从属于",
+        "source": 72,
+        "target": 1
+      },
+      {
+        "type": "从属于",
+        "source": 73,
+        "target": 72
+      },
+      {
+        "type": "产品对应环节",
+        "source": 74,
+        "target": 73
+      },
+      {
+        "type": "拥有产品",
+        "source": 75,
+        "target": 74
+      },
+      {
+        "type": "产品对应环节",
+        "source": 76,
+        "target": 73
+      },
+      {
+        "type": "拥有产品",
+        "source": 77,
+        "target": 76
+      },
+      {
+        "type": "产品对应环节",
+        "source": 78,
+        "target": 73
+      },
+      {
+        "type": "拥有产品",
+        "source": 79,
+        "target": 78
+      },
+      {
+        "type": "产品对应环节",
+        "source": 80,
+        "target": 73
+      },
+      {
+        "type": "拥有产品",
+        "source": 81,
+        "target": 80
+      },
+      {
+        "type": "从属于",
+        "source": 82,
+        "target": 0
+      },
+      {
+        "type": "从属于",
+        "source": 83,
+        "target": 82
+      },
+      {
+        "type": "从属于",
+        "source": 84,
+        "target": 83
+      },
+      {
+        "type": "产品对应环节",
+        "source": 85,
+        "target": 84
+      },
+      {
+        "type": "拥有产品",
+        "source": 86,
+        "target": 85
+      },
+      {
+        "type": "产品对应环节",
+        "source": 87,
+        "target": 84
+      },
+      {
+        "type": "拥有产品",
+        "source": 88,
+        "target": 87
+      },
+      {
+        "type": "产品对应环节",
+        "source": 89,
+        "target": 84
+      },
+      {
+        "type": "拥有产品",
+        "source": 90,
+        "target": 89
+      },
+      {
+        "type": "产品对应环节",
+        "source": 91,
+        "target": 84
+      },
+      {
+        "type": "拥有产品",
+        "source": 92,
+        "target": 91
+      },
+      {
+        "type": "产品对应环节",
+        "source": 93,
+        "target": 84
+      },
+      {
+        "type": "拥有产品",
+        "source": 94,
+        "target": 93
+      },
+      {
+        "type": "产品对应环节",
+        "source": 95,
+        "target": 84
+      },
+      {
+        "type": "拥有产品",
+        "source": 96,
+        "target": 95
+      },
+      {
+        "type": "产品对应环节",
+        "source": 97,
+        "target": 84
+      },
+      {
+        "type": "拥有产品",
+        "source": 98,
+        "target": 97
+      },
+      {
+        "type": "产品对应环节",
+        "source": 99,
+        "target": 84
+      },
+      {
+        "type": "拥有产品",
+        "source": 100,
+        "target": 99
+      },
+      {
+        "type": "从属于",
+        "source": 101,
+        "target": 83
+      },
+      {
+        "type": "产品对应环节",
+        "source": 102,
+        "target": 101
+      },
+      {
+        "type": "拥有产品",
+        "source": 86,
+        "target": 102
+      },
+      {
+        "type": "产品对应环节",
+        "source": 103,
+        "target": 101
+      },
+      {
+        "type": "拥有产品",
+        "source": 104,
+        "target": 103
+      },
+      {
+        "type": "产品对应环节",
+        "source": 105,
+        "target": 101
+      },
+      {
+        "type": "拥有产品",
+        "source": 106,
+        "target": 105
+      },
+      {
+        "type": "产品对应环节",
+        "source": 107,
+        "target": 101
+      },
+      {
+        "type": "拥有产品",
+        "source": 108,
+        "target": 107
+      },
+      {
+        "type": "产品对应环节",
+        "source": 109,
+        "target": 101
+      },
+      {
+        "type": "拥有产品",
+        "source": 110,
+        "target": 109
+      },
+      {
+        "type": "产品对应环节",
+        "source": 111,
+        "target": 101
+      },
+      {
+        "type": "拥有产品",
+        "source": 112,
+        "target": 111
+      },
+      {
+        "type": "从属于",
+        "source": 113,
+        "target": 83
+      },
+      {
+        "type": "产品对应环节",
+        "source": 114,
+        "target": 113
+      },
+      {
+        "type": "拥有产品",
+        "source": 115,
+        "target": 114
+      },
+      {
+        "type": "产品对应环节",
+        "source": 116,
+        "target": 113
+      },
+      {
+        "type": "拥有产品",
+        "source": 117,
+        "target": 116
+      },
+      {
+        "type": "产品对应环节",
+        "source": 118,
+        "target": 113
+      },
+      {
+        "type": "拥有产品",
+        "source": 119,
+        "target": 118
+      },
+      {
+        "type": "产品对应环节",
+        "source": 120,
+        "target": 113
+      },
+      {
+        "type": "拥有产品",
+        "source": 121,
+        "target": 120
+      },
+      {
+        "type": "产品对应环节",
+        "source": 122,
+        "target": 113
+      },
+      {
+        "type": "拥有产品",
+        "source": 123,
+        "target": 122
+      },
+      {
+        "type": "产品对应环节",
+        "source": 124,
+        "target": 113
+      },
+      {
+        "type": "拥有产品",
+        "source": 125,
+        "target": 124
+      },
+      {
+        "type": "从属于",
+        "source": 126,
+        "target": 83
+      },
+      {
+        "type": "产品对应环节",
+        "source": 127,
+        "target": 126
+      },
+      {
+        "type": "拥有产品",
+        "source": 128,
+        "target": 127
+      },
+      {
+        "type": "产品对应环节",
+        "source": 129,
+        "target": 126
+      },
+      {
+        "type": "拥有产品",
+        "source": 130,
+        "target": 129
+      },
+      {
+        "type": "产品对应环节",
+        "source": 131,
+        "target": 126
+      },
+      {
+        "type": "拥有产品",
+        "source": 132,
+        "target": 131
+      },
+      {
+        "type": "产品对应环节",
+        "source": 133,
+        "target": 126
+      },
+      {
+        "type": "拥有产品",
+        "source": 134,
+        "target": 133
+      },
+      {
+        "type": "产品对应环节",
+        "source": 135,
+        "target": 126
+      },
+      {
+        "type": "拥有产品",
+        "source": 136,
+        "target": 135
+      },
+      {
+        "type": "产品对应环节",
+        "source": 137,
+        "target": 126
+      },
+      {
+        "type": "拥有产品",
+        "source": 138,
+        "target": 137
+      },
+      {
+        "type": "从属于",
+        "source": 139,
+        "target": 83
+      },
+      {
+        "type": "产品对应环节",
+        "source": 140,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 141,
+        "target": 140
+      },
+      {
+        "type": "产品对应环节",
+        "source": 142,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 115,
+        "target": 142
+      },
+      {
+        "type": "产品对应环节",
+        "source": 143,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 144,
+        "target": 143
+      },
+      {
+        "type": "产品对应环节",
+        "source": 145,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 146,
+        "target": 145
+      },
+      {
+        "type": "产品对应环节",
+        "source": 147,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 148,
+        "target": 147
+      },
+      {
+        "type": "产品对应环节",
+        "source": 149,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 92,
+        "target": 149
+      },
+      {
+        "type": "产品对应环节",
+        "source": 150,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 151,
+        "target": 150
+      },
+      {
+        "type": "产品对应环节",
+        "source": 152,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 153,
+        "target": 152
+      },
+      {
+        "type": "产品对应环节",
+        "source": 154,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 155,
+        "target": 154
+      },
+      {
+        "type": "产品对应环节",
+        "source": 156,
+        "target": 139
+      },
+      {
+        "type": "拥有产品",
+        "source": 157,
+        "target": 156
+      },
+      {
+        "type": "从属于",
+        "source": 158,
+        "target": 83
+      },
+      {
+        "type": "产品对应环节",
+        "source": 159,
+        "target": 158
+      },
+      {
+        "type": "拥有产品",
+        "source": 160,
+        "target": 159
+      },
+      {
+        "type": "产品对应环节",
+        "source": 161,
+        "target": 158
+      },
+      {
+        "type": "拥有产品",
+        "source": 162,
+        "target": 161
+      },
+      {
+        "type": "产品对应环节",
+        "source": 163,
+        "target": 158
+      },
+      {
+        "type": "拥有产品",
+        "source": 164,
+        "target": 163
+      },
+      {
+        "type": "产品对应环节",
+        "source": 165,
+        "target": 158
+      },
+      {
+        "type": "拥有产品",
+        "source": 166,
+        "target": 165
+      },
+      {
+        "type": "产品对应环节",
+        "source": 167,
+        "target": 158
+      },
+      {
+        "type": "拥有产品",
+        "source": 168,
+        "target": 167
+      },
+      {
+        "type": "从属于",
+        "source": 169,
+        "target": 82
+      },
+      {
+        "type": "从属于",
+        "source": 170,
+        "target": 169
+      },
+      {
+        "type": "产品对应环节",
+        "source": 171,
+        "target": 170
+      },
+      {
+        "type": "拥有产品",
+        "source": 172,
+        "target": 171
+      },
+      {
+        "type": "从属于",
+        "source": 173,
+        "target": 169
+      },
+      {
+        "type": "产品对应环节",
+        "source": 174,
+        "target": 173
+      },
+      {
+        "type": "拥有产品",
+        "source": 175,
+        "target": 174
+      },
+      {
+        "type": "从属于",
+        "source": 176,
+        "target": 169
+      },
+      {
+        "type": "产品对应环节",
+        "source": 177,
+        "target": 176
+      },
+      {
+        "type": "拥有产品",
+        "source": 178,
+        "target": 177
+      },
+      {
+        "type": "产品对应环节",
+        "source": 179,
+        "target": 176
+      },
+      {
+        "type": "拥有产品",
+        "source": 180,
+        "target": 179
+      },
+      {
+        "type": "从属于",
+        "source": 181,
+        "target": 169
+      },
+      {
+        "type": "产品对应环节",
+        "source": 182,
+        "target": 181
+      },
+      {
+        "type": "拥有产品",
+        "source": 183,
+        "target": 182
+      },
+      {
+        "type": "从属于",
+        "source": 184,
+        "target": 169
+      },
+      {
+        "type": "产品对应环节",
+        "source": 185,
+        "target": 184
+      },
+      {
+        "type": "拥有产品",
+        "source": 186,
+        "target": 185
+      },
+      {
+        "type": "产品对应环节",
+        "source": 187,
+        "target": 184
+      },
+      {
+        "type": "拥有产品",
+        "source": 188,
+        "target": 187
+      },
+      {
+        "type": "从属于",
+        "source": 189,
+        "target": 169
+      },
+      {
+        "type": "产品对应环节",
+        "source": 190,
+        "target": 189
+      },
+      {
+        "type": "拥有产品",
+        "source": 191,
+        "target": 190
+      },
+      {
+        "type": "产品对应环节",
+        "source": 192,
+        "target": 189
+      },
+      {
+        "type": "拥有产品",
+        "source": 166,
+        "target": 192
+      },
+      {
+        "type": "产品对应环节",
+        "source": 193,
+        "target": 189
+      },
+      {
+        "type": "拥有产品",
+        "source": 168,
+        "target": 193
+      },
+      {
+        "type": "产品对应环节",
+        "source": 194,
+        "target": 189
+      },
+      {
+        "type": "拥有产品",
+        "source": 195,
+        "target": 194
+      },
+      {
+        "type": "产品对应环节",
+        "source": 196,
+        "target": 189
+      },
+      {
+        "type": "拥有产品",
+        "source": 197,
+        "target": 196
+      },
+      {
+        "type": "从属于",
+        "source": 198,
+        "target": 82
+      },
+      {
+        "type": "从属于",
+        "source": 199,
+        "target": 198
+      },
+      {
+        "type": "产品对应环节",
+        "source": 200,
+        "target": 199
+      },
+      {
+        "type": "拥有产品",
+        "source": 201,
+        "target": 200
+      },
+      {
+        "type": "产品对应环节",
+        "source": 202,
+        "target": 199
+      },
+      {
+        "type": "拥有产品",
+        "source": 203,
+        "target": 202
+      },
+      {
+        "type": "产品对应环节",
+        "source": 204,
+        "target": 199
+      },
+      {
+        "type": "拥有产品",
+        "source": 205,
+        "target": 204
+      },
+      {
+        "type": "产品对应环节",
+        "source": 206,
+        "target": 199
+      },
+      {
+        "type": "拥有产品",
+        "source": 207,
+        "target": 206
+      },
+      {
+        "type": "从属于",
+        "source": 208,
+        "target": 198
+      },
+      {
+        "type": "产品对应环节",
+        "source": 209,
+        "target": 208
+      },
+      {
+        "type": "拥有产品",
+        "source": 201,
+        "target": 209
+      },
+      {
+        "type": "产品对应环节",
+        "source": 210,
+        "target": 208
+      },
+      {
+        "type": "拥有产品",
+        "source": 203,
+        "target": 210
+      },
+      {
+        "type": "产品对应环节",
+        "source": 211,
+        "target": 208
+      },
+      {
+        "type": "拥有产品",
+        "source": 205,
+        "target": 211
+      },
+      {
+        "type": "从属于",
+        "source": 212,
+        "target": 82
+      },
+      {
+        "type": "从属于",
+        "source": 213,
+        "target": 212
+      },
+      {
+        "type": "产品对应环节",
+        "source": 214,
+        "target": 213
+      },
+      {
+        "type": "拥有产品",
+        "source": 215,
+        "target": 214
+      },
+      {
+        "type": "从属于",
+        "source": 216,
+        "target": 212
+      },
+      {
+        "type": "产品对应环节",
+        "source": 217,
+        "target": 216
+      },
+      {
+        "type": "拥有产品",
+        "source": 215,
+        "target": 217
+      },
+      {
+        "type": "产品对应环节",
+        "source": 218,
+        "target": 216
+      },
+      {
+        "type": "拥有产品",
+        "source": 219,
+        "target": 218
+      },
+      {
+        "type": "产品对应环节",
+        "source": 220,
+        "target": 216
+      },
+      {
+        "type": "拥有产品",
+        "source": 221,
+        "target": 220
+      },
+      {
+        "type": "产品对应环节",
+        "source": 222,
+        "target": 216
+      },
+      {
+        "type": "拥有产品",
+        "source": 223,
+        "target": 222
+      },
+      {
+        "type": "从属于",
+        "source": 224,
+        "target": 82
+      },
+      {
+        "type": "从属于",
+        "source": 225,
+        "target": 224
+      },
+      {
+        "type": "产品对应环节",
+        "source": 226,
+        "target": 225
+      },
+      {
+        "type": "拥有产品",
+        "source": 227,
+        "target": 226
+      },
+      {
+        "type": "产品对应环节",
+        "source": 228,
+        "target": 225
+      },
+      {
+        "type": "拥有产品",
+        "source": 229,
+        "target": 228
+      },
+      {
+        "type": "产品对应环节",
+        "source": 230,
+        "target": 225
+      },
+      {
+        "type": "拥有产品",
+        "source": 231,
+        "target": 230
+      },
+      {
+        "type": "产品对应环节",
+        "source": 232,
+        "target": 225
+      },
+      {
+        "type": "拥有产品",
+        "source": 233,
+        "target": 232
+      },
+      {
+        "type": "产品对应环节",
+        "source": 234,
+        "target": 225
+      },
+      {
+        "type": "拥有产品",
+        "source": 235,
+        "target": 234
+      },
+      {
+        "type": "从属于",
+        "source": 236,
+        "target": 82
+      },
+      {
+        "type": "从属于",
+        "source": 237,
+        "target": 236
+      },
+      {
+        "type": "产品对应环节",
+        "source": 238,
+        "target": 237
+      },
+      {
+        "type": "拥有产品",
+        "source": 239,
+        "target": 238
+      },
+      {
+        "type": "产品对应环节",
+        "source": 240,
+        "target": 237
+      },
+      {
+        "type": "拥有产品",
+        "source": 241,
+        "target": 240
+      },
+      {
+        "type": "产品对应环节",
+        "source": 242,
+        "target": 237
+      },
+      {
+        "type": "拥有产品",
+        "source": 243,
+        "target": 242
+      },
+      {
+        "type": "产品对应环节",
+        "source": 244,
+        "target": 237
+      },
+      {
+        "type": "拥有产品",
+        "source": 245,
+        "target": 244
+      },
+      {
+        "type": "产品对应环节",
+        "source": 246,
+        "target": 237
+      },
+      {
+        "type": "拥有产品",
+        "source": 247,
+        "target": 246
+      },
+      {
+        "type": "产品对应环节",
+        "source": 248,
+        "target": 237
+      },
+      {
+        "type": "拥有产品",
+        "source": 249,
+        "target": 248
+      },
+      {
+        "type": "产品对应环节",
+        "source": 250,
+        "target": 237
+      },
+      {
+        "type": "拥有产品",
+        "source": 251,
+        "target": 250
+      },
+      {
+        "type": "从属于",
+        "source": 252,
+        "target": 82
+      },
+      {
+        "type": "从属于",
+        "source": 253,
+        "target": 252
+      },
+      {
+        "type": "产品对应环节",
+        "source": 254,
+        "target": 253
+      },
+      {
+        "type": "拥有产品",
+        "source": 255,
+        "target": 254
+      },
+      {
+        "type": "产品对应环节",
+        "source": 256,
+        "target": 253
+      },
+      {
+        "type": "拥有产品",
+        "source": 257,
+        "target": 256
+      },
+      {
+        "type": "产品对应环节",
+        "source": 258,
+        "target": 253
+      },
+      {
+        "type": "拥有产品",
+        "source": 259,
+        "target": 258
+      },
+      {
+        "type": "产品对应环节",
+        "source": 260,
+        "target": 253
+      },
+      {
+        "type": "拥有产品",
+        "source": 261,
+        "target": 260
+      },
+      {
+        "type": "从属于",
+        "source": 262,
+        "target": 252
+      },
+      {
+        "type": "产品对应环节",
+        "source": 263,
+        "target": 262
+      },
+      {
+        "type": "拥有产品",
+        "source": 264,
+        "target": 263
+      },
+      {
+        "type": "产品对应环节",
+        "source": 265,
+        "target": 262
+      },
+      {
+        "type": "拥有产品",
+        "source": 266,
+        "target": 265
+      },
+      {
+        "type": "产品对应环节",
+        "source": 267,
+        "target": 262
+      },
+      {
+        "type": "拥有产品",
+        "source": 268,
+        "target": 267
+      },
+      {
+        "type": "从属于",
+        "source": 269,
+        "target": 0
+      },
+      {
+        "type": "从属于",
+        "source": 270,
+        "target": 269
+      },
+      {
+        "type": "从属于",
+        "source": 271,
+        "target": 270
+      },
+      {
+        "type": "产品对应环节",
+        "source": 272,
+        "target": 271
+      },
+      {
+        "type": "拥有产品",
+        "source": 273,
+        "target": 272
+      },
+      {
+        "type": "产品对应环节",
+        "source": 274,
+        "target": 271
+      },
+      {
+        "type": "拥有产品",
+        "source": 275,
+        "target": 274
+      },
+      {
+        "type": "产品对应环节",
+        "source": 276,
+        "target": 271
+      },
+      {
+        "type": "拥有产品",
+        "source": 277,
+        "target": 276
+      },
+      {
+        "type": "产品对应环节",
+        "source": 278,
+        "target": 271
+      },
+      {
+        "type": "拥有产品",
+        "source": 279,
+        "target": 278
+      },
+      {
+        "type": "从属于",
+        "source": 280,
+        "target": 270
+      },
+      {
+        "type": "产品对应环节",
+        "source": 281,
+        "target": 280
+      },
+      {
+        "type": "拥有产品",
+        "source": 282,
+        "target": 281
+      },
+      {
+        "type": "产品对应环节",
+        "source": 283,
+        "target": 280
+      },
+      {
+        "type": "拥有产品",
+        "source": 284,
+        "target": 283
+      },
+      {
+        "type": "从属于",
+        "source": 285,
+        "target": 270
+      },
+      {
+        "type": "产品对应环节",
+        "source": 286,
+        "target": 285
+      },
+      {
+        "type": "拥有产品",
+        "source": 287,
+        "target": 286
+      },
+      {
+        "type": "产品对应环节",
+        "source": 288,
+        "target": 285
+      },
+      {
+        "type": "拥有产品",
+        "source": 289,
+        "target": 288
+      },
+      {
+        "type": "产品对应环节",
+        "source": 290,
+        "target": 285
+      },
+      {
+        "type": "拥有产品",
+        "source": 291,
+        "target": 290
+      },
+      {
+        "type": "从属于",
+        "source": 292,
+        "target": 269
+      },
+      {
+        "type": "从属于",
+        "source": 293,
+        "target": 292
+      },
+      {
+        "type": "产品对应环节",
+        "source": 294,
+        "target": 293
+      },
+      {
+        "type": "拥有产品",
+        "source": 295,
+        "target": 294
+      },
+      {
+        "type": "产品对应环节",
+        "source": 296,
+        "target": 293
+      },
+      {
+        "type": "拥有产品",
+        "source": 297,
+        "target": 296
+      },
+      {
+        "type": "产品对应环节",
+        "source": 298,
+        "target": 293
+      },
+      {
+        "type": "拥有产品",
+        "source": 299,
+        "target": 298
+      },
+      {
+        "type": "从属于",
+        "source": 300,
+        "target": 292
+      },
+      {
+        "type": "产品对应环节",
+        "source": 301,
+        "target": 300
+      },
+      {
+        "type": "拥有产品",
+        "source": 302,
+        "target": 301
+      },
+      {
+        "type": "产品对应环节",
+        "source": 303,
+        "target": 300
+      },
+      {
+        "type": "拥有产品",
+        "source": 304,
+        "target": 303
+      },
+      {
+        "type": "从属于",
+        "source": 305,
+        "target": 269
+      },
+      {
+        "type": "从属于",
+        "source": 306,
+        "target": 305
+      },
+      {
+        "type": "产品对应环节",
+        "source": 307,
+        "target": 306
+      },
+      {
+        "type": "拥有产品",
+        "source": 201,
+        "target": 307
+      },
+      {
+        "type": "产品对应环节",
+        "source": 308,
+        "target": 306
+      },
+      {
+        "type": "拥有产品",
+        "source": 203,
+        "target": 308
+      },
+      {
+        "type": "从属于",
+        "source": 309,
+        "target": 269
+      },
+      {
+        "type": "从属于",
+        "source": 310,
+        "target": 309
+      },
+      {
+        "type": "产品对应环节",
+        "source": 311,
+        "target": 310
+      },
+      {
+        "type": "拥有产品",
+        "source": 215,
+        "target": 311
+      },
+      {
+        "type": "产品对应环节",
+        "source": 312,
+        "target": 310
+      },
+      {
+        "type": "拥有产品",
+        "source": 284,
+        "target": 312
+      },
+      {
+        "type": "从属于",
+        "source": 313,
+        "target": 269
+      },
+      {
+        "type": "从属于",
+        "source": 314,
+        "target": 313
+      },
+      {
+        "type": "产品对应环节",
+        "source": 315,
+        "target": 314
+      },
+      {
+        "type": "拥有产品",
+        "source": 316,
+        "target": 315
+      },
+      {
+        "type": "产品对应环节",
+        "source": 317,
+        "target": 314
+      },
+      {
+        "type": "拥有产品",
+        "source": 243,
+        "target": 317
+      },
+      {
+        "type": "产品对应环节",
+        "source": 318,
+        "target": 314
+      },
+      {
+        "type": "拥有产品",
+        "source": 319,
+        "target": 318
+      },
+      {
+        "type": "产品对应环节",
+        "source": 320,
+        "target": 314
+      },
+      {
+        "type": "拥有产品",
+        "source": 321,
+        "target": 320
+      },
+      {
+        "type": "从属于",
+        "source": 322,
+        "target": 269
+      },
+      {
+        "type": "从属于",
+        "source": 323,
+        "target": 322
+      },
+      {
+        "type": "产品对应环节",
+        "source": 324,
+        "target": 323
+      },
+      {
+        "type": "拥有产品",
+        "source": 325,
+        "target": 324
+      },
+      {
+        "type": "产品对应环节",
+        "source": 326,
+        "target": 323
+      },
+      {
+        "type": "拥有产品",
+        "source": 273,
+        "target": 326
+      },
+      {
+        "type": "产品对应环节",
+        "source": 327,
+        "target": 323
+      },
+      {
+        "type": "拥有产品",
+        "source": 328,
+        "target": 327
+      },
+      {
+        "type": "产品对应环节",
+        "source": 329,
+        "target": 323
+      },
+      {
+        "type": "拥有产品",
+        "source": 330,
+        "target": 329
+      }
+    ]
+  }

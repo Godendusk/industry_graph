@@ -1,0 +1,100 @@
+<!-- 1. 首页仪表盘 -->
+<div id="view-dashboard" class="absolute inset-0 p-8 overflow-y-auto fade-in hidden">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- 卡片 1: 知识图谱 -->
+        <div onclick="switchView('graph')" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:border-blue-300 transition-all cursor-pointer group relative overflow-hidden min-h-[180px] flex flex-col">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-share-alt"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-800">全景知识图谱</h3>
+                    <p class="text-sm text-gray-500"></p>
+                </div>
+            </div>
+            <div class="mt-6 text-blue-600 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                进入可视化视图 <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+
+        <!-- 卡片 2: 风险分析 -->
+        <div onclick="switchView('risk')" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:border-red-300 transition-all cursor-pointer group relative overflow-hidden min-h-[180px] flex flex-col">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-800">风险传导分析</h3>
+                    <p class="text-sm text-gray-500"></p>
+                </div>
+            </div>
+            <div class="mt-6 text-red-600 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                启动分析引擎 <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+
+        <!-- 卡片 3: 政策推演 -->
+        <div onclick="switchView('policy')" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:border-purple-300 transition-all cursor-pointer group relative overflow-hidden min-h-[180px] flex flex-col">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-gavel"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-800">政策效应推演</h3>
+                    <p class="text-sm text-gray-500"></p>
+                </div>
+            </div>
+            <div class="mt-6 text-purple-600 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                进入推演工具箱 <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+
+        <!-- 卡片 4: 智能问答 (RAG) -->
+        <div onclick="switchView('industry-report')" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:border-blue-300 transition-all cursor-pointer group relative overflow-hidden min-h-[180px] flex flex-col">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-file-signature"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-800">产业报告生成</h3>
+                    <p class="text-sm text-gray-500"></p>
+                </div>
+            </div>
+            <div class="mt-6 text-blue-600 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                编写产业报告 <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+
+        <!-- 卡片 5: 智能问答 (RAG) -->
+        <div onclick="switchView('rag')" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:border-emerald-300 transition-all cursor-pointer group relative overflow-hidden min-h-[180px] flex flex-col">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-800">智能知识问答</h3>
+                    <p class="text-sm text-gray-500"></p>
+                </div>
+            </div>
+            <div class="mt-6 text-emerald-600 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                开始对话 <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+
+        <!-- 卡片 6: 企业资讯 -->
+        <div onclick="switchView('news-list')" class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-lg hover:border-blue-300 transition-all cursor-pointer group relative overflow-hidden min-h-[180px] flex flex-col">
+            <div class="flex items-center gap-4 mb-4">
+                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center text-xl">
+                    <i class="fas fa-newspaper"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-lg text-gray-800">行业资讯动态</h3>
+                    <p class="text-sm text-gray-500"></p>
+                </div>
+            </div>
+            <div class="mt-6 text-blue-600 text-sm font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                查看最新资讯 <i class="fas fa-arrow-right"></i>
+            </div>
+        </div>
+    </div>
+</div>

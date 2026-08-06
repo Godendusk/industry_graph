@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下载中....</title>
+    
+    <script src="https://sasac-rc.com/indusgraph/static/js/modules/echarts.min.js"></script> 
+    <script src="https://sasac-rc.com/indusgraph/static/js/modules/html-to-image.min.js"></script>
+    <!-- 引入Font Awesome图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* 图例样式 - 参考 graph_sunburt.js 放大后的左侧图例 */
+        .sunburst-legend-container {
+            width: 140px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(6px);
+            z-index: 1001;
+            padding: 1px 2px;
+            overflow-y: auto;
+            position: absolute;
+            left: 1%;
+            top: 1%;
+            transform: none;
+            max-height: 45vh;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+        }
+        
+        #graph-legend {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 100%;
+            gap: 0;
+        }
+        
+        #graph-legend .legend-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            padding: 10px 8px 0 6px;
+            margin-bottom: 13px;
+        }
+        
+        #graph-legend .legend-section-title:first-child {
+            padding-top: 4px;
+        }
+        
+        #graph-legend .legend-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 5px;
+            border-radius: 2px;
+            font-size: 10px;
+            color: #374151;
+            width: 100%;
+        }
+        
+        #graph-legend .legend-item > div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #graph-legend .legend-color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        #graph-legend .legend-count-badge {
+            background-color: #e5e7eb;
+            padding: 1px 2px;
+            border-radius: 9999px;
+            font-size: 8px;
+            color: #374151;
+            margin-left: 10px;
+            width: 28px;
+            text-align: center;
+        }
+        
+        /* 控制按钮容器 */
+        .control-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .control-button {
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-button:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .control-button i {
+            font-size: 16px;
+        }
+        
+        /* 截图通知样式 */
+        .screenshot-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 2000;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fadeInUp 0.3s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        
+        .notification-close {
+            margin-left: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .notification-close:hover {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+ 
+    <!--旭日图容器 -->
+    <div id="sunburst-export-wrapper" style="min-width: 2560px; width: 100%;">
+        <div id="sunburst-container" style="width: 100%; height:1440px;position:relative;">
+            <!-- 控制按钮 -->
+            <div class="control-buttons">
+                <!--<button class="control-button" onclick="captureSunburstScreenshot()" title="截图保存">
+                    <i class="fas fa-camera"></i>
+                    <span>截图</span>
+                </button> -->
+                <button class="control-button" onclick="exportEChartsToPng()" title="导出高清图">
+                    <i class="fas fa-download"></i>
+                    <span>导出</span>
+                </button>
+            </div>
+            
+            <!-- 旭日图画布 -->
+            <div id="sunburst-chart" style="width:100%;height:100%;"></div>
+        </div>
+
+        <!-- 底部说明文字 -->
+        <div style="width:1480px;text-align:center; font-size: 14px; color: #6b7280; line-height: 1.8; padding: 5px 0 4px 0; ">
+            <div id="screenshot-footer-title">图：人工智能产业链图谱</div>
+            <div>资料来源：国资国企研究数智化分析平台</div>
+        </div>
+    </div>
+
+    <script>
+        
+// 旭日图相关变量
+let sunburstChart = null;
+let isSunburstInitialized = false;
+let isSunburstFullscreen = false; // 标记是否处于全屏放大模式
+let companyNodeCounter = 0; // 全局企业节点计数器，用于控制label显示
+let totalCompanyNodes = 0; // 全局企业节点总数
+
+// 从URL参数中解析数据源和产业信息
+(function parseUrlParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const dataSource = urlParams.get('data_source');
+    const industry = urlParams.get('industry') || 'ai';
+    
+    // 存储到全局变量，供后续使用
+    window.sunburstDataSource = dataSource;
+    window.sunburstIndustry = industry;
+    
+    // 设置产业名称映射
+    const industryNameMap = {
+        'ai': '人工智能',
+        'embodied': '具身智能',
+        'low_altitude': '低空经济',
+        'sea': '海洋经济',
+        'quantum': '量子科技',
+        'biology': '生物制造',
+        'brain': '脑机接口',
+        'material': '新材料'
+    };
+    window.industryDisplayName = industryNameMap[industry] || '人工智能';
+    
+    console.log('URL参数解析完成 - 数据源:', dataSource, '产业:', industry);
+})();
+
+
+
+
+function getColor(type) {
+    if (type === '中央企业') return '#AB4232'; // 红
+    if (type === '其他国资' || type === '央企/国企' || type === '国有企业') return '#D2A450'; // 橙红
+    if (type === '外资企业' || type === '境外企业') return '#5E9A76'; // 绿
+    return '#7B72B7'; // 蓝  民营企业
+}
+
+
+
+// 构建层级数据的辅助函数（指定根节点）
+function buildHierarchyWithRoot(nodes, relationships, rootId) {
+    const nodeMap = {};
+    const childrenMap = {};
+    const parentMap = {}; // 记录每个节点的父节点
+    const visitedNonLeafNodes = new Set(); // 记录已访问的非叶子节点（避免重复创建）
+    const companyNodeCache = {}; // 缓存公司节点模板
+
+    // 初始化 - 统一使用字符串ID确保一致性
+    nodes.forEach(node => {
+        const nodeId = String(node.id);
+        nodeMap[nodeId] = { ...node, children: [] };
+        childrenMap[nodeId] = [];
+        parentMap[nodeId] = [];
+    });
+
+    // 建立父子关系
+    // 注意：根据数据结构调整，target 是父节点，source 是子节点
+    relationships.forEach(rel => {
+        const sourceId = String(rel.source);
+        const targetId = String(rel.target);
+        if (childrenMap[targetId]) {
+            childrenMap[targetId].push(sourceId);
+        }
+        // 记录父节点关系
+        if (parentMap[sourceId]) {
+            parentMap[sourceId].push(targetId);
+        }
+    });
+
+    var colorList = ['#37a2da', '#1bccf5', '#E4C446', '#ff9f7f', '#e062ae', '#ffdb5c', '#9d96f5', '#8378ea', '#96bfff', '#72de46'];
+    
+    // 判断是否为公司节点（叶子节点）
+    function isCompanyNode(node) {
+        return node && node.labels && node.labels.includes('公司');
+    }
+    
+    // 判断是否为产品节点
+    function isProductNode(node) {
+        return node && node.labels && node.labels.includes('产品');
+    }
+    
+    // 判断是否为环节节点
+    function isLinkNode(node) {
+        return node && node.labels && node.labels.includes('环节');
+    }
+    
+    // 创建公司节点（叶子节点）- 在创建时进行重复判断
+    function createCompanyNode(node, parentNode) {
+        const type = node.properties.category || '民营企业';
+        const nodeName = node.properties.name || String(node.id);
+        
+        // 获取父节点名称用于重复判断
+        let parentName = '';
+        if (parentNode) {
+            parentName = parentNode.properties?.name || String(parentNode.id);
+        }
+        
+        // 创建唯一键：公司名 + ID + 父节点名
+        const companyKey = `${nodeName}_${node.id}_${parentName}`;
+        
+        // 检查是否已经见过相同的公司节点（在同一父节点下）
+        if (companyNodeCache[companyKey]) {
+            // 如果已经存在相同的公司节点，返回null表示跳过
+            return null;
+        }
+        
+        // 为每个实例创建唯一的名称，避免ECharts识别冲突
+        const uniqueName = `${nodeName}_${node.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        
+        // 先不决定是否显示label，在排序后统一处理
+        companyNodeCounter++;
+       
+        
+        // 缓存这个公司节点
+        const companyNode = {
+            name: uniqueName, // 使用唯一名称
+            displayName: nodeName, // 保存原始显示名称
+            value: 1, // 默认权重
+            itemStyle: { color: getColor(type) },
+            label: {
+                position: 'outside',
+                silent: false,
+               // rotate: 'tangential',
+                fontSize: 5,
+                color:"#000000",
+                //color: getColor(type), // 字体颜色跟随企业性质
+                show: false, // 初始设置为false，在排序后统一设置
+                formatter: function(params) {
+                    // 显示原始名称，而不是唯一名称
+                    const displayName = params.data.displayName || params.name.split('_')[0];
+                    //return displayName.length > 8 ? displayName.substring(0, 8) + ".." : displayName;
+                    return displayName;
+                }
+            },
+            originalData: node, // 保存原始节点数据，包含ID
+            isCompany: true, // 标记为公司节点
+            originalId: node.id // 保存原始ID用于识别
+        };
+        
+        // 缓存这个公司节点
+        companyNodeCache[companyKey] = companyNode;
+        
+        return companyNode;
+    }
+    
+    // 创建非公司节点（中间节点）- 避免重复创建
+    function createNonLeafNode(id) {
+        const nodeId = String(id);
+        const node = nodeMap[nodeId];
+        if (!node) {
+            return null;
+        }
+        
+        // 如果已经创建过，返回null（避免重复）
+        if (visitedNonLeafNodes.has(nodeId)) {
+            return null;
+        }
+        visitedNonLeafNodes.add(nodeId);
+        
+        const childIds = childrenMap[nodeId] || [];
+        const level = node.properties.level || 0;
+        const nodeName = node.properties.name || String(node.id);
+        const uniqueName = `${nodeName}_${node.id}`; // 添加ID确保唯一性
+        
+        // 递归创建子节点
+        const children = [];
+        childIds.forEach(childId => {
+            const childNode = nodeMap[childId];
+            if (childNode) {
+                if (isCompanyNode(childNode)) {
+                    // 公司节点：创建新实例（在创建时进行重复判断）
+                    const companyNode = createCompanyNode(childNode, node);
+                    if (companyNode) {
+                        children.push(companyNode);
+                    }
+                } else if (isProductNode(childNode)) {
+                    // 产品节点：不直接显示，但需要获取其下的公司节点
+                    // 获取产品节点的子节点（公司节点）
+                    const productChildIds = childrenMap[childId] || [];
+                    productChildIds.forEach(companyChildId => {
+                        const companyNode = nodeMap[companyChildId];
+                        if (companyNode && isCompanyNode(companyNode)) {
+                            // 将公司节点作为当前节点的直接子级
+                            const createdCompanyNode = createCompanyNode(companyNode, node);
+                            if (createdCompanyNode) {
+                                children.push(createdCompanyNode);
+                            }
+                        }
+                    });
+                } else {
+                    // 非公司节点：递归创建（避免重复）
+                    const childTree = createNonLeafNode(childId);
+                    if (childTree) {
+                        children.push(childTree);
+                    }
+                }
+            }
+        });
+        
+        // 对同一层级下的叶子节点（公司）按照category进行排序
+        // 定义category的排序优先级
+        const categoryOrder = {
+            '中央企业': 1,
+            '央企/国企': 2,
+            '国有企业': 2,
+            '其他国资': 3,
+            '外资企业': 4,
+            '境外企业': 4,
+            '民营企业': 5
+        };
+        
+        // 对children数组进行排序
+        children.sort((a, b) => {
+            // 如果两个都是公司节点，按照category排序
+            if (a.isCompany && b.isCompany) {
+                const categoryA = a.originalData?.properties?.category || '民营企业';
+                const categoryB = b.originalData?.properties?.category || '民营企业';
+                const orderA = categoryOrder[categoryA] || 6; // 默认优先级最低
+                const orderB = categoryOrder[categoryB] || 6;
+                return orderA - orderB;
+            }
+            // 如果一个公司节点一个非公司节点，公司节点排在后面
+            if (a.isCompany && !b.isCompany) return 1;
+            if (!a.isCompany && b.isCompany) return -1;
+            // 如果两个都是非公司节点，保持原有顺序
+            return 0;
+        });
+        
+        // 注意：现在不在每个层级单独设置label显示
+        // 将在构建完整树数据后统一处理
+        
+   
+        return {
+            name: uniqueName, // 使用唯一名称
+            displayName: nodeName, // 保存原始显示名称
+            children: children,
+            //itemStyle: { color: colorList[level % colorList.length] },
+            label: {
+                // align: 'center',
+                // padding: 1,
+                
+                position: 'center',
+                textAlign: 'center',    // 水平居中
+                verticalAlign: 'middle', // 垂直居中
+                silent: false,
+                fontSize: function() {
+                    if (level === 0) return 18;
+                    if (level === 1) {
+                        return 14;
+                    }
+                    if (level === 2) {
+                        //人工智能  
+                        return 12;
+                    }
+                    if (level === 3) {
+                        // 统计当前节点下属的企业节点数量，企业越多扇区角度越大，字号也可相应增大
+                        var companyCount = 0;
+                        children.forEach(function(child) {
+                            if (child.isCompany) companyCount++;
+                        });
+                        // 企业数>10 → 5, >20 → 6, 依次递增，最大10
+                        var size = Math.min(12, 7 + Math.floor((companyCount - 1) / 4));
+                        return size;
+                    }
+
+                    return children.length > 6 ? 9 : 7;
+                }(),
+                formatter: function(params) {
+                    // console.log(params);
+                    // 显示原始名称，而不是唯一名称   
+                    const displayName = params.data.displayName || params.name.split('_')[0];
+                    if(params.data.originalData.properties.level===0 && (displayName==='人工1智能' || displayName==='低1空经济'))
+                        return displayName+"\n\n\n";
+                    
+                    if(displayName==='机械硬盘HDD')
+                       return displayName
+                    
+                    if(displayName==='存储控制/RAID/HBA')
+                       return "存储控制/RAID\n/HBA"
+
+                    let j= level ==2 ? 7 : 7;
+                  
+                    let result = '';
+                    for (let i = 0; i < displayName.length; i += j) {
+                        result += displayName.substring(i, i + j);
+                        if (i + j < displayName.length) {
+                            result += '\n';
+                        }
+                    }
+                    return result;
+                }
+            },
+            originalData: node, // 保存原始节点数据，包含ID
+            isCompany: false // 标记为非公司节点
+        };
+    }
+
+    // 从根节点开始构建
+    return createNonLeafNode(rootId);
+}
+
+// 全局统一设置公司节点的label显示
+function setGlobalCompanyLabels(treeData) {
+    if (!treeData) {
+        return treeData;
+    }
+    
+    console.log('开始全局统一设置公司节点label显示...');
+    
+    // 收集所有公司节点
+    const allCompanyNodes = [];
+    
+    // 递归遍历树结构，收集所有公司节点
+    function collectCompanyNodes(node) {
+        if (!node) return;
+        
+        // 如果是公司节点，添加到列表
+        if (node.isCompany) {
+            allCompanyNodes.push(node);
+        }
+        
+        // 递归处理子节点
+        if (node.children && node.children.length > 0) {
+            node.children.forEach(child => {
+                collectCompanyNodes(child);
+            });
+        }
+    }
+    
+    // 从根节点开始收集
+    collectCompanyNodes(treeData);
+    
+    console.log(`总共收集到 ${allCompanyNodes.length} 个公司节点`);
+    
+     // 全局统一设置label显示：全部显示，不间隔
+     const showInterval = 1;
+     
+     // 先收集哪些节点需要显示label
+     const visibleIndices = [];
+     allCompanyNodes.forEach((node, index) => {
+         if (index % showInterval === 0) {
+             visibleIndices.push(index);
+         }
+     });
+     
+     // 解决圆形旭日图首尾label重叠问题：
+     // 在圆形布局中，第一个可见label（靠近0°）和最后一个可见label（靠近360°）是空间相邻的
+     // 如果它们之间的圆形间隙小于showInterval，说明它们实际贴得太近，需要隐藏最后一个
+     if (visibleIndices.length > 1) {
+         const firstIdx = visibleIndices[0];
+         const lastIdx = visibleIndices[visibleIndices.length - 1];
+         // 计算从最后一个绕回第一个的圆形间距
+         const wrapGap = allCompanyNodes.length - lastIdx + firstIdx;
+         
+         if (wrapGap < showInterval) {
+             // 首尾label空间太近，移除最后一个可见label（即第一个的前一个）
+             visibleIndices.pop();
+         }
+     }
+     
+// 应用label显示设置
+    const visibleSet = new Set(visibleIndices);
+ 
+    if(allCompanyNodes.length > 1000){
+        companyLabelFontSize = 3
+    } else if(allCompanyNodes.length > 800){
+        companyLabelFontSize = 4
+    } else if(allCompanyNodes.length > 600){
+        companyLabelFontSize = 5
+    } else {
+        companyLabelFontSize = 6
+    }
+    //const companyLabelFontSize =  6;
+    allCompanyNodes.forEach((node, index) => {
+        if (node.label) {
+            //node.label.show = visibleSet.has(index);
+            node.label.show = true
+            node.label.fontSize = companyLabelFontSize;
+        }
+    });
+    
+    
+    console.log(`全局label显示设置完成，显示间隔：${showInterval}，去重后公司节点数：${allCompanyNodes.length}，字号：${companyLabelFontSize}`);
+    return treeData;
+}
+
+
+// 初始化旭日图
+function initSunburstChart() {
+    console.log('初始化旭日图...');
+    
+    // 确保echarts已加载
+    if (typeof echarts === 'undefined') {
+        console.error('ECharts加载失败');
+        return;
+    }
+    
+    console.log('ECharts已加载，开始渲染...');
+    renderSunburstChart();
+}
+initSunburstChart()
+// 渲染旭日图
+function renderSunburstChart() {
+    console.log('开始渲染旭日图...');
+    
+    // 重置企业节点计数器，确保每次渲染时label显示策略一致
+    companyNodeCounter = 0;
+    
+    // 获取当前图谱数据
+    if (typeof allGraphData === 'undefined' || !allGraphData.nodes || allGraphData.nodes.length === 0) {
+        console.error('No graph data available');
+        // 尝试从后端获取数据
+        fetchGraphDataForSunburst();
+        return;
+    }
+    
+    console.log('使用数据节点数:', allGraphData.nodes.length);
+    
+    // 计算总的企业节点数量
+    totalCompanyNodes = allGraphData.nodes.filter(node => 
+        node.labels && node.labels.includes('公司')
+    ).length;
+    console.log('企业节点总数:', totalCompanyNodes);
+    
+    
+    
+    // 转换数据格式 - 处理当前图谱的数据结构
+    const sunburstData = {
+        nodes: allGraphData.nodes.map(node => {
+            // 确保节点有正确的属性结构
+            const properties = node.properties || {};
+            if (!properties.name && node.id) {
+                properties.name = String(node.id);
+            }
+            if (!properties.category) {
+                // 根据标签设置默认分类
+                if (node.labels && node.labels.includes('公司')) {
+                    properties.category = '民营企业'; // 默认分类
+                } else if (node.labels && node.labels.includes('环节')) {
+                    properties.category = '环节';
+                } else if (node.labels && node.labels.includes('产品')) {
+                    properties.category = '产品';
+                }
+            }
+            if (properties.level === undefined) {
+                // 设置默认层级
+                if (node.labels && node.labels.includes('环节')) {
+                    // 根据环节名称判断层级
+                    const name = properties.name || '';
+                    if (name.includes('上游') || name.includes('中游') || name.includes('下游')) {
+                        properties.level = 1; // 一级环节
+                    } else if (name.includes('基础设施') || name.includes('软件开发') || name.includes('主要产品') || name.includes('应用场景')) {
+                        properties.level = 2; // 二级环节
+                    } else {
+                        properties.level = 3; // 三级环节
+                    }
+                } else if (node.labels && node.labels.includes('产品')) {
+                    properties.level = 4; // 产品层级（虽然不显示）
+                } else if (node.labels && node.labels.includes('公司')) {
+                    properties.level = 5; // 公司层级
+                } else {
+                    properties.level = 1; // 默认层级
+                }
+            }
+            
+            return {
+                id: node.id,
+                properties: properties,
+                labels: node.labels || []
+            };
+        }),
+        relationships: (allGraphData.links || allGraphData.relationships || []).map(rel => {
+            // 处理关系的源和目标 - 从可能的对象中提取ID
+            let sourceId = rel.source;
+            let targetId = rel.target;
+            
+            // 如果source是对象，提取id属性
+            if (typeof sourceId === 'object' && sourceId !== null) {
+                sourceId = sourceId.id;
+            }
+            // 如果target是对象，提取id属性  
+            if (typeof targetId === 'object' && targetId !== null) {
+                targetId = targetId.id;
+            }
+            
+            return {
+                source: sourceId,
+                target: targetId,
+                type: rel.type // 保留关系类型信息
+            };
+        })
+    };
+    
+    console.log('sunburstData', sunburstData);
+    // 查找根节点（层级为0的节点）
+    const rootNode = sunburstData.nodes.find(node => 
+        node.properties.level === 0
+    );
+    
+    // 如果没有找到根节点，使用第一个节点
+    const rootId = rootNode ? rootNode.id : (sunburstData.nodes[0] ? sunburstData.nodes[0].id : 'root');
+    
+    // 修改buildHierarchy函数以使用指定的根节点
+    const treeData = buildHierarchyWithRoot(sunburstData.nodes, sunburstData.relationships, rootId);
+    
+    // 注意：现在buildHierarchyWithRoot函数在构建层级数据时已经进行了重复判断
+    // 不再需要单独调用filterDuplicateCompanyNodes函数
+    const filteredTreeData = treeData;
+    
+    // 全局统一设置公司节点的label显示
+    const treeDataWithLabels = setGlobalCompanyLabels(filteredTreeData);
+    
+    console.log('treeData', treeData);
+    console.log('treeDataWithLabels', treeDataWithLabels);
+    const chartDom = document.getElementById('sunburst-chart');
+    if (!chartDom) {
+        console.error('Sunburst chart container not found');
+        return;
+    }
+    
+    // 确保容器有明确的大小
+    if (chartDom.clientHeight === 0 || chartDom.clientWidth === 0) {
+        console.warn('图表容器大小为0，尝试修复...');
+        // 获取父容器大小
+        const parent = chartDom.parentElement;
+        if (parent) {
+            chartDom.style.height = parent.clientHeight + 'px';
+            chartDom.style.width = parent.clientWidth + 'px';
+        } else {
+            // 设置默认大小
+            chartDom.style.height = '600px';
+            chartDom.style.width = '800px';
+        }
+    }    
+    // 如果已有图表实例，先销毁
+    if (sunburstChart) {
+        try {
+            sunburstChart.dispose();
+        } catch (e) {
+            console.warn('销毁旧图表时出错:', e);
+        }
+    }
+    
+    sunburstChart = echarts.init(chartDom,null,{renderer: 'svg'});
+    const option = {
+        title: {
+            // text: 'AI 产业图谱 (旭日图)',
+            // left: 'center',
+            // top: 10
+        },
+        tooltip: {
+            trigger: 'none' // 关闭悬浮提示框
+        },
+        series: {
+            type: 'sunburst',
+            data: [treeDataWithLabels],
+            radius: ['0%', '90%'],
+            center: ['29%', '50%'], // 居中
+            nodeClick: 'rootToNode', // 点击节点时跳转到该节点
+            sort: undefined,
+            emphasis: {
+                 focus: 'none'
+            },
+            levels: [
+            {},
+            {
+                r0: '0%',
+                r: '12%',
+                itemStyle: {  borderWidth: 2 },
+                itemStyle: { color: '#364A67', borderWidth: 2 },
+                label: { color:"#FFFFFF",position: 'center', rotate: 'tangential' }
+            },
+            {
+                r0: '12%',
+                r: '30%',
+                itemStyle: { color: '#456DA1' },
+                label: { color:"#FFFFFF",rotate: 'tangential'}
+            },
+            {
+                r0: '30%',
+                r: '43%',
+                itemStyle: { color: '#6D90BB' },
+                label: { color:"#FFFFFF",position: 'inside', padding: 3, silent: false }
+            },
+            {
+                r0: '43%',
+                r: '55%',
+                itemStyle: { color: '#AEC4DF' },
+                label: { color:"#000000",position: 'inside', padding: 3, silent: false }
+            },
+            {
+                // 最后一层：叶子节点 (公司)
+                r0: '55%',
+                r: '90%',
+                itemStyle: {
+                    borderWidth: 0
+                }
+            }
+            ],
+            label: {
+                fontSize: 3,
+                //fontWeight: 'bolder'
+            },
+            itemStyle: {
+                borderColor: '#fff',
+                borderWidth: 0.5
+            }
+        }
+    };
+
+    try {
+        sunburstChart.setOption(option);
+        console.log('旭日图渲染成功');
+        
+    
+        
+        // 更新底部说明文字
+        const footerTitle = document.getElementById('screenshot-footer-title');
+        if (footerTitle) {
+            footerTitle.textContent = `图：${window.industryDisplayName}产业链图谱`;
+        }
+        
+        // 触发一次resize确保图表正确显示
+        setTimeout(() => {
+            if (sunburstChart) {
+                sunburstChart.resize();
+                console.log('图表resize完成');
+                
+                // 图表渲染成功后自动显示图例
+                setTimeout(() => {
+                    createSunburstLegend();
+                }, 500);
+                
+                // 延迟后自动触发截图下载
+                setTimeout(() => {
+                    console.log('开始自动下载旭日图截图...');
+                    const exportWrapper = document.getElementById('sunburst-export-wrapper');
+                    if (!exportWrapper) {
+                        console.error('未找到导出容器');
+                        return;
+                    }
+                    
+                    // 使用html-to-image库进行截图下载
+                    if (typeof htmlToImage !== 'undefined') {
+                        htmlToImage.toPng(exportWrapper, {
+                            skipStyles: true,
+                            pixelRatio: 10,
+                            backgroundColor: '#fff',
+                            cacheBust: true,
+                            width: 1480,
+                            filter: function(node) {
+                                if (node.classList && node.classList.contains('control-buttons')) {
+                                    return false;
+                                }
+                                if (node.classList && node.classList.contains('control-button')) {
+                                    return false;
+                                }
+                                return true;
+                            }
+                        })
+                        .then(function(dataUrl) {
+                            const downloadLink = document.createElement('a');
+                            downloadLink.href = dataUrl;
+                            
+                            const now = new Date();
+                            const dateStr = now.toISOString().split('T')[0];
+                            const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+                            const fileName = `旭日图_${window.industryDisplayName}_${dateStr}_${timeStr}.png`;
+                            
+                            downloadLink.download = fileName;
+                            document.body.appendChild(downloadLink);
+                            downloadLink.click();
+                            document.body.removeChild(downloadLink);
+                            console.log('旭日图截图已保存:', fileName);
+                            // 下载完成后自动关闭当前页面（延迟确保下载已触发）
+                            setTimeout(function() {
+                                window.close();
+                            }, 500);
+                        })
+                        .catch(function(error) {
+                            console.error('截图失败:', error);
+                            alert('截图失败，请检查控制台');
+                        });
+                    } else {
+                        console.error('html-to-image库未加载');
+                    }
+                }, 1500);
+            }
+        }, 100);
+    } catch (error) {
+        console.error('渲染旭日图时出错:', error);
+        
+    }
+    
+    // 窗口大小变化时重绘
+    window.addEventListener('resize', function() {
+        // 如果当前视图是旭日图，重新计算容器高度
+        if (window.currentView === 'sunburst') {
+            const sunburstContainer = document.getElementById('sunburst-container');
+            if (sunburstContainer && !sunburstContainer.classList.contains('hidden')) {
+                // 重新计算高度 - 使用与switchToSunburst相同的逻辑
+                const calculateAvailableHeight = () => {
+                    const viewportHeight = window.innerHeight;
+                    const headerHeight = 64; // 顶部导航栏高度
+                    let availableHeight = viewportHeight - headerHeight;
+                    
+                    const viewGraph = document.getElementById('view-graph');
+                    if (viewGraph && viewGraph.clientHeight > 0) {
+                        const parentHeight = viewGraph.clientHeight;
+                        availableHeight = Math.max(availableHeight, parentHeight);
+                    }
+                    
+                    return availableHeight;
+                };
+                
+                const availableHeight = calculateAvailableHeight();
+                sunburstContainer.style.height = availableHeight + 'px';
+                console.log('窗口大小变化，旭日图容器高度已调整:', availableHeight);
+                
+                // 延迟一点确保DOM更新后再调整图表
+                setTimeout(() => {
+                    if (sunburstChart) {
+                        sunburstChart.resize();
+                        console.log('窗口大小变化后图表已调整');
+                    }
+                }, 50);
+            }
+        } else if (sunburstChart) {
+            // 即使不是旭日图视图，如果图表存在也调整尺寸（可能在其他地方使用）
+            sunburstChart.resize();
+        }
+    });
+}
+
+
+// 从后端获取图谱数据
+function fetchGraphDataForSunburst() {
+    const dataSource = window.sunburstDataSource || "http://127.0.0.1:8000/static/data/ai/graph_data.json";
+    console.log(`加载旭日图产业数据源: ${dataSource}`);
+    fetch(dataSource, { cache: "no-cache" })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('成功获取图谱数据:', data);
+            // 确保数据格式正确
+            if (data && (data.nodes || data.relationships)) {
+                allGraphData = {
+                    nodes: data.nodes || [],
+                    links: data.relationships || data.links || []
+                };
+                renderSunburstChart();
+            } else {
+                console.error('数据格式不正确:', data);
+            }
+        })
+        .catch(error => {
+            console.error('Failed to fetch graph data:', error);
+            
+        });
+}
+
+// 当图谱数据更新时，重新渲染旭日图
+if (typeof reloadGraphData === 'function') {
+    const originalReloadGraphData = reloadGraphData;
+    reloadGraphData = function(skipStatus = false, forceReload = false) {
+        originalReloadGraphData(skipStatus, forceReload);
+        // 如果旭日图正在显示，重新渲染
+        if (!document.getElementById('sunburst-container').classList.contains('hidden')) {
+            setTimeout(renderSunburstChart, 500);
+        }
+    };
+}
+
+// 统计旭日图中各类型节点数量
+function countSunburstNodeTypes() {
+    const counts = {
+        '产业': 0,
+        '一级环节': 0,
+        '二级环节': 0,
+        '三级环节': 0,
+        '中央企业': 0,
+        '其他国资': 0,
+        '民营企业': 0,
+        '外资企业': 0
+    };
+
+    if (typeof allGraphData !== 'undefined' && allGraphData.nodes) {
+        allGraphData.nodes.forEach(node => {
+            if (node.labels && node.labels.includes('公司')) {
+                const category = node.properties?.category || '民营企业';
+                if (category === '中央企业') {
+                    counts['中央企业']++;
+                } else if (category === '其他国资' || category === '国有企业' || category === '地方国企' || category === '事业单位' || category === '未知') {
+                    counts['其他国资']++;
+                } else if (category === '外资企业' || category === '境外企业') {
+                    counts['外资企业']++;
+                } else {
+                    counts['民营企业']++;
+                }
+            } else if (node.labels && node.labels.includes('Root')) {
+                counts['产业']++;
+            } else if (node.labels && node.labels.includes('环节')) {
+                // 根据层级区分一级/二级/三级环节
+                const level = node.properties?.level;
+                const name = (node.properties?.name || '');
+                if (level === 1 || (!level && (name.includes('上游') || name.includes('中游') || name.includes('下游')))) {
+                    counts['一级环节']++;
+                } else if (level === 2 || (!level && (name.includes('基础设施') || name.includes('软件开发') || name.includes('主要产品') || name.includes('应用场景')))) {
+                    counts['二级环节']++;
+                } else {
+                    counts['三级环节']++;
+                }
+            }
+        });
+    }
+
+    return counts;
+}
+
+// 创建旭日图图例
+function createSunburstLegend() {
+    // 检查是否已存在图例容器
+    let legendContainer = document.getElementById('sunburst-legend-container');
+    if (!legendContainer) {
+        // 创建图例容器
+        legendContainer = document.createElement('div');
+        legendContainer.id = 'sunburst-legend-container';
+        legendContainer.className = 'sunburst-legend-container';
+
+        // 图例内容
+        const legendContent = document.createElement('div');
+        legendContent.id = 'graph-legend';
+
+        // 定义图例分组：
+        //   分组1：企业性质（中央企业、其他国资、民营企业、外资企业）
+        //   分组2：产业链环节（产业、一级环节、二级环节、三级环节）
+        const legendGroups = [
+            {
+                title: '企业性质',
+                items: [
+                    { type: '中央企业', color: '#AB4232' },
+                    { type: '其他国资', color: '#D2A450' },
+                    { type: '民营企业', color: '#7B72B7' },
+                    { type: '外资企业', color: '#5E9A76' }
+                ]
+            },
+           /** {
+                title: '分层环节',
+                items: [
+                    //{ type: '产业', color: '#37a2da' },
+                    { type: '一级环节', color: '#ABD9FB' },
+                    { type: '二级环节', color: '#AEEEE9' },
+                    { type: '三级环节', color: '#D9CCF8' }
+                ]
+            }**/
+        ];
+
+        // 获取各类型节点数量统计
+        const typeCounts = countSunburstNodeTypes();
+
+        // 添加分组图例
+        legendGroups.forEach(function(group) {
+            // 添加分组标题
+            const sectionTitle = document.createElement('div');
+            sectionTitle.className = 'legend-section-title';
+            sectionTitle.textContent = group.title;
+            legendContent.appendChild(sectionTitle);
+
+            // 添加组内图例项
+            group.items.forEach(function(item) {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+
+                // 左侧：圆形色块 + 类型名称
+                const leftContent = document.createElement('div');
+                const colorDot = document.createElement('span');
+                colorDot.className = 'legend-color-dot';
+                colorDot.style.backgroundColor = item.color;
+                const typeName = document.createElement('span');
+                typeName.textContent = item.type;
+                leftContent.appendChild(colorDot);
+                leftContent.appendChild(typeName);
+
+                // 右侧：数量统计标签
+                const countBadge = document.createElement('span');
+                countBadge.className = 'legend-count-badge';
+                countBadge.textContent = typeCounts[item.type] || 0;
+
+                legendItem.appendChild(leftContent);
+                legendItem.appendChild(countBadge);
+                legendContent.appendChild(legendItem);
+            });
+        });
+
+        // 组装图例容器
+        legendContainer.appendChild(legendContent);
+
+        // 将图例容器添加到旭日图容器中
+        const sunburstContainer = document.getElementById('sunburst-container');
+        if (sunburstContainer) {
+            sunburstContainer.insertBefore(legendContainer, sunburstContainer.firstChild);
+        }
+
+        console.log('图例已创建');
+    }
+}
+
+
+
+function exportEChartsToPng() {
+    var container = document.getElementById("sunburst-export-wrapper");
+    if (!container) {
+      alert('未找到图表容器');
+      return;
+    }
+  
+    // 调用 html-to-image（全局变量 htmlToImage）
+    htmlToImage.toPng(container, {
+      skipStyles: true,  
+      pixelRatio: 10,           // 关键：2倍分辨率，高清
+      backgroundColor: '#fff', // 白色背景（避免透明变黑）
+      cacheBust: true, // 避免缓存旧图
+      width: 1100, 
+      filter: function(node) {
+        // 过滤掉控制按钮容器
+        if (node.classList && node.classList.contains('control-buttons')) {
+          return false;
+        }
+        // 过滤掉控制按钮
+        if (node.classList && node.classList.contains('control-button')) {
+          return false;
+        }
+        return true;
+      }
+        
+    })
+    .then(function (dataUrl) {
+  
+          // 创建下载链接
+          const downloadLink = document.createElement('a');
+          downloadLink.href = dataUrl;
+          
+          // 生成文件名：旭日图_日期_时间
+          const now = new Date();
+          const dateStr = now.toISOString().split('T')[0];
+          const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+          const fileName = `旭日图_${dateStr}_${timeStr}.png`;
+          
+          downloadLink.download = fileName;
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          document.body.removeChild(downloadLink);
+          
+          console.log('旭日图截图已保存:', fileName);
+          
+          // 显示成功消息
+          showScreenshotNotification('下载成功！文件已保存为: ' + fileName);
+
+    })
+    .catch(function (error) {
+      console.error('截图失败:', error);
+      alert('截图失败，请检查控制台');
+    });
+  }
+
+  
+// 旭日图截图功能
+function captureSunburstScreenshot() {
+    console.log('开始截图旭日图...');
+    
+    if (!sunburstChart) {
+        console.error('旭日图未初始化');
+        alert('请先加载旭日图');
+        return;
+    }
+    
+    // 检查是否在全屏模式下
+    if (!isSunburstFullscreen) {
+        console.warn('截图功能建议在全屏模式下使用，效果更佳');
+    }
+    
+    try {
+        // ECharts提供getDataURL方法获取图表图片
+        const screenshotUrl = sunburstChart.getDataURL({
+            type: 'png',
+            pixelRatio: 3, // 高清截图
+            backgroundColor: '#ffffff',
+            excludeComponents: ['tooltip'] // 排除tooltip
+        });
+        
+        // 创建下载链接
+        const downloadLink = document.createElement('a');
+        downloadLink.href = screenshotUrl;
+        
+        // 生成文件名：旭日图_日期_时间
+        const now = new Date();
+        const dateStr = now.toISOString().split('T')[0];
+        const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+        const fileName = `旭日图_${dateStr}_${timeStr}.png`;
+        
+        downloadLink.download = fileName;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+        
+        console.log('旭日图截图已保存:', fileName);
+        
+        // 显示成功消息
+        showScreenshotNotification('下载成功！文件已保存为: ' + fileName);
+        
+    } catch (error) {
+        console.error('截图失败:', error);
+        alert('截图失败: ' + error.message);
+    }
+}
+
+// 显示截图通知
+function showScreenshotNotification(message) {
+    // 检查是否已存在通知
+    let notification = document.getElementById('screenshot-notification');
+    if (!notification) {
+        notification = document.createElement('div');
+        notification.id = 'screenshot-notification';
+        notification.className = 'screenshot-notification';
+        document.body.appendChild(notification);
+    }
+    
+    notification.innerHTML = `
+        <i class="fas fa-check-circle"></i>
+        <span>${message}</span>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    // 3秒后自动消失
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 3000);
+}
+   
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Local secrets and machine config
+.env
+.env.*
+!.env.example
+*.local
+
+# Logs
+logs/*
+!logs/.gitkeep
+*.log
+*.log.*
+
+# Runtime uploads and generated sessions
+uploads/sessions/*
+!uploads/sessions/.gitkeep
+
+# Runtime graph backups
+backups/*
+!backups/.gitkeep
+
+# Generated analysis reports
+static/risk_outputs/*
+!static/risk_outputs/.gitkeep
+static/policy_outputs/*
+!static/policy_outputs/.gitkeep
+
+# RAG query previews / scratch outputs
+RAG/output.md
+RAG/output.html
+
+# Generated report-generation external RAG vector store/state
+report_generation/vector_db/
+
+# Report-generation test outputs
+outline_agent_test_result.json
+coordinator_agent_test_result.json
+coordinator_agent_full_result.json
+body_agent_test_result.json
+body_agent_full_result.json
+body_api_test_result.json
+rewrite_materials_test_result.json
+rewrite_agent_test_result.json
+rewrite_api_test_result.json
+summary_agent_test_result.json
+word_export_test_result.json
+report_generation/outputs/
+report_generation/history/
+
+# SQLite / Chroma transient sidecar files
+*.sqlite3-wal
+*.sqlite3-shm
+*.sqlite3-journal
+*.db-wal
+*.db-shm
+*.db-journal
+
+# IDE / editor state
+.vscode/
+.idea/
+*.iml
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Thumbs.db:encryptable
+Desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Office temporary lock files
+~$*

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产业洞察</title>
+    <!-- Tailwind CSS (生产环境建议下载到本地) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Force Graph & D3 (不需要 Neo4j Driver 了) -->
+    <script src="https://unpkg.com/force-graph"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
+
+    <!-- Markmap 库 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.18.2"></script>
+    
+    <!-- 引用拆分出来的 CSS -->
+    <link rel="stylesheet" href="{{ STATIC_BASE }}css/style.css">
+
+</head>
+<body class="bg-gray-100 h-screen flex overflow-hidden font-sans text-gray-800">
+
+    <!-- 左侧导航栏 -->
+    <aside id="nav-sidebar" class="relative w-64 bg-white text-gray-800 flex flex-col flex-shrink-0 transition-all duration-300 shadow-xl z-20">
+        <div class="p-6 border-b border-gray-200 flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-600 rounded flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <i class="fas fa-project-diagram text-white"></i>
+            </div>
+            <span class="font-bold text-lg tracking-normal">产业洞察</span>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+            <div class="px-2 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">功能导航</div>
+
+            <button onclick="showDashboard()" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all border border-transparent">
+                <i class="fas fa-th-large w-5 text-center text-gray-500"></i>
+                系统概览
+            </button>
+
+            <button onclick="switchView('graph')" id="nav-graph" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-sm font-medium bg-blue-50 text-blue-600 rounded-lg border border-blue-200 shadow-sm transition-all">
+                <i class="fas fa-share-alt w-5 text-center text-blue-600"></i>
+                知识图谱
+            </button>
+
+            <button onclick="switchView('risk')" id="nav-risk" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-lg transition-all border border-transparent">
+                <i class="fas fa-heartbeat w-5 text-center text-gray-500"></i>
+                风险分析
+            </button>
+
+            <button onclick="switchView('policy')" id="nav-policy" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-600 hover:bg-purple-50 hover:text-purple-600 rounded-lg transition-all border border-transparent">
+                <i class="fas fa-gavel w-5 text-center text-gray-500"></i>
+                政策推演
+            </button>
+
+            <button onclick="switchView('industry-report')" id="nav-industry-report" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all border border-transparent">
+                <i class="fas fa-file-signature w-5 text-center text-gray-500"></i>
+                产业报告
+            </button>
+
+            <button onclick="switchView('rag')" id="nav-rag" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-600 hover:bg-emerald-50 hover:text-emerald-600 rounded-lg transition-all border border-transparent">
+                <i class="fas fa-robot w-5 text-center text-gray-500"></i>
+                智能问答
+            </button>
+
+            <button onclick="switchView('news-list')" id="nav-news-list" class="nav-item w-full flex items-center gap-3 px-3 py-3 text-sm font-medium text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all border border-transparent">
+                <i class="fas fa-newspaper w-5 text-center text-gray-500"></i>
+                行业资讯
+            </button>
+
+            <div class="mt-8 px-2 mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">系统状态</div>
+            <div class="bg-gray-50 rounded-lg p-4 space-y-4 border border-gray-200">
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs text-gray-600">数据源</span>
+                        <div id="status-dot-db" class="w-2 h-2 rounded-full bg-green-500"></div>
+                    </div>
+                    <!-- 这里改为 JSON 状态 -->
+                    <div id="status-text-db" class="text-xs font-mono text-green-600">加载完成</div>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs text-gray-600">接口服务</span>
+                        <div id="status-dot-api" class="w-2 h-2 rounded-full bg-red-500"></div>
+                    </div>
+                    <div id="status-text-api" class="text-xs font-mono text-gray-500">检查中...</div>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- 左侧导航栏缩放按钮（在aside外部，避免overflow:hidden时被裁切） -->
+    <button id="nav-toggle-btn" onclick="toggleNavSidebar()" 
+            class="fixed left-[248px] top-4 w-5 h-5 bg-white border border-gray-300 rounded-full shadow-md flex items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 hover:text-blue-600 transition-all duration-300 z-[110] text-gray-500 text-xs"
+            title="收起导航栏">
+        <svg id="nav-toggle-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" role="img" width="1em" height="1em" viewBox="0 0 48 48" style="font-size: 14px; transition: transform 0.3s;"><g fill="none" stroke="currentColor" stroke-linejoin="round" stroke-width="4"><path stroke-linecap="round" d="M8 10.5h32m-16 9h16m-16 9h16m-32 9h32"></path><path fill="currentColor" d="m16 19l-8 5l8 5z"></path></g></svg>
+    </button>
+
+    <!-- 主内容区域 -->
+    <main class="flex-1 flex flex-col min-w-0 bg-gray-50 relative">
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0 shadow-sm" style="position: relative; z-index: 100;">
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <img src="{{ STATIC_BASE }}images/path.png" alt="产业图标" class="w-6 h-6">
+                    <span class="text-lg font-bold text-gray-800">当前产业：</span>
+                    <div class="relative" style="z-index: 100000; position: relative; isolation: isolate;">
+                        <div class="flex items-center">
+                            <div class="relative w-64">
+                                <input id="industry-search-input"
+                                       type="text"
+                                       class="w-full text-base font-medium border border-gray-300 rounded-lg px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                       placeholder="选择或搜索产业..."
+                                       autocomplete="off"
+                                       oninput="handleIndustrySearch(this.value)"
+                                       onfocus="handleIndustrySearch(this.value)"
+                                       readonly>
+                                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <i class="fas fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                            </div>
+                        </div>
+                        <div id="industry-search-results" class="hidden absolute z-[100000] w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl max-h-64 overflow-y-auto" style="z-index: 100000; isolation: isolate;"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="flex-1 min-h-0 overflow-hidden relative bg-gray-100" style="height: 100%;">
+            <!-- 引入拆分后的各个组件 -->
+            {% include 'components/dashboard.html' %}
+            {% include 'components/graph.html' %}
+            {% include 'components/risk.html' %}
+            {% include 'components/policy.html' %}
+            {% include 'components/industry_report.html' %}
+            {% include 'components/rag.html' %}
+            {% include 'components/company.html' %}
+            {% include 'components/news_list.html' %}
+            {% include 'components/news_detail.html' %}
+            {% include 'components/company_news_detail.html' %}
+        </div>
+    </main>
+
+    <!-- 全局 JS 定义 -->
+    <script>
+        // 定义 API 基础路径，供模块 JS 使用
+        const API_BASE = "https://sasac-rc.com/indusgraph";
+        //const API_BASE = "http://127.0.0.1:8000";
+    </script>
+
+    <script src="{{ STATIC_BASE }}js/main.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/graph_viz.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/graph_import.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/policy_sim.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/industry_report.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/risk.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/rag_chat.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/echarts.min.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/chain_panorama.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/graph_sunburt.js"></script>
+    
+    <script src="{{ STATIC_BASE }}js/modules/graph_mindmap.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/company.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/news_list.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/news_detail.js"></script>
+    <script src="{{ STATIC_BASE }}js/modules/company_news_detail.js"></script>
+</body>
+</html>

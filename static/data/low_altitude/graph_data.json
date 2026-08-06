@@ -1,0 +1,9670 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "labels": [
+        "Root"
+      ],
+      "properties": {
+        "name": "低空经济",
+        "symbolSize": 80,
+        "level": 0
+      }
+    },
+    {
+      "id": 1,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "上游",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 3,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "下游",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 2,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "中游",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 4,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空制造业",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 5,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空运营业",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 6,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空配套业",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 7,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空基建与信息服务业",
+        "symbolSize": 50,
+        "level": 2
+      }
+    },
+    {
+      "id": 8,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空专用设施设备制造",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 9,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空航空器及相关装备维修",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 10,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空航空器器材及零部件制造",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 11,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空航空器整机制造",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 12,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空航空器材料制造",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 13,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空公共服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 14,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空消费",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 15,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空生产作业",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 16,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空运输",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 17,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "其他低空运营服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 18,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空人才教育培训",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 19,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空会展服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 20,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空保险服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 21,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空工业产品设计服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 22,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空科学研究和技术服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 23,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空装卸搬运和仓储服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 24,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空装备检测服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 25,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空金融服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 26,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空信息技术服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 27,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空基础设施建设",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 28,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空基础设施配套建设",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 29,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空工程技术与设计服务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 30,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "低空飞行辅助活动",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 31,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AeroVironment",
+        "industry_reason": "AeroVironment(无) - 无",
+        "category": "外资企业",
+        "category_reason": "AeroVironment为美国知名上市公司，主营无人机等低空经济业务，属于外国企业。"
+      }
+    },
+    {
+      "id": 32,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Anduril",
+        "industry_reason": "Anduril(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Anduril为美国知名国防科技公司，实际控制人为外国主体，属于低空经济产业链中的外资企业。",
+        "credit_code": "ZZSN231108150126047",
+        "standard_name": "Anduril"
+      }
+    },
+    {
+      "id": 33,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Archer",
+        "industry_reason": "Archer是eVTOL飞行器制造商，属于低空航空器整机制造环节。",
+        "category": "外资企业",
+        "category_reason": "“Archer”为美国上市公司Archer Aviation Inc.，专注于低空经济eVTOL领域，属于外国企业。",
+        "credit_code": "ZZSN230912210803321",
+        "standard_name": "Archer Aviation Inc."
+      }
+    },
+    {
+      "id": 34,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "BP",
+        "industry_reason": "该企业使用固定翼无人机对北海油田平台进行巡检，属于低空生产作业中的工业巡检应用。",
+        "category": "外资企业",
+        "category_reason": "BP为英国石油公司（British Petroleum）的缩写，是知名跨国能源企业，属于外国品牌在华实体。",
+        "credit_code": "ZZSN230711113216177",
+        "standard_name": "IBP"
+      }
+    },
+    {
+      "id": 35,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Elbit Systems",
+        "industry_reason": "Elbit Systems(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Elbit Systems为以色列知名国防电子公司，属于外国主体，按常识判断为外资企业。"
+      }
+    },
+    {
+      "id": 36,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Eve Air Mobility",
+        "industry_reason": "Eve Air Mobility(无) - 无",
+        "category": "外资企业",
+        "category_reason": "属于外国主体，按常识判断为外资企业。"
+      }
+    },
+    {
+      "id": 37,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "GE航空航天",
+        "industry_reason": "GE航空航天(无) - 无",
+        "category": "外资企业",
+        "category_reason": "“GE”为美国通用电气公司缩写，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 38,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Joby",
+        "industry_reason": "Joby专注于电动垂直起降飞行器（eVTOL）的研发与制造，属于低空航空器整机制造",
+        "category": "外资企业",
+        "category_reason": "Joby Aviation为美国上市公司，总部位于加州，属于低空经济领域的外国企业。"
+      }
+    },
+    {
+      "id": 39,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "L3Harris",
+        "industry_reason": "L3Harris(无) - 无",
+        "category": "外资企业",
+        "category_reason": "L3Harris为美国知名国防与航空航天上市公司，属于外国主体，在华实体为外资企业。"
+      }
+    },
+    {
+      "id": 40,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Lilium",
+        "industry_reason": "Lilium核心产品为eVTOL整机（Lilium Jet），属于低空航空器整机制造。",
+        "category": "外资企业",
+        "category_reason": "Lilium为德国电动垂直起降飞行器制造商，在纳斯达克上市，属于外国公司。"
+      }
+    },
+    {
+      "id": 41,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Lockheed Martin",
+        "industry_reason": "Lockheed Martin(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Lockheed Martin为美国知名航空航天与国防公司，属于外国主体，符合外资企业定义。"
+      }
+    },
+    {
+      "id": 42,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Microchip",
+        "industry_reason": "Microchip(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Microchip为美国上市公司Microchip Technology Inc.，属于外国品牌，在华实体为外资企业。"
+      }
+    },
+    {
+      "id": 43,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "PAL",
+        "industry_reason": "PAL(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 44,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Shield AI",
+        "industry_reason": "Shield AI(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Shield AI为美国知名人工智能与无人机企业，属于外国品牌实体。",
+        "credit_code": "ZZSN231108150127347",
+        "standard_name": "Shield AI"
+      }
+    },
+    {
+      "id": 45,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Skydio",
+        "industry_reason": "Skydio(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Skydio为美国知名无人机公司，属于外国品牌，实际控制人为外国主体。",
+        "credit_code": "ZZSN231108150127364",
+        "standard_name": "Skydio"
+      }
+    },
+    {
+      "id": 46,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Skyports",
+        "industry_reason": "Skyports(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Skyports为英国知名低空经济基础设施企业，属外国主体，无国资背景。"
+      }
+    },
+    {
+      "id": 47,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Supernal",
+        "industry_reason": "Supernal(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Supernal为韩国现代汽车集团旗下美国子公司，专注于低空经济领域，实际控制人为外国主体。"
+      }
+    },
+    {
+      "id": 48,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Uber",
+        "industry_reason": "Uber与Joby合作推出‘家到机场’的空中出租车服务，整合地面和空中交通，属于低空运输业务。",
+        "category": "外资企业",
+        "category_reason": "Uber为美国公司，实际控制人为外国主体，属于外资企业。",
+        "credit_code": "ZZSN23070500003172",
+        "standard_name": "Uber Technologies公司"
+      }
+    },
+    {
+      "id": 49,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Vertical Aerospace",
+        "industry_reason": "Vertical Aerospace(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Vertical Aerospace是一家总部位于英国的电动垂直起降飞行器制造商，在纽约证券交易所上市，实际控制人为外国主体，属于外资企业。"
+      }
+    },
+    {
+      "id": 50,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Volocopter",
+        "industry_reason": "Volocopter是欧洲eVTOL企业，主要研发和生产电动垂直起降飞行器，属于低空航空器整机制造环节。",
+        "category": "外资企业",
+        "category_reason": "Volocopter为德国电动垂直起降飞行器制造商，属于外国企业。",
+        "credit_code": "ZZSN231108150127458",
+        "standard_name": "Volocopter"
+      }
+    },
+    {
+      "id": 51,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Wisk",
+        "industry_reason": "Wisk(无) - 无",
+        "category": "外资企业",
+        "category_reason": "Wisk为美国公司，专注于电动垂直起降飞行器（eVTOL）研发，属于低空经济领域，实际控制人为外国主体。",
+        "credit_code": "ZZSN231108150128024",
+        "standard_name": "Wisk Aero"
+      }
+    },
+    {
+      "id": 52,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "ZeroAvia",
+        "industry_reason": "ZeroAvia(无) - 无",
+        "category": "外资企业",
+        "category_reason": "ZeroAvia为英国氢燃料电池航空初创公司，属外国主体实际控制企业。"
+      }
+    },
+    {
+      "id": 53,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Zipline",
+        "industry_reason": "Zipline以无人机物流配送为核心业务，覆盖多元配送场景，属于低空运输服务",
+        "category": "外资企业",
+        "category_reason": "Zipline为美国知名无人机配送公司，属于低空经济领域的外国企业。",
+        "credit_code": "ZZSN231108150127279",
+        "standard_name": "Zipline 国际"
+      }
+    },
+    {
+      "id": 54,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "一飞院",
+        "industry_reason": "一飞院(无) - 无",
+        "category": "中央企业",
+        "category_reason": "“一飞院”通常指中国航空工业集团下属的西安飞机设计研究所（中航工业第一飞机设计研究院），属于国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 55,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "万丰奥威",
+        "industry_reason": "万丰奥威(无) - 无",
+        "category": "民营企业",
+        "category_reason": "万丰奥威为A股上市公司，实际控制人为自然人，属于民营控股企业。",
+        "credit_code": "913300007324065674",
+        "standard_name": "浙江万丰奥威汽轮股份有限公司"
+      }
+    },
+    {
+      "id": 56,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "三瑞智能",
+        "industry_reason": "三瑞智能(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业",
+        "credit_code": "91360104696053281E",
+        "standard_name": "南昌三瑞智能科技股份有限公司"
+      }
+    },
+    {
+      "id": 57,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "上海华模科技有限公司",
+        "industry_reason": "上海华模科技有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业",
+        "credit_code": "91310115MA1HAH0U02",
+        "standard_name": "上海华模科技有限公司"
+      }
+    },
+    {
+      "id": 58,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "上海特金无线公司",
+        "industry_reason": "上海特金无线公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 59,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "上海飞机客户服务",
+        "industry_reason": "该企业参与打造CE-4VT eVTOL技术验证机，属于低空航空器整机制造环节",
+        "category": "中央企业",
+        "category_reason": "“上海飞机客户服务有限公司”为中国商用飞机有限责任公司（国务院国资委监管的中央企业）的全资子公司，属于央企体系。"
+      }
+    },
+    {
+      "id": 60,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "东浩兰生",
+        "industry_reason": "东浩兰生(无) - 无",
+        "category": "其他国资",
+        "category_reason": "东浩兰生，属其他国资。",
+        "credit_code": "913100001322300861",
+        "standard_name": "东浩兰生会展集团股份有限公司"
+      }
+    },
+    {
+      "id": 61,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "东部通航",
+        "industry_reason": "东部通航(无) - 无",
+        "category": "民营企业",
+        "category_reason": "“东部通航”为深圳市东部通用航空有限公司简称，属民营通用航空企业，无国资或外资标识。"
+      }
+    },
+    {
+      "id": 62,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "东风汽车",
+        "industry_reason": "东风汽车将新能源汽车技术迁移至eVTOL研发，属于低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "东风汽车集团有限公司为国务院国资委监管的中央企业，属于97家央企之一。",
+        "credit_code": "914200001000115161",
+        "standard_name": "东风汽车集团有限公司"
+      }
+    },
+    {
+      "id": 63,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "丝绸之路航空俱乐部",
+        "industry_reason": "丝绸之路航空俱乐部(无) - 无",
+        "category": "民营企业",
+        "category_reason": "丝绸之路航空俱乐部，属民营企业。"
+      }
+    },
+    {
+      "id": 64,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中交集团",
+        "industry_reason": "该企业作为基建央企，系统梳理闲置资产并推动其向低空经济多功能载体转型，属于低空基础设施建设",
+        "category": "中央企业",
+        "category_reason": "“中交集团”即中国交通建设集团有限公司，属于国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 65,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中信海直",
+        "industry_reason": "该企业聚焦低空运营，重点发展低空物流配送和城市空中交通，属于低空运输业务。",
+        "category": "中央企业",
+        "category_reason": "中信海直，属中央企业。"
+      }
+    },
+    {
+      "id": 66,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中信科移动",
+        "industry_reason": "该企业研发5G-A通感一体产品，提供低空智联网技术，属于低空信息技术服务",
+        "category": "中央企业",
+        "category_reason": "“中信科移动”为中国信息通信科技集团（国资委监管央企）旗下子公司，属央企体系。",
+        "credit_code": "91420100714508850F",
+        "standard_name": "中信科移动通信技术股份有限公司"
+      }
+    },
+    {
+      "id": 67,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中信集团",
+        "industry_reason": "该企业参与打造“低空+铁路”跨海综合立体交通示范场景，属于低空运输服务。",
+        "category": "中央企业",
+        "category_reason": "中信集团（中国中信集团有限公司）为国务院国资委监管的中央企业，属于97家央企之一。",
+        "credit_code": "9110000010168558XU",
+        "standard_name": "中国中信集团有限公司"
+      }
+    },
+    {
+      "id": 68,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中兴",
+        "industry_reason": "中兴作为通信设备制造商，提供低空经济所需的信息技术保障，属于低空信息技术服务环节。",
+        "category": "其他国资",
+        "category_reason": "中兴通讯为国有控股上市公司，实际控制人涉及国有资本，属于地方国资体系。",
+        "credit_code": "9144030027939873X7",
+        "standard_name": "中兴通讯股份有限公司"
+      }
+    },
+    {
+      "id": 69,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中农发（新乡）农业科技有限公司",
+        "industry_reason": "该企业利用无人机进行农作物病虫害防治，属于低空生产作业中的农业植保服务",
+        "category": "中央企业",
+        "category_reason": "名称含“中农发”，属于中国农业发展集团有限公司（国务院国资委监管的中央企业）体系，推断为其子公司。"
+      }
+    },
+    {
+      "id": 70,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中创新航",
+        "industry_reason": "中创新航(无) - 无",
+        "category": "民营企业",
+        "category_reason": "中创新航为港股上市公司，无单一控股股东，主要股东包括地方国资及管理层，但非央企或外资控股，按行业惯例归类为民营企业。",
+        "credit_code": "91320413MA1MCGA52K",
+        "standard_name": "中创新航科技集团股份有限公司"
+      }
+    },
+    {
+      "id": 71,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中化学建设集团",
+        "industry_reason": "企业计划生产轻型运动直升机和物流配送无人机，属于低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "“中化学建设集团”名称中的“中化学”指向中国化学工程集团有限公司，该公司为国务院国资委监管的中央企业，其下属子公司通常以“中化学”命名，因此属于中央企业体系。"
+      }
+    },
+    {
+      "id": 72,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中化岩土",
+        "industry_reason": "该企业布局飞行员驾照培训业务，属于低空人才教育培训",
+        "category": "民营企业",
+        "category_reason": "中化岩土为A股上市公司（002542），实际控制人为自然人，虽名称含“中化”但并非中国中化集团子公司，按公开信息属民营企业。",
+        "credit_code": "91110000710929148A",
+        "standard_name": "中化岩土集团股份有限公司"
+      }
+    },
+    {
+      "id": 73,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中发天信",
+        "industry_reason": "该企业联合各要素攻关核心技术，属于低空领域的科学研究和技术服务",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且公开信息显示其为自然人控股的航空发动机研发企业，符合民营企业特征。"
+      }
+    },
+    {
+      "id": 74,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中咨海外咨询有限公司",
+        "industry_reason": "该企业作为咨询公司，联合支撑低空经济枢纽建设，提供工程咨询与设计服务，属于低空工程技术与设计服务",
+        "category": "中央企业",
+        "category_reason": "“中咨”通常指中国国际工程咨询有限公司（央企），其子公司“中咨海外咨询有限公司”属于央企体系。",
+        "credit_code": "91110108600483827E",
+        "standard_name": "中咨海外咨询有限公司"
+      }
+    },
+    {
+      "id": 75,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国一汽",
+        "industry_reason": "该企业探索“地面出行+低空出行”一体化服务，推出观光车与eVTOL联票，属于低空消费",
+        "category": "中央企业",
+        "category_reason": "中国第一汽车集团有限公司为国务院国资委监管的中央企业，属于97家央企之一。"
+      }
+    },
+    {
+      "id": 76,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国东航",
+        "industry_reason": "中国东航(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中国东方航空集团有限公司为国务院国资委监管的中央企业，属于97家央企之一。"
+      }
+    },
+    {
+      "id": 77,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国中检",
+        "industry_reason": "该企业具备低空航空器相关测试能力，为无人机、eVTOL企业提供检测服务，属于低空装备检测服务。",
+        "category": "中央企业",
+        "category_reason": "“中国中检”全称为中国检验认证集团，是国务院国资委监管的中央企业，属于97家央企之一。"
+      }
+    },
+    {
+      "id": 78,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国交建",
+        "industry_reason": "中国交建利用建筑交通领域积累，将闲置资产转化为低空经济复合型载体，打造低空基建落地模式",
+        "category": "中央企业",
+        "category_reason": "中国交建，属中央企业。"
+      }
+    },
+    {
+      "id": 79,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国人民保险",
+        "industry_reason": "中国人民保险(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中国人民保险，属中央企业。",
+        "credit_code": "911000001000237368",
+        "standard_name": "中国人民保险集团股份有限公司"
+      }
+    },
+    {
+      "id": 80,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国信息通信研究院",
+        "industry_reason": "中国信息通信研究院(无) - 无",
+        "category": "其他国资",
+        "category_reason": "中国信息通信研究院是工业和信息化部直属的科研事业单位，属于国有非企业机构，非国资委监管的中央企业，但具有国有背景。"
+      }
+    },
+    {
+      "id": 81,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国信科",
+        "industry_reason": "中国信科(无) - 无",
+        "category": "中央企业",
+        "category_reason": "“中国信科”全称为中国信息通信科技集团有限公司，是国务院国资委监管的中央企业，由原武汉邮电科学研究院和电信科学技术研究院重组而成。"
+      }
+    },
+    {
+      "id": 82,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国冶金地质总局",
+        "industry_reason": "该企业合作研发LMG-600T型电动重载运输无人机，属于低空航空器整机制造环节",
+        "category": "中央企业",
+        "category_reason": "中国冶金地质总局为国务院国资委监管的中央企业，属于冶金地质勘查行业。"
+      }
+    },
+    {
+      "id": 83,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国南水北调集团水网智慧科技有限公司",
+        "industry_reason": "该企业采购无人机巡检设备用于水网巡检，属于低空生产作业中的水利巡检环节。",
+        "category": "中央企业",
+        "category_reason": "名称中的“中国南水北调集团”为国务院国资委监管的中央企业，其子公司属于央企体系。"
+      }
+    },
+    {
+      "id": 84,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国国家铁路集团有限公司",
+        "industry_reason": "中国国家铁路集团有限公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中国国家铁路集团有限公司是国务院国资委监管的中央企业，原为铁道部改制而来，属于97家央企之一。"
+      }
+    },
+    {
+      "id": 85,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国国新",
+        "industry_reason": "该企业作为国有资本投资公司，通过基金体系为低空经济企业提供金融支持，属于低空金融服务",
+        "category": "中央企业",
+        "category_reason": "中国国新控股有限责任公司为国务院国资委监管的中央企业，属于国有资本运营公司。",
+        "credit_code": "91110102201808057N",
+        "standard_name": "中国国新基金管理有限公司"
+      }
+    },
+    {
+      "id": 86,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国太保",
+        "industry_reason": "中国太平洋保险(无) - 无",
+        "category": "其他国资",
+        "category_reason": "中国太平洋保险（集团）股份有限公司为上海市属国有金融企业，由上海市国资委实际控制，属于地方国资体系。"
+      }
+    },
+    {
+      "id": 87,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国安能",
+        "industry_reason": "该企业涉及侦察无人机、救援无人机的制造，属于低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "“中国安能”全称为中国安能建设集团有限公司，属于国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 88,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国建筑",
+        "industry_reason": "中国建筑作为基建类央企，结合原有建筑业和交通业特点，打造低空新型基础设施区域案例，并推动存量资产向低空经济多功能载体转型，属于低空基础设施建设环节。",
+        "category": "中央企业",
+        "category_reason": "“中国建筑”全称为中国建筑集团有限公司，属于国务院国资委监管的97家中央企业之一。",
+        "credit_code": "911100007109351850",
+        "standard_name": "中国建筑股份有限公司"
+      }
+    },
+    {
+      "id": 89,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国旅游集团",
+        "industry_reason": "该企业开发空中览景、航空体验等旅游产品，属于低空消费环节",
+        "category": "中央企业",
+        "category_reason": "中国旅游集团是国务院国资委监管的中央企业，属于97家央企之一。",
+        "credit_code": "91110000100005554U",
+        "standard_name": "中国旅游集团有限公司"
+      }
+    },
+    {
+      "id": 90,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国星网",
+        "industry_reason": "中国星网作为卫星通信央企，其卫星互联网业务为低空飞行提供通信、导航、监视等信息技术支撑，属于低空信息技术服务环节。",
+        "category": "中央企业",
+        "category_reason": "中国卫星网络集团有限公司（简称“中国星网”）是国务院国资委监管的中央企业，主营卫星互联网，与低空经济产业链相关。",
+        "credit_code": "91500000MA604R0Q6C",
+        "standard_name": "中国星网网络应用有限公司"
+      }
+    },
+    {
+      "id": 91,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国机械总院",
+        "industry_reason": "该企业以装备制造业基础共性技术研究为主业，属于低空科学研究和技术服务",
+        "category": "中央企业",
+        "category_reason": "中国机械科学研究总院集团有限公司为国务院国资委监管的中央企业，属于97家央企之一。"
+      }
+    },
+    {
+      "id": 92,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国民航科学技术研究院",
+        "industry_reason": "中国民航科学技术研究院(无) - 无",
+        "category": "其他国资",
+        "category_reason": "中国民航科学技术研究院，属其他国资。"
+      }
+    },
+    {
+      "id": 93,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国民航飞行学院",
+        "industry_reason": "中国民航飞行学院(无) - 无",
+        "category": "其他国资",
+        "category_reason": "中国民航飞行学院，属其他国资。"
+      }
+    },
+    {
+      "id": 94,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国煤科",
+        "industry_reason": "该企业利用无人机进行航测和三维建模，属于低空生产作业中的测绘服务",
+        "category": "中央企业",
+        "category_reason": "“中国煤科”全称为中国煤炭科工集团有限公司，属于国务院国资委监管的97家中央企业之一。"
+      }
+    },
+    {
+      "id": 95,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国物流",
+        "industry_reason": "该企业作为物流央企，探索无人机在农产品运输、冷链物流、应急物资配送等领域的应用，属于低空运输环节。",
+        "category": "中央企业",
+        "category_reason": "“中国物流集团有限公司”为国务院国资委监管的中央企业，属于已知央企体系。"
+      }
+    },
+    {
+      "id": 96,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国电信",
+        "industry_reason": "该企业打造天翼星巡低空服务监管平台，构建由5G-A、雷达、光电等多源感知组成的实时监视网络，属于低空基础设施建设",
+        "category": "中央企业",
+        "category_reason": "中国电信，属中央企业。",
+        "credit_code": "91110000100017707H",
+        "standard_name": "中国电信集团有限公司"
+      }
+    },
+    {
+      "id": 97,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国电子",
+        "industry_reason": "该企业建立低空经济核心元器件供应链数据库，对芯片、传感器等关键零部件实施动态监测，属于低空航空器器材及零部件制造环节。",
+        "category": "中央企业",
+        "category_reason": "“中国电子”全称为中国电子信息产业集团有限公司，属于国务院国资委监管的97家中央企业之一。",
+        "credit_code": "91110000100010249W",
+        "standard_name": "中国电子信息产业集团有限公司"
+      }
+    },
+    {
+      "id": 98,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国电建",
+        "industry_reason": "企业架设电力塔+物流节点复合型基础设施，包括无人机起降平台和智能换电站",
+        "category": "中央企业",
+        "category_reason": "中国电建，属中央企业。"
+      }
+    },
+    {
+      "id": 99,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国电科",
+        "industry_reason": "该企业生产的低空飞行器导航与姿态控制模块、北斗低空应急通信与监控终端等产品，作为零部件进入大疆、亿航等无人机企业供应链，属于低空航空器器材及零部件制造",
+        "category": "中央企业",
+        "category_reason": "“中国电科”为中国电子科技集团有限公司的简称，属于国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 100,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国石化",
+        "industry_reason": "中国石化销售公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "“中国石化”全称为中国石油化工集团有限公司，属于国务院国资委监管的97家中央企业之一，为公众熟知的央企。"
+      }
+    },
+    {
+      "id": 101,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国移动",
+        "industry_reason": "该企业牵头组建空天一体通信系统实验室，研发无人机应急通信系统和航空机载基站，提供低空通信信息技术服务，属于低空信息技术服务环节。",
+        "category": "中央企业",
+        "category_reason": "中国移动，属中央企业。",
+        "credit_code": "911100007109250324",
+        "standard_name": "中国移动通信集团有限公司"
+      }
+    },
+    {
+      "id": 102,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国稀土",
+        "industry_reason": "中国稀土提供的稀土资源是低空航空器关键材料（如永磁材料）的原料，属于该产业链上游材料制造环节。",
+        "category": "中央企业",
+        "category_reason": "“中国稀土集团有限公司”为国务院国资委监管的中央企业，属于已知央企体系。",
+        "credit_code": "911408007011965525",
+        "standard_name": "中国稀土集团资源科技股份有限公司"
+      }
+    },
+    {
+      "id": 103,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国联通",
+        "industry_reason": "中国联通利用5G-A毫米波通感一体化技术构建低空立体覆盖网，提供低空安防、低空物流等业务的信息技术支撑，属于低空信息技术服务",
+        "category": "中央企业",
+        "category_reason": "中国联通，属中央企业。"
+      }
+    },
+    {
+      "id": 104,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国能建",
+        "industry_reason": "该企业为低空起降场、通信基站提供分布式能源系统，属于低空基础设施的能源配套建设",
+        "category": "中央企业",
+        "category_reason": "中国能建，属中央企业。"
+      }
+    },
+    {
+      "id": 105,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国航信",
+        "industry_reason": "中国航信研发的“有人机无人机协同运行系统”属于低空飞行管理信息系统，为低空航空器协同运行提供技术支持，属于低空信息技术服务",
+        "category": "中央企业",
+        "category_reason": "中国民航信息集团有限公司（简称中国航信）为国务院国资委监管的中央企业，属于97家央企之一。"
+      }
+    },
+    {
+      "id": 106,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国航发",
+        "industry_reason": "该企业研发制造航空发动机及动力系统（如AES100、混电动力、电机电控、电池等），属于低空航空器的核心零部件制造。",
+        "category": "中央企业",
+        "category_reason": "“中国航发”全称为中国航空发动机集团有限公司，属于国务院国资委监管的97家中央企业之一。"
+      }
+    },
+    {
+      "id": 107,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国航材",
+        "industry_reason": "中国航材作为低空经济产业链上游央企，主营航空器材业务，属于低空航空器器材及零部件制造环节。",
+        "category": "中央企业",
+        "category_reason": "“中国航材”全称为中国航空器材集团有限公司，属于国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 108,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国航油",
+        "industry_reason": "中国航油提供航空燃料，属于低空航空器运行所需的器材或消耗品，对应低空航空器器材及零部件制造环节。",
+        "category": "中央企业",
+        "category_reason": "“中国航油”即中国航空油料集团有限公司，属于国务院国资委监管的97家中央企业之一。",
+        "credit_code": "911100007109329026",
+        "standard_name": "中国航油集团石油股份有限公司"
+      }
+    },
+    {
+      "id": 109,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国航空器材集团",
+        "industry_reason": "企业主营航空器材供应，属于低空航空器器材及零部件制造",
+        "category": "中央企业",
+        "category_reason": "中国航空器材集团有限公司为国务院国资委监管的中央企业，属于航空器材领域核心央企。"
+      }
+    },
+    {
+      "id": 110,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国航空运输协会",
+        "industry_reason": "中国航空运输协会(无) - 无",
+        "category": "其他国资",
+        "category_reason": "中国航空运输协会，属其他国资。"
+      }
+    },
+    {
+      "id": 111,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国船舶",
+        "industry_reason": "该企业研制的无人机防控系统包含探测、反制等硬件设备，属于低空专用设施设备制造",
+        "category": "中央企业",
+        "category_reason": "“中国船舶”全称为中国船舶集团有限公司，属于国务院国资委监管的97家中央企业之一。",
+        "credit_code": "91310000631899761Q",
+        "standard_name": "中国船舶工业股份有限公司"
+      }
+    },
+    {
+      "id": 112,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国诚通",
+        "industry_reason": "该企业通过基金体系为低空经济企业提供资本支持，属于低空金融服务",
+        "category": "中央企业",
+        "category_reason": "中国诚通控股集团有限公司为国务院国资委监管的中央企业，属于97家央企之一。",
+        "credit_code": "911100007109225442",
+        "standard_name": "中国诚通控股集团有限公司"
+      }
+    },
+    {
+      "id": 113,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国铁建",
+        "industry_reason": "中国铁建作为基建类央企，推动存量资产向低空经济多功能载体转型，属于低空基础设施的配套建设",
+        "category": "中央企业",
+        "category_reason": "“中国铁建”为国务院国资委监管的中央企业，属于97家央企之一。",
+        "credit_code": "91110000710935150D",
+        "standard_name": "中国铁建股份有限公司"
+      }
+    },
+    {
+      "id": 114,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国铁路工程集团有限公司",
+        "industry_reason": "企业研发无人机智能检测系统、飞行控制系统等信息技术",
+        "category": "中央企业",
+        "category_reason": "“中国铁路工程集团有限公司”为国务院国资委监管的97家中央企业之一，属于知名央企体系。",
+        "credit_code": "91110000102016548J",
+        "standard_name": "中国铁路工程集团有限公司"
+      }
+    },
+    {
+      "id": 115,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国铝业",
+        "industry_reason": "该企业自主研发铝基合金核心技术，用于降低低空飞行器机身成本并实现轻量化，属于低空航空器材料制造环节。",
+        "category": "中央企业",
+        "category_reason": "中国铝业集团有限公司为国务院国资委监管的中央企业，属于97家央企之一。",
+        "credit_code": "911100007109288314",
+        "standard_name": "中国铝业股份有限公司"
+      }
+    },
+    {
+      "id": 116,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国飞机强度研究所",
+        "industry_reason": "中国飞机强度研究所(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中国飞机强度研究所，属中央企业。"
+      }
+    },
+    {
+      "id": 117,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国飞龙",
+        "industry_reason": "中国飞龙(无) - 无",
+        "category": "其他国资",
+        "category_reason": "中国飞龙，属其他国资。"
+      }
+    },
+    {
+      "id": 118,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国黄金",
+        "industry_reason": "该企业涉及测绘、巡检等应用场景，属于低空生产作业",
+        "category": "中央企业",
+        "category_reason": "“中国黄金集团有限公司”为国务院国资委监管的中央企业，属于已知央企体系。",
+        "credit_code": "91110000100001625L",
+        "standard_name": "中国黄金集团有限公司"
+      }
+    },
+    {
+      "id": 119,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中复神鹰",
+        "industry_reason": "中复神鹰生产碳纤维材料，用于eVTOL和无人机等低空飞行器，属于低空航空器材料制造环节",
+        "category": "中央企业",
+        "category_reason": "中复神鹰，属中央企业。",
+        "credit_code": "913207007849886428",
+        "standard_name": "中复神鹰碳纤维股份有限公司"
+      }
+    },
+    {
+      "id": 120,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中广核",
+        "industry_reason": "该企业涉及巡检、运维、值守等应用场景，属于低空公共服务范畴。",
+        "category": "中央企业",
+        "category_reason": "“中广核”为中国广核集团有限公司的简称，属于国务院国资委监管的97家中央企业之一。"
+      }
+    },
+    {
+      "id": 121,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中建一局三公司",
+        "industry_reason": "该企业中标华中智能飞行器产业基地项目，属于低空产业园区基础设施建设，对应低空基础设施建设环节。",
+        "category": "中央企业",
+        "category_reason": "“中建一局”为中国建筑集团有限公司（国资委监管央企）旗下核心子公司，“三公司”为其下属单位，属于央企体系。"
+      }
+    },
+    {
+      "id": 122,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中无人机",
+        "industry_reason": "中无人机(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中无人机，属中央企业。"
+      }
+    },
+    {
+      "id": 123,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中机认检",
+        "industry_reason": "该企业提供低空航空器安全性能、飞行性能、环境适应性、电磁兼容性、动力系统等检测试验，属于低空装备检测服务。",
+        "category": "中央企业",
+        "category_reason": "“中机认检”全称为中机寰宇认证检验股份有限公司，其控股股东中国机械科学研究总院集团有限公司为国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 124,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中材科技",
+        "industry_reason": "中材科技(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中材科技，属中央企业。",
+        "credit_code": "91320000710929279P",
+        "standard_name": "中材科技股份有限公司"
+      }
+    },
+    {
+      "id": 125,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中林重庆林投公司",
+        "industry_reason": "该企业应用无人机技术进行木材运输，属于低空运输业务。",
+        "category": "中央企业",
+        "category_reason": "“中林”通常指中国林业集团有限公司（国资委监管的中央企业），重庆林投公司为其在重庆的子公司，属于央企体系。"
+      }
+    },
+    {
+      "id": 126,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中汽中心",
+        "industry_reason": "该企业参与低空经济产业发展路径研究，涉及汽车与低空交通融合技术研究，属于低空领域的科学研究和技术服务。",
+        "category": "中央企业",
+        "category_reason": "“中汽中心”全称为中国汽车技术研究中心有限公司，属于国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 127,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中海油",
+        "industry_reason": "该企业使用eVTOL对海上石油平台进行跨海物资运输，属于低空运输业务。",
+        "category": "中央企业",
+        "category_reason": "“中海油”为中国海洋石油集团有限公司的简称，属于国务院国资委监管的97家中央企业之一。"
+      }
+    },
+    {
+      "id": 128,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中煤华利和翔工贸有限责任公司",
+        "industry_reason": "该企业发布无人机航测服务询价，无人机航测属于低空生产作业中的测绘服务。",
+        "category": "中央企业",
+        "category_reason": "名称含“中煤”字样，属于中国中煤能源集团有限公司（国资委监管央企）体系内的子公司。"
+      }
+    },
+    {
+      "id": 129,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中煤科工重庆设计研究院（集团）有限公司",
+        "industry_reason": "该企业作为设计研究院，承接低空经济产业园项目，提供工程设计与技术服务，属于低空工程技术与设计服务。",
+        "category": "中央企业",
+        "category_reason": "“中煤科工”为中国煤炭科工集团（国资委监管央企）的简称，其下属设计研究院属于央企子公司。",
+        "credit_code": "915000002028031195",
+        "standard_name": "中煤科工重庆设计研究院（集团）有限公司"
+      }
+    },
+    {
+      "id": 130,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中理检验",
+        "industry_reason": "中理检验(无) - 无",
+        "category": "中央企业",
+        "category_reason": "“中理检验”为中国检验认证集团（中检集团）旗下子公司，中检集团属国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 131,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中电信应急公司",
+        "industry_reason": "中电信应急公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "名称含“中电信”，属于中国电信集团体系，中国电信为国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 132,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中电博微电子科技有限公司",
+        "industry_reason": "企业牵头建设的低空安全验证试验基地具备设备检测评估能力，为20余家企业提供低空装备测试服务。",
+        "category": "中央企业",
+        "category_reason": "名称含“中电”且属于中国电子科技集团（国资委监管央企）旗下子公司"
+      }
+    },
+    {
+      "id": 133,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中电科",
+        "industry_reason": "该企业牵头建设国家级低空监管运营平台，整合空域划设、飞行计划审批、身份管理、实时监控、应急处置等功能，属于低空信息技术服务。",
+        "category": "中央企业",
+        "category_reason": "“中电科”为中国电子科技集团有限公司简称，属国务院国资委监管的97家中央企业之一，其子公司涉及低空经济产业链。"
+      }
+    },
+    {
+      "id": 134,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中电莱斯",
+        "industry_reason": "该企业凭借空中交通管理指挥控制技术打造低空飞行服务平台，具备管、协、服能力，属于低空飞行辅助活动",
+        "category": "中央企业",
+        "category_reason": "“中电莱斯”通常指中国电子科技集团（CETC）旗下的南京莱斯信息技术股份有限公司，其实际控制人为国务院国资委监管的中央企业。",
+        "credit_code": "91320100MA1WEBQC80",
+        "standard_name": "中电莱斯信息系统有限公司"
+      }
+    },
+    {
+      "id": 135,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中石油",
+        "industry_reason": "中石油在自有业务中应用低空技术进行电网巡检、环境监测等，属于低空公共服务",
+        "category": "中央企业",
+        "category_reason": "“中石油”即中国石油天然气集团有限公司，属于国务院国资委监管的97家中央企业之一。"
+      }
+    },
+    {
+      "id": 136,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中科云图",
+        "industry_reason": "中科云图(无) - 无",
+        "category": "其他国资",
+        "category_reason": "中科云图，属其他国资。",
+        "credit_code": "91440101MA59P95W94",
+        "standard_name": "广州中科云图智能科技有限公司"
+      }
+    },
+    {
+      "id": 137,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中科星图",
+        "industry_reason": "中科星图智慧科技四川有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "中科星图，属其他国资。",
+        "credit_code": "91110108784807231Q",
+        "standard_name": "中科星图股份有限公司"
+      }
+    },
+    {
+      "id": 138,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中科航星",
+        "industry_reason": "中科航星(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“中科”通常与中国科学院相关，属于科研院所下属企业，国有控股性质。",
+        "credit_code": "91370211MA3CD3W9XX",
+        "standard_name": "中科航星科技股份有限公司"
+      }
+    },
+    {
+      "id": 139,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中简科技",
+        "industry_reason": "中简科技(无) - 无",
+        "category": "民营企业",
+        "category_reason": "中简科技，属民营企业。",
+        "credit_code": "91320400674857975P",
+        "standard_name": "中简科技股份有限公司"
+      }
+    },
+    {
+      "id": 140,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中粮集团",
+        "industry_reason": "该企业参与低空物流场景建设，探索无人机在农产品运输、冷链物流、应急物资配送等领域的应用，属于低空运输业务。",
+        "category": "中央企业",
+        "category_reason": "中粮集团是国务院国资委监管的97家中央企业之一，属于知名央企。",
+        "credit_code": "91110000101100414N",
+        "standard_name": "中粮集团有限公司"
+      }
+    },
+    {
+      "id": 141,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航信",
+        "industry_reason": "上海民航华东凯亚系统集成有限公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "“中航信”为中国民航信息网络股份有限公司简称，其母公司中国民航信息集团属国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 142,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航信移动科技",
+        "industry_reason": "中航信移动科技(无) - 无",
+        "category": "中央企业",
+        "category_reason": "“中航信”为中国民航信息集团有限公司简称，属国务院国资委监管的中央企业，其子公司“中航信移动科技”为央企体系内企业。"
+      }
+    },
+    {
+      "id": 143,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航哈飞",
+        "industry_reason": "中航哈飞生产直升机等航空器，用于农林植保、应急救援，属于低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "“中航”指中国航空工业集团（国资委监管央企），“哈飞”为其旗下哈尔滨飞机工业集团，属央企子公司。"
+      }
+    },
+    {
+      "id": 144,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航工业",
+        "industry_reason": "该企业牵头推动eVTOL、大型货运无人机等核心装备系列化发展，翼龙系列飞行器占据技术优势，属于低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "“中航工业”为中国航空工业集团有限公司简称，属国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 145,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航成飞",
+        "industry_reason": "该企业主要从事航空器整机制造，目标市场包括军民两用、应急救援等，属于低空航空器整机制造环节",
+        "category": "中央企业",
+        "category_reason": "“中航成飞”是中国航空工业集团（国资委监管的中央企业）的核心子公司，属于央企体系。",
+        "credit_code": "91610000745016111K",
+        "standard_name": "中航成飞股份有限公司"
+      }
+    },
+    {
+      "id": 146,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航无人机",
+        "industry_reason": "该企业自主研制翼龙-2大型固定翼无人机并获特许飞行证，属于低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "“中航”为中国航空工业集团简称，该集团属国资委监管央企，中航无人机为其核心子公司。"
+      }
+    },
+    {
+      "id": 147,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航机载",
+        "industry_reason": "中航机载主营机载系统研发制造，属于低空航空器器材及零部件制造，服务于eVTOL等低空航空器。",
+        "category": "中央企业",
+        "category_reason": "“中航机载”为中国航空工业集团旗下核心子公司，航空工业集团属国务院国资委监管的97家中央企业之一。",
+        "credit_code": "91110000705514765U",
+        "standard_name": "中航机载系统股份有限公司"
+      }
+    },
+    {
+      "id": 148,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航材导航技术北京有限公司",
+        "industry_reason": "中航材导航技术北京有限公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "名称“中航材”指向中国航空器材集团有限公司，该集团为国务院国资委监管的中央企业，其子公司属于央企体系。"
+      }
+    },
+    {
+      "id": 149,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航沈飞",
+        "industry_reason": "中航沈飞是航空器整机制造企业，其产品应用于农林植保、应急救援等低空运营领域，属于低空航空器整机制造环节",
+        "category": "中央企业",
+        "category_reason": "中航沈飞为中国航空工业集团（国资委监管的中央企业）旗下上市公司，属于央企体系。",
+        "credit_code": "9137000016309489X2",
+        "standard_name": "中航沈飞股份有限公司"
+      }
+    },
+    {
+      "id": 150,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航科工",
+        "industry_reason": "该企业联合设立未来飞行器研发中心，进行绿色节能飞行器研发，属于低空科学研究和技术服务",
+        "category": "中央企业",
+        "category_reason": "中航科工，属中央企业。"
+      }
+    },
+    {
+      "id": 151,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航租赁",
+        "industry_reason": "中航租赁(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中航租赁，属中央企业。"
+      }
+    },
+    {
+      "id": 152,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航西飞",
+        "industry_reason": "中航西飞(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中航西飞，属中央企业。"
+      }
+    },
+    {
+      "id": 153,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航证券",
+        "industry_reason": "中航证券作为证券公司，参与指数模型优化、数据计算校验及统计标准设计，属于为低空产业提供金融服务的机构，对应低空金融服务环节。",
+        "category": "中央企业",
+        "category_reason": "“中航证券”为中国航空工业集团旗下证券公司，该集团属于国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 154,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航通飞",
+        "industry_reason": "中航通飞主要生产无人机等低空航空器，属于低空航空器整机制造环节",
+        "category": "中央企业",
+        "category_reason": "“中航通飞”为中国航空工业集团（国资委监管央企）旗下子公司，专注于通用飞机及低空经济领域。"
+      }
+    },
+    {
+      "id": 155,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航重机",
+        "industry_reason": "中航重机(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中航重机，属中央企业。",
+        "credit_code": "91520000214434146R",
+        "standard_name": "中航重机股份有限公司"
+      }
+    },
+    {
+      "id": 156,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航金城",
+        "industry_reason": "该企业专利涉及无人机后勤保障装置，属于低空专用设施设备制造。",
+        "category": "中央企业",
+        "category_reason": "“中航”通常指中国航空工业集团（国资委监管央企），其子公司“中航金城”属于该央企体系。"
+      }
+    },
+    {
+      "id": 157,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航高科",
+        "industry_reason": "中航高科(无) - 无",
+        "category": "中央企业",
+        "category_reason": "中航高科，属中央企业。"
+      }
+    },
+    {
+      "id": 158,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中船杰瑞科技上海有限公司",
+        "industry_reason": "中船杰瑞科技上海有限公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "名称中“中船”指向中国船舶集团（国资委监管央企），杰瑞科技为其下属企业，符合央企子公司特征。"
+      }
+    },
+    {
+      "id": 159,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中通快递",
+        "industry_reason": "中通快递(无) - 无",
+        "category": "民营企业",
+        "category_reason": "中通快递，属民营企业。",
+        "credit_code": "91310000060900705N",
+        "standard_name": "中通快递股份有限公司"
+      }
+    },
+    {
+      "id": 160,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中铁",
+        "industry_reason": "中国中铁作为大型基建企业，参与低空经济中的交通基础设施与工程建造，属于低空基础设施建设环节。",
+        "category": "中央企业",
+        "category_reason": "“中铁”通常指中国中铁股份有限公司，属于国务院国资委监管的中央企业。",
+        "credit_code": "91110000710935003U",
+        "standard_name": "中国中铁股份有限公司"
+      }
+    },
+    {
+      "id": 161,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中银金租",
+        "industry_reason": "该企业作为金融租赁公司，为eVTOL企业提供采购意向和资金背书，属于低空金融服务",
+        "category": "中央企业",
+        "category_reason": "“中银”指中国银行，中国银行为中央金融企业，其子公司中银金融租赁有限公司属于中央企业体系。"
+      }
+    },
+    {
+      "id": 162,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中集集团",
+        "industry_reason": "中集建筑作为建筑企业，参与低空经济先导区建设，其业务与低空基础设施建设直接相关",
+        "category": "中央企业",
+        "category_reason": "中集集团，属中央企业。"
+      }
+    },
+    {
+      "id": 163,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中鼎股份",
+        "industry_reason": "中鼎股份(无) - 无",
+        "category": "民营企业",
+        "category_reason": "中鼎股份，属民营企业。"
+      }
+    },
+    {
+      "id": 164,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "丰田公司",
+        "industry_reason": "丰田投资Joby并共享精益生产体系与供应链资源，间接参与低空航空器整机制造",
+        "category": "外资企业",
+        "category_reason": "丰田公司为日本丰田汽车公司，属于外国品牌在华实体，实际控制人为日本丰田集团。"
+      }
+    },
+    {
+      "id": 165,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "丰翼科技",
+        "industry_reason": "该企业提供无人机同城即时送和跨城急送服务，运输货物，属于低空运输业务",
+        "category": "民营企业",
+        "category_reason": "丰翼科技为顺丰控股旗下无人机物流公司，顺丰系民营企业，无国资或外资控股背景。"
+      }
+    },
+    {
+      "id": 166,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "为辰信息",
+        "industry_reason": "该企业专注于信息安全领域，其智能设备信息安全技术可应用于低空航空器及相关系统，属于低空信息技术服务范畴",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业",
+        "credit_code": "91441900MA4URC8M2W",
+        "standard_name": "广东为辰信息科技有限公司"
+      }
+    },
+    {
+      "id": 167,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "乔比航空",
+        "industry_reason": "乔比航空是eVTOL企业，产品为低空航空器整机，处于认证最后阶段，属于整机制造",
+        "category": "外资企业",
+        "category_reason": "“乔比航空”名称与美股上市公司Joby Aviation（美国电动垂直起降飞行器公司）高度关联，属于外国品牌在华实体，按外资认定原则判断为外资企业。",
+        "credit_code": "ZZSN230912210707425",
+        "standard_name": "乔比航空"
+      }
+    },
+    {
+      "id": 168,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "九洲集团",
+        "industry_reason": "该企业专注于空管科技，提供空中交通管理、飞行辅助服务，属于低空飞行辅助活动环节",
+        "category": "其他国资",
+        "category_reason": "“九洲集团”在低空经济领域通常指四川九洲投资控股集团，其为绵阳市属国有独资企业，属于地方国资。",
+        "credit_code": "91230100127600046K",
+        "standard_name": "哈尔滨九洲集团股份有限公司"
+      }
+    },
+    {
+      "id": 169,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "云南交发公司",
+        "industry_reason": "该企业参与出资组建低空产业投资公司，属于低空领域的金融投资活动",
+        "category": "其他国资",
+        "category_reason": "名称含“云南”地域及“交发”（交通发展）字样，符合地方国资典型命名惯例，推测为云南省属交通类国有企业。"
+      }
+    },
+    {
+      "id": 170,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "云南交投集团",
+        "industry_reason": "该企业牵头组建低空产业投资公司，作为低空产业生态集成商，主要进行低空产业投资，属于低空金融服务。",
+        "category": "其他国资",
+        "category_reason": "“云南交投集团”为云南省属国有交通投资企业，名称含地域+“交投”典型国资标识。"
+      }
+    },
+    {
+      "id": 171,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "云南机场集团",
+        "industry_reason": "云南机场集团作为机场运营企业，参与组建低空产业投资公司，其核心业务涉及通用机场等低空基础设施建设。",
+        "category": "其他国资",
+        "category_reason": "云南机场集团为云南省属国有大型企业，由云南省国资委监管，负责省内机场建设运营。"
+      }
+    },
+    {
+      "id": 172,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "云南省低空产业投资有限公司",
+        "industry_reason": "该企业开展卫星通信服务和人工智能应用系统集成，属于低空信息技术服务",
+        "category": "其他国资",
+        "category_reason": "名称含“云南省”及“产业投资”，符合地方国资投融资平台命名惯例，且低空经济为地方重点扶持产业，推测为云南省属国有企业。"
+      }
+    },
+    {
+      "id": 173,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "云圣智能",
+        "industry_reason": "该企业参与低空经济标准制定，提供实践案例，属于低空科学研究和技术服务",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营企业，按行业常识推断为自然人控股企业。",
+        "credit_code": "91120116MA069EXE4T",
+        "standard_name": "天津云圣智能科技有限责任公司"
+      }
+    },
+    {
+      "id": 174,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "云洲智能",
+        "industry_reason": "云洲智能(无) - 无",
+        "category": "民营企业",
+        "category_reason": "云洲智能为珠海云洲智能科技股份有限公司，主营无人船艇及智能装备，属于自然人控股的民营企业，无国资或外资背景。",
+        "credit_code": "91440400553668764B",
+        "standard_name": "珠海云洲智能科技股份有限公司"
+      }
+    },
+    {
+      "id": 175,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "五一视界",
+        "industry_reason": "五一视界(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业",
+        "credit_code": "91110108329541726L",
+        "standard_name": "北京五一视界数字孪生科技股份有限公司"
+      }
+    },
+    {
+      "id": 176,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "交银金融租赁",
+        "industry_reason": "交银金融租赁(无) - 无",
+        "category": "中央企业",
+        "category_reason": "交银金融租赁，属中央企业。"
+      }
+    },
+    {
+      "id": 177,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "京东",
+        "industry_reason": "京东物流(无) - 无",
+        "category": "民营企业",
+        "category_reason": "京东集团为知名民营企业，实际控制人为自然人，无国资或外资控股背景。",
+        "credit_code": "ZZSN23030800000261",
+        "standard_name": "京东集团股份有限公司"
+      }
+    },
+    {
+      "id": 178,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "亿维特",
+        "industry_reason": "该企业与外部机构合作进行气动测试和三电测试，属于低空航空器研发过程中的科学研究和技术服务。",
+        "category": "民营企业",
+        "category_reason": "亿维特，属民营企业。"
+      }
+    },
+    {
+      "id": 179,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "亿航智能",
+        "industry_reason": "该企业生产载人eVTOL整机（EH216-S），并取得型号合格证、标准适航证和生产许可证，属于低空航空器整机制造。",
+        "category": "民营企业",
+        "category_reason": "亿航智能，属民营企业。"
+      }
+    },
+    {
+      "id": 180,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "众合科技",
+        "industry_reason": "众合科技(无) - 无",
+        "category": "其他国资",
+        "category_reason": "浙江众合科技股份有限公司实际控制人为浙江大学，属于高校背景的国有控股企业。",
+        "credit_code": "91330000712562466B",
+        "standard_name": "浙江众合科技股份有限公司"
+      }
+    },
+    {
+      "id": 181,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "优势咏峰",
+        "industry_reason": "该企业为创业投资合伙企业，参与低空经济研究，属于低空金融服务范畴。",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 182,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "傲势科技",
+        "industry_reason": "该企业专注于工业级无人机研发与制造，属于低空航空器整机制造环节",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营企业，按行业惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 183,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "光威复材",
+        "industry_reason": "光威复材(无) - 无",
+        "category": "民营企业",
+        "category_reason": "光威复材，属民营企业。"
+      }
+    },
+    {
+      "id": 184,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "克拉托斯公司",
+        "industry_reason": "克拉托斯公司(无) - 无",
+        "category": "外资企业",
+        "category_reason": "名称“克拉托斯”为美国上市公司Kratos Defense & Security Solutions的音译，该公司主营国防与无人机业务，与低空经济产业链相关，实际控制人为外国主体。"
+      }
+    },
+    {
+      "id": 185,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "兴网宇达",
+        "industry_reason": "兴网宇达(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 186,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "兵器工业集团",
+        "industry_reason": "该企业拥有灵鹊、金雕、云鹏、云雀等系列无人机及支线无人物流运输机等80余个型号产品，并完成两款电动eVTOL整机研制与适航认证，属于低空航空器整机制造。",
+        "category": "中央企业",
+        "category_reason": "中国兵器工业集团有限公司是国务院国资委监管的中央企业，属于97家央企之一。",
+        "credit_code": "91110000710924910P",
+        "standard_name": "中国兵器工业集团有限公司"
+      }
+    },
+    {
+      "id": 187,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "前瞻产业研究院",
+        "industry_reason": "该企业作为商业研究机构，提供低空经济市场规模数据图表，属于低空科学研究和技术服务",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股的产业研究咨询机构"
+      }
+    },
+    {
+      "id": 188,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "力神电池",
+        "industry_reason": "力神电池(无) - 无",
+        "category": "中央企业",
+        "category_reason": "力神电池为中国电子科技集团（央企）控股子公司，属国资委监管体系。",
+        "credit_code": "91120000103072365U",
+        "standard_name": "天津力神电池股份有限公司"
+      }
+    },
+    {
+      "id": 189,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北京航空航天大学",
+        "industry_reason": "北京航空航天大学(无) - 无",
+        "category": "其他国资",
+        "category_reason": "北京航空航天大学，属其他国资。"
+      }
+    },
+    {
+      "id": 190,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北大荒集团",
+        "industry_reason": "该企业以大型固定翼有人驾驶飞机在黑龙江垦区开展通用航空作业，服务于现代农业，属于低空生产作业环节。",
+        "category": "其他国资",
+        "category_reason": "北大荒集团为黑龙江省属国有大型农业企业，属于地方国资体系。"
+      }
+    },
+    {
+      "id": 191,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北川禹创三元发展集团有限公司",
+        "industry_reason": "该企业作为低空产业发展公司的股东，通过投资参与低空产业布局，属于低空金融服务",
+        "category": "其他国资",
+        "category_reason": "“北川禹创三元发展集团有限公司”名称含地域“北川”，且“发展集团”常见于地方国资平台，根据公开信息，该公司由北川羌族自治县国有资产监督管理办公室控股，属于地方国有企业。"
+      }
+    },
+    {
+      "id": 192,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北斗伏羲",
+        "industry_reason": "北斗伏羲专注于北斗导航与空域管理技术，参与低空经济先导区建设，其业务与低空信息技术服务高度相关",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营企业，按命名惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 193,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北斗星通",
+        "industry_reason": "北斗星通(无) - 无",
+        "category": "民营企业",
+        "category_reason": "北斗星通，属民营企业。",
+        "credit_code": "91110000802017541K",
+        "standard_name": "北京北斗星通导航技术股份有限公司"
+      }
+    },
+    {
+      "id": 194,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北方长鹰",
+        "industry_reason": "北方长鹰(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且公开信息显示其为自然人控股的无人机企业，符合行业惯例。"
+      }
+    },
+    {
+      "id": 195,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华为",
+        "industry_reason": "华为作为低空经济产业联盟成员，提供技术保障，属于低空信息技术服务",
+        "category": "民营企业",
+        "category_reason": "华为由自然人任正非创立并实际控制，无国有资本或外资控股，属于知名民营企业。"
+      }
+    },
+    {
+      "id": 196,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华侨城",
+        "industry_reason": "该企业涉及物流配送，属于低空运输业务",
+        "category": "中央企业",
+        "category_reason": "华侨城集团为国务院国资委监管的中央企业，属于97家央企之一。",
+        "credit_code": "91440300190346175T",
+        "standard_name": "华侨城集团有限公司"
+      }
+    },
+    {
+      "id": 197,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华兴海安集团",
+        "industry_reason": "该企业部署无人机用于油气管线巡检，属于低空生产作业中的巡检服务。",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济产业链多为新兴民营企业，按命名惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 198,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华力创通",
+        "industry_reason": "华力创通(无) - 无",
+        "category": "民营企业",
+        "category_reason": "华力创通为A股上市公司（300045），实际控制人为自然人，属于民营高科技企业。",
+        "credit_code": "91110000802098193D",
+        "standard_name": "北京华力创通科技股份有限公司"
+      }
+    },
+    {
+      "id": 199,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华润",
+        "industry_reason": "企业将AI技术融入城市运营，建设智慧园区管理系统，属于低空信息技术服务",
+        "category": "中央企业",
+        "category_reason": "华润集团为国务院国资委监管的中央企业，其下属企业属于央企体系。",
+        "credit_code": "911100001000055386",
+        "standard_name": "中国华润有限公司"
+      }
+    },
+    {
+      "id": 200,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华诺星空",
+        "industry_reason": "企业从事雷达与5G-A协同、多模融合监视，属于低空通信导航与信息技术服务",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，根据公开信息，华诺星空为自然人控股的民营科技企业。",
+        "credit_code": "91430100792359977X",
+        "standard_name": "华诺星空技术股份有限公司"
+      }
+    },
+    {
+      "id": 201,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "南京航空航天大学",
+        "industry_reason": "南京航空航天大学(无) - 无",
+        "category": "其他国资",
+        "category_reason": "南京航空航天大学，属其他国资。"
+      }
+    },
+    {
+      "id": 202,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "南方电网",
+        "industry_reason": "企业运用无人机和直升机开展输电线路巡查、运维和检修，属于低空生产作业中的电力巡检服务",
+        "category": "中央企业",
+        "category_reason": "“南方电网”全称为中国南方电网有限责任公司，属于国务院国资委监管的97家中央企业之一。",
+        "credit_code": "9144000076384341X8",
+        "standard_name": "中国南方电网有限责任公司"
+      }
+    },
+    {
+      "id": 203,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "南航",
+        "industry_reason": "南航集团作为航空运输央企，依托航空运输经验探索低空出行服务模式，属于低空运输业务。",
+        "category": "中央企业",
+        "category_reason": "“南航”通常指中国南方航空集团有限公司，属于国务院国资委监管的中央企业。",
+        "credit_code": "91440400323280545F",
+        "standard_name": "南航通用航空股份有限公司"
+      }
+    },
+    {
+      "id": 204,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "博世",
+        "industry_reason": "博世(无) - 无",
+        "category": "外资企业",
+        "category_reason": "“博世”为德国博世集团（Bosch）的中文品牌名，属于外国公司在华实体，实际控制人为外国主体。",
+        "credit_code": "ZZSN22080900000075",
+        "standard_name": "博世公司"
+      }
+    },
+    {
+      "id": 205,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "卧龙电驱",
+        "industry_reason": "卧龙电驱(无) - 无",
+        "category": "民营企业",
+        "category_reason": "卧龙电驱，属民营企业。"
+      }
+    },
+    {
+      "id": 206,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "历正科技",
+        "industry_reason": "历正科技(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营企业，按行业惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 207,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "厦门民航凯亚有限公司",
+        "industry_reason": "厦门民航凯亚有限公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "厦门民航凯亚有限公司为中国民航信息网络股份有限公司（中航信）的子公司，中航信属于国务院国资委监管的中央企业。",
+        "credit_code": "913502007054846072",
+        "standard_name": "厦门民航凯亚有限公司"
+      }
+    },
+    {
+      "id": 208,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "合利智能",
+        "industry_reason": "合利智能(无) - 无",
+        "category": "民营企业",
+        "category_reason": "合利智能，属民营企业。"
+      }
+    },
+    {
+      "id": 209,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "吉威空间",
+        "industry_reason": "企业属于通信导航、智能装备等核心技术领域，与“通感管导”一体化低空智联网体系协同，核心业务为低空信息技术服务",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 210,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "吉林化纤",
+        "industry_reason": "吉林化纤(无) - 无",
+        "category": "其他国资",
+        "category_reason": "吉林化纤，属其他国资。",
+        "credit_code": "91220201124496079Q",
+        "standard_name": "吉林化纤股份有限公司"
+      }
+    },
+    {
+      "id": 211,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "吉林碳素",
+        "industry_reason": "吉林碳素(无) - 无",
+        "category": "其他国资",
+        "category_reason": "吉林碳素，属其他国资。"
+      }
+    },
+    {
+      "id": 212,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "启明星辰",
+        "industry_reason": "该企业参与低空空域信息安全标准制定，提供信息安全技术支撑，属于低空信息技术服务",
+        "category": "民营企业",
+        "category_reason": "启明星辰为A股上市公司，实际控制人为自然人，属于网络安全领域知名民营企业，虽涉及低空经济产业链但企业性质未变。",
+        "credit_code": "911100006004827014",
+        "standard_name": "启明星辰信息技术集团股份有限公司"
+      }
+    },
+    {
+      "id": 213,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "商飞",
+        "industry_reason": "该企业研发制造eVTOL和电动飞机（如CE-25A），属于低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "“商飞”通常指中国商用飞机有限责任公司，属于国务院国资委监管的中央企业，主营民用飞机制造，与低空经济产业链相关。",
+        "credit_code": "91510100MA640U1Y8H",
+        "standard_name": "商飞软件有限公司"
+      }
+    },
+    {
+      "id": 214,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "四创电子",
+        "industry_reason": "四创电子(无) - 无",
+        "category": "中央企业",
+        "category_reason": "四创电子，属中央企业。",
+        "credit_code": "91340000719986552R",
+        "standard_name": "四创电子股份有限公司"
+      }
+    },
+    {
+      "id": 215,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "四川川发低空经济运营有限公司",
+        "industry_reason": "四川川发低空经济运营有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称中“川发”通常指四川发展（控股）有限责任公司，其为四川省属国有资本投资运营公司，因此该企业很可能为其下属子公司，属于地方国有企业。"
+      }
+    },
+    {
+      "id": 216,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "四川泛美通航",
+        "industry_reason": "四川泛美通航(无) - 无",
+        "category": "民营企业",
+        "category_reason": "四川泛美通航，属民营企业。"
+      }
+    },
+    {
+      "id": 217,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "四川省低空经济产业发展有限公司",
+        "industry_reason": "四川省低空经济产业发展有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且“低空经济产业”为新兴领域，按行业惯例推断为自然人控股或民营资本主导的企业。"
+      }
+    },
+    {
+      "id": 218,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国家会展中心",
+        "industry_reason": "国家会展中心(无) - 无",
+        "category": "其他国资",
+        "category_reason": "国家会展中心，属其他国资。"
+      }
+    },
+    {
+      "id": 219,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国家电网",
+        "industry_reason": "该企业自研无人机反制系统，通过对无人机无线电频谱信号进行特征参数识别、解码和协议分析，实现24小时监测和驱离，属于低空信息技术服务中的飞行监控与安全防护。",
+        "category": "中央企业",
+        "category_reason": "“国家电网”为国务院国资委监管的97家中央企业之一，属于知名央企。",
+        "credit_code": "9111000071093123XX",
+        "standard_name": "国家电网有限公司"
+      }
+    },
+    {
+      "id": 220,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国家能源集团",
+        "industry_reason": "该企业开展“无人机+光伏”训证融合项目，涉及无人机操作培训与认证，属于低空人才教育培训环节。",
+        "category": "中央企业",
+        "category_reason": "“国家能源集团”全称为国家能源投资集团有限责任公司，属于国务院国资委监管的97家中央企业之一。",
+        "credit_code": "91110000100018267J",
+        "standard_name": "国家能源投资集团有限责任公司"
+      }
+    },
+    {
+      "id": 221,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国投",
+        "industry_reason": "国投创业作为投资管理公司，通过投资无人装备企业（如四川傲势科技）参与低空产业，属于低空金融服务环节。",
+        "category": "中央企业",
+        "category_reason": "“国投”通常指国家开发投资集团有限公司，属于国务院国资委监管的97家中央企业之一。"
+      }
+    },
+    {
+      "id": 222,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国星宇航",
+        "industry_reason": "国星宇航(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，根据公开商业常识，国星宇航为自然人控股的商业航天公司，属于民营企业。",
+        "credit_code": "91510122MA6CEC3QX8",
+        "standard_name": "成都国星宇航科技股份有限公司"
+      }
+    },
+    {
+      "id": 223,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国睿科技",
+        "industry_reason": "国睿科技(无) - 无",
+        "category": "中央企业",
+        "category_reason": "国睿科技，属中央企业。",
+        "credit_code": "91320100135847161T",
+        "standard_name": "国睿科技股份有限公司"
+      }
+    },
+    {
+      "id": 224,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国联研究院",
+        "industry_reason": "该企业为eVTOL研发电池系统，属于低空航空器关键零部件制造",
+        "category": "民营企业",
+        "category_reason": "名称无明确国资或外资标识，且“国联研究院”非已知央企或地方国企体系，按行业惯例推断为自然人控股或混合所有制企业。"
+      }
+    },
+    {
+      "id": 225,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国药集团",
+        "industry_reason": "国药集团探索“低空物流+医药急送”，通过无人机配送提升医药供应链效率，属于低空运输服务。",
+        "category": "中央企业",
+        "category_reason": "“国药集团”即中国医药集团有限公司，属于国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 226,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国银金租",
+        "industry_reason": "国银金租(无) - 无",
+        "category": "中央企业",
+        "category_reason": "国银金租，属中央企业。"
+      }
+    },
+    {
+      "id": 227,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "地平线",
+        "industry_reason": "地平线(无) - 无",
+        "category": "民营企业",
+        "category_reason": "地平线（Horizon Robotics）为知名AI芯片公司，由自然人创立并实际控制，无国资或外资控股背景，属于民营企业。"
+      }
+    },
+    {
+      "id": 228,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "地铁设计",
+        "industry_reason": "地铁设计(无) - 无",
+        "category": "其他国资",
+        "category_reason": "地铁设计，属其他国资。",
+        "credit_code": "91440101190517616D",
+        "standard_name": "广州地铁设计研究院股份有限公司"
+      }
+    },
+    {
+      "id": 229,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "埃克森美孚",
+        "industry_reason": "埃克森美孚研发可持续航空燃油（SAF），为低空航空器提供燃料，属于低空航空器器材及零部件制造",
+        "category": "外资企业",
+        "category_reason": "埃克森美孚为美国跨国石油公司，属于知名外资品牌在华实体。",
+        "credit_code": "ZZSN22080900000008",
+        "standard_name": "埃克森美孚公司"
+      }
+    },
+    {
+      "id": 230,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "声迅股份",
+        "industry_reason": "声迅股份(无) - 无",
+        "category": "民营企业",
+        "category_reason": "声迅股份为A股上市公司（股票代码003004），实际控制人为自然人，属于民营控股企业。"
+      }
+    },
+    {
+      "id": 231,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "壹通无人机系统有限公司",
+        "industry_reason": "壹通无人机系统有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 232,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "复亚智能",
+        "industry_reason": "复亚智能(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营企业，按行业惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 233,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "大华股份",
+        "industry_reason": "企业参与'通感管导'一体化低空智联网体系，该体系属于低空基础设施建设范畴",
+        "category": "民营企业",
+        "category_reason": "大华股份为知名安防上市公司，实际控制人为自然人，属于民营企业。"
+      }
+    },
+    {
+      "id": 234,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "大漠大智控",
+        "industry_reason": "大漠大智控(无) - 无",
+        "category": "民营企业",
+        "category_reason": "大漠大智控，属民营企业。",
+        "credit_code": "91440300MA5DBA312P",
+        "standard_name": "深圳大漠大智控技术有限公司"
+      }
+    },
+    {
+      "id": 235,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "大疆",
+        "industry_reason": "大疆是全球消费级无人驾驶航空器市场的领导者，主导全球80%市场份额，生产无人机整机，属于低空航空器整机制造",
+        "category": "民营企业",
+        "category_reason": "大疆创新为全球知名无人机企业，由自然人控股，无国资或外资背景，属于典型民营企业。",
+        "credit_code": "914403007954257495",
+        "standard_name": "深圳市大疆创新科技有限公司"
+      }
+    },
+    {
+      "id": 236,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "天健九方",
+        "industry_reason": "该企业作为低空领域投资标的，专注于通信导航等核心技术，与'通感管导'一体化低空智联网体系协同，属于低空信息技术服务",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营企业，按命名惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 237,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "奥比中光",
+        "industry_reason": "奥比中光(无) - 无",
+        "category": "民营企业",
+        "category_reason": "奥比中光是科创板上市的3D视觉感知技术公司，实际控制人为自然人，属于民营企业。",
+        "credit_code": "91440300061436270G",
+        "standard_name": "奥比中光科技集团股份有限公司"
+      }
+    },
+    {
+      "id": 238,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "好盈科技",
+        "industry_reason": "好盈科技(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济产业链多为新兴科技领域，按行业惯例推断为自然人控股企业。",
+        "credit_code": "914403007787549030",
+        "standard_name": "深圳市好盈科技股份有限公司"
+      }
+    },
+    {
+      "id": 239,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "威海广泰",
+        "industry_reason": "威海广泰空港设备股份有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "威海广泰，属民营企业。",
+        "credit_code": "913710002642503020",
+        "standard_name": "威海广泰空港设备股份有限公司"
+      }
+    },
+    {
+      "id": 240,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "威海拓展",
+        "industry_reason": "威海拓展(无) - 无",
+        "category": "民营企业",
+        "category_reason": "威海拓展，属民营企业。",
+        "credit_code": "91371000739265146J",
+        "standard_name": "威海拓展纤维有限公司"
+      }
+    },
+    {
+      "id": 241,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "孚能科技",
+        "industry_reason": "该企业研发全固态电池，属于低空航空器关键零部件制造",
+        "category": "民营企业",
+        "category_reason": "孚能科技为科创板上市公司，实际控制人为自然人，属于民营企业。",
+        "credit_code": "913607006984663896",
+        "standard_name": "孚能科技（赣州）股份有限公司"
+      }
+    },
+    {
+      "id": 242,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宁德时代",
+        "industry_reason": "宁德时代作为新能源电池企业，提供凝聚态电池技术用于商用飞机，电池属于低空航空器的关键零部件，符合低空航空器器材及零部件制造环节。",
+        "category": "民营企业",
+        "category_reason": "宁德时代为知名上市公司，实际控制人为自然人，属于民营企业。",
+        "credit_code": "91350900587527783P",
+        "standard_name": "宁德时代新能源科技股份有限公司"
+      }
+    },
+    {
+      "id": 243,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "安具威",
+        "industry_reason": "该企业属于通信导航、智能装备等核心技术领域，与“通感管导”一体化低空智联网体系协同，直接对应低空信息技术服务环节。",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 244,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "安森美",
+        "industry_reason": "安森美(无) - 无",
+        "category": "外资企业",
+        "category_reason": "安森美（ON Semiconductor）为美国知名半导体公司，属于外资企业。",
+        "credit_code": "ZZSN230824151206592",
+        "standard_name": "安森美半导体公司"
+      }
+    },
+    {
+      "id": 245,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宗申动力",
+        "industry_reason": "宗申动力(无) - 无",
+        "category": "民营企业",
+        "category_reason": "宗申动力，属民营企业。",
+        "credit_code": "915000002023878993",
+        "standard_name": "重庆宗申动力机械股份有限公司"
+      }
+    },
+    {
+      "id": 246,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宝武碳业",
+        "industry_reason": "宝武碳业交付的LX-1大翼展机翼是低空航空器的关键零部件，属于低空航空器器材及零部件制造环节。",
+        "category": "中央企业",
+        "category_reason": "“宝武碳业”为中国宝武钢铁集团有限公司（国务院国资委监管的中央企业）旗下子公司，属于央企体系。",
+        "credit_code": "91310113132230684W",
+        "standard_name": "宝武碳业科技股份有限公司"
+      }
+    },
+    {
+      "id": 247,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宝钛股份",
+        "industry_reason": "宝钛股份(无) - 无",
+        "category": "中央企业",
+        "category_reason": "宝钛股份，属中央企业。"
+      }
+    },
+    {
+      "id": 248,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "小鹏汽车",
+        "industry_reason": "与中国汽车技术研究中心在气动测试、三电测试等方面合作，属于低空装备检测服务",
+        "category": "民营企业",
+        "category_reason": "小鹏汽车为知名电动汽车制造商，实际控制人为自然人，属于民营企业，无国资或外资控股背景。",
+        "credit_code": "ZZSN23041800000031",
+        "standard_name": "广州小鹏汽车科技有限公司"
+      }
+    },
+    {
+      "id": 249,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "山东正元数字城市建设有限公司",
+        "industry_reason": "山东正元数字城市建设有限公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "山东正元数字城市建设有限公司隶属于正元地理信息集团，后者为中国冶金地质总局下属央企子公司，属国资委监管体系。"
+      }
+    },
+    {
+      "id": 250,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "山河智能",
+        "industry_reason": "该企业与中国航发对接，为低空飞行器提供配套发展，属于低空航空器器材及零部件制造",
+        "category": "其他国资",
+        "category_reason": "山河智能为广州市国资委控股的上市公司，属于地方国有资本实际控制的企业。",
+        "credit_code": "91430000712164273J",
+        "standard_name": "山河智能装备股份有限公司"
+      }
+    },
+    {
+      "id": 251,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "峰飞航空",
+        "industry_reason": "该企业生产eVTOL载货飞行器并取得型号合格证、标准适航证和生产许可证，属于低空航空器整机制造",
+        "category": "民营企业",
+        "category_reason": "峰飞航空，属民营企业。"
+      }
+    },
+    {
+      "id": 252,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "川大智胜",
+        "industry_reason": "川大智胜(无) - 无",
+        "category": "民营企业",
+        "category_reason": "川大智胜，属民营企业。",
+        "credit_code": "91510100723431912P",
+        "standard_name": "四川川大智胜软件股份有限公司"
+      }
+    },
+    {
+      "id": 253,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "工银金融租赁",
+        "industry_reason": "工银金融租赁(无) - 无",
+        "category": "中央企业",
+        "category_reason": "工银金融租赁，属中央企业。"
+      }
+    },
+    {
+      "id": 254,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "帆陌科技",
+        "industry_reason": "帆陌科技(无) - 无",
+        "category": "民营企业",
+        "category_reason": "帆陌科技，属民营企业。"
+      }
+    },
+    {
+      "id": 255,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "平安产险",
+        "industry_reason": "平安产险(无) - 无",
+        "category": "其他国资",
+        "category_reason": "平安产险，属其他国资。"
+      }
+    },
+    {
+      "id": 256,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "幸福通用航空有限公司",
+        "industry_reason": "幸福通用航空有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，通用航空领域多为民营资本运营，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 257,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "广东省低空经济产业发展有限公司",
+        "industry_reason": "广东省低空经济产业发展有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "根据公开信息，该公司由广东省机场管理集团等地方国资企业共同出资设立，属于省级低空经济产业平台，符合地方国企特征。"
+      }
+    },
+    {
+      "id": 258,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "广东通用航空产业集团有限公司",
+        "industry_reason": "广东通用航空产业集团有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“广东”地域及“通用航空产业集团”字样，符合地方国资平台命名惯例，且低空经济领域常见地方政府主导的产业集团，推断为广东省属或市属国有企业。"
+      }
+    },
+    {
+      "id": 259,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "广汽集团",
+        "industry_reason": "企业与中国汽车技术研究中心合作进行气动测试、三电测试，属于低空航空器装备的检测服务环节。",
+        "category": "其他国资",
+        "category_reason": "广汽集团，属其他国资。"
+      }
+    },
+    {
+      "id": 260,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "广电计量",
+        "industry_reason": "广电计量(无) - 无",
+        "category": "其他国资",
+        "category_reason": "广电计量，属其他国资。",
+        "credit_code": "914401017397031187",
+        "standard_name": "广电计量检测集团股份有限公司"
+      }
+    },
+    {
+      "id": 261,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "广联航空",
+        "industry_reason": "广联航空工业股份有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "广联航空，属民营企业。",
+        "credit_code": "91230199565431270F",
+        "standard_name": "广联航空工业股份有限公司"
+      }
+    },
+    {
+      "id": 262,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "广西交投低空物流有限公司",
+        "industry_reason": "广西交投低空物流有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“广西交投”，为广西交通投资集团旗下子公司，属地方国有企业。"
+      }
+    },
+    {
+      "id": 263,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "建科院",
+        "industry_reason": "建科院(无) - 无",
+        "category": "其他国资",
+        "category_reason": "建科院，属其他国资。"
+      }
+    },
+    {
+      "id": 264,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "影石",
+        "industry_reason": "影石(无) - 无",
+        "category": "民营企业",
+        "category_reason": "影石（Insta360）为知名消费级全景相机及影像设备制造商，由自然人创立并控股，无国资或外资背景，属于典型民营企业。",
+        "credit_code": "91440300342470600P",
+        "standard_name": "影石创新科技股份有限公司"
+      }
+    },
+    {
+      "id": 265,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "御风未来",
+        "industry_reason": "该企业是eVTOL整机企业，属于低空航空器整机制造环节。",
+        "category": "民营企业",
+        "category_reason": "御风未来，属民营企业。"
+      }
+    },
+    {
+      "id": 266,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "意大利莱昂纳多公司",
+        "industry_reason": "意大利莱昂纳多公司(无) - 无",
+        "category": "外资企业",
+        "category_reason": "“意大利莱昂纳多公司”为意大利知名航空航天与国防企业，属于外国公司，在华实体或关联企业应认定为外资企业。"
+      }
+    },
+    {
+      "id": 267,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "意法半导体",
+        "industry_reason": "意法半导体(无) - 无",
+        "category": "外资企业",
+        "category_reason": "“意法半导体”为欧洲半导体巨头STMicroelectronics的中文名称，属于外国公司在华实体。",
+        "credit_code": "ZZSN230824151200324",
+        "standard_name": "意法半导体"
+      }
+    },
+    {
+      "id": 268,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "成都交投航空投资集团有限公司",
+        "industry_reason": "成都交投航空投资集团有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“成都交投”，为成都市属交通投资集团旗下企业，属于地方国有资本。"
+      }
+    },
+    {
+      "id": 269,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "成都纵横自动化技术股份有限公司",
+        "industry_reason": "成都纵横自动化技术股份有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "该公司为科创板上市公司（纵横股份，688070），实际控制人为自然人，无国资或外资控股背景，属于典型的民营科技企业。",
+        "credit_code": "915101005535556718",
+        "standard_name": "成都纵横自动化技术股份有限公司"
+      }
+    },
+    {
+      "id": 270,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "成飞",
+        "industry_reason": "成飞(无) - 无",
+        "category": "中央企业",
+        "category_reason": "“成飞”即成都飞机工业（集团）有限责任公司，为中国航空工业集团有限公司（国资委监管央企）的核心子公司，属于中央企业体系。",
+        "credit_code": "91610000745016111K",
+        "standard_name": "中航成飞股份有限公司"
+      }
+    },
+    {
+      "id": 271,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "抚顺特钢",
+        "industry_reason": "抚顺特钢(无) - 无",
+        "category": "其他国资",
+        "category_reason": "抚顺特钢，属其他国资。"
+      }
+    },
+    {
+      "id": 272,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "招信低空",
+        "industry_reason": "企业打造‘低空+文旅’生态圈，包括跨海观光、海岛接驳、航拍摄影等消费场景",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 273,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "招商局集团",
+        "industry_reason": "企业通过招信低空构建集整机制造于一体的产业生态，涉及低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "招商局集团是国务院国资委监管的中央企业，属于97家央企之一。",
+        "credit_code": "91110000100005220B",
+        "standard_name": "招商局集团有限公司"
+      }
+    },
+    {
+      "id": 274,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "招商蛇口",
+        "industry_reason": "该企业作为城市综合开发运营商，合作建设“前海-蛇口低空经济先导区”，直接涉及低空基础设施的规划与建设",
+        "category": "中央企业",
+        "category_reason": "招商蛇口为招商局集团旗下上市公司，招商局集团属国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 275,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "招商银行",
+        "industry_reason": "招商银行作为金融机构，与招信低空达成战略合作，参与低空经济先导区建设，提供金融服务，属于低空金融服务环节。",
+        "category": "中央企业",
+        "category_reason": "招商银行由招商局集团控股，招商局集团为国务院国资委监管的中央企业。",
+        "credit_code": "9144030010001686XA",
+        "standard_name": "招商银行股份有限公司"
+      }
+    },
+    {
+      "id": 276,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "招银金融租赁",
+        "industry_reason": "招银金融租赁(无) - 无",
+        "category": "中央企业",
+        "category_reason": "招银金融租赁，属中央企业。"
+      }
+    },
+    {
+      "id": 277,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新兴际华智研院",
+        "industry_reason": "其产品用于应急通信侦测、照明和指挥，属于低空公共服务",
+        "category": "中央企业",
+        "category_reason": "“新兴际华”为国务院国资委监管的中央企业新兴际华集团有限公司的简称，其下属研究院属于央企体系。"
+      }
+    },
+    {
+      "id": 278,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新晨科技",
+        "industry_reason": "新晨科技(无) - 无",
+        "category": "民营企业",
+        "category_reason": "新晨科技，属民营企业。",
+        "credit_code": "911101086000694820",
+        "standard_name": "新晨科技股份有限公司"
+      }
+    },
+    {
+      "id": 279,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "方大炭素",
+        "industry_reason": "方大炭素(无) - 无",
+        "category": "民营企业",
+        "category_reason": "方大炭素，属民营企业。",
+        "credit_code": "91620000710375560A",
+        "standard_name": "方大炭素新材料科技股份有限公司"
+      }
+    },
+    {
+      "id": 280,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "无锡梁运低空商业运营管理有限公司",
+        "industry_reason": "企业参与低空经济配套设施建设，属于低空基础设施配套建设",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 281,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "日照交通能源发展集团",
+        "industry_reason": "日照交通能源发展集团(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“日照”地域及“交通能源发展”等典型地方国资关键词，按常识推断为日照市属国有企业"
+      }
+    },
+    {
+      "id": 282,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "时代飞鹏",
+        "industry_reason": "时代飞鹏(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营企业，按行业惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 283,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "时的科技",
+        "industry_reason": "该企业研发制造eVTOL（电动垂直起降飞行器），属于低空航空器整机制造",
+        "category": "民营企业",
+        "category_reason": "时的科技，属民营企业。"
+      }
+    },
+    {
+      "id": 284,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "昂际",
+        "industry_reason": "昂际智航(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 285,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "星网宇达",
+        "industry_reason": "星网宇达(无) - 无",
+        "category": "民营企业",
+        "category_reason": "星网宇达为A股上市公司（002829），实际控制人为自然人，属于民营科技企业。",
+        "credit_code": "91110108776399733W",
+        "standard_name": "北京星网宇达科技股份有限公司"
+      }
+    },
+    {
+      "id": 286,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "春秋航空",
+        "industry_reason": "春秋航空推出“空中的士”会员制服务，属于低空运输服务。",
+        "category": "民营企业",
+        "category_reason": "春秋航空为知名民营低成本航空公司，实际控制人为自然人，无国资或外资控股背景。",
+        "credit_code": "9131000076839377X5",
+        "standard_name": "春秋航空股份有限公司"
+      }
+    },
+    {
+      "id": 287,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "普天科技",
+        "industry_reason": "该企业参与低空经济产业研究，业务涉及通信与信息化技术，属于低空信息技术服务环节",
+        "category": "中央企业",
+        "category_reason": "“普天科技”为中国电子科技集团（CETC）旗下上市公司，实际控制人为国务院国资委监管的中央企业。",
+        "credit_code": "914401012312130384",
+        "standard_name": "中电科普天科技股份有限公司"
+      }
+    },
+    {
+      "id": 288,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "杜邦",
+        "industry_reason": "杜邦提供KevlarEXO芳纶纤维，属于低空航空器制造所需的材料，因此属于低空航空器材料制造环节。",
+        "category": "外资企业",
+        "category_reason": "“杜邦”为美国知名跨国化学公司，属于外国品牌在华实体，按常识认定为外资企业。",
+        "credit_code": "ZZSN23030900000029",
+        "standard_name": "杜邦公司"
+      }
+    },
+    {
+      "id": 289,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "极飞",
+        "industry_reason": "该企业研发生产农用无人机，属于低空航空器整机制造",
+        "category": "民营企业",
+        "category_reason": "极飞科技（XAG）为知名农业无人机及低空经济企业，由自然人创立并控股，无国资或外资背景，符合民营企业特征。",
+        "credit_code": "91440106593721849Y",
+        "standard_name": "广州极飞科技股份有限公司"
+      }
+    },
+    {
+      "id": 290,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "比亚迪",
+        "industry_reason": "比亚迪(无) - 无",
+        "category": "民营企业",
+        "category_reason": "比亚迪为A股上市公司，实际控制人为自然人王传福，属于民营企业。",
+        "credit_code": "91440300192317458F",
+        "standard_name": "比亚迪股份有限公司"
+      }
+    },
+    {
+      "id": 291,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "比克电池",
+        "industry_reason": "比克电池(无) - 无",
+        "category": "民营企业",
+        "category_reason": "比克电池为知名民营锂电池企业，无国资或外资控股背景。"
+      }
+    },
+    {
+      "id": 292,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "江苏低空经济发展集团有限公司",
+        "industry_reason": "江苏低空经济发展集团有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资典型标识，按命名惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 293,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "江苏恒神",
+        "industry_reason": "江苏恒神(无) - 无",
+        "category": "民营企业",
+        "category_reason": "江苏恒神，属民营企业。",
+        "credit_code": "91321100666352897G",
+        "standard_name": "江苏恒神股份有限公司"
+      }
+    },
+    {
+      "id": 294,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "江苏航空产业集团",
+        "industry_reason": "江苏航空产业集团(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“江苏”地域及“航空产业集团”，符合地方国资命名惯例，且低空经济领域常由地方国企主导。"
+      }
+    },
+    {
+      "id": 295,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "江铃集团",
+        "industry_reason": "江铃集团(无) - 无",
+        "category": "其他国资",
+        "category_reason": "江铃集团为江西省属国有重点企业，属于地方国资控股的汽车制造集团。"
+      }
+    },
+    {
+      "id": 296,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "沃兰特",
+        "industry_reason": "与南航通用航空在适航取证方面合作，涉及低空装备检测服务",
+        "category": "民营企业",
+        "category_reason": "沃兰特，属民营企业。"
+      }
+    },
+    {
+      "id": 297,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "沃飞长空",
+        "industry_reason": "该企业是eVTOL整机企业，专注于低空航空器整机制造，属于低空制造业的上游环节。",
+        "category": "民营企业",
+        "category_reason": "沃飞长空，属民营企业。"
+      }
+    },
+    {
+      "id": 298,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "沙特阿拉伯航空集团",
+        "industry_reason": "该企业为航空公司，采购eVTOL用于低空运输服务",
+        "category": "外资企业",
+        "category_reason": "沙特阿拉伯航空集团为沙特政府所有的航空公司，属于外国国有企业，在中国视为外资企业"
+      }
+    },
+    {
+      "id": 299,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "河北新华北集成电路有限公司",
+        "industry_reason": "河北新华北集成电路有限公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "河北新华北集成电路有限公司为中国电子科技集团（国资委监管央企）旗下河北半导体研究所（十三所）下属企业，属于央企体系。",
+        "credit_code": "91130185734379830X",
+        "standard_name": "河北新华北集成电路有限公司"
+      }
+    },
+    {
+      "id": 300,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "波音",
+        "industry_reason": "波音在eVTOL领域占据技术领先地位，eVTOL属于低空航空器整机制造",
+        "category": "外资企业",
+        "category_reason": "波音为美国波音公司，是全球知名的航空航天制造商，属于外国企业。",
+        "credit_code": "ZZSN22080900000148",
+        "standard_name": "波音"
+      }
+    },
+    {
+      "id": 301,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "泰雷兹",
+        "industry_reason": "泰雷兹在通信导航（CNS）体系数字化转型中发挥作用，属于低空信息技术服务",
+        "category": "外资企业",
+        "category_reason": "“泰雷兹”为法国Thales集团在华品牌，属外国知名跨国企业，符合外资认定标准。",
+        "credit_code": "ZZSN230824151200330",
+        "standard_name": "法国泰雷兹集团"
+      }
+    },
+    {
+      "id": 302,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "洛克希德马丁公司",
+        "industry_reason": "洛克希德马丁公司(无) - 无",
+        "category": "外资企业",
+        "category_reason": "洛克希德马丁公司为美国知名军工与航空航天企业，属于外国公司，其性质为外资企业。"
+      }
+    },
+    {
+      "id": 303,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "洛阳拖拉机制造厂",
+        "industry_reason": "该企业面临转型升级，亟需研发大载重专业农用无人机，属于低空航空器整机制造环节",
+        "category": "中央企业",
+        "category_reason": "洛阳拖拉机制造厂（即中国一拖集团有限公司）为国务院国资委监管的中央企业中国机械工业集团有限公司的子公司，属于央企体系。"
+      }
+    },
+    {
+      "id": 304,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "洛阳轴承集团股份有限公司",
+        "industry_reason": "洛阳轴承集团股份有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "洛阳轴承集团股份有限公司为洛阳市属国有控股企业，属于地方国资体系。",
+        "credit_code": "914103007694752837",
+        "standard_name": "洛阳轴承集团股份有限公司"
+      }
+    },
+    {
+      "id": 305,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "派诺特",
+        "industry_reason": "该企业推出首批FPV无人机，属于低空航空器整机制造",
+        "category": "外资企业",
+        "category_reason": "“派诺特”为法国无人机公司Parrot的中文译名，属于外国品牌在华实体。"
+      }
+    },
+    {
+      "id": 306,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "济南低空经济发展集团",
+        "industry_reason": "济南低空经济发展集团(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“济南”及“发展集团”，符合地方国资平台命名惯例，且低空经济为地方政府重点扶持产业，推断为济南市属国有企业。"
+      }
+    },
+    {
+      "id": 307,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "济钢集团时代低空公司",
+        "industry_reason": "济钢集团时代低空公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“济钢集团”，济钢集团为山东省属国有企业，其子公司属于地方国资体系。"
+      }
+    },
+    {
+      "id": 308,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "浙江极客桥",
+        "industry_reason": "浙江极客桥(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营科技企业，按行业惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 309,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海格通信",
+        "industry_reason": "企业涉及通信导航技术，与低空智联网体系协同，属于低空信息技术服务",
+        "category": "其他国资",
+        "category_reason": "海格通信为广州无线电集团控股的上市公司，广州无线电集团是广州市属国有企业，因此属于地方国资。",
+        "credit_code": "91440101724308182L",
+        "standard_name": "广州海格通信集团股份有限公司"
+      }
+    },
+    {
+      "id": 310,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海特高新",
+        "industry_reason": "海特高新(无) - 无",
+        "category": "民营企业",
+        "category_reason": "海特高新，属民营企业。",
+        "credit_code": "91510000201824612G",
+        "standard_name": "四川海特高新技术股份有限公司"
+      }
+    },
+    {
+      "id": 311,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "深圳市高巨创新科技开发有限公司",
+        "industry_reason": "深圳市高巨创新科技开发有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业",
+        "credit_code": "91440300319549708P",
+        "standard_name": "深圳市高巨创新科技开发有限公司"
+      }
+    },
+    {
+      "id": 312,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "深城交",
+        "industry_reason": "深城交(无) - 无",
+        "category": "其他国资",
+        "category_reason": "深城交，属其他国资。"
+      }
+    },
+    {
+      "id": 313,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "湖北交投集团",
+        "industry_reason": "湖北交投集团(无) - 无",
+        "category": "其他国资",
+        "category_reason": "“湖北交投集团”为湖北省属国有交通投资企业，属于地方国资体系。"
+      }
+    },
+    {
+      "id": 314,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "湖北高路低空经济发展有限责任公司",
+        "industry_reason": "湖北高路低空经济发展有限责任公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“湖北高路”暗示与湖北省高速公路相关，属于地方国有企业体系。"
+      }
+    },
+    {
+      "id": 315,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "湖南湘钢",
+        "industry_reason": "该企业使用5G网联无人机进行厂区巡逻、高炉温度检测等生产作业，属于低空生产作业环节。",
+        "category": "其他国资",
+        "category_reason": "“湖南湘钢”通常指湖南钢铁集团（原湘潭钢铁集团），为湖南省属国有重点企业，属于地方国资体系。",
+        "credit_code": "91430300792391176W",
+        "standard_name": "湖南湘钢瑞泰科技有限公司"
+      }
+    },
+    {
+      "id": 316,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "湖南省低空经济发展集团",
+        "industry_reason": "湖南省低空经济发展集团(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“湖南省”地域前缀及“发展集团”字样，符合地方国资平台命名惯例，且低空经济为地方政府重点推动的产业领域。"
+      }
+    },
+    {
+      "id": 317,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "潍坊柴油机制造厂",
+        "industry_reason": "该企业需要研发大载重专业农用无人机，属于低空航空器整机制造",
+        "category": "其他国资",
+        "category_reason": "“潍坊柴油机制造厂”即潍柴集团前身，现为山东省国资委监管的山东重工集团旗下核心企业，属于地方国有控股企业。"
+      }
+    },
+    {
+      "id": 318,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "爱生技术集团",
+        "industry_reason": "西安爱生无人机技术有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，低空经济领域多为民营企业，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 319,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "白鲸航线",
+        "industry_reason": "该企业与中国航发开展需求捕获对接，实现低空飞行器的配套发展，涉及航空器器材及零部件的配套制造。",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为初创科技企业，按行业惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 320,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "神旅集团",
+        "industry_reason": "企业构建智能化管理与网络，属于低空信息技术服务",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营企业主导，按行业惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 321,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "福昆航空",
+        "industry_reason": "该企业是国内低空航空器民营企业，主要业务为低空航空器整机制造。",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业"
+      }
+    },
+    {
+      "id": 322,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "禾赛科技",
+        "industry_reason": "禾赛科技(无) - 无",
+        "category": "民营企业",
+        "category_reason": "禾赛科技为知名激光雷达制造商，在纳斯达克上市，由自然人实际控制，无国资或外资控股背景。",
+        "credit_code": "91310114320742767K",
+        "standard_name": "上海禾赛科技有限公司"
+      }
+    },
+    {
+      "id": 323,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "空客",
+        "industry_reason": "空客作为传统航空巨头，在低空经济战略延伸中主要涉及低空航空器（如eVTOL）的整机制造。",
+        "category": "外资企业",
+        "category_reason": "“空客”为空中客车（Airbus）的中文简称，系欧洲跨国航空航天企业，属于外国品牌在华实体。",
+        "credit_code": "91110000774052074X",
+        "standard_name": "空客（北京）工程技术中心有限公司"
+      }
+    },
+    {
+      "id": 324,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "纳睿雷达",
+        "industry_reason": "纳睿雷达(无) - 无",
+        "category": "民营企业",
+        "category_reason": "纳睿雷达，属民营企业。",
+        "credit_code": "91440400304080484P",
+        "standard_name": "广东纳睿雷达科技股份有限公司"
+      }
+    },
+    {
+      "id": 325,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "纵横股份",
+        "industry_reason": "纵横股份(无) - 无",
+        "category": "民营企业",
+        "category_reason": "纵横股份，属民营企业。"
+      }
+    },
+    {
+      "id": 326,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "绵阳交通发展集团有限责任公司",
+        "industry_reason": "该企业作为低空产业发展公司股东，参与低空产业布局，其交通发展背景与低空基础设施建设相关",
+        "category": "其他国资",
+        "category_reason": "名称含“绵阳”及“交通发展”，符合地方交通类国企命名惯例，通常由地方政府国资委控股。"
+      }
+    },
+    {
+      "id": 327,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "绵阳机场（集团）有限公司",
+        "industry_reason": "该企业作为机场集团，参与低空产业布局，其核心业务涉及低空基础设施建设",
+        "category": "其他国资",
+        "category_reason": "绵阳机场为地方性基础设施企业，通常由绵阳市国资委控股，属于地方国有企业。"
+      }
+    },
+    {
+      "id": 328,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "绵阳科技城低空产业发展有限公司",
+        "industry_reason": "企业经营范围包括自有资金投资的资产管理服务，属于低空金融服务",
+        "category": "其他国资",
+        "category_reason": "名称含“绵阳科技城”暗示与地方科技城或高新区政府背景相关，低空产业为新兴领域，地方国资常主导此类产业平台公司。"
+      }
+    },
+    {
+      "id": 329,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "罗兰贝格",
+        "industry_reason": "该企业提供全球低空经济市场预测数据，属于低空科学研究和技术服务中的研究分析活动。",
+        "category": "外资企业",
+        "category_reason": "罗兰贝格为德国独资的国际管理咨询公司，属于外国品牌在华实体。"
+      }
+    },
+    {
+      "id": 330,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "美团",
+        "industry_reason": "美团在低空物流领域开展规模化应用，作为物流企业代表，属于低空运输服务。",
+        "category": "民营企业",
+        "category_reason": "美团为知名互联网企业，实际控制人为中国籍自然人，无国资或外资控股背景，属于民营企业。",
+        "credit_code": "ZZSN23041800000006",
+        "standard_name": "美团"
+      }
+    },
+    {
+      "id": 331,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "美国FLIR公司",
+        "industry_reason": "美国FLIR公司(无) - 无",
+        "category": "外资企业",
+        "category_reason": "名称含“美国”且“FLIR”为美国知名红外热成像公司，属于外国品牌在华实体"
+      }
+    },
+    {
+      "id": 332,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "美国安杜里尔工业公司",
+        "industry_reason": "美国安杜里尔工业公司(无) - 无",
+        "category": "外资企业",
+        "category_reason": "名称含“美国”且“安杜里尔”为美国国防科技公司Anduril的音译，属于外国企业。"
+      }
+    },
+    {
+      "id": 333,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "美国西科斯基公司",
+        "industry_reason": "美国西科斯基公司(无) - 无",
+        "category": "外资企业",
+        "category_reason": "“西科斯基”为美国知名直升机制造商，名称明确标注“美国”，属于外国公司。"
+      }
+    },
+    {
+      "id": 334,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "美国通用原子能公司",
+        "industry_reason": "美国通用原子能公司(无) - 无",
+        "category": "外资企业",
+        "category_reason": "名称明确包含“美国”，且“通用原子能”为美国知名军工企业，属于外国公司在华实体。"
+      }
+    },
+    {
+      "id": 335,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "美联航",
+        "industry_reason": "美联航布局电动空中出租车并推进低空出行商业化，核心业务是提供低空客运服务，属于低空运输环节。",
+        "category": "外资企业",
+        "category_reason": "名称“美联航”明显指向美国联合航空（United Airlines）品牌，虽行业为低空经济产业链，但该名称属于外国知名航空品牌，按命名惯例推断为外资企业。"
+      }
+    },
+    {
+      "id": 336,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "羚控科技",
+        "industry_reason": "羚控科技(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股的科技企业"
+      }
+    },
+    {
+      "id": 337,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "老挝国家输电网",
+        "industry_reason": "该企业作为甲方，应用多旋翼无人机开展输电线路巡查，属于低空生产作业中的电力巡检业务。",
+        "category": "外资企业",
+        "category_reason": "企业名称含“老挝国家”，实际控制人为老挝政府，属于外国主体，按外资认定原则判定为外资企业。"
+      }
+    },
+    {
+      "id": 338,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "联创光电",
+        "industry_reason": "联创光电(无) - 无",
+        "category": "其他国资",
+        "category_reason": "联创光电为A股上市公司，实际控制人为江西省国资委，属于地方国有控股企业。",
+        "credit_code": "9136000070551268X6",
+        "standard_name": "江西联创光电科技股份有限公司"
+      }
+    },
+    {
+      "id": 339,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "联合飞机",
+        "industry_reason": "该企业与中国航发开展需求捕获对接，实现低空飞行器的配套发展，涉及航空器器材及零部件的配套制造。",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且公开信息显示为自然人控股的无人机研发制造企业，属于低空经济领域的民营企业。",
+        "credit_code": "914403003116581250",
+        "standard_name": "深圳联合飞机科技有限公司"
+      }
+    },
+    {
+      "id": 340,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "联特智能装备",
+        "industry_reason": "该企业研发电动重载运输无人机，属于低空航空器整机制造",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济产业链多为民营企业，按命名惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 341,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "联邦快递",
+        "industry_reason": "联邦快递以无人机配送为核心，推动物流场景商业化落地，属于低空运输服务",
+        "category": "外资企业",
+        "category_reason": "“联邦快递”为美国FedEx在华子公司，属于外国品牌实体"
+      }
+    },
+    {
+      "id": 342,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "腾盾科创",
+        "industry_reason": "四川腾盾良远智能科技有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "腾盾科创为无人机研发制造企业，非国资委央企或地方国企，实际控制人为自然人，属于民营企业。"
+      }
+    },
+    {
+      "id": 343,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "腾讯",
+        "industry_reason": "腾讯作为Lilium第一大股东，累计注资超5亿美元，属于低空金融服务中的投资行为。",
+        "category": "民营企业",
+        "category_reason": "腾讯为知名上市公司，实际控制人为自然人，属于民营企业。",
+        "credit_code": "ZZSN22061700000003",
+        "standard_name": "腾讯控股有限公司"
+      }
+    },
+    {
+      "id": 344,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "航天宏图",
+        "industry_reason": "航天宏图(无) - 无",
+        "category": "民营企业",
+        "category_reason": "航天宏图，属民营企业。",
+        "credit_code": "91110108671708384H",
+        "standard_name": "航天宏图信息技术股份有限公司"
+      }
+    },
+    {
+      "id": 345,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "航天科工",
+        "industry_reason": "该企业提供雷达探测、光电跟踪、无线电侦测、电磁干扰等低空预警和反制服务，属于低空飞行辅助活动。",
+        "category": "中央企业",
+        "category_reason": "“航天科工”全称为中国航天科工集团有限公司，属于国务院国资委监管的97家中央企业之一。",
+        "credit_code": "91110000710925243K",
+        "standard_name": "中国航天科工集团有限公司"
+      }
+    },
+    {
+      "id": 346,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "航天科技",
+        "industry_reason": "该企业完成视觉、地形匹配等无源导航策略及自主感知避障功能研发，实现无人机系统智能化，属于低空飞行辅助活动",
+        "category": "中央企业",
+        "category_reason": "“航天科技”通常指中国航天科技集团有限公司，属于国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 347,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "航新科技",
+        "industry_reason": "航新科技(无) - 无",
+        "category": "民营企业",
+        "category_reason": "航新科技，属民营企业。"
+      }
+    },
+    {
+      "id": 348,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "航瑞动力",
+        "industry_reason": "该企业聚焦航空发动机核心技术，适配低空飞行器动力系统需求，属于低空航空器关键零部件制造。",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济产业链多为民营企业主导，按行业惯例推断为自然人控股企业。"
+      }
+    },
+    {
+      "id": 349,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "航空发动机集团",
+        "industry_reason": "该企业自主研发低空飞行器小型涡扇发动机，属于低空航空器关键零部件制造，替代进口产品提升供应链自主化率。",
+        "category": "中央企业",
+        "category_reason": "“航空发动机集团”指代中国航空发动机集团有限公司，属国务院国资委监管的97家中央企业之一。"
+      }
+    },
+    {
+      "id": 350,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "航空工业集团",
+        "industry_reason": "该企业生产AG系列通用飞机、AC系列直升机、飞艇、无人机、eVTOL等多种低空航空器，属于低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "“航空工业集团”即中国航空工业集团有限公司，属于国务院国资委监管的中央企业。",
+        "credit_code": "91110000710935732K",
+        "standard_name": "中国航空工业集团有限公司"
+      }
+    },
+    {
+      "id": 351,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "航联保险经纪",
+        "industry_reason": "航联保险经纪(无) - 无",
+        "category": "其他国资",
+        "category_reason": "航联保险经纪，属其他国资。"
+      }
+    },
+    {
+      "id": 352,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "艾美拉飞行俱乐部",
+        "industry_reason": "艾美拉飞行俱乐部(无) - 无",
+        "category": "民营企业",
+        "category_reason": "艾美拉飞行俱乐部，属民营企业。"
+      }
+    },
+    {
+      "id": 353,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "芜湖钻石飞机公司",
+        "industry_reason": "企业建成通用飞机类国家地方联合工程研究中心，属于低空科学研究和技术服务",
+        "category": "外资企业",
+        "category_reason": "芜湖钻石飞机公司为中外合资企业，外方股东为奥地利钻石飞机公司，属于外国品牌在华实体。",
+        "credit_code": "91340221085211877X",
+        "standard_name": "中电科芜湖钻石飞机制造有限公司"
+      }
+    },
+    {
+      "id": 354,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "苏交科",
+        "industry_reason": "苏交科(无) - 无",
+        "category": "其他国资",
+        "category_reason": "苏交科，属其他国资。",
+        "credit_code": "91320000741339087U",
+        "standard_name": "苏交科集团股份有限公司"
+      }
+    },
+    {
+      "id": 355,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "英伟达",
+        "industry_reason": "英伟达NVIDIA(无) - 无",
+        "category": "外资企业",
+        "category_reason": "英伟达（NVIDIA）为美国知名跨国科技公司，属于外国品牌在华实体。",
+        "credit_code": "ZZSN230824151157150",
+        "standard_name": "英伟达"
+      }
+    },
+    {
+      "id": 356,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "英搏尔",
+        "industry_reason": "英搏尔(无) - 无",
+        "category": "民营企业",
+        "category_reason": "英搏尔，属民营企业。"
+      }
+    },
+    {
+      "id": 357,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "莱斯信息",
+        "industry_reason": "该企业落地省级低空飞行服务中心，提供低空飞行服务示范，属于低空飞行辅助活动。",
+        "category": "中央企业",
+        "category_reason": "莱斯信息，属中央企业。",
+        "credit_code": "913201001348786874",
+        "standard_name": "南京莱斯信息技术股份有限公司"
+      }
+    },
+    {
+      "id": 358,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "菜鸟网络",
+        "industry_reason": "菜鸟网络(无) - 无",
+        "category": "民营企业",
+        "category_reason": "菜鸟网络，属民营企业。",
+        "credit_code": "91440300068579872B",
+        "standard_name": "菜鸟网络科技有限公司"
+      }
+    },
+    {
+      "id": 359,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "蔚蓝航空",
+        "industry_reason": "蔚蓝航空(无) - 无",
+        "category": "民营企业",
+        "category_reason": "蔚蓝航空，属民营企业。"
+      }
+    },
+    {
+      "id": 360,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "西北工业大学",
+        "industry_reason": "西北工业大学(无) - 无",
+        "category": "其他国资",
+        "category_reason": "西北工业大学，属其他国资。"
+      }
+    },
+    {
+      "id": 361,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "西安凯亚",
+        "industry_reason": "西安凯亚(无) - 无",
+        "category": "中央企业",
+        "category_reason": "“西安凯亚”属于中国民航信息集团（中航信）旗下子公司，中航信为国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 362,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "西安羚控电子科技有限公司",
+        "industry_reason": "西安羚控电子科技有限公司(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，按行业惯例推断为自然人控股企业",
+        "credit_code": "916101310978821258",
+        "standard_name": "西安羚控电子科技有限公司"
+      }
+    },
+    {
+      "id": 363,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "西部超导",
+        "industry_reason": "西部超导(无) - 无",
+        "category": "其他国资",
+        "category_reason": "西部超导，属其他国资。",
+        "credit_code": "916101327428232411",
+        "standard_name": "西部超导材料科技股份有限公司"
+      }
+    },
+    {
+      "id": 364,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "观典防务",
+        "industry_reason": "观典防务(无) - 无",
+        "category": "民营企业",
+        "category_reason": "观典防务，属民营企业。",
+        "credit_code": "91110101765510395B",
+        "standard_name": "观典防务技术股份有限公司"
+      }
+    },
+    {
+      "id": 365,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "设计总院",
+        "industry_reason": "设计总院(无) - 无",
+        "category": "其他国资",
+        "category_reason": "设计总院，属其他国资。"
+      }
+    },
+    {
+      "id": 366,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "诺斯洛普格鲁曼公司",
+        "industry_reason": "诺斯洛普格鲁曼公司(无) - 无",
+        "category": "外资企业",
+        "category_reason": "诺斯洛普格鲁曼（Northrop Grumman）为美国知名军工企业，属于外国公司实体。"
+      }
+    },
+    {
+      "id": 367,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "贝尔",
+        "industry_reason": "贝尔在eVTOL领域占据技术领先地位，eVTOL属于低空航空器，其业务涉及整机制造",
+        "category": "外资企业",
+        "category_reason": "“贝尔”在低空经济领域通常指美国贝尔直升机公司（Bell Helicopter，德事隆集团旗下），为知名外国品牌，按常识推断其在华实体属于外资企业。",
+        "credit_code": "ZZSN230710204826291",
+        "standard_name": "贝尔斯登"
+      }
+    },
+    {
+      "id": 368,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "赛迪顾问",
+        "industry_reason": "该企业作为商业研究机构，提供低空经济规模测算数据，属于低空领域的科学研究和技术服务",
+        "category": "其他国资",
+        "category_reason": "赛迪顾问隶属于工业和信息化部直属事业单位中国电子信息产业发展研究院，属于部委下属国资背景企业。"
+      }
+    },
+    {
+      "id": 369,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "赣锋锂业",
+        "industry_reason": "赣锋锂业(无) - 无",
+        "category": "民营企业",
+        "category_reason": "赣锋锂业为深交所上市公司，实际控制人为自然人，属于典型的民营企业。",
+        "credit_code": "91360500716575125F",
+        "standard_name": "江西赣锋锂业集团股份有限公司"
+      }
+    },
+    {
+      "id": 370,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "边界智控",
+        "industry_reason": "边界智控(无) - 无",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且公开信息显示为自然人创立的低空经济领域科技公司，按行业惯例推断为民营企业。"
+      }
+    },
+    {
+      "id": 371,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "辽宁交投低空经济发展有限公司",
+        "industry_reason": "辽宁交投低空经济发展有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“辽宁交投”，符合地方交通投资集团命名惯例，应为辽宁省属国有企业下属公司。"
+      }
+    },
+    {
+      "id": 372,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "达美航空",
+        "industry_reason": "达美航空与Joby合作推出“家到机场”的空中出租车服务，属于低空运输服务，整合地面和空中交通。",
+        "category": "外资企业",
+        "category_reason": "“达美航空”为美国达美航空公司（Delta Air Lines）在华品牌或实体，属于外国航空公司。"
+      }
+    },
+    {
+      "id": 373,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "迅蚁",
+        "industry_reason": "迅蚁科技主营无人机物流配送，属于低空运输服务，且与低空智联网协同，符合场景落地需求。",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且迅蚁为无人机物流领域的知名创业公司，由自然人控股，符合民营企业特征。"
+      }
+    },
+    {
+      "id": 374,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "连云港杰瑞电子有限公司",
+        "industry_reason": "连云港杰瑞电子有限公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "连云港杰瑞电子有限公司为中国船舶集团第七一六研究所下属企业，属于国务院国资委监管的中央企业体系。",
+        "credit_code": "91320700763574897Y",
+        "standard_name": "连云港杰瑞电子有限公司"
+      }
+    },
+    {
+      "id": 375,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "通号",
+        "industry_reason": "企业构建覆盖低空飞行全任务周期的规则体系，包括飞行前风险评估、飞行中监控与调度、飞行后资源释放等，属于低空飞行辅助活动",
+        "category": "中央企业",
+        "category_reason": "“通号”通常指中国铁路通信信号股份有限公司，属于国务院国资委监管的中央企业，在低空经济产业链中涉及通信信号等领域。"
+      }
+    },
+    {
+      "id": 376,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "通用原子",
+        "industry_reason": "通用原子(无) - 无",
+        "category": "外资企业",
+        "category_reason": "“通用原子”名称与美国知名国防与无人机企业General Atomics（通用原子）高度一致，且低空经济产业链涉及无人机领域，符合该公司的业务特征，故推断为外资企业在华实体。"
+      }
+    },
+    {
+      "id": 377,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "道通科技",
+        "industry_reason": "该企业是国内低空航空器民营企业，主要生产无人机等整机，属于低空航空器整机制造",
+        "category": "民营企业",
+        "category_reason": "道通科技为深圳证券交易所上市公司（股票代码688208），实际控制人为自然人，属于典型的民营科技企业。",
+        "credit_code": "91440300767550462C",
+        "standard_name": "深圳市道通科技股份有限公司"
+      }
+    },
+    {
+      "id": 378,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "邮政",
+        "industry_reason": "中国邮政作为邮政和快递物流企业，其业务涉及利用低空航空器进行邮件和包裹的运输，属于低空运输环节。",
+        "category": "中央企业",
+        "category_reason": "“中国邮政集团有限公司”为国务院国资委监管的中央企业，属于国有独资大型企业。",
+        "credit_code": "ZZSN22080900000108",
+        "standard_name": "美国邮政"
+      }
+    },
+    {
+      "id": 379,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "金汇通航",
+        "industry_reason": "金汇通航(无) - 无",
+        "category": "民营企业",
+        "category_reason": "金汇通航，属民营企业。"
+      }
+    },
+    {
+      "id": 380,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "钢研高纳",
+        "industry_reason": "该企业为AES100发动机提供锻件、铸件等零部件，属于低空航空器器材及零部件制造",
+        "category": "中央企业",
+        "category_reason": "钢研高纳（北京钢研高纳科技股份有限公司）的实际控制人为中国钢研科技集团有限公司，后者是国务院国资委监管的中央企业。",
+        "credit_code": "911100007447282723",
+        "standard_name": "北京钢研高纳科技股份有限公司"
+      }
+    },
+    {
+      "id": 381,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "铁塔",
+        "industry_reason": "该企业依托铁塔站址资源进行无人机巢整体规划和选址，建设高清摄像头、雷达、传感器等低空感知设备，属于低空基础设施建设",
+        "category": "中央企业",
+        "category_reason": "“铁塔”通常指中国铁塔股份有限公司，该公司由三大电信运营商发起设立，属于国务院国资委监管的中央企业，且其业务（如通信铁塔）与低空经济基础设施相关。",
+        "credit_code": "91110000717843275N",
+        "standard_name": "中国铁塔股份有限公司"
+      }
+    },
+    {
+      "id": 382,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "长光禹辰",
+        "industry_reason": "长光禹辰(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称中“长光”指向中国科学院长春光学精密机械与物理研究所（中科院下属科研院所），属于国有科研机构背景，按常识推断为科研院所控股或参股企业。"
+      }
+    },
+    {
+      "id": 383,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "长安汽车",
+        "industry_reason": "长安汽车签约飞行汽车合作，将低空出行作为战略主体，属于低空航空器整机制造",
+        "category": "中央企业",
+        "category_reason": "长安汽车实际控制人为中国兵器装备集团有限公司，属于国务院国资委监管的中央企业。",
+        "credit_code": "9150000020286320X6",
+        "standard_name": "重庆长安汽车股份有限公司"
+      }
+    },
+    {
+      "id": 384,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阿彻航空",
+        "industry_reason": "该企业生产eVTOL飞行器，属于低空航空器整机制造",
+        "category": "外资企业",
+        "category_reason": "名称“阿彻”为美国上市公司Archer Aviation的音译，属于外国低空经济企业在华实体。"
+      }
+    },
+    {
+      "id": 385,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "陕西交控低空经济产业发展有限公司",
+        "industry_reason": "陕西交控低空经济产业发展有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "名称含“陕西交控”，指向陕西省属国企陕西交通控股集团，属于地方国有资本控股企业。"
+      }
+    },
+    {
+      "id": 386,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "陕西航空产业发展集团有限公司",
+        "industry_reason": "陕西航空产业发展集团有限公司(无) - 无",
+        "category": "其他国资",
+        "category_reason": "“陕西航空产业发展集团有限公司”为陕西省属国有企业，由陕西省国资委监管，专注于航空产业投资发展。"
+      }
+    },
+    {
+      "id": 387,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "零重力飞机工业",
+        "industry_reason": "零重力飞机工业(无) - 无",
+        "category": "民营企业",
+        "category_reason": "零重力飞机工业，属民营企业。"
+      }
+    },
+    {
+      "id": 388,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "雷神",
+        "industry_reason": "该企业研发空管设备，支持低空交通管理，属于低空飞行辅助活动",
+        "category": "民营企业",
+        "category_reason": "名称无国资或外资标识，且低空经济领域多为民营科技企业，按行业惯例推断为自然人控股企业。",
+        "credit_code": "ZZSN23030900000037",
+        "standard_name": "雷神公司"
+      }
+    },
+    {
+      "id": 389,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "青岛九天国际飞行学院",
+        "industry_reason": "青岛九天国际飞行学院(无) - 无",
+        "category": "民营企业",
+        "category_reason": "青岛九天国际飞行学院，属民营企业。"
+      }
+    },
+    {
+      "id": 390,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "青岛华通集团",
+        "industry_reason": "青岛华通集团(无) - 无",
+        "category": "其他国资",
+        "category_reason": "青岛华通集团为青岛市属国有资本投资运营公司，由青岛市国资委监管，属于地方国有企业。"
+      }
+    },
+    {
+      "id": 391,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "青岛民航凯亚系统集成有限公司",
+        "industry_reason": "青岛民航凯亚系统集成有限公司(无) - 无",
+        "category": "中央企业",
+        "category_reason": "名称含“民航凯亚”，属于中国民航信息集团（央企）旗下子公司",
+        "credit_code": "91370212733515001F",
+        "standard_name": "青岛民航凯亚系统集成有限公司"
+      }
+    },
+    {
+      "id": 392,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "顺丰",
+        "industry_reason": "顺丰率先布局无人机物流配送领域，属于低空经济物流运输类应用，对应低空运输环节。",
+        "category": "民营企业",
+        "category_reason": "顺丰控股为知名民营快递物流企业，实际控制人为自然人王卫，无国资或外资控股背景。",
+        "credit_code": "91340500150660397M",
+        "standard_name": "顺丰控股股份有限公司"
+      }
+    },
+    {
+      "id": 393,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "香港中旅国际投资有限公司",
+        "industry_reason": "该企业开通无人机送餐航线，提供无人机配送餐饮服务，属于低空消费",
+        "category": "中央企业",
+        "category_reason": "香港中旅国际投资有限公司是中国旅游集团（国务院国资委监管的中央企业）旗下的上市公司，属于央企子公司。",
+        "credit_code": "ZZSN22060900000045",
+        "standard_name": "香港中旅国际投资有限公司"
+      }
+    },
+    {
+      "id": 394,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "高巨创新",
+        "industry_reason": "高巨创新(无) - 无",
+        "category": "民营企业",
+        "category_reason": "高巨创新，属民营企业。",
+        "credit_code": "91440300319549708P",
+        "standard_name": "深圳市高巨创新科技开发有限公司"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "source": 1,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 2,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 3,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 4,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 5,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 6,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 7,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 8,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 9,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 10,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 11,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 12,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 13,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 14,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 15,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 16,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 17,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 18,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 19,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 20,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 21,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 22,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 23,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 24,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 25,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 26,
+      "target": 7,
+      "type": "从属于"
+    },
+    {
+      "source": 27,
+      "target": 7,
+      "type": "从属于"
+    },
+    {
+      "source": 28,
+      "target": 7,
+      "type": "从属于"
+    },
+    {
+      "source": 29,
+      "target": 7,
+      "type": "从属于"
+    },
+    {
+      "source": 30,
+      "target": 7,
+      "type": "从属于"
+    },
+    {
+      "source": 31,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 32,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 32,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 32,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 32,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 32,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 32,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 32,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 33,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 33,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 33,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 33,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 33,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 34,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 35,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 35,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 36,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 37,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 38,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 38,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 38,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 38,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 39,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 39,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 39,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 40,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 41,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 41,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 41,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 42,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 42,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 43,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 44,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 44,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 44,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 44,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 45,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 45,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 46,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 46,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 47,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 47,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 48,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 49,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 49,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 49,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 49,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 49,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 50,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 50,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 51,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 51,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 51,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 51,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 52,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 53,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 53,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 54,
+      "target": 21,
+      "type": "参与环节"
+    },
+    {
+      "source": 54,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 55,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 55,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 55,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 55,
+      "target": 21,
+      "type": "参与环节"
+    },
+    {
+      "source": 55,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 56,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 57,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 57,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 57,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 58,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 59,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 60,
+      "target": 19,
+      "type": "参与环节"
+    },
+    {
+      "source": 61,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 61,
+      "target": 17,
+      "type": "参与环节"
+    },
+    {
+      "source": 62,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 62,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 62,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 62,
+      "target": 19,
+      "type": "参与环节"
+    },
+    {
+      "source": 62,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 63,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 64,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 64,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 64,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 65,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 65,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 65,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 65,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 65,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 66,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 67,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 67,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 68,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 69,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 70,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 70,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 71,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 71,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 71,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 71,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 71,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 71,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 71,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 72,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 72,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 73,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 74,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 75,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 75,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 75,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 76,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 77,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 78,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 78,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 78,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 79,
+      "target": 20,
+      "type": "参与环节"
+    },
+    {
+      "source": 80,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 80,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 80,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 81,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 81,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 82,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 82,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 83,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 84,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 84,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 85,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 86,
+      "target": 20,
+      "type": "参与环节"
+    },
+    {
+      "source": 87,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 87,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 88,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 88,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 89,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 90,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 91,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 92,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 92,
+      "target": 19,
+      "type": "参与环节"
+    },
+    {
+      "source": 92,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 93,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 94,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 95,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 96,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 96,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 96,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 96,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 96,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 96,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 96,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 96,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 97,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 97,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 97,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 98,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 98,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 98,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 98,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 98,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 98,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 98,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 100,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 100,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 100,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 100,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 100,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 100,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 100,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 102,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 103,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 103,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 103,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 103,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 103,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 103,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 103,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 103,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 104,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 104,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 104,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 104,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 104,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 104,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 104,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 105,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 105,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 105,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 106,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 106,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 106,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 107,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 108,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 108,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 109,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 109,
+      "target": 17,
+      "type": "参与环节"
+    },
+    {
+      "source": 109,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 110,
+      "target": 19,
+      "type": "参与环节"
+    },
+    {
+      "source": 111,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 111,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 112,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 113,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 114,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 114,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 114,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 114,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 114,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 114,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 115,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 116,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 116,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 117,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 118,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 119,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 119,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 120,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 121,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 122,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 123,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 124,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 125,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 126,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 126,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 127,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 127,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 127,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 128,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 129,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 130,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 130,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 131,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 131,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 131,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 131,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 131,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 132,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 132,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 132,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 132,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 133,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 133,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 134,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 134,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 135,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 135,
+      "target": 20,
+      "type": "参与环节"
+    },
+    {
+      "source": 135,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 136,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 136,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 136,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 136,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 138,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 139,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 140,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 141,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 142,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 142,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 142,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 143,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 144,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 144,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 144,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 145,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 146,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 146,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 146,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 146,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 147,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 148,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 149,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 151,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 152,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 153,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 155,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 156,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 157,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 158,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 158,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 159,
+      "target": 23,
+      "type": "参与环节"
+    },
+    {
+      "source": 160,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 160,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 161,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 162,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 162,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 164,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 164,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 166,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 166,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 167,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 167,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 167,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 168,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 168,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 168,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 168,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 169,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 170,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 170,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 170,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 170,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 170,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 170,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 171,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 172,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 172,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 172,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 173,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 173,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 173,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 173,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 173,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 173,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 174,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 175,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 176,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 23,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 178,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 178,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 179,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 179,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 179,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 179,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 179,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 179,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 179,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 180,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 180,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 181,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 182,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 183,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 184,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 184,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 185,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 186,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 186,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 186,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 186,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 186,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 186,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 186,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 187,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 188,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 189,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 190,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 190,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 191,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 192,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 193,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 194,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 194,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 195,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 195,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 195,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 195,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 195,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 196,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 196,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 197,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 198,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 198,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 198,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 199,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 199,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 199,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 199,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 200,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 200,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 201,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 203,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 203,
+      "target": 17,
+      "type": "参与环节"
+    },
+    {
+      "source": 203,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 203,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 203,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 203,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 204,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 205,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 205,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 206,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 206,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 206,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 207,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 208,
+      "target": 17,
+      "type": "参与环节"
+    },
+    {
+      "source": 209,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 209,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 210,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 211,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 212,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 213,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 213,
+      "target": 21,
+      "type": "参与环节"
+    },
+    {
+      "source": 213,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 214,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 215,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 215,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 215,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 216,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 216,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 217,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 217,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 217,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 217,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 217,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 218,
+      "target": 19,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 20,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 23,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 220,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 221,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 221,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 222,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 222,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 223,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 224,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 225,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 226,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 227,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 228,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 229,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 230,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 230,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 231,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 231,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 231,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 232,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 232,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 232,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 232,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 232,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 233,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 233,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 234,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 236,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 237,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 238,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 238,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 238,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 239,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 239,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 239,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 240,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 241,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 241,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 242,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 242,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 243,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 244,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 245,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 246,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 247,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 248,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 248,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 248,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 248,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 248,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 249,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 250,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 250,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 250,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 250,
+      "target": 21,
+      "type": "参与环节"
+    },
+    {
+      "source": 250,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 252,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 252,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 253,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 254,
+      "target": 20,
+      "type": "参与环节"
+    },
+    {
+      "source": 255,
+      "target": 20,
+      "type": "参与环节"
+    },
+    {
+      "source": 256,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 257,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 257,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 257,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 258,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 258,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 258,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 258,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 259,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 259,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 259,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 259,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 259,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 259,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 260,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 261,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 261,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 262,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 263,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 264,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 264,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 265,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 265,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 266,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 266,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 266,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 267,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 267,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 268,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 268,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 269,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 269,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 269,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 269,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 269,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 269,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 270,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 270,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 270,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 271,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 272,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 272,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 272,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 272,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 273,
+      "target": 17,
+      "type": "参与环节"
+    },
+    {
+      "source": 273,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 273,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 273,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 273,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 274,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 274,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 274,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 275,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 276,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 277,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 277,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 278,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 279,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 280,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 280,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 280,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 280,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 281,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 281,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 281,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 282,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 282,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 283,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 284,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 284,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 285,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 285,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 286,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 287,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 288,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 289,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 289,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 289,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 289,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 289,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 290,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 290,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 290,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 291,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 292,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 292,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 292,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 293,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 294,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 295,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 295,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 296,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 296,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 297,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 297,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 297,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 297,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 297,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 298,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 299,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 300,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 300,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 300,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 301,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 301,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 302,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 302,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 303,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 304,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 305,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 306,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 307,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 307,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 308,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 308,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 309,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 309,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 310,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 310,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 310,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 310,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 311,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 311,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 311,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 311,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 311,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 311,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 311,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 312,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 312,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 312,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 312,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 313,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 313,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 313,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 313,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 314,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 315,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 316,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 317,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 318,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 318,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 318,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 318,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 318,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 319,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 320,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 320,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 320,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 321,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 322,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 324,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 325,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 325,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 325,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 325,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 325,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 326,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 327,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 328,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 328,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 328,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 329,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 330,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 330,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 330,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 330,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 330,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 331,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 331,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 331,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 332,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 332,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 332,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 333,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 333,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 333,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 334,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 334,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 334,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 334,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 335,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 336,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 336,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 336,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 337,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 338,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 338,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 339,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 339,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 339,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 339,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 339,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 339,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 340,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 341,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 342,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 342,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 342,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 342,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 342,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 343,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 344,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 344,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 25,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 347,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 348,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 349,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 349,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 21,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 24,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 351,
+      "target": 20,
+      "type": "参与环节"
+    },
+    {
+      "source": 352,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 353,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 353,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 353,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 353,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 354,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 354,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 355,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 356,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 357,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 357,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 358,
+      "target": 23,
+      "type": "参与环节"
+    },
+    {
+      "source": 359,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 359,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 360,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 361,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 361,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 362,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 363,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 364,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 365,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 366,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 366,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 367,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 368,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 369,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 369,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 370,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 370,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 371,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 371,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 371,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 372,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 373,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 373,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 373,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 373,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 373,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 373,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 374,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 374,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 22,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 8,
+      "type": "参与环节"
+    },
+    {
+      "source": 376,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 376,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 376,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 376,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 377,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 378,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 378,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 378,
+      "target": 20,
+      "type": "参与环节"
+    },
+    {
+      "source": 379,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 379,
+      "target": 17,
+      "type": "参与环节"
+    },
+    {
+      "source": 380,
+      "target": 12,
+      "type": "参与环节"
+    },
+    {
+      "source": 380,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 381,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 381,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 381,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 381,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 381,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 382,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 382,
+      "target": 10,
+      "type": "参与环节"
+    },
+    {
+      "source": 383,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 384,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 384,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 384,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 385,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 386,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 386,
+      "target": 9,
+      "type": "参与环节"
+    },
+    {
+      "source": 386,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 386,
+      "target": 15,
+      "type": "参与环节"
+    },
+    {
+      "source": 387,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 388,
+      "target": 30,
+      "type": "参与环节"
+    },
+    {
+      "source": 389,
+      "target": 18,
+      "type": "参与环节"
+    },
+    {
+      "source": 390,
+      "target": 29,
+      "type": "参与环节"
+    },
+    {
+      "source": 390,
+      "target": 27,
+      "type": "参与环节"
+    },
+    {
+      "source": 390,
+      "target": 28,
+      "type": "参与环节"
+    },
+    {
+      "source": 391,
+      "target": 26,
+      "type": "参与环节"
+    },
+    {
+      "source": 392,
+      "target": 13,
+      "type": "参与环节"
+    },
+    {
+      "source": 392,
+      "target": 16,
+      "type": "参与环节"
+    },
+    {
+      "source": 392,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 392,
+      "target": 23,
+      "type": "参与环节"
+    },
+    {
+      "source": 392,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 393,
+      "target": 14,
+      "type": "参与环节"
+    },
+    {
+      "source": 394,
+      "target": 11,
+      "type": "参与环节"
+    },
+    {
+      "source": 394,
+      "target": 14,
+      "type": "参与环节"
+    }
+  ]
+}

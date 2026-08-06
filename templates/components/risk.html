@@ -1,0 +1,49 @@
+<!-- 3. 风险分析视图 -->
+<div id="view-risk" class="absolute inset-0 bg-gray-50 hidden p-6 flex flex-col overflow-y-auto">
+    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
+        <div class="flex items-center gap-3 mb-2">
+            <i class="fas fa-heartbeat text-red-500 text-2xl"></i>
+            <h2 class="text-2xl font-bold text-gray-800">风险推断引擎</h2>
+        </div>
+
+        <div class="space-y-3">
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="text-sm text-gray-600 font-semibold block">选择 Level 2 节点</label>
+                    <select id="risk-node-select" class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-red-500 focus:border-red-500">
+                        <option value="">加载中...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+                <button id="btn-run-risk" onclick="runRiskAnalysis()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md shadow-red-200 flex items-center gap-2">
+                    <i class="fas fa-play"></i> 开始分析
+                </button>
+                <button onclick="loadRiskNodes()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-300 flex items-center gap-2">
+                    <i class="fas fa-sync-alt"></i> 刷新节点
+                </button>
+                <button onclick="exportRiskPdf()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-md shadow-emerald-200 flex items-center gap-2">
+                    <i class="fas fa-file-pdf"></i> 导出 PDF
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+            <div class="flex items-center gap-2 mb-2">
+                <i class="fas fa-file-alt text-gray-500"></i>
+                <span class="font-semibold text-gray-700 text-sm">LLM 风险报告</span>
+            </div>
+            <div id="risk-report" class="markdown-body text-sm text-gray-800 min-h-[120px]">等待生成...</div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+            <div class="flex items-center gap-2 mb-2">
+                <i class="fas fa-image text-gray-500"></i>
+                <span class="font-semibold text-gray-700 text-sm">可视化结果</span>
+            </div>
+            <div id="risk-images" class="grid grid-cols-1 gap-4">
+                <div class="text-gray-400 text-sm">暂无图片，运行分析后显示。</div>
+            </div>
+        </div>
+    </div>
+</div>

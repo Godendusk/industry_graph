@@ -1,0 +1,117 @@
+<!-- 行业资讯列表视图 -->
+<div id="view-news-list" class="absolute inset-0 bg-gray-100 hidden flex flex-col">
+    
+    <!-- 顶部导航栏（固定） -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 flex-shrink-0 shadow-sm z-10">
+        <div class="flex items-center gap-4">
+            <h1 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                <i class="fas fa-newspaper text-blue-600"></i> 
+                <span>行业资讯</span>
+            </h1>
+        </div>
+        <div class="text-sm text-gray-500">
+            共 <span id="total-news-count" class="font-bold text-blue-600">0</span> 条资讯
+        </div>
+    </header>
+
+    <!-- 主内容区域（可滚动） -->
+    <main class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-6xl mx-auto">
+            <!-- 搜索筛选区域 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <!-- 关键词搜索 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">关键词搜索</label>
+                        <div class="relative">
+                            <input type="text" id="news-keyword-search" 
+                                class="w-full bg-gray-50 border border-gray-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                placeholder="输入关键词...">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- 开始时间 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">开始时间</label>
+                        <div class="relative">
+                            <input type="date" id="news-start-date" 
+                                class="w-full bg-gray-50 border border-gray-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <i class="fas fa-calendar-alt absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- 结束时间 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">结束时间</label>
+                        <div class="relative">
+                            <input type="date" id="news-end-date" 
+                                class="w-full bg-gray-50 border border-gray-300 rounded-lg pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <i class="fas fa-calendar-alt absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="flex justify-end items-center gap-2">
+                    <button id="news-reset-btn" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fas fa-redo"></i>
+                        重置
+                    </button>
+                    <button id="news-search-btn" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fas fa-search"></i>
+                        搜索
+                    </button>
+                </div>
+            </div>
+
+            <!-- 资讯列表区域 -->
+            <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            
+                <!-- 空状态 -->
+                <div id="news-empty-state" class="hidden text-center py-12 text-gray-500">
+                    <i class="fas fa-newspaper text-4xl mb-4 opacity-50"></i>
+                    <p class="text-lg">暂无资讯数据</p>
+                    <p class="text-sm mt-2">请尝试其他搜索条件</p>
+                </div>
+
+                <!-- 加载状态 -->
+                <div id="news-loading-state" class="hidden text-center py-12">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                    <p class="text-gray-500">正在加载资讯...</p>
+                </div>
+
+                <!-- 实际资讯列表 -->
+                <div id="news-items-container" class="space-y-4"></div>
+            </div>
+
+            <!-- 分页区域 -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <div id="news-list-pagination" class="mt-6 flex justify-center items-center gap-2 hidden">
+                    <button id="prev-news-page" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="fas fa-chevron-left"></i> 上一页
+                    </button>
+                    
+                    <div class="text-sm text-gray-600">
+                        第 <span id="news-current-page-display" class="font-bold">1</span> 页 / 共 <span id="news-total-pages" class="font-bold">1</span> 页
+                    </div>
+                    
+                    <button id="next-news-page" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                        下一页 <i class="fas fa-chevron-right"></i>
+                    </button>
+                    
+                    <div class="ml-6 text-sm text-gray-500 flex items-center gap-2">
+                        <span>每页显示</span>
+                        <select id="news-page-size" class="border border-gray-300 rounded py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span>条</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

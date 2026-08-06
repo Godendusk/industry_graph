@@ -1,0 +1,31 @@
+<!-- 产业链全景（嵌入知识图谱 view-graph 右侧主区） -->
+<div id="chain-panorama-container" class="flex-1 relative overflow-hidden bg-gray-100 hidden flex flex-col min-h-0">
+    <!-- <div class="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-white shadow-sm">
+        <h2 class="text-xl font-bold text-gray-800">人工智能产业链技术全景图（含企业与占比）</h2>
+    </div> -->
+    <div id="chain-panorama-scroll" class="flex-1 overflow-y-auto min-h-0 mt-4 p-4 md:p-6">
+        <div id="chain-panorama-root" class="max-w-[1920px] mx-auto">
+            <div id="chain-panorama-loading" class="text-center text-gray-500 py-16 hidden">加载中…</div>
+            <div id="chain-panorama-error" class="text-center text-red-600 py-16 hidden"></div>
+            <!-- 三列：每列横幅 + 表格（Grid 等高，无列间箭头） -->
+            <div id="chain-panorama-columns" class="min-h-0 w-full max-w-full"></div>
+        </div>
+        <!-- 企业图谱统计面板 -->
+        <div id="chain-stats-panel" class="max-w-[1920px] mx-auto mt-6 hidden"></div>
+        <div class="max-w-[1920px] bg-[#FBFBFD] py-[6px] px-[12px] rounded-lg mx-auto mt-6 mb-4 flex flex-col gap-3 text-gray-600">
+            <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between text-[14px]">
+                <div class="flex flex-wrap items-center justify-center gap-4 md:justify-start">
+                    <span class="inline-flex items-center gap-1.5"><span class="h-[14px] w-[14px] shrink-0 bg-[#F66F6A]"></span>中央企业</span>
+                    <span class="inline-flex items-center gap-1.5"><span class="h-[14px] w-[14px] shrink-0 bg-[#FA9841]"></span>其他国资</span>
+                    <span class="inline-flex items-center gap-1.5"><span class="h-[14px] w-[14px] shrink-0 bg-[#5E7CE0]"></span>民营企业</span>
+                    <span class="inline-flex items-center gap-1.5"><span class="h-[14px] w-[14px] shrink-0 bg-[#3AC295]"></span>外资企业(含港澳台及国际企业)</span>
+                </div>
+                <p class="text-center text-gray-500 md:text-right max-w-xl md:mx-0 mx-auto">
+                    注:企业类型占比为二级技术环节各类型代表性企业数量占该环节总代表性企业数量的比重
+                </p>
+            </div>
+            <div id="chain-panorama-l3-details" class="flex w-full min-w-0 flex-nowrap items-stretch justify-start gap-4 overflow-x-auto pb-1 empty:hidden"></div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,8386 @@
+{
+  "nodes": [
+    {
+      "id": 0,
+      "labels": [
+        "Root"
+      ],
+      "properties": {
+        "name": "AI产业链",
+        "symbolSize": 80,
+        "level": 0
+      }
+    },
+    {
+      "id": 1,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "上游基础层",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 2,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "中游技术层",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 3,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "下游应用层",
+        "symbolSize": 60,
+        "level": 1
+      }
+    },
+    {
+      "id": 4,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "材料与制造设备",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 5,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "设计工具",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 6,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "计算芯片",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 7,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "存储",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 8,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "网络",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 9,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "算力调度",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 10,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "云原生容器",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 11,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "云原生Serverless",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 12,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "机器学习",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 13,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据库",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 14,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据采集标注",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 15,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据治理",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 16,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据流通",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 17,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据安全",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 18,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据分析",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 19,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据平台",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 20,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "基础大模型",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 21,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "模型训练平台",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 22,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "模型推理平台",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 23,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "智能体服务平台",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 24,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "通用应用",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 25,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "垂直行业应用",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 26,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI手机",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 27,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI PC",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 28,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI眼镜",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 29,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI中屏",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 30,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI摄像头",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 31,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "人形机器人",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 32,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "智能网联汽车",
+        "symbolSize": 60,
+        "level": 2
+      }
+    },
+    {
+      "id": 33,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "光刻",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 34,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "晶圆",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 35,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "EDA",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 36,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "CPU",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 37,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "GPU",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 38,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "FPGA",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 39,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "计算",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 40,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "高性能存储",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 41,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "网络",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 42,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "算力调度",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 43,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "云原生容器",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 44,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "云原生Serverless",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 45,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "机器学习",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 46,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据库",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 47,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据采集标注",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 48,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据治理",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 49,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据流通",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 50,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据安全",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 51,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据分析",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 52,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "数据平台",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 53,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "基础大模型",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 54,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "模型训练平台",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 55,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "模型推理平台",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 56,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "智能体服务平台",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 57,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "通用应用",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 58,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "政务",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 59,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "工业",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 60,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "交通",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 61,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "教育",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 62,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "医疗",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 63,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "金融",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 64,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI手机",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 65,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI PC",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 66,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI眼镜",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 67,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI中屏",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 68,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "AI摄像头",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 69,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "人形机器人",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 70,
+      "labels": [
+        "环节"
+      ],
+      "properties": {
+        "name": "智能网联汽车",
+        "symbolSize": 40,
+        "level": 3
+      }
+    },
+    {
+      "id": 71,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阿斯麦 (ASML)",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "ASML（阿斯麦）是一家总部位于荷兰的半导体设备制造商，属于外商独资企业。"
+      }
+    },
+    {
+      "id": 72,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "上海微电子",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "上海微电子装备（集团）股份有限公司（简称上海微电子）是由上海市国资委实际控制的国有控股企业，属于地方国企。",
+        "credit_code": "91310000736664790J",
+        "standard_name": "上海微电子装备（集团）股份有限公司"
+      }
+    },
+    {
+      "id": 73,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国科学院上海光学精密机械研究所",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该机构是中国科学院下属的国家级科研院所，属于国家事业单位，因此归类为央企/国企范畴。"
+      }
+    },
+    {
+      "id": 74,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国科学院长春光机所",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该单位是中国科学院下属的国家级科研院所，属于事业单位性质，由国家财政支持，从事国家战略科研任务，因此归类为央企/国企类别。"
+      }
+    },
+    {
+      "id": 75,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "炬光科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "炬光科技（西安炬光科技股份有限公司）是一家在中国A股上市的科技公司，其股权结构主要由自然人、投资机构等非国有资本构成，属于中国本土的私营企业。",
+        "credit_code": "91610131663186571P",
+        "standard_name": "西安炬光科技股份有限公司"
+      }
+    },
+    {
+      "id": 76,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中芯国际",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中芯国际集成电路制造有限公司（SMIC）是中国大陆规模最大、技术最先进的集成电路晶圆代工企业。其最大股东为国有控股的中国信息通信科技集团有限公司，且公司承担国家集成电路产业发展的战略任务，受到国家资本的大力支持，因此属于国有控股企业。",
+        "credit_code": "ZZSN23011300000004",
+        "standard_name": "中芯国际集成电路制造有限公司"
+      }
+    },
+    {
+      "id": 77,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华虹半导体",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "华虹半导体（华虹集团）是中国大陆领先的半导体制造企业，其最终控制人为上海市国有资产监督管理委员会，属于地方国有企业。",
+        "credit_code": "ZZSN230912210750102",
+        "standard_name": "华虹半导体有限公司"
+      }
+    },
+    {
+      "id": 78,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "台积电",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "台积电（台湾积体电路制造公司）总部位于中国台湾，根据提供的分类标准，属于台港澳资企业范畴。"
+      }
+    },
+    {
+      "id": 79,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "三星电子",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "三星电子是韩国三星集团旗下的核心子公司，属于外商独资企业。",
+        "credit_code": "ZZSN22080900000014",
+        "standard_name": "三星电子"
+      }
+    },
+    {
+      "id": 80,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "SK海力士",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "SK海力士是韩国SK集团旗下的半导体公司，属于外商独资企业。",
+        "credit_code": "ZZSN22080900000278",
+        "standard_name": "SK海力士株式会社"
+      }
+    },
+    {
+      "id": 81,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "麦斯克电子",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "麦斯克电子（MESK Electronics）是中国本土的私营企业，由自然人控股，主要从事半导体材料等业务，不属于国有资本控股或外资控股的企业。",
+        "credit_code": "91410300623912049A",
+        "standard_name": "麦斯克电子材料股份有限公司"
+      }
+    },
+    {
+      "id": 82,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中欣氟材",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "浙江中欣氟材股份有限公司是一家在深圳证券交易所上市的股份有限公司，其控股股东和实际控制人为自然人，属于中国本土的私营企业。",
+        "credit_code": "91330600723626031R",
+        "standard_name": "浙江中欣氟材股份有限公司"
+      }
+    },
+    {
+      "id": 83,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "江丰电子",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "江丰电子（宁波江丰电子材料股份有限公司）是由自然人控股并在深圳证券交易所创业板上市的股份有限公司，属于中国本土私营企业。",
+        "credit_code": "91330200772311538P",
+        "standard_name": "宁波江丰电子材料股份有限公司"
+      }
+    },
+    {
+      "id": 84,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "奥特斯",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "奥特斯（AT&S）是一家总部位于奥地利的全球领先的高端印制电路板制造商，在中国设有生产基地，属于外商独资企业。",
+        "credit_code": "91341000584595940L",
+        "standard_name": "黄山奥特斯电气股份有限公司"
+      }
+    },
+    {
+      "id": 85,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "富乐华",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开信息，江苏富乐华半导体科技股份有限公司是一家专注于功率半导体覆铜陶瓷载板研发、制造和销售的中国本土企业，由自然人控股，属于典型的民营企业。",
+        "credit_code": "91320981MA1W7DJX2Q",
+        "standard_name": "江苏富乐华半导体科技股份有限公司"
+      }
+    },
+    {
+      "id": 86,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宇腾（铜川）半导体有限公司",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称中不含任何典型的国资或政府机构标识，且“宇腾”为常见商号，符合中国本土私营企业的命名特征，因此判断为民营企业。"
+      }
+    },
+    {
+      "id": 87,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "陕西日月芯半导体有限公司",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开的工商注册信息，陕西日月芯半导体有限公司由自然人股东控股，无国有资本或外资背景，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 88,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "康佳芯云半导体科技（盐城）有限公司",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "康佳芯云半导体科技（盐城）有限公司是康佳集团股份有限公司的控股子公司。康佳集团虽为上市公司，但其控股股东为华侨城集团（央企），然而，通过股权穿透分析，康佳芯云半导体科技（盐城）有限公司的实际运营和资本结构主要由市场化主体主导，符合民营企业的运营特征，因此归类为民营企业。"
+      }
+    },
+    {
+      "id": 89,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "康盈半导体科技有限公司",
+        "symbolSize": 30,
+        "category": "民营企业"
+      }
+    },
+    {
+      "id": 90,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北京昂瑞微电子技术股份有限公司",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称为股份有限公司，且名称中不含任何国资或政府机构标识，符合中国本土私营企业的典型特征。",
+        "credit_code": "9111010859966120XL",
+        "standard_name": "北京昂瑞微电子技术股份有限公司"
+      }
+    },
+    {
+      "id": 91,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华润微电子",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "华润微电子有限公司是华润集团旗下负责微电子业务的高科技企业，而华润集团是国务院国资委直接监管的国有重点骨干企业，因此华润微电子属于央企/国企范畴。",
+        "credit_code": "ZZSN23011300000009",
+        "standard_name": "华润微电子有限公司"
+      }
+    },
+    {
+      "id": 92,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "士兰微",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "杭州士兰微电子股份有限公司是由自然人发起并控股的上市公司，其控股股东和实际控制人为个人，属于典型的中国本土私营企业。",
+        "credit_code": "91330000253933976Q",
+        "standard_name": "杭州士兰微电子股份有限公司"
+      }
+    },
+    {
+      "id": 93,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "扬杰科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "扬杰科技（股票代码：300373）是一家在中国A股上市的半导体分立器件制造商，其控股股东和实际控制人为自然人，属于典型的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 94,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "斯达半导体",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "嘉兴斯达半导体股份有限公司是一家由自然人控股、专注于IGBT芯片和模块研发生产的中国本土私营企业，属于民营企业。",
+        "credit_code": "913304007731328302",
+        "standard_name": "斯达半导体股份有限公司"
+      }
+    },
+    {
+      "id": 95,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百识电子",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "百识电子（南京百识电子科技有限公司）是一家专注于第三代半导体外延片研发与生产的公司，由自然人投资设立并控股，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 96,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "芯联集成",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "芯联集成（芯联集成电路制造股份有限公司）是一家在中国注册的半导体制造企业，由自然人及民营资本控股，不属于国家或地方政府直接控制，因此归类为民营企业。",
+        "credit_code": "91330600MA2BDY6H13",
+        "standard_name": "芯联集成电路制造股份有限公司"
+      }
+    },
+    {
+      "id": 97,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "英诺赛科",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "英诺赛科（珠海）科技有限公司是一家专注于第三代半导体硅基氮化镓研发与产业化的中国本土高科技企业，由自然人投资控股，属于民营企业。",
+        "credit_code": "91320509MA1T5BWP05",
+        "standard_name": "英诺赛科（苏州）半导体有限公司"
+      }
+    },
+    {
+      "id": 98,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "重庆三安意法半导体",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "重庆三安意法半导体有限公司是由中国本土民营企业三安光电股份有限公司与外资企业意法半导体（STMicroelectronics）共同设立的合资公司。根据其股权结构，中方控股股东三安光电为自然人控股的民营企业，因此该合资企业的主导方和性质归类为民营企业。",
+        "credit_code": "ZZSN230824151200324",
+        "standard_name": "意法半导体"
+      }
+    },
+    {
+      "id": 99,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "闻泰科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "闻泰科技股份有限公司（Wingtech Technology Co., Ltd.）是一家由自然人控股的A股上市公司，其实际控制人为个人，主营业务为半导体和产品集成，属于典型的中国本土私营企业。",
+        "credit_code": "91420000706811358X",
+        "standard_name": "闻泰科技股份有限公司"
+      }
+    },
+    {
+      "id": 100,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "鸿海精密工业",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "鸿海精密工业股份有限公司（Foxconn）是注册于中国台湾的企业，属于台港澳资企业范畴。",
+        "credit_code": "ZZSN22080900000016",
+        "standard_name": "鸿海精密工业股份有限公司"
+      }
+    },
+    {
+      "id": 101,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "京东方华灿光电",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "京东方华灿光电是京东方科技集团股份有限公司（BOE）的控股子公司，而京东方科技集团股份有限公司是北京市国资委监管的国有控股上市公司，属于地方国企范畴。",
+        "credit_code": "914201007819530811",
+        "standard_name": "京东方华灿光电股份有限公司"
+      }
+    },
+    {
+      "id": 102,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "武汉柔显科技股份有限公司",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称包含'股份有限公司'，且无任何表明其具有国有资本控股或政府背景的关键词（如'中'、'国'、'华'、'电'、'铁'等），其名称'柔显科技'符合典型的中国本土科技类私营企业命名风格。",
+        "credit_code": "91420100MA4KWBJF0N",
+        "standard_name": "武汉柔显科技股份有限公司"
+      }
+    },
+    {
+      "id": 103,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "TCL科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "TCL科技集团股份有限公司是一家由自然人控股的上市公司，其实际控制人为李东生先生，属于中国本土的私营企业。",
+        "credit_code": "91441300195971850Y",
+        "standard_name": "TCL科技集团股份有限公司"
+      }
+    },
+    {
+      "id": 104,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新凯来",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "新凯来（深圳市新凯来技术有限公司）是一家专注于半导体设备、精密仪器和先进制造领域的中国本土私营企业，由自然人控股，属于民营企业范畴。"
+      }
+    },
+    {
+      "id": 105,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "深圳新凯来",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "深圳新凯来技术有限公司是深圳市重大产业投资集团有限公司的全资子公司，而深圳市重大产业投资集团是深圳市国资委100%控股的国有独资企业，因此深圳新凯来属于地方国企体系。"
+      }
+    },
+    {
+      "id": 106,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中科硅纪",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称带有'中科'字样，但经查询，其并非中国科学院或其下属机构直接控股或管理的企业。'中科硅纪'是一家专注于半导体材料领域的科技公司，由自然人股东或私营资本投资设立，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 107,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "芯原股份",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "芯原微电子（上海）股份有限公司（芯原股份）是一家由自然人控股、在中国本土运营的集成电路设计服务公司，其股权结构和公开信息均表明其为私营企业性质。"
+      }
+    },
+    {
+      "id": 108,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "芯来科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "芯来科技（Nuclei System Technology）是一家专注于RISC-V处理器内核IP研发与服务的中国本土公司，由自然人创立并控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 109,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "达索析统（上海）信息技术有限公司",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "该企业名称中包含'达索'，这是法国达索系统公司的品牌标识，且其注册地为上海，符合外商独资或中外合资企业的典型特征，因此属于外资企业。"
+      }
+    },
+    {
+      "id": 110,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "西门子",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "西门子（Siemens）是德国跨国企业集团，在中国运营的实体属于外商独资或中外合资企业。",
+        "credit_code": "ZZSN230711140540405",
+        "standard_name": "西门子股份公司"
+      }
+    },
+    {
+      "id": 111,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华大九天",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "华大九天（北京华大九天科技股份有限公司）是中国本土的私营企业，由自然人控股，主要从事EDA（电子设计自动化）软件的研发与销售，不属于国有资本控股或外资控股的企业。",
+        "credit_code": "91110105690013756F",
+        "standard_name": "北京华大九天科技股份有限公司"
+      }
+    },
+    {
+      "id": 112,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "英特尔",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "英特尔是美国公司，在中国设立的是外商独资或合资企业，属于外资企业范畴。",
+        "credit_code": "ZZSN22080900000103",
+        "standard_name": "英特尔公司"
+      }
+    },
+    {
+      "id": 113,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "龙芯中科",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "龙芯中科技术股份有限公司是由中国科学院计算技术研究所孵化的企业，但其股权结构主要由市场化资本和员工持股构成，无政府或国有资本控股，属于自然人控股的科技企业。",
+        "credit_code": "9111010867283004X0",
+        "standard_name": "龙芯中科技术股份有限公司"
+      }
+    },
+    {
+      "id": 114,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海光信息",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "海光信息技术股份有限公司（海光信息）的实际控制人为中国科学院计算技术研究所，而中国科学院是国务院直属事业单位，属于国家级科研机构。因此，海光信息属于国有控股企业。",
+        "credit_code": "911201163004788158",
+        "standard_name": "海光信息技术股份有限公司"
+      }
+    },
+    {
+      "id": 115,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海光微电子",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "海光微电子是海光信息技术股份有限公司的子公司，而海光信息是由中科曙光等民营企业控股的上市公司，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 116,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海光集成",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "海光集成（全称：海光信息技术股份有限公司）的实际控制人为中国科学院计算技术研究所，属于国有控股企业。"
+      }
+    },
+    {
+      "id": 117,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "兆易创新",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "兆易创新（GigaDevice）是一家在上海证券交易所上市的半导体设计公司，其股权结构主要由创始团队、管理层及社会公众股东持有，无政府或国有资本控股，属于典型的中国本土私营企业。",
+        "credit_code": "91110108773369432Y",
+        "standard_name": "兆易创新科技集团股份有限公司"
+      }
+    },
+    {
+      "id": 118,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "乐鑫科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "乐鑫科技（上海）股份有限公司是一家在上海证券交易所科创板上市的集成电路设计公司，由自然人控股，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 119,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "瑞萨",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "瑞萨电子（Renesas Electronics）是一家日本半导体公司，属于外商独资企业。",
+        "credit_code": "ZZSN230824151202424",
+        "standard_name": "瑞萨电子株式会社"
+      }
+    },
+    {
+      "id": 120,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "恩智浦",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "恩智浦（NXP Semiconductors）是一家全球性的半导体公司，其前身为飞利浦半导体，目前注册于荷兰，属于外商独资企业。",
+        "credit_code": "ZZSN230824151200332",
+        "standard_name": "恩智浦半导体有限公司"
+      }
+    },
+    {
+      "id": 121,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "英飞凌",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "英飞凌科技公司（Infineon Technologies AG）是一家总部位于德国的半导体制造商，在中国运营的实体属于外商独资或合资企业。",
+        "credit_code": "ZZSN230824151200296",
+        "standard_name": "英飞凌科技"
+      }
+    },
+    {
+      "id": 122,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "先楫",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "先楫半导体（上海）股份有限公司是一家专注于高性能微控制器（MCU）设计与销售的中国本土科技公司，由自然人控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 123,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "沁恒微",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "南京沁恒微电子股份有限公司是一家专注于集成电路设计和芯片研发的高新技术企业，由自然人控股，属于中国本土的私营企业。",
+        "credit_code": "91320114762105087B",
+        "standard_name": "南京沁恒微电子股份有限公司"
+      }
+    },
+    {
+      "id": 124,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "思澈科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "思澈科技是一家专注于物联网芯片设计的中国本土科技公司，由自然人控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 125,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "启明智显",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开信息，启明智显是一家专注于嵌入式显示技术研发与生产的中国本土科技公司，由自然人控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 126,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "恒玄科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "恒玄科技（上海）股份有限公司是一家专注于智能音频SoC芯片设计的中国本土高科技企业，由自然人控股，属于典型的民营企业。",
+        "credit_code": "91310115341975375J",
+        "standard_name": "恒玄科技（上海）股份有限公司"
+      }
+    },
+    {
+      "id": 127,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "瑞芯微",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "瑞芯微（Rockchip）是一家专注于集成电路设计的中国本土私营企业，由自然人控股，属于典型的民营企业。",
+        "credit_code": "913501007335995323",
+        "standard_name": "瑞芯微电子股份有限公司"
+      }
+    },
+    {
+      "id": 128,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国科微",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "国科微（全称：湖南国科微电子股份有限公司）是一家由自然人控股的集成电路设计企业，属于中国本土的私营企业。",
+        "credit_code": "9143010068031562X6",
+        "standard_name": "湖南国科微电子股份有限公司"
+      }
+    },
+    {
+      "id": 129,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "美芯晟",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "美芯晟是一家专注于高性能模拟及数模混合芯片设计的中国本土公司，由自然人控股，属于私营企业。",
+        "credit_code": "911101086723550827",
+        "standard_name": "美芯晟科技（北京）股份有限公司"
+      }
+    },
+    {
+      "id": 130,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "艾为电子",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "上海艾为电子技术股份有限公司是由自然人创立并控股的集成电路设计企业，属于中国本土私营企业。",
+        "credit_code": "91310000676257316N",
+        "standard_name": "上海艾为电子技术股份有限公司"
+      }
+    },
+    {
+      "id": 131,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "芯朋微",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "芯朋微（无锡芯朋微电子股份有限公司）是一家专注于电源管理芯片设计的公司，由自然人控股，属于中国本土的私营企业。",
+        "credit_code": "91320200782736492H",
+        "standard_name": "无锡芯朋微电子股份有限公司"
+      }
+    },
+    {
+      "id": 132,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "芯导科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "芯导科技（上海芯导电子科技股份有限公司）是一家专注于半导体功率器件和电源管理芯片研发、设计与销售的中国本土企业，由自然人控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 133,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华灿光电",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "华灿光电股份有限公司是一家在中国大陆注册的上市公司，其股权结构主要由自然人和民营投资机构持有，无政府或国有资本控股，因此属于民营企业。",
+        "credit_code": "914201007819530811",
+        "standard_name": "京东方华灿光电股份有限公司"
+      }
+    },
+    {
+      "id": 134,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "利亚德",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "利亚德光电股份有限公司是一家在中国深圳证券交易所上市的公众公司，其控股股东和实际控制人为自然人，属于典型的中国本土私营企业。",
+        "credit_code": "91110000600039822G",
+        "standard_name": "利亚德光电股份有限公司"
+      }
+    },
+    {
+      "id": 135,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "英伟达",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "英伟达（NVIDIA）是一家注册于美国的跨国科技公司，在中国开展业务属于外商独资企业。",
+        "credit_code": "ZZSN230824151157150",
+        "standard_name": "英伟达"
+      }
+    },
+    {
+      "id": 136,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AMD",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "AMD（超威半导体公司）是美国注册的跨国半导体公司，在中国开展业务属于外商独资或中外合资性质。"
+      }
+    },
+    {
+      "id": 137,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华为",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "华为技术有限公司由员工持股，无政府或外资控股，是中国本土的私营企业。",
+        "credit_code": "914403001922038216",
+        "standard_name": "华为技术有限公司"
+      }
+    },
+    {
+      "id": 138,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海思",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "海思（HiSilicon）是华为技术有限公司旗下的全资子公司，而华为是一家由员工持股的中国本土私营企业，因此海思属于民营企业范畴。",
+        "credit_code": "91542200741928586E",
+        "standard_name": "海思科医药集团股份有限公司"
+      }
+    },
+    {
+      "id": 139,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "寒武纪",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "寒武纪（北京中科寒武纪科技股份有限公司）是一家由自然人控股、专注于人工智能芯片研发与销售的中国本土私营企业，其股权结构和公司治理模式符合民营企业的定义。",
+        "credit_code": "91110108MA0044ED5J",
+        "standard_name": "中科寒武纪科技股份有限公司"
+      }
+    },
+    {
+      "id": 140,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "壁仞科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "壁仞科技是一家专注于人工智能芯片研发的中国本土私营企业，由自然人控股，属于典型的民营企业。",
+        "credit_code": "91310115MA1HATB40R",
+        "standard_name": "上海壁仞科技股份有限公司"
+      }
+    },
+    {
+      "id": 141,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "天数智芯",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "上海天数智芯半导体有限公司是一家专注于高端通用GPU芯片研发的中国本土高科技公司，由自然人股东和风险投资机构控股，属于典型的民营企业。",
+        "credit_code": "91320114MA1MDG5R6Y",
+        "standard_name": "上海天数智芯半导体股份有限公司"
+      }
+    },
+    {
+      "id": 142,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "摩尔线程",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "摩尔线程智能科技（北京）有限责任公司是一家专注于GPU芯片设计的中国本土科技公司，由自然人控股，属于私营企业。",
+        "credit_code": "91110108MA01RWUG4Y",
+        "standard_name": "摩尔线程智能科技（北京）股份有限公司"
+      }
+    },
+    {
+      "id": 143,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "景嘉微",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "长沙景嘉微电子股份有限公司是一家由自然人控股的上市公司，其实际控制人为自然人，主营业务为图形显控、小型专用化雷达等领域的研发与生产，属于典型的中国本土私营高科技企业。",
+        "credit_code": "914301007853917172",
+        "standard_name": "长沙景嘉微电子股份有限公司"
+      }
+    },
+    {
+      "id": 144,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "格兰菲智能科技股份有限公司",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称中不含任何国有或政府机构标识，且'格兰菲'为典型商业品牌名称，符合中国本土私营企业的命名特征，因此判断为民营企业。"
+      }
+    },
+    {
+      "id": 145,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "沐曦集成电路",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "沐曦集成电路（上海）有限公司是一家专注于高性能GPU芯片设计的中国本土科技公司，由自然人及风险投资机构控股，属于典型的民营企业。",
+        "credit_code": "91310000MA1H38T58K",
+        "standard_name": "沐曦集成电路（上海）股份有限公司"
+      }
+    },
+    {
+      "id": 146,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "瀚博半导体",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "瀚博半导体（上海）有限公司是一家专注于人工智能和半导体领域的中国本土私营企业，由自然人控股，属于民营企业。",
+        "credit_code": "91310115MA1K493TXQ",
+        "standard_name": "瀚博半导体（上海）股份有限公司"
+      }
+    },
+    {
+      "id": 147,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "燧原科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "燧原科技是一家专注于人工智能领域云端算力平台的科技公司，由自然人创立并控股，属于中国本土的私营企业。",
+        "credit_code": "91310115MA1K41R2X3",
+        "standard_name": "上海燧原科技股份有限公司"
+      }
+    },
+    {
+      "id": 148,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "芯动科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "芯动科技（Innosilicon）是一家专注于高性能计算芯片设计的中国本土私营企业，由自然人控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 149,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "昆仑芯",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "昆仑芯（北京）科技有限公司是百度旗下的独立芯片公司，由百度控股，属于中国本土私营企业。",
+        "credit_code": "91110108576914390R",
+        "standard_name": "昆仑芯（北京）科技有限公司"
+      }
+    },
+    {
+      "id": 150,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百度",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "百度（Baidu）是一家由自然人控股、在中国本土创立并运营的私营企业，其股权结构和管理模式符合民营企业的定义。",
+        "credit_code": "91110000802100433B",
+        "standard_name": "百度集团股份有限公司"
+      }
+    },
+    {
+      "id": 151,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阿里巴巴",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "阿里巴巴集团是由马云等自然人创立的中国本土私营企业，其股权结构主要由私人资本和机构投资者持有，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 152,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "腾讯",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "腾讯控股有限公司由马化腾等自然人创立并控股，是中国本土的私营企业。",
+        "credit_code": "ZZSN22061700000003",
+        "standard_name": "腾讯控股有限公司"
+      }
+    },
+    {
+      "id": 153,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "字节跳动",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "字节跳动有限公司是由自然人张一鸣等人创立的中国本土私营企业，其股权结构主要由创始团队和市场化投资机构持有，无政府或国有资本控股，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 154,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "商汤科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "商汤科技是由自然人（如汤晓鸥教授等）创办并控股的中国本土人工智能公司，属于私营企业。",
+        "credit_code": "911101083181538675",
+        "standard_name": "北京市商汤科技开发有限公司"
+      }
+    },
+    {
+      "id": 155,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "云从科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "云从科技集团股份有限公司是由自然人控股的上市公司，其控股股东和实际控制人为个人，属于中国本土的私营企业。",
+        "credit_code": "914401153314442716",
+        "standard_name": "云从科技集团股份有限公司"
+      }
+    },
+    {
+      "id": 156,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "复旦微电",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该企业全称为上海复旦微电子集团股份有限公司，其控股股东为复旦大学，属于公立高校控股的企业，因此归类为央企/国企类别。",
+        "credit_code": "91310000631137409B",
+        "standard_name": "上海复旦微电子集团股份有限公司"
+      }
+    },
+    {
+      "id": 157,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "莱迪思",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "莱迪思（Lattice Semiconductor）是一家在美国注册成立并在纳斯达克上市的半导体公司，在中国开展业务属于外商独资企业。",
+        "credit_code": "ZZSN230912210729786",
+        "standard_name": "莱迪思半导体公司"
+      }
+    },
+    {
+      "id": 158,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中科曙光",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中科曙光（曙光信息产业股份有限公司）的实际控制人为中国科学院计算技术研究所，属于国家级科研院所控股的企业，因此归类为央企/国企。",
+        "credit_code": "91650100328902569H",
+        "standard_name": "新疆中科曙光云计算有限公司"
+      }
+    },
+    {
+      "id": 159,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "浪潮信息",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "浪潮信息（浪潮电子信息产业股份有限公司）的最终控制人为山东省人民政府国有资产监督管理委员会，属于地方国有企业。"
+      }
+    },
+    {
+      "id": 160,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国家超级计算太原中心",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该中心通常由地方政府、国家科研机构或高校主导建设和运营，属于国家级科研基础设施，具有明确的公共服务和科研属性，符合'央企/国企'类别中的'国家级科研院所'定义。"
+      }
+    },
+    {
+      "id": 161,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "全球计算联盟",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该名称'全球计算联盟'并非中国官方或国资背景的机构名称，更类似于一个行业组织、技术联盟或商业品牌，通常由私营企业或非政府实体发起成立，因此归类为民营企业。"
+      }
+    },
+    {
+      "id": 162,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "AWS",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "AWS (Amazon Web Services) 是亚马逊公司旗下的云计算服务平台，亚马逊是美国公司，因此AWS在中国市场属于外资企业。"
+      }
+    },
+    {
+      "id": 163,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阿里云",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "阿里云是阿里巴巴集团旗下的云计算及人工智能科技公司，阿里巴巴集团由自然人和投资机构控股，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 164,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Oracle",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Oracle（甲骨文公司）是美国注册的跨国科技公司，在中国运营的实体属于外商独资企业。"
+      }
+    },
+    {
+      "id": 165,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "CoreWeave",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "CoreWeave是一家美国公司，专注于GPU加速的云服务，属于外商独资企业。"
+      }
+    },
+    {
+      "id": 166,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中兴通讯股份有限公司",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中兴通讯股份有限公司的最大股东为中兴新通讯有限公司，而中兴新通讯有限公司由西安微电子技术研究所（隶属于中国航天科技集团）控股，属于国有控股企业。",
+        "credit_code": "9144030027939873X7",
+        "standard_name": "中兴通讯股份有限公司"
+      }
+    },
+    {
+      "id": 167,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国电信",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国电信集团有限公司是由国务院国有资产监督管理委员会直接监管的中央企业，属于大型国有骨干通信企业。",
+        "credit_code": "91110000100017707H",
+        "standard_name": "中国电信集团有限公司"
+      }
+    },
+    {
+      "id": 168,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国移动",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国移动通信集团有限公司是国务院国有资产监督管理委员会直接监管的中央企业，属于国有独资公司。",
+        "credit_code": "911100007109250324",
+        "standard_name": "中国移动通信集团有限公司"
+      }
+    },
+    {
+      "id": 169,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国联通",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国联合网络通信集团有限公司（中国联通）是国务院国资委直接监管的中央企业，属于国有控股的电信运营商。"
+      }
+    },
+    {
+      "id": 170,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国电科",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国电子科技集团有限公司（中国电科）是由中央直接管理的国有重要骨干企业，属于国务院国资委监管的中央企业。"
+      }
+    },
+    {
+      "id": 171,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "鼎桥通信技术有限公司",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "鼎桥通信技术有限公司是诺基亚西门子通信（Nokia Siemens Networks，后为诺基亚）与华为技术有限公司共同组建的合资企业，属于中外合资性质。"
+      }
+    },
+    {
+      "id": 172,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "四川华丰科技股份有限公司",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "四川华丰科技股份有限公司是四川长虹电子控股集团有限公司的控股子公司，而四川长虹电子控股集团有限公司是绵阳市国资委监管的地方国有企业，因此该公司属于地方国企体系。",
+        "credit_code": "91510703205401254W",
+        "standard_name": "四川华丰科技股份有限公司"
+      }
+    },
+    {
+      "id": 173,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中航光电",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中航光电科技股份有限公司（简称中航光电）是中国航空工业集团有限公司（央企）控股的上市公司，实际控制人为国务院国资委，属于国有控股企业。",
+        "credit_code": "914100007457748527",
+        "standard_name": "中航光电科技股份有限公司"
+      }
+    },
+    {
+      "id": 174,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "亨通光纤",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "亨通光纤隶属于亨通集团，而亨通集团是中国领先的民营通信与能源互联系统解决方案服务商，由自然人控股，属于典型的民营企业。",
+        "credit_code": "913205097344236439",
+        "standard_name": "江苏亨通光纤科技有限公司"
+      }
+    },
+    {
+      "id": 175,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "东集",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "东集（通常指南京东集技术股份有限公司）是一家专注于自动识别和数据采集技术的高新技术企业，由自然人控股，属于中国本土私营企业。",
+        "credit_code": "91320191736066918G",
+        "standard_name": "东集技术股份有限公司"
+      }
+    },
+    {
+      "id": 176,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "谷歌云",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "谷歌云（Google Cloud）是谷歌（Google）旗下的云计算服务部门，谷歌是一家注册于美国的外资公司，因此其在中国运营的谷歌云业务属于外资企业范畴。"
+      }
+    },
+    {
+      "id": 177,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华为云",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "华为云是华为技术有限公司旗下的云服务品牌，而华为技术有限公司是一家由员工持股的民营企业，无政府或外资控股。"
+      }
+    },
+    {
+      "id": 178,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "腾讯云",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "腾讯云是腾讯集团旗下的云计算品牌，而腾讯集团是由自然人控股的上市公司，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 179,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "兰洋科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "兰洋科技是一家专注于浸入式液态散热技术研发与应用的科技公司，由自然人投资设立并控股，属于中国本土的私营企业。",
+        "credit_code": "914403007152260893",
+        "standard_name": "深圳市兰洋科技有限公司"
+      }
+    },
+    {
+      "id": 180,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "英维克",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "英维克（Envicool）是深圳市英维克科技股份有限公司的简称，该公司由自然人控股并在深圳证券交易所上市，属于中国本土的私营企业。",
+        "credit_code": "9144030077877383X6",
+        "standard_name": "深圳市英维克科技股份有限公司"
+      }
+    },
+    {
+      "id": 181,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "绿色云图",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "绿色云图（北京）科技有限公司是一家专注于数据中心节能技术研发与服务的公司，由自然人控股，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 182,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "讯凌新 (Icicleflow)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称'讯凌新 (Icicleflow)'无任何国有资本或政府机构标识，其英文名Icicleflow为典型商业品牌名称，符合中国本土私营企业的特征。"
+      }
+    },
+    {
+      "id": 183,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "高泰昊能",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开的企业信息，高泰昊能（全称：北京高泰昊能科技有限公司）的股东为自然人，无国有资本或外资背景，符合中国本土私营企业的特征。",
+        "credit_code": "913301045773134820",
+        "standard_name": "浙江高泰昊能科技有限公司"
+      }
+    },
+    {
+      "id": 184,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "全应科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "全应科技（上海）有限公司是一家专注于工业互联网和智能制造领域的科技公司，由自然人股东控股，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 185,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "朗新科技集团",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "朗新科技集团股份有限公司是一家在深圳证券交易所上市的软件和信息技术服务公司，其控股股东和实际控制人为自然人，属于中国本土的私营企业。",
+        "credit_code": "91320200747189665N",
+        "standard_name": "朗新科技集团股份有限公司"
+      }
+    },
+    {
+      "id": 186,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "远光软件",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "远光软件股份有限公司的控股股东为陈利浩先生，属于自然人控股的上市公司，因此归类为民营企业。",
+        "credit_code": "91440400707956364B",
+        "standard_name": "远光软件股份有限公司"
+      }
+    },
+    {
+      "id": 187,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百度智能云",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "百度智能云是百度集团旗下的云计算服务品牌，而百度集团是由自然人控股的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 188,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "并行科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "北京并行科技股份有限公司是一家在新三板挂牌的高性能计算服务提供商，其控股股东和实际控制人为自然人，属于中国本土私营企业。",
+        "credit_code": "91110108799022234R",
+        "standard_name": "北京并行科技股份有限公司"
+      }
+    },
+    {
+      "id": 189,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "OpenAI",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "OpenAI是一家在美国成立的人工智能研究公司，其注册地和主要运营地均在美国，属于外商独资企业。",
+        "credit_code": "ZZSN231108150126005",
+        "standard_name": "OpenAI"
+      }
+    },
+    {
+      "id": 190,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Google",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Google（谷歌）是美国Alphabet公司的子公司，在中国开展业务，属于外商独资企业。"
+      }
+    },
+    {
+      "id": 191,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Meta",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Meta Platforms, Inc. 是一家注册于美国的跨国公司，在中国开展业务属于外商独资或外资控股性质。",
+        "credit_code": "ZZSN230824151155010",
+        "standard_name": "Meta Platforms"
+      }
+    },
+    {
+      "id": 192,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "微软",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "微软（Microsoft）是美国跨国科技公司，在中国设立的公司属于外商独资企业。",
+        "credit_code": "ZZSN22080900000024",
+        "standard_name": "微软公司"
+      }
+    },
+    {
+      "id": 193,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "智源研究院",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "智源研究院（北京智源人工智能研究院）是由北京市政府支持、依托北京大学和清华大学等高校及科研机构共同发起成立的新型研发机构，属于国家级科研院所性质，其资金和监管主要来源于政府，因此归类为央企/国企。"
+      }
+    },
+    {
+      "id": 194,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "重庆软江图灵人工智能公司",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称中不含任何表明其具有国有或外资背景的关键词（如“中”、“国”、“集团”、“研究院”或外资品牌名），且“重庆”为地域前缀，“软江图灵”为典型的企业字号，符合中国本土私营企业的命名特征。"
+      }
+    },
+    {
+      "id": 195,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Amini",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称'Amini'不符合中国央企/国企的常见命名规则，也非知名外资品牌。根据中国商业实践，此类名称通常为本土注册的私营企业，因此判断为民营企业。"
+      }
+    },
+    {
+      "id": 196,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "LiblibAI",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "LiblibAI（哩布哩布AI）是一家专注于AI绘画模型分享与创作的中国本土私营科技公司，由自然人控股，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 197,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "NVAIE",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "该企业名称 'NVAIE' 不符合典型的中文命名习惯，更类似于外资或国际企业的命名方式。在缺乏具体股权信息的情况下，基于其名称特征，归类为外资企业。"
+      }
+    },
+    {
+      "id": 198,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "智谱AI",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "智谱AI（北京智谱华章科技有限公司）是一家专注于人工智能技术研发的中国本土私营企业，由自然人控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 199,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "出门问问",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "出门问问（Mobvoi）是一家专注于人工智能和语音交互技术的中国本土科技公司，由自然人创立并控股，属于典型的私营企业。",
+        "credit_code": "91110108MA00CHLQ5U",
+        "standard_name": "出门问问信息科技有限公司"
+      }
+    },
+    {
+      "id": 200,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Anthropic",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Anthropic是一家由前OpenAI员工在美国创立的人工智能研究公司，其总部位于美国，属于外商独资企业。",
+        "credit_code": "ZZSN231108150126148",
+        "standard_name": "Anthropic"
+      }
+    },
+    {
+      "id": 201,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Character.AI",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Character.AI是一家在美国注册成立的人工智能公司，由前谷歌工程师创立，属于外商独资企业。"
+      }
+    },
+    {
+      "id": 202,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Azure (Microsoft)",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Azure是微软（Microsoft）旗下的云服务平台，微软是一家美国跨国科技公司，因此Azure在中国市场属于外资企业提供的服务。"
+      }
+    },
+    {
+      "id": 203,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Databricks",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Databricks是一家由美国资本创立并控股的科技公司，属于外商独资企业。",
+        "credit_code": "ZZSN231011135952003",
+        "standard_name": "Databricks"
+      }
+    },
+    {
+      "id": 204,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Mavrix",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "该企业名称'Mavrix'为英文名称，不符合中国央企/国企或典型民营企业的命名惯例，通常为外资或外商相关企业。"
+      }
+    },
+    {
+      "id": 205,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "每日互动",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "每日互动（浙江每日互动网络科技股份有限公司）是一家由自然人控股的A股上市公司，主营业务为移动互联网数据服务，属于中国本土私营企业。",
+        "credit_code": "91330106566067060H",
+        "standard_name": "每日互动股份有限公司"
+      }
+    },
+    {
+      "id": 206,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "极光",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "极光（Aurora Mobile）是一家在美国纳斯达克上市的中国移动大数据服务商，其创始人和主要股东为自然人，属于中国本土的私营企业。",
+        "credit_code": "914401015544474882",
+        "standard_name": "广东三雄极光照明股份有限公司"
+      }
+    },
+    {
+      "id": 207,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "深圳市智云译科技有限公司",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称为'深圳市智云译科技有限公司'，其名称结构符合中国本土私营科技公司的常见命名方式，无'中'、'国'、'集团'等国企常用标识，也无外资企业特征，因此判断为民营企业。"
+      }
+    },
+    {
+      "id": 208,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "时空壶",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "时空壶（Wearable Technology Limited）是一家专注于AI翻译耳机等智能穿戴设备的科技公司，由自然人创立并控股，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 209,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "有道智云",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "有道智云是网易有道旗下的云计算服务品牌，而网易有道是网易集团（一家在美国上市的中国互联网科技公司）的子公司，其最终控制权属于私人资本和公众股东，因此属于民营企业。"
+      }
+    },
+    {
+      "id": 210,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Scale AI",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Scale AI是一家在美国注册成立、总部位于旧金山的人工智能数据标注公司，属于外商独资企业。",
+        "credit_code": "ZZSN231108150126071",
+        "standard_name": "Scale AI"
+      }
+    },
+    {
+      "id": 211,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "光轮智能",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开信息，光轮智能（北京光轮智能科技有限公司）是一家专注于人工智能技术研发与应用的中国本土科技公司，由自然人创立并控股，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 212,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海天瑞声",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "海天瑞声（北京海天瑞声科技股份有限公司）是一家由自然人控股的A股上市公司，主营业务为AI训练数据服务，属于中国本土的私营企业。",
+        "credit_code": "91110108776388751R",
+        "standard_name": "北京海天瑞声科技股份有限公司"
+      }
+    },
+    {
+      "id": 213,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "贵州大数据集团",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "贵州大数据集团是贵州省人民政府批准成立的省属国有全资企业，属于地方国企。"
+      }
+    },
+    {
+      "id": 214,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "汉得信息",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "上海汉得信息技术股份有限公司是一家由自然人控股的上市公司，主营业务为ERP实施服务，属于中国本土的私营企业。",
+        "credit_code": "9131000074027295XF",
+        "standard_name": "上海汉得信息技术股份有限公司"
+      }
+    },
+    {
+      "id": 215,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "神州信息",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "神州数码信息服务股份有限公司（神州信息）是神州数码控股有限公司的子公司，其最终控制方为自然人，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 216,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "数珩科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "数珩科技是一家专注于软件和信息技术服务的中国本土公司，其股权结构主要由自然人持有，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 217,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北电数智",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "北电数智（北京北电数智科技有限公司）是北京电子控股有限责任公司的全资子公司，而北京电子控股有限责任公司是北京市国资委监管的市属大型国有企业集团，因此北电数智属于地方国企体系。"
+      }
+    },
+    {
+      "id": 218,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国知网",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国知网（CNKI）的运营主体是同方知网（北京）技术有限公司，其控股股东为同方股份有限公司。同方股份有限公司是清华大学控股的高科技上市公司，清华大学是教育部直属的公立高校，因此其最终控制方属于国有性质。"
+      }
+    },
+    {
+      "id": 219,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Collibra",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Collibra是一家总部位于美国的数据智能公司，在中国开展业务，属于外商独资企业。",
+        "credit_code": "ZZSN231108150126102",
+        "standard_name": "Collibra"
+      }
+    },
+    {
+      "id": 220,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Informatica",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Informatica是一家全球领先的企业云数据管理软件提供商，总部位于美国，在中国设有分支机构，属于外商独资或外资控股企业。",
+        "credit_code": "ZZSN230912210658285",
+        "standard_name": "Informatica公司"
+      }
+    },
+    {
+      "id": 221,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "数澜科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "数澜科技是一家专注于数据中台和数据分析服务的中国本土科技公司，由自然人股东控股，属于私营企业。",
+        "credit_code": "91330110MA27Y00N09",
+        "standard_name": "杭州数澜科技有限公司"
+      }
+    },
+    {
+      "id": 222,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "福建大数据交易所",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "福建大数据交易所通常由地方政府主导设立，属于地方国有控股或国有资本参与的平台型企业，服务于区域数据要素市场建设，符合国企特征。"
+      }
+    },
+    {
+      "id": 223,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "贵阳大数据交易所",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "贵阳大数据交易所是由贵阳市政府主导成立并控股的国有控股企业，属于地方国企性质。"
+      }
+    },
+    {
+      "id": 224,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "上海临港跨境数科",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "上海临港跨境数科（上海临港跨境数字科技有限公司）是上海临港经济发展（集团）有限公司的控股子公司，而临港集团是上海市国资委下属的大型国有企业集团，因此该企业属于地方国企体系。"
+      }
+    },
+    {
+      "id": 225,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "上海数据交易所",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "上海数据交易所由上海市人民政府批准设立，是经上海市人民政府批准、上海市经济和信息化委员会指导、上海市大数据中心牵头组建的国有控股企业，属于地方国企性质。"
+      }
+    },
+    {
+      "id": 226,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北信源",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "北信源（北京北信源软件股份有限公司）是由自然人控股的上市公司，其实际控制人为自然人，属于中国本土的私营企业。",
+        "credit_code": "91110000101967333M",
+        "standard_name": "北京北信源软件股份有限公司"
+      }
+    },
+    {
+      "id": 227,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Duality",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "该企业名称为英文，且在中国企业信息中无明确对应的、广为人知的央企、国企或大型民营企业。根据命名惯例，此类英文名称通常为外资企业或其在华分支机构。"
+      }
+    },
+    {
+      "id": 228,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Anonos",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Anonos是一家专注于数据隐私和安全技术的公司，其总部位于美国，在中国开展业务，属于外商独资或外资背景的企业。"
+      }
+    },
+    {
+      "id": 229,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "趣链科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "趣链科技（杭州趣链科技有限公司）是一家专注于区块链技术研发与应用的中国本土科技公司，由自然人控股，属于典型的民营企业。",
+        "credit_code": "91330108MA27Y5XH5G",
+        "standard_name": "杭州趣链科技有限公司"
+      }
+    },
+    {
+      "id": 230,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "蚂蚁密算",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称'蚂蚁密算'与知名民营企业'蚂蚁集团'在名称上高度相似，且无任何公开信息表明其具有国有资本背景或受政府机构直接监管，因此判断为典型的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 231,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国经济信息社",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国经济信息社是新华通讯社的全资子公司，而新华通讯社是国务院直属事业单位，属于国家级机构，因此该企业属于国有企业范畴。"
+      }
+    },
+    {
+      "id": 232,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "帆软软件",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "帆软软件有限公司是中国本土的私营软件企业，由自然人控股，不属于国有资本或外资控制。",
+        "credit_code": "91320205MA1X04R87F",
+        "standard_name": "帆软软件有限公司"
+      }
+    },
+    {
+      "id": 233,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Kpler",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Kpler是一家总部位于法国的全球大宗商品数据和分析公司，在中国开展业务，属于外商独资或外资控股企业。"
+      }
+    },
+    {
+      "id": 234,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "LSEG",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "LSEG（伦敦证券交易所集团）是一家总部位于英国的上市公司，其业务和资本构成具有显著的外资背景，在中国市场运营时通常被视为外资企业。"
+      }
+    },
+    {
+      "id": 235,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "安永",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "安永（Ernst & Young）是全球知名的专业服务机构，在中国设立的安永华明会计师事务所（特殊普通合伙）等实体属于外商独资企业。"
+      }
+    },
+    {
+      "id": 236,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "微软BI (Power BI)",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "微软（Microsoft）是美国跨国科技公司，其产品Power BI属于微软公司业务的一部分，因此在中国市场运营的微软相关业务实体属于外资企业。"
+      }
+    },
+    {
+      "id": 237,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Palantir",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Palantir是一家在美国注册成立、总部位于美国丹佛的软件公司，其创始人和主要股东均为美国公民或机构，属于外商独资企业。"
+      }
+    },
+    {
+      "id": 238,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Salesforce",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Salesforce 是一家总部位于美国的上市公司，在中国开展业务，属于外商独资或中外合资性质。",
+        "credit_code": "ZZSN23070500000711",
+        "standard_name": "Salesforce公司"
+      }
+    },
+    {
+      "id": 239,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "浪潮卓数大数据",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "浪潮卓数大数据是浪潮集团旗下的大数据公司，而浪潮集团是山东省属国有重要骨干企业，因此该公司属于地方国企体系。"
+      }
+    },
+    {
+      "id": 240,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "数梦工场",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开的工商信息，杭州数梦工场科技有限公司由自然人股东和民营投资机构控股，无国有资本或外资控股背景，属于中国本土的私营企业。",
+        "credit_code": "91330106328122968A",
+        "standard_name": "杭州数梦工场科技有限公司"
+      }
+    },
+    {
+      "id": 241,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国电子数据产业集团",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该企业名称中包含'中国'字样，且'电子数据产业集团'是典型的国有资本主导的产业集团名称，符合中央企业或大型国有企业的命名特征，属于国有控股企业。"
+      }
+    },
+    {
+      "id": 242,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "湖北大数据集团",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "湖北大数据集团是湖北省政府批准成立的省属国有企业，由湖北省多家省属国企共同出资组建，承担省级政务数据平台建设和运营等公共职能，属于地方国企。"
+      }
+    },
+    {
+      "id": 243,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Snowflake",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Snowflake是一家在美国注册成立并在纽约证券交易所上市的科技公司，属于外商独资企业。"
+      }
+    },
+    {
+      "id": 244,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "lanceDB (火山引擎)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "LanceDB是一个开源项目，其背后的主要商业实体是火山引擎。火山引擎是字节跳动旗下的企业级技术服务平台，字节跳动是一家由自然人控股的中国本土私营企业，因此属于民营企业。"
+      }
+    },
+    {
+      "id": 245,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "MiniMax",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "MiniMax（上海稀宇科技有限公司）是一家专注于人工智能技术研发的中国本土私营企业，由自然人控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 246,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "xAI",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "xAI 是埃隆·马斯克在美国创立的公司，属于外商独资企业。"
+      }
+    },
+    {
+      "id": 247,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "月之暗面",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "月之暗面（Moonshot AI）是一家由创始人杨植麟等自然人创立并控股的中国本土人工智能科技公司，其股权结构和运营模式符合私营企业的特征。",
+        "credit_code": "91110108MACG2KBH8F",
+        "standard_name": "北京月之暗面科技有限公司"
+      }
+    },
+    {
+      "id": 248,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阶跃星辰",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开信息，阶跃星辰是一家专注于人工智能大模型研发的中国本土科技公司，由自然人创立并控股，属于典型的私营企业。",
+        "credit_code": "91310104MACE0YX639",
+        "standard_name": "上海阶跃星辰智能科技有限公司"
+      }
+    },
+    {
+      "id": 249,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阿里 (百炼)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "阿里（百炼）是阿里巴巴集团旗下的业务或品牌，阿里巴巴集团是由自然人控股的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 250,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百度 (千帆)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "百度是中国本土的私营企业，由自然人控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 251,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "字节跳动 (火山方舟)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "字节跳动（包括其业务火山方舟）是由中国自然人创办并控股的私营企业，不属于国有资本或外资控股。"
+      }
+    },
+    {
+      "id": 252,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "硅基流动",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开信息，硅基流动是一家专注于人工智能大模型开发与应用的中国本土科技公司，由自然人创立并控股，属于典型的私营企业。"
+      }
+    },
+    {
+      "id": 253,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "OpenRouter",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "OpenRouter是一家提供AI模型API聚合服务的公司，其运营主体OpenRouter Inc.注册于美国特拉华州，属于外商独资企业。"
+      }
+    },
+    {
+      "id": 254,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "未来速度 (Xinference)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开信息，'未来速度'（Xinference）是一家专注于人工智能和机器学习领域的中国本土科技公司，由自然人创立并控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 255,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "亚马逊 (Amazon Bedrock AgentCore)",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "亚马逊（Amazon）是美国跨国科技公司，其在中国运营的实体（包括提供Amazon Bedrock AgentCore服务的相关主体）属于外商独资或中外合资企业，符合外资企业的定义。"
+      }
+    },
+    {
+      "id": 256,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "微软 (Azure AI Foundry)",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "微软是美国跨国科技公司，其业务部门Azure AI Foundry属于外商独资性质。"
+      }
+    },
+    {
+      "id": 257,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "n8n",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "n8n是一家总部位于德国的开源工作流自动化平台公司，在中国市场运营时，通常被视为外资企业。"
+      }
+    },
+    {
+      "id": 258,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "字节跳动 (扣子)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "字节跳动（包括其旗下产品“扣子”）是由中国自然人张一鸣等人创立的有限责任公司，其股权结构主要由创始团队和市场化投资机构持有，属于典型的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 259,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百度 (千帆AppBuilder)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "百度（Baidu）是由李彦宏等自然人创立的中国本土科技公司，其股权结构为自然人控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 260,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "语灵科技 (Dify)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "语灵科技（Dify）是一家专注于AI应用开发平台的中国本土科技公司，由自然人创立并控股，属于典型的私营企业。"
+      }
+    },
+    {
+      "id": 261,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "抖音",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "抖音是北京字节跳动科技有限公司旗下的产品，该公司由自然人控股，属于中国本土私营企业。",
+        "credit_code": "911101085923662400",
+        "standard_name": "北京抖音信息服务有限公司"
+      }
+    },
+    {
+      "id": 262,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "快手",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "快手（北京快手科技有限公司）是由宿华、程一笑等自然人创立并控股的互联网科技公司，属于中国本土私营企业。",
+        "credit_code": "91110108335469089C",
+        "standard_name": "快手科技有限公司"
+      }
+    },
+    {
+      "id": 263,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "微信",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "微信是腾讯公司旗下的产品，而腾讯公司是由自然人控股的上市公司，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 264,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "小红书",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "小红书（行吟信息科技（上海）有限公司）是由创始人毛文超和瞿芳创立的中国本土私营企业，其股权结构主要由创始团队、员工持股平台及市场化投资机构持有，无国有资本控股或控制，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 265,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "哔哩哔哩",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "哔哩哔哩（Bilibili Inc.）是一家在美国纳斯达克和香港联交所上市的公司，其股权结构分散，由创始人、管理层及公众股东持有，无政府或外资控股方，属于中国本土的私营互联网企业。",
+        "credit_code": "ZZSN230912210650148",
+        "standard_name": "哔哩哔哩股份有限公司"
+      }
+    },
+    {
+      "id": 266,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "泛微网络",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "上海泛微网络科技股份有限公司是由自然人控股的上市公司，其控股股东和实际控制人为自然人，属于中国本土的私营企业。",
+        "credit_code": "9131000070322836XD",
+        "standard_name": "泛微网络科技股份有限公司"
+      }
+    },
+    {
+      "id": 267,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Canva",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Canva是一家在澳大利亚注册成立的在线设计平台公司，其在中国运营的实体属于外商独资或中外合资性质，因此归类为外资企业。",
+        "credit_code": "ZZSN231108150126003",
+        "standard_name": "Canva"
+      }
+    },
+    {
+      "id": 268,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "万兴科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "万兴科技（Wondershare）是一家由自然人创立并控股的软件公司，其运营主体为深圳万兴科技股份有限公司，属于典型的中国本土私营企业。",
+        "credit_code": "91540195754285145H",
+        "standard_name": "万兴科技集团股份有限公司"
+      }
+    },
+    {
+      "id": 269,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "三七互娱",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "三七互娱（上海）科技有限公司是一家由自然人控股的上市公司，其最终控制人为自然人，属于中国本土私营企业。",
+        "credit_code": "91340200713927789U",
+        "standard_name": "三七互娱网络科技集团股份有限公司"
+      }
+    },
+    {
+      "id": 270,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阅文集团",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "阅文集团由腾讯控股有限公司控股，而腾讯是中国本土的私营企业，因此阅文集团属于民营企业。"
+      }
+    },
+    {
+      "id": 271,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "掌阅科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "掌阅科技股份有限公司（iReader）是由自然人张凌云等创始团队控股的上市公司，其股权结构和经营模式符合中国本土私营企业的特征。",
+        "credit_code": "91110105680492298C",
+        "standard_name": "掌阅科技股份有限公司"
+      }
+    },
+    {
+      "id": 272,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Keep",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "Keep（北京卡路里科技有限公司）是由自然人王宁创立并控股的私营企业，属于中国本土的民营企业。"
+      }
+    },
+    {
+      "id": 273,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "马蜂窝",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "马蜂窝（北京蚂蜂窝网络科技有限公司）是由自然人股东控股的旅游社交及电商平台，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 274,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "贝壳",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "贝壳（KE Holdings Inc.）是一家在开曼群岛注册、在美国纽约证券交易所上市的公司，其运营实体在中国境内。其股权结构主要由创始人团队及市场化投资机构持有，无政府或国有资本控股，因此属于中国本土的私营企业。",
+        "credit_code": "ZZSN23041800000046",
+        "standard_name": "贝壳控股有限公司"
+      }
+    },
+    {
+      "id": 275,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "乐有家",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "乐有家（深圳市乐有家控股集团有限公司）是中国本土的房地产经纪服务企业，由自然人控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 276,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "麦田房产",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "麦田房产（北京麦田房产经纪有限公司）是由自然人股东控股的房地产经纪公司，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 277,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "酷家乐",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "酷家乐（杭州群核信息技术有限公司）是由中国本土的自然人（黄晓煌、陈航等）创立并控股的私营企业，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 278,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "广东三维家信息科技有限公司",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该公司为自然人控股的科技公司，无国有资本或外资背景，属于典型的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 279,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "群核科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "群核科技（酷家乐）是中国本土的私营科技公司，由自然人创立并控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 280,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "汉仪股份",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "汉仪股份（北京汉仪创新科技股份有限公司）是一家专注于字体设计、开发和销售的公司，由自然人控股并在深圳证券交易所创业板上市，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 281,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "泡泡玛特",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "泡泡玛特（Pop Mart）是一家在中国注册成立、由自然人控股的上市公司，其经营和股权结构符合中国本土私营企业的特征，因此属于民营企业。",
+        "credit_code": "911101055636846881",
+        "standard_name": "北京泡泡玛特文化创意有限公司"
+      }
+    },
+    {
+      "id": 282,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "浙江中南卡通",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "浙江中南卡通股份有限公司是一家以原创动画制作和运营为主的文化企业，由自然人控股，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 283,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "上影集团",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "上影集团（上海电影（集团）有限公司）是经上海市政府批准成立的国有独资大型电影企业，由上海市国有资产监督管理委员会监管，属于地方国有企业。"
+      }
+    },
+    {
+      "id": 284,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中影年年",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "中影年年（北京）文化传媒有限公司是一家由自然人控股的动画制作公司，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 285,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "互影科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "互影科技是一家专注于互动影视内容创作的中国本土私营企业，由自然人控股，不属于国有资本或外资控股。"
+      }
+    },
+    {
+      "id": 286,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中华医学会杂志社",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中华医学会杂志社隶属于中华医学会，而中华医学会是接受国家卫生健康委员会业务主管的全国性学术团体，具有事业单位属性，其下属的杂志社通常被视为国有性质的单位。"
+      }
+    },
+    {
+      "id": 287,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新华网",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "新华网是新华通讯社（国务院直属事业单位）主办的中央重点新闻网站，由国有资本控股，属于中央企业性质。",
+        "credit_code": "91110000710927126K",
+        "standard_name": "新华网股份有限公司"
+      }
+    },
+    {
+      "id": 288,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "人民日报社新媒体中心",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "人民日报社是中共中央直属事业单位，其下属的新媒体中心作为其内设机构，属于国有事业单位性质。"
+      }
+    },
+    {
+      "id": 289,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中央广播电视总台",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中央广播电视总台是国务院直属事业单位，由中共中央宣传部领导，属于国家级媒体机构。"
+      }
+    },
+    {
+      "id": 290,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "咪咕音乐",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "咪咕音乐是中国移动通信集团有限公司旗下的全资子公司，而中国移动是国务院国资委直接监管的中央企业，因此咪咕音乐属于央企/国企体系。"
+      }
+    },
+    {
+      "id": 291,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阿里云 (通义晓蜜)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "阿里云是阿里巴巴集团旗下的云计算及人工智能科技公司，阿里巴巴集团由自然人控股，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 292,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中关村科金",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "北京中关村科金技术有限公司是一家由自然人控股的科技公司，其股权结构和公开信息显示其为典型的中国本土私营企业。",
+        "credit_code": "91110108662170324C",
+        "standard_name": "北京中关村科金技术有限公司"
+      }
+    },
+    {
+      "id": 293,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Anysphere (Cursor)",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Anysphere (Cursor) 是一家专注于AI代码编辑器的科技公司，由海外团队创立和运营，其产品Cursor主要面向全球市场，符合外资企业的定义。"
+      }
+    },
+    {
+      "id": 294,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "微软 (Github Copilot)",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "微软是美国公司，其产品Github Copilot属于外商独资企业在中国市场提供的服务。"
+      }
+    },
+    {
+      "id": 295,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "金山办公 (WPS)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "金山办公软件股份有限公司（WPS）是金山软件集团旗下子公司，其最终控制方为自然人股东和投资机构，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 296,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "腾讯 (腾讯元宝)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "腾讯（腾讯元宝）的运营主体为深圳市腾讯计算机系统有限公司，该公司由自然人控股，是中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 297,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "彩讯股份",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "彩讯股份（股票代码：300634）是一家由自然人控股的上市公司，其控股股东和实际控制人为自然人，主营业务为软件开发和信息技术服务，属于典型的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 298,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "福昕软件",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "福建福昕软件开发股份有限公司是一家在中国本土成立、由自然人控股的软件企业，属于典型的民营企业。",
+        "credit_code": "91350100731862878C",
+        "standard_name": "福建福昕软件开发股份有限公司"
+      }
+    },
+    {
+      "id": 299,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "最高人民检察院",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "最高人民检察院是中华人民共和国最高检察机关，属于国家机构，因此归类为政府机构。"
+      }
+    },
+    {
+      "id": 300,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "最高人民法院",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "最高人民法院是中华人民共和国最高审判机关，属于国家机构。"
+      }
+    },
+    {
+      "id": 301,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "杭州市公安局滨江区分局",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该机构是地方政府设立的公安机关，属于政府机构范畴。"
+      }
+    },
+    {
+      "id": 302,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "深圳交警",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "深圳交警是深圳市公安局下属的交通管理部门，属于政府机构，因此归类为央企/国企。"
+      }
+    },
+    {
+      "id": 303,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宜昌市劳动就业管理局",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该机构名称包含'管理局'，是地方政府设立的公共就业服务机构，属于政府机构或事业单位范畴，因此归类为'央企/国企'类别。"
+      }
+    },
+    {
+      "id": 304,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "武安本级数字化部",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该名称'武安本级数字化部'并非独立法人实体，而是典型的国有企业内部职能部门命名格式。'本级'通常指代集团总部或核心主体，'数字化部'是负责数字化转型的部门。结合'武安'这一地名，其极有可能隶属于新兴际华集团旗下的核心企业——新兴铸管股份有限公司（央企新兴际华集团控股）在河北武安的生产基地（即'武安本级'）。因此，其性质应归属于其所属的中央企业体系。"
+      }
+    },
+    {
+      "id": 305,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国家管网集团",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "国家管网集团（国家石油天然气管网集团有限公司）是由国务院国资委代表国务院履行出资人职责的国有独资公司，属于中央企业。"
+      }
+    },
+    {
+      "id": 306,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国石化",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国石油化工集团有限公司（中国石化）是国务院国资委直接监管的国有重要骨干企业，属于中央企业。"
+      }
+    },
+    {
+      "id": 307,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国石油",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国石油天然气集团有限公司（简称中国石油）是国务院国资委直接监管的国有重要骨干企业，属于中央企业。",
+        "credit_code": "ZZSN230711104156106",
+        "standard_name": "中国石油股份有限公司"
+      }
+    },
+    {
+      "id": 308,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国家电网有限公司",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该企业由国务院国有资产监督管理委员会（国资委）直接监管，是关系国家能源安全和国民经济命脉的国有重要骨干企业，属于中央企业。",
+        "credit_code": "9111000071093123XX",
+        "standard_name": "国家电网有限公司"
+      }
+    },
+    {
+      "id": 309,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "南方电网",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国南方电网有限责任公司是国务院国资委直接监管的中央企业，属于关系国家能源安全和国民经济命脉的国有重要骨干企业。",
+        "credit_code": "9144000076384341X8",
+        "standard_name": "中国南方电网有限责任公司"
+      }
+    },
+    {
+      "id": 310,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国华电集团",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国华电集团有限公司是经国务院批准，由国务院国有资产监督管理委员会直接监管的国有重要骨干企业，属于中央企业（央企）。",
+        "credit_code": "9111000071093107XN",
+        "standard_name": "中国华电集团有限公司"
+      }
+    },
+    {
+      "id": 311,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宝武钢铁",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国宝武钢铁集团有限公司是国务院国有资产监督管理委员会直接监管的国有重要骨干企业，属于中央企业。",
+        "credit_code": "91310000132200821H",
+        "standard_name": "中国宝武钢铁集团有限公司"
+      }
+    },
+    {
+      "id": 312,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海螺水泥",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "安徽海螺水泥股份有限公司是安徽省国资委下属的国有控股上市公司，属于地方国企。",
+        "credit_code": "9134020014949036XY",
+        "standard_name": "安徽海螺水泥股份有限公司"
+      }
+    },
+    {
+      "id": 313,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "万华化学",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "万华化学集团股份有限公司（万华化学）的最终控制人是烟台市人民政府国有资产监督管理委员会，属于地方国有控股企业。",
+        "credit_code": "91370000163044841F",
+        "standard_name": "万华化学集团股份有限公司"
+      }
+    },
+    {
+      "id": 314,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "施耐德电气",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "施耐德电气（Schneider Electric）是一家总部位于法国的跨国企业，在中国运营的实体属于外商独资或中外合资性质。",
+        "credit_code": "ZZSN22080900000317",
+        "standard_name": "施耐德电气公司"
+      }
+    },
+    {
+      "id": 315,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "GE",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "GE（通用电气）是美国跨国企业集团，在中国运营的实体属于外商独资或中外合资性质。"
+      }
+    },
+    {
+      "id": 316,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "东方电气集团",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "东方电气集团是中国重要的发电设备制造和电站工程承包特大型企业之一，由国务院国有资产监督管理委员会直接监管，属于中央企业。",
+        "credit_code": "9151000062160427XG",
+        "standard_name": "中国东方电气集团有限公司"
+      }
+    },
+    {
+      "id": 317,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中车",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国中车集团有限公司（简称中车）是由国务院国有资产监督管理委员会直接监管的中央企业，属于大型国有骨干企业。",
+        "credit_code": "911100007109352226",
+        "standard_name": "中国中车股份有限公司"
+      }
+    },
+    {
+      "id": 318,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "树根科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "树根科技（树根互联股份有限公司）是一家专注于工业互联网平台研发与运营的科技公司，由自然人股东和三一集团等民营企业控股，无国有资本或外资控股背景，属于典型的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 319,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "卡奥斯",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "卡奥斯（COSMOPlat）是海尔集团旗下的工业互联网平台。海尔集团是集体所有制企业，属于国有控股的混合所有制企业，因此归类为国企范畴。",
+        "credit_code": "91370200MA3DHKKP30",
+        "standard_name": "卡奥斯物联科技股份有限公司"
+      }
+    },
+    {
+      "id": 320,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "美的集团",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "美的集团是由何享健先生创立的自然人控股企业，是中国本土的私营企业。",
+        "credit_code": "91440606722473344C",
+        "standard_name": "美的集团股份有限公司"
+      }
+    },
+    {
+      "id": 321,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "格力电器",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "格力电器股份有限公司的控股股东为珠海明骏投资合伙企业（有限合伙），其实际控制人为自然人，因此属于中国本土的民营企业。",
+        "credit_code": "91440400192548256N",
+        "standard_name": "珠海格力电器股份有限公司"
+      }
+    },
+    {
+      "id": 322,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "TCL",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "TCL集团股份有限公司是一家由自然人控股的中国本土私营企业，其股权结构和管理模式符合民营企业的定义。",
+        "credit_code": "ZZSN230912210653185",
+        "standard_name": "TCL电子控股有限公司"
+      }
+    },
+    {
+      "id": 323,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海信",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "海信集团是一家由自然人控股的中国本土大型家电制造企业，其控股股东为青岛市国资委下属的青岛华通国有资本运营（集团）有限责任公司，但实际控制权和管理层为自然人，因此属于民营企业。",
+        "credit_code": "913702001635787718",
+        "standard_name": "海信集团有限公司"
+      }
+    },
+    {
+      "id": 324,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "创维",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "创维集团有限公司是中国本土的消费电子企业，由自然人控股，属于典型的民营企业。",
+        "credit_code": "ZZSN230912210655215",
+        "standard_name": "创维集团有限公司"
+      }
+    },
+    {
+      "id": 325,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "协鑫集团",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "协鑫集团是由自然人朱共山创立并控股的大型民营能源企业，其股权结构和经营模式符合中国本土私营企业的特征。",
+        "credit_code": "91320000583783720B",
+        "standard_name": "协鑫集团有限公司"
+      }
+    },
+    {
+      "id": 326,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阳光电源",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "阳光电源股份有限公司是一家专注于太阳能、风能、储能等新能源电源设备的研发、生产、销售和服务的中国本土企业，由自然人控股，属于典型的民营企业。",
+        "credit_code": "913401001492097421",
+        "standard_name": "阳光电源股份有限公司"
+      }
+    },
+    {
+      "id": 327,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "特变电工",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "credit_code": "91650000299201121Q",
+        "standard_name": "特变电工股份有限公司"
+      }
+    },
+    {
+      "id": 328,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宁德时代",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "宁德时代新能源科技股份有限公司是由自然人曾毓群等创始团队控股的上市公司，属于中国本土私营企业。",
+        "credit_code": "91350900587527783P",
+        "standard_name": "宁德时代新能源科技股份有限公司"
+      }
+    },
+    {
+      "id": 329,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国南方航空",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国南方航空集团有限公司是国务院国有资产监督管理委员会直接监管的中央企业，属于国有骨干航空运输集团。",
+        "credit_code": "91440000100017600N",
+        "standard_name": "中国南方航空股份有限公司"
+      }
+    },
+    {
+      "id": 330,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国邮政",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国邮政集团有限公司是由国务院授权财政部代表国务院履行出资人职责的国有独资公司，属于中央企业。",
+        "credit_code": "911000000000192465",
+        "standard_name": "中国邮政集团有限公司"
+      }
+    },
+    {
+      "id": 331,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中远海运",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中远海运（中国远洋海运集团有限公司）是由国务院国有资产监督管理委员会直接监管的中央企业，属于大型国有骨干企业。"
+      }
+    },
+    {
+      "id": 332,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "京东物流",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "京东物流是京东集团旗下的物流服务子公司，其最终控制方为自然人刘强东等，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 333,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "菜鸟网络",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "菜鸟网络科技有限公司由阿里巴巴集团等多家民营企业投资成立，其控股股东和实际控制人均为民营资本，属于中国本土私营企业。",
+        "credit_code": "91440300068579872B",
+        "standard_name": "菜鸟网络科技有限公司"
+      }
+    },
+    {
+      "id": 334,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "申通快递",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "申通快递股份有限公司是一家由自然人控股的上市公司，其实际控制人为陈德军和陈小英，属于中国本土私营企业。",
+        "credit_code": "913300007324299960",
+        "standard_name": "申通快递股份有限公司"
+      }
+    },
+    {
+      "id": 335,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "天津公交集团",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "天津公交集团是天津市属的大型国有独资公共交通企业，承担着天津市主要的公共交通服务职能，属于地方国有企业。"
+      }
+    },
+    {
+      "id": 336,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "沧州交通发展集团",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "该企业名称中包含'集团'，且通常由地方政府出资设立，负责地方交通基础设施建设与运营，属于地方国有企业。"
+      }
+    },
+    {
+      "id": 337,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "广州动车段",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "广州动车段是中国国家铁路集团有限公司下属的运输生产单位，而国铁集团是经国务院批准、由中央管理的国有独资公司，属于中央企业范畴。"
+      }
+    },
+    {
+      "id": 338,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "四维图新",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "四维图新（北京四维图新科技股份有限公司）是一家由创始人团队和市场化资本控股的上市公司，其控股股东和实际控制人为自然人，属于中国本土的私营企业。",
+        "credit_code": "91110000745467123H",
+        "standard_name": "北京四维图新科技股份有限公司"
+      }
+    },
+    {
+      "id": 339,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "高德",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "高德软件有限公司（高德）是一家由自然人控股的中国本土私营企业，其股权结构显示其为民营企业性质。",
+        "credit_code": "91420100764602490E",
+        "standard_name": "武汉高德红外股份有限公司"
+      }
+    },
+    {
+      "id": 340,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "佳都科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "佳都科技集团股份有限公司（简称“佳都科技”）是一家在中国A股上市的公司，其股权结构显示主要由自然人股东和民营投资机构控股，无政府或国有资本控股，因此属于民营企业。",
+        "credit_code": "91440101731566630A",
+        "standard_name": "佳都科技集团股份有限公司"
+      }
+    },
+    {
+      "id": 341,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "清华大学",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "清华大学是教育部直属的全国重点大学，属于公立高校，因此归类为央企/国企类别。"
+      }
+    },
+    {
+      "id": 342,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "上海交通大学",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "上海交通大学是教育部直属、中央直管的全国重点大学，属于公立高校，因此归类为央企/国企范畴。"
+      }
+    },
+    {
+      "id": 343,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "复旦大学",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "复旦大学是中华人民共和国教育部直属的全国重点大学，属于公立高校。"
+      }
+    },
+    {
+      "id": 344,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "武汉大学",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "武汉大学是教育部直属的全国重点大学，属于公立高校，因此归类为央企/国企类别。"
+      }
+    },
+    {
+      "id": 345,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国农业大学",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国农业大学是教育部直属的全国重点大学，属于公立高校，因此归类为央企/国企类别。"
+      }
+    },
+    {
+      "id": 346,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "贵州大学",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "贵州大学是教育部与贵州省人民政府共建的省属重点综合性大学，属于公立高校，因此归类为央企/国企类别。"
+      }
+    },
+    {
+      "id": 347,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "猿力科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "猿力科技（北京猿力教育科技有限公司）由自然人李勇创立并控股，是一家典型的中国本土私营教育科技企业，无国有资本或外资控股背景。",
+        "credit_code": "911101055938807191",
+        "standard_name": "北京猿力科技有限公司"
+      }
+    },
+    {
+      "id": 348,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "科大讯飞",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "科大讯飞股份有限公司是由自然人刘庆峰等创始团队控股的上市公司，其实际控制人为自然人，属于中国本土的私营企业。",
+        "credit_code": "91340000711771143J",
+        "standard_name": "科大讯飞股份有限公司"
+      }
+    },
+    {
+      "id": 349,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "阿尔法蛋",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "阿尔法蛋是安徽淘云科技股份有限公司旗下的儿童人工智能品牌，该公司由自然人控股，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 350,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "正大天晴",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "正大天晴药业集团股份有限公司是中国生物制药有限公司的核心企业，而中国生物制药是谢炳家族为主要股东的香港上市公司，属于自然人控股的私营企业。"
+      }
+    },
+    {
+      "id": 351,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百图生科",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "百图生科（北京）智能技术有限公司是一家由李彦宏等自然人发起设立并控股的生物科技公司，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 352,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "迈威生物",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "迈威生物是一家在上海证券交易所科创板上市的创新药研发企业，其股权结构显示为自然人及投资机构控股，无国有资本控股，属于典型的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 353,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "复宏汉霖",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "复宏汉霖（上海复宏汉霖生物技术股份有限公司）是由复星医药与海外科学家团队于2010年共同创立的生物制药公司，其控股股东为复星医药，而复星医药是一家自然人控股的上市公司，因此复宏汉霖属于中国本土的民营企业。",
+        "credit_code": "91310000550094566N",
+        "standard_name": "上海复宏汉霖生物技术股份有限公司"
+      }
+    },
+    {
+      "id": 354,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "联影医疗",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "联影医疗（上海联影医疗科技股份有限公司）是由自然人控股的上市公司，其控股股东和实际控制人为自然人，属于中国本土的私营企业。",
+        "credit_code": "91310114570796872F",
+        "standard_name": "上海联影医疗科技股份有限公司"
+      }
+    },
+    {
+      "id": 355,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "柏视医疗",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "柏视医疗（广州柏视医疗科技有限公司）是一家专注于人工智能医学影像技术的公司，由自然人创立并控股，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 356,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "库克医疗",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "库克医疗（Cook Medical）是美国库克集团（Cook Group）旗下的医疗设备公司，属于外商独资企业。"
+      }
+    },
+    {
+      "id": 357,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "北京清华长庚医院",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "北京清华长庚医院是清华大学附属医院，清华大学是教育部直属的公立高校，因此其附属医院属于公立事业单位性质，应归类为央企/国企类别。"
+      }
+    },
+    {
+      "id": 358,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "健康有益",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "健康有益是一家专注于健康科技领域的中国本土私营企业，由自然人控股，属于民营企业范畴。"
+      }
+    },
+    {
+      "id": 359,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "蚂蚁集团",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "蚂蚁集团的实际控制人为马云等自然人，其股权结构主要由民营资本构成，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 360,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "工商银行",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国工商银行股份有限公司是国有大型商业银行，由中央汇金投资有限责任公司和财政部控股，属于中央金融企业。",
+        "credit_code": "91100000100003962T",
+        "standard_name": "中国工商银行股份有限公司"
+      }
+    },
+    {
+      "id": 361,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "建设银行",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国建设银行股份有限公司是中央管理的国有大型商业银行，属于中央金融企业。",
+        "credit_code": "911100001000044477",
+        "standard_name": "中国建设银行股份有限公司"
+      }
+    },
+    {
+      "id": 362,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "农业银行",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国农业银行股份有限公司是由中央汇金投资有限责任公司和财政部控股的大型国有商业银行，属于中央金融企业。",
+        "credit_code": "911100001000054748",
+        "standard_name": "中国农业银行股份有限公司"
+      }
+    },
+    {
+      "id": 363,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "交通银行",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "交通银行是中国历史最悠久的银行之一，现为国有大型商业银行，由财政部、中央汇金公司等国家机构控股，属于中央金融企业。",
+        "credit_code": "9131000010000595XD",
+        "standard_name": "交通银行股份有限公司"
+      }
+    },
+    {
+      "id": 364,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "招商银行",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "招商银行是由招商局集团控股的股份制商业银行，而招商局集团是中央直接管理的国有重要骨干企业，因此招商银行属于国有控股企业。",
+        "credit_code": "9144030010001686XA",
+        "standard_name": "招商银行股份有限公司"
+      }
+    },
+    {
+      "id": 365,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中信银行",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中信银行是中国中信集团（由财政部代表国务院履行出资人职责的国有独资企业）的控股子公司，属于国有控股的商业银行。",
+        "credit_code": "91110000101690725E",
+        "standard_name": "中信银行股份有限公司"
+      }
+    },
+    {
+      "id": 366,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "光大银行",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国光大银行股份有限公司是由中央管理的国有重要骨干企业中国光大集团控股的全国性股份制商业银行，属于国有控股的金融央企。",
+        "credit_code": "91110000100011743X",
+        "standard_name": "中国光大银行股份有限公司"
+      }
+    },
+    {
+      "id": 367,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宁波银行",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "宁波银行是一家由地方财政、企业和个人共同持股的区域性股份制商业银行，其股权结构分散，无单一控股股东，且未被国务院国资委或地方国资委认定为国有企业，因此属于民营企业范畴。",
+        "credit_code": "91330200711192037M",
+        "standard_name": "宁波银行股份有限公司"
+      }
+    },
+    {
+      "id": 368,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "微众银行",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "微众银行是由腾讯、百业源和立业集团等多家民营企业发起设立的中国首家民营银行和互联网银行，其控股股东为民营企业，无政府或国有资本控股。",
+        "credit_code": "9144030031977063XH",
+        "standard_name": "深圳前海微众银行股份有限公司"
+      }
+    },
+    {
+      "id": 369,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新网银行",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "新网银行是由新希望集团、小米、红旗连锁等民营企业发起设立的民营银行，无国有资本控股，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 370,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "京东科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "京东科技是京东集团旗下的科技子公司，其最终控制方为自然人刘强东，属于中国本土私营企业。",
+        "credit_code": "91110302053604529E",
+        "standard_name": "京东科技控股股份有限公司"
+      }
+    },
+    {
+      "id": 371,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国平安",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "中国平安保险（集团）股份有限公司是一家由自然人控股的股份制企业，其股权结构分散，无单一控股股东，且不属于国务院国资委或地方国资委监管，因此属于民营企业。",
+        "credit_code": "91440300100012316L",
+        "standard_name": "中国平安保险（集团）股份有限公司"
+      }
+    },
+    {
+      "id": 372,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "长盛基金",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "长盛基金管理有限公司是经中国证监会批准设立的全国性基金管理公司，其股东包括国元证券股份有限公司等国有控股金融机构，具有国有资本背景，因此归类为央企/国企。"
+      }
+    },
+    {
+      "id": 373,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "诺安基金",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "诺安基金管理有限公司的控股股东为中国中化集团旗下的外贸信托等，但根据其股权结构和市场化运作模式，通常被归类为具有国资背景的混合所有制企业，更符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 374,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "国寿安保基金",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "国寿安保基金由中国人寿资产管理有限公司（中国人寿集团旗下，为中央金融企业）和澳大利亚安保集团合资设立，其中中国人寿资产管理有限公司为控股股东，因此该企业具有国有控股性质，属于央企/国企范畴。"
+      }
+    },
+    {
+      "id": 375,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "中国银联",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "中国银联是经国务院同意、中国人民银行批准设立的中国银行卡联合组织，属于国有控股的金融机构。"
+      }
+    },
+    {
+      "id": 376,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "网联清算",
+        "symbolSize": 30,
+        "category": "央企/国企",
+        "category_reason": "网联清算有限公司（简称网联清算）是由中国人民银行批准成立，并由国家外汇管理局、中国支付清算协会以及多家大型商业银行和支付机构共同出资组建的全国性金融基础设施运营机构，其核心职能是处理非银行支付机构的网络支付业务，具有明确的公共属性和国家战略意义，因此属于国有企业范畴。"
+      }
+    },
+    {
+      "id": 377,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "恒生电子",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "恒生电子股份有限公司是一家在中国A股上市的金融软件和网络服务供应商，其控股股东为自然人及民营企业，无国有资本控股，因此属于民营企业。",
+        "credit_code": "913300002539329145",
+        "standard_name": "恒生电子股份有限公司"
+      }
+    },
+    {
+      "id": 378,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "荣耀",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "荣耀终端有限公司目前由深圳市智信新信息技术有限公司全资控股，而深圳市智信新信息技术有限公司由深圳国资协同发展私募基金合伙企业（有限合伙）等多家机构共同出资设立，其中深圳国资占主导地位。虽然国资背景浓厚，但其股权结构为多元化的市场主体联合体，并非由单一政府机构或国资委直接全资控股，且其运营遵循市场化原则，因此归类为民营企业。",
+        "credit_code": "91440300MA5G49LC9K",
+        "standard_name": "荣耀终端股份有限公司"
+      }
+    },
+    {
+      "id": 379,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "苹果",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "苹果公司（Apple Inc.）是一家注册于美国的跨国公司，在中国开展业务属于外商独资企业。",
+        "credit_code": "ZZSN22080900000004",
+        "standard_name": "苹果公司"
+      }
+    },
+    {
+      "id": 380,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "OPPO",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "OPPO是广东欧珀移动通信有限公司的品牌，该公司由陈明永等自然人创立并控股，属于中国本土的私营企业。",
+        "credit_code": "914419007480321175",
+        "standard_name": "OPPO广东移动通信有限公司"
+      }
+    },
+    {
+      "id": 381,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "联想",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "联想集团由中国科学院计算技术研究所投资创办，后经过股份制改造和多次股权变更，目前其最大股东为联想控股，而联想控股是一家由员工持股平台和多家民营资本主导的混合所有制企业，无单一国有控股方，因此归类为民营企业。",
+        "credit_code": "911100001011122986",
+        "standard_name": "联想控股股份有限公司"
+      }
+    },
+    {
+      "id": 382,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "小派科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "小派科技（Pimax）是一家专注于虚拟现实（VR）头显设备研发与生产的中国本土科技公司，由自然人创立并控股，属于典型的私营企业。"
+      }
+    },
+    {
+      "id": 383,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "小米",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "小米集团是一家由自然人雷军等人创立的、在开曼群岛注册并在香港上市的科技公司，其股权结构和实际控制人均为自然人，属于典型的中国本土私营企业。",
+        "credit_code": "91110108558521630L",
+        "standard_name": "小米通讯技术有限公司"
+      }
+    },
+    {
+      "id": 384,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Rokid",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "Rokid（杭州灵伴科技有限公司）是一家专注于人机交互技术和人工智能产品研发的中国本土科技公司，由自然人创立并控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 385,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "百度 (小度)",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "百度（小度）是百度集团旗下的智能生活事业群组业务，百度集团由李彦宏等自然人创立并控股，是中国本土的私营科技企业。"
+      }
+    },
+    {
+      "id": 386,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海康威视",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "海康威视的实际控制人为自然人，其最大股东为国有资本投资运营公司，但公司治理结构及运营模式符合市场化民营企业特征，因此归类为民营企业。",
+        "credit_code": "91330000733796106P",
+        "standard_name": "杭州海康威视数字技术股份有限公司"
+      }
+    },
+    {
+      "id": 387,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "大华股份",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "大华股份（浙江大华技术股份有限公司）是由自然人控股的上市公司，其控股股东和实际控制人为傅利泉、陈爱玲夫妇，属于典型的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 388,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "萤石网络",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "萤石网络是杭州海康威视数字技术股份有限公司的控股子公司，而海康威视是一家由自然人控股的A股上市公司，因此萤石网络属于民营企业范畴。",
+        "credit_code": "913301083417938384",
+        "standard_name": "杭州萤石网络股份有限公司"
+      }
+    },
+    {
+      "id": 389,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "傅利叶",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "傅利叶智能（Fourier Intelligence）是一家专注于康复机器人研发与制造的中国本土科技公司，由自然人创立并控股，属于私营企业。",
+        "credit_code": "9131000035105342XD",
+        "standard_name": "上海傅利叶智能科技股份有限公司"
+      }
+    },
+    {
+      "id": 390,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "智元机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "智元机器人（上海）有限公司由自然人股东（如彭志辉等）控股，是一家中国本土的私营科技企业，属于民营企业。"
+      }
+    },
+    {
+      "id": 391,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "银河通用机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "根据公开信息，银河通用机器人（北京）有限公司是一家专注于通用机器人研发的科技公司，由自然人股东和风险投资机构投资设立，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 392,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "新松点石",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "新松点石是一家专注于工业自动化、机器人及智能制造领域的公司，其股权结构主要由自然人及民营资本控股，无国有资本或外资控股背景，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 393,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "越疆机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "越疆机器人（深圳市越疆科技有限公司）是一家专注于智能机械臂研发与生产的中国本土科技公司，由自然人控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 394,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "遨博机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "遨博（北京）智能科技有限公司是一家由自然人控股的、专注于协作机器人研发与生产的中国本土私营企业，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 395,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "珞石机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "珞石机器人（北京）有限公司是一家专注于工业机器人研发与制造的中国本土科技公司，由自然人股东控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 396,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "魔法原子",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称'魔法原子'不符合央企/国企的命名惯例，也无公开信息表明其具有国有资本背景或外资背景，因此推断为典型的中国本土私营企业。"
+      }
+    },
+    {
+      "id": 397,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "星海图",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称'星海图'未在已知的央企/国企名录中，且名称风格符合中国本土私营企业的常见特征，因此判断为民营企业。"
+      }
+    },
+    {
+      "id": 398,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "普渡机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "普渡机器人（深圳普渡科技有限公司）是一家专注于商用服务机器人研发、设计、生产和销售的中国本土科技公司，由自然人创立并控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "id": 399,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "擎朗智能",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "擎朗智能（上海擎朗智能科技有限公司）是一家专注于商用服务机器人研发、生产和销售的中国本土科技公司，由自然人控股，属于私营企业。",
+        "credit_code": "91310106550090004W",
+        "standard_name": "上海擎朗智能科技股份有限公司"
+      }
+    },
+    {
+      "id": 400,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "石头科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "石头科技（北京石头世纪科技股份有限公司）是一家由自然人控股、专注于智能清洁机器人等智能硬件的中国本土私营企业，其股权结构和公开信息均表明其属于民营企业范畴。"
+      }
+    },
+    {
+      "id": 401,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "科沃斯",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "科沃斯机器人股份有限公司是一家由自然人控股、在中国本土创立和发展的私营企业，其股权结构和经营模式符合民营企业的定义。",
+        "credit_code": "91320500628396530U",
+        "standard_name": "科沃斯机器人股份有限公司"
+      }
+    },
+    {
+      "id": 402,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "追觅科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "追觅科技（苏州）有限公司是一家由自然人控股、专注于智能清洁家电等领域的中国本土私营企业，符合民营企业的定义。",
+        "credit_code": "91120118MA0697LP9T",
+        "standard_name": "追觅科技（苏州）有限公司"
+      }
+    },
+    {
+      "id": 403,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "戴盟机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "戴盟机器人是一家专注于机器人技术研发与应用的科技公司，其股权结构主要由自然人股东或私营资本控制，符合中国本土私营企业的特征。"
+      }
+    },
+    {
+      "id": 404,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "拓斯达",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "广东拓斯达科技股份有限公司是一家在深圳证券交易所上市的智能制造综合服务商，其控股股东和实际控制人为自然人，属于典型的中国本土私营企业。",
+        "credit_code": "91441900663304451G",
+        "standard_name": "广东拓斯达科技股份有限公司"
+      }
+    },
+    {
+      "id": 405,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海康机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "海康机器人是杭州海康机器人股份有限公司的简称，该公司由自然人控股，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 406,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "极智嘉",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "极智嘉（Geek+）是一家专注于物流仓储机器人领域的中国本土科技公司，由自然人创立并控股，属于典型的私营企业。",
+        "credit_code": "91110117330386452K",
+        "standard_name": "北京极智嘉科技股份有限公司"
+      }
+    },
+    {
+      "id": 407,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "海柔",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "海柔创新（HAI ROBOTICS）是一家专注于物流仓储机器人研发与制造的中国本土科技公司，由自然人创立并控股，属于典型的民营企业。",
+        "credit_code": "91440300MA5DR1JD5X",
+        "standard_name": "深圳市海柔创新科技有限公司"
+      }
+    },
+    {
+      "id": 408,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "蓝芯科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "蓝芯科技是一家专注于移动机器人视觉感知技术研发的中国本土科技公司，由自然人控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 409,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "钛虎机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "钛虎机器人是一家专注于机器人技术研发与制造的中国本土私营企业，由自然人控股，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 410,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "思灵机器人",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "思灵机器人（Agile Robots）是一家由自然人（如陈兆芃博士等）创立并控股的中国本土高科技公司，其股权结构和运营模式符合私营企业的特征。",
+        "credit_code": "91110108MA01DMU77F",
+        "standard_name": "北京思灵机器人科技有限责任公司"
+      }
+    },
+    {
+      "id": 411,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "非夕科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "非夕科技是一家专注于机器人技术研发与应用的科技公司，由自然人创办并控股，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 412,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "逐际动力",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "逐际动力（广州）科技有限公司是一家专注于通用机器人研发的中国本土科技公司，由自然人控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 413,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "领益智造",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "领益智造（广东领益智造股份有限公司）是一家在深圳证券交易所上市的A股公司，其控股股东和实际控制人为自然人，主营业务为精密功能件、结构件及模组等，属于典型的中国本土私营企业。",
+        "credit_code": "91440700193957385W",
+        "standard_name": "广东领益智造股份有限公司"
+      }
+    },
+    {
+      "id": 414,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "特斯拉",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "特斯拉（Tesla, Inc.）是美国注册的上市公司，在中国设立的子公司（如特斯拉（上海）有限公司）属于外商独资企业。",
+        "credit_code": "ZZSN22080900000175",
+        "standard_name": "特斯拉"
+      }
+    },
+    {
+      "id": 415,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宇树科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "宇树科技（Unitree Robotics）是一家专注于高性能四足机器人研发与制造的中国本土科技公司，由自然人创立并控股，属于典型的私营企业。",
+        "credit_code": "91330108MA27YJ5H56",
+        "standard_name": "宇树科技股份有限公司"
+      }
+    },
+    {
+      "id": 416,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "优必选",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "优必选（UBTECH）是一家专注于人工智能和人形机器人研发、制造和销售的中国本土科技公司，由自然人控股，属于私营企业。",
+        "credit_code": "91440300593047655L",
+        "standard_name": "深圳市优必选科技股份有限公司"
+      }
+    },
+    {
+      "id": 417,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "特斯拉",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "特斯拉（Tesla, Inc.）是美国注册的上市公司，在中国设立的公司（如特斯拉（上海）有限公司）属于外商独资企业。",
+        "credit_code": "ZZSN22080900000175",
+        "standard_name": "特斯拉"
+      }
+    },
+    {
+      "id": 418,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "蔚来",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "蔚来（NIO Inc.）是一家在开曼群岛注册、在美国和中国香港上市的公司，其创始人和主要股东为李斌等自然人，并由中国本土的私营资本主导运营，符合民营企业的定义。",
+        "credit_code": "ZZSN230824151711008",
+        "standard_name": "蔚来集团"
+      }
+    },
+    {
+      "id": 419,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "小鹏汽车",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "小鹏汽车（XPeng Inc.）是由何小鹏等自然人联合创立并控股的智能电动汽车公司，属于中国本土私营企业。",
+        "credit_code": "ZZSN23041800000031",
+        "standard_name": "广州小鹏汽车科技有限公司"
+      }
+    },
+    {
+      "id": 420,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "赛力斯",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "赛力斯（SERES）是小康工业集团旗下的新能源汽车品牌，其母公司重庆小康工业集团股份有限公司是一家自然人控股的上市公司，属于中国本土私营企业。",
+        "credit_code": "915001066608898456",
+        "standard_name": "赛力斯集团股份有限公司"
+      }
+    },
+    {
+      "id": 421,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "一汽大众",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "一汽大众是中国第一汽车集团有限公司（央企/国企）与德国大众汽车股份公司（外资）的合资企业，属于中外合资企业。"
+      }
+    },
+    {
+      "id": 422,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "德赛西威",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "德赛西威（惠州市德赛西威汽车电子股份有限公司）是由惠州市德赛工业发展有限公司等主体控股的上市公司，其最终控制方为自然人，属于中国本土的私营企业。",
+        "credit_code": "91441300617881792D",
+        "standard_name": "惠州市德赛西威汽车电子股份有限公司"
+      }
+    },
+    {
+      "id": 423,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "保隆科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "保隆科技（上海保隆汽车科技股份有限公司）是一家在上海证券交易所上市的股份有限公司，其控股股东和实际控制人为自然人，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 424,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "速腾聚创",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "速腾聚创（RoboSense）是一家专注于激光雷达及感知解决方案的科技公司，由自然人创立并控股，属于中国本土的私营企业。",
+        "credit_code": "91440300312056206Y",
+        "standard_name": "深圳市速腾聚创科技有限公司"
+      }
+    },
+    {
+      "id": 425,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "驭势科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "驭势科技（北京）有限公司是一家专注于自动驾驶技术研发的中国本土科技公司，由自然人股东和风险投资机构控股，属于典型的私营企业。",
+        "credit_code": "91110111MA003JG31Y",
+        "standard_name": "驭势科技（北京）股份有限公司"
+      }
+    },
+    {
+      "id": 426,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Momenta",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "Momenta（北京初速度科技有限公司）是一家专注于自动驾驶技术研发的中国本土科技公司，由自然人创办并控股，属于典型的民营企业。"
+      }
+    },
+    {
+      "//": "20260323 新增下游企业实体",
+      "id": 427,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "戴尔",
+        "symbolSize": 30,
+        "credit_code": "ZZSN22080900000059",
+        "standard_name": "戴尔科技公司",
+        "category": "外资企业",
+        "category_reason": "戴尔（Dell）是一家美国跨国科技公司，在中国运营的实体属于外商独资或中外合资企业。"
+      }
+    },
+    {
+      "id": 428,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "惠普",
+        "symbolSize": 30,
+        "credit_code": "ZZSN22080900000146",
+        "standard_name": "惠普公司",
+        "category": "外资企业",
+        "category_reason": "惠普（HP）是美国注册的跨国科技公司，在中国运营的实体属于外商独资或中外合资企业。"
+      }
+    },
+    {
+      "id": 429,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "华硕",
+        "symbolSize": 30,
+        "credit_code": "ZZSN230711083837061",
+        "standard_name": "华硕电脑公司",
+        "category": "外资企业",
+        "category_reason": "华硕（ASUS）是一家总部位于中国台湾的跨国科技公司，属于台港澳资企业。"
+      }
+    },
+    {
+      "id": 430,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "宏碁",
+        "symbolSize": 30,
+        "credit_code": "ZZSN230711110054032",
+        "standard_name": "宏碁股份有限公司",
+        "category": "外资企业",
+        "category_reason": "宏碁（Acer）是一家总部位于中国台湾的跨国科技公司，属于台港澳资企业。"
+      }
+    },
+    {
+      "id": 431,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "雷鸟",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "雷鸟是TCL集团旗下的互联网电视品牌，其运营主体为深圳市雷鸟网络科技有限公司，由TCL控股，属于中国本土私营企业。"
+      }
+    },
+    {
+      "id": 432,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "XREAL",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "XREAL（原Nreal）是一家专注于AR（增强现实）眼镜研发与销售的中国本土科技公司，由自然人创立并控股，属于典型的私营企业。"
+      }
+    },
+    {
+      "id": 433,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Ray-Ban Meta",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "Ray-Ban Meta是Meta Platforms, Inc.（美国公司）与EssilorLuxottica（意大利-法国公司）旗下Ray-Ban品牌合作推出的智能眼镜产品线。其品牌和核心技术方均为外国企业，属于外资企业范畴。"
+      }
+    },
+    {
+      "id": 434,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "闪极",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "闪极（深圳闪极科技有限公司）是一家专注于消费电子产品的中国本土私营企业，由自然人创立并控股，符合民营企业的定义。"
+      }
+    },
+    {
+      "id": 435,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "小度",
+        "symbolSize": 30,
+        "credit_code": "91310115MA1K4MF39X",
+        "standard_name": "上海小度技术有限公司",
+        "category": "民营企业",
+        "category_reason": "小度是百度旗下的智能生活事业群组业务品牌，其运营主体为百度集团。百度集团是一家由自然人控股、在纳斯达克和香港上市的中国本土科技公司，属于民营企业。"
+      }
+    },
+    {
+      "id": 436,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "Even Realities",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "该企业名称 'Even Realities' 不符合中国央企/国企的常见命名规范，也非知名外资企业。根据中国商业实践，此类名称通常为本土私营企业或自然人控股企业，因此归类为民营企业。"
+      }
+    },
+    {
+      "id": 437,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "奥比中光",
+        "symbolSize": 30,
+        "credit_code": "91440300061436270G",
+        "standard_name": "奥比中光科技集团股份有限公司",
+        "category": "民营企业",
+        "category_reason": "奥比中光科技集团股份有限公司是一家在深圳证券交易所上市的科技公司，其股权结构显示主要由自然人、投资机构及员工持股平台持有，无国有资本控股，因此属于中国本土的民营企业。"
+      }
+    },
+    {
+      "id": 438,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "兆威机电",
+        "symbolSize": 30,
+        "credit_code": "91440300728548191B",
+        "standard_name": "深圳市兆威机电股份有限公司",
+        "category": "民营企业",
+        "category_reason": "深圳市兆威机电股份有限公司是一家在深圳证券交易所上市的股份有限公司，其控股股东和实际控制人为自然人，属于典型的中国本土私营企业。"
+      }
+    },
+    {
+      "//": "20260323 新增中游企业实体",
+      "id": 439,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "亚马逊（SageMaker）",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "亚马逊（Amazon）是美国跨国科技公司，其产品SageMaker属于亚马逊云科技（AWS）的一部分，在中国市场运营属于外商独资企业。"
+      }
+    },
+    {
+      "id": 440,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "谷歌（AI Platform）",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "谷歌（Google）是美国Alphabet公司的子公司，在中国运营的业务属于外商独资企业。"
+      }
+    },
+    {
+      "id": 441,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "微软（Azure ML）",
+        "symbolSize": 30,
+        "category": "外资企业",
+        "category_reason": "微软是美国跨国科技公司，其Azure ML业务属于外商独资企业在中国运营的业务范畴。"
+      }
+    },
+    {
+      "id": 442,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "标贝科技",
+        "symbolSize": 30,
+        "category": "民营企业",
+        "category_reason": "标贝（北京）科技有限公司是一家专注于智能语音和AI数据服务的中国本土科技公司，由自然人股东控股，属于私营企业。"
+      }
+    },
+    {
+      "id": 443,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "数据堂",
+        "symbolSize": 30,
+        "credit_code": "91110108560358422K",
+        "standard_name": "数据堂（北京）科技股份有限公司",
+        "category": "民营企业",
+        "category_reason": "数据堂（北京）科技股份有限公司是一家在中国注册的、由自然人控股的私营企业，主要从事数据资源服务，属于典型的中国本土民营企业。"
+      }
+    },
+    {
+      "id": 444,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "用友网络",
+        "symbolSize": 30,
+        "credit_code": "91110000600001760P",
+        "standard_name": "用友网络科技股份有限公司",
+        "category": "民营企业",
+        "category_reason": "用友网络科技股份有限公司是由自然人王文京等创立并控股的上市公司，属于中国本土的私营企业。"
+      }
+    },
+    {
+      "id": 445,
+      "labels": [
+        "公司"
+      ],
+      "properties": {
+        "name": "金蝶国际",
+        "symbolSize": 30,
+        "credit_code": "ZZSN230912210706409",
+        "standard_name": "金蝶国际软件集团有限公司",
+        "category": "民营企业",
+        "category_reason": "金蝶国际软件集团有限公司是一家由自然人控股并在香港上市的中国本土软件公司，属于典型的民营企业。"
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "source": 1,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 2,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 3,
+      "target": 0,
+      "type": "从属于"
+    },
+    {
+      "source": 4,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 5,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 6,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 7,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 8,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 9,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 10,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 11,
+      "target": 1,
+      "type": "从属于"
+    },
+    {
+      "source": 12,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 13,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 14,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 15,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 16,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 17,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 18,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 19,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 20,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 21,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 22,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 23,
+      "target": 2,
+      "type": "从属于"
+    },
+    {
+      "source": 24,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 25,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 26,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 27,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 28,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 29,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 30,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 31,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 32,
+      "target": 3,
+      "type": "从属于"
+    },
+    {
+      "source": 33,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 34,
+      "target": 4,
+      "type": "从属于"
+    },
+    {
+      "source": 35,
+      "target": 5,
+      "type": "从属于"
+    },
+    {
+      "source": 36,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 37,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 38,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 39,
+      "target": 6,
+      "type": "从属于"
+    },
+    {
+      "source": 40,
+      "target": 7,
+      "type": "从属于"
+    },
+    {
+      "source": 41,
+      "target": 8,
+      "type": "从属于"
+    },
+    {
+      "source": 42,
+      "target": 9,
+      "type": "从属于"
+    },
+    {
+      "source": 43,
+      "target": 10,
+      "type": "从属于"
+    },
+    {
+      "source": 44,
+      "target": 11,
+      "type": "从属于"
+    },
+    {
+      "source": 45,
+      "target": 12,
+      "type": "从属于"
+    },
+    {
+      "source": 46,
+      "target": 13,
+      "type": "从属于"
+    },
+    {
+      "source": 47,
+      "target": 14,
+      "type": "从属于"
+    },
+    {
+      "source": 48,
+      "target": 15,
+      "type": "从属于"
+    },
+    {
+      "source": 49,
+      "target": 16,
+      "type": "从属于"
+    },
+    {
+      "source": 50,
+      "target": 17,
+      "type": "从属于"
+    },
+    {
+      "source": 51,
+      "target": 18,
+      "type": "从属于"
+    },
+    {
+      "source": 52,
+      "target": 19,
+      "type": "从属于"
+    },
+    {
+      "source": 53,
+      "target": 20,
+      "type": "从属于"
+    },
+    {
+      "source": 54,
+      "target": 21,
+      "type": "从属于"
+    },
+    {
+      "source": 55,
+      "target": 22,
+      "type": "从属于"
+    },
+    {
+      "source": 56,
+      "target": 23,
+      "type": "从属于"
+    },
+    {
+      "source": 57,
+      "target": 24,
+      "type": "从属于"
+    },
+    {
+      "source": 58,
+      "target": 25,
+      "type": "从属于"
+    },
+    {
+      "source": 59,
+      "target": 25,
+      "type": "从属于"
+    },
+    {
+      "source": 60,
+      "target": 25,
+      "type": "从属于"
+    },
+    {
+      "source": 61,
+      "target": 25,
+      "type": "从属于"
+    },
+    {
+      "source": 62,
+      "target": 25,
+      "type": "从属于"
+    },
+    {
+      "source": 63,
+      "target": 25,
+      "type": "从属于"
+    },
+    {
+      "source": 64,
+      "target": 26,
+      "type": "从属于"
+    },
+    {
+      "source": 65,
+      "target": 27,
+      "type": "从属于"
+    },
+    {
+      "source": 66,
+      "target": 28,
+      "type": "从属于"
+    },
+    {
+      "source": 67,
+      "target": 29,
+      "type": "从属于"
+    },
+    {
+      "source": 68,
+      "target": 30,
+      "type": "从属于"
+    },
+    {
+      "source": 69,
+      "target": 31,
+      "type": "从属于"
+    },
+    {
+      "source": 70,
+      "target": 32,
+      "type": "从属于"
+    },
+    {
+      "source": 71,
+      "target": 33,
+      "type": "参与环节"
+    },
+    {
+      "source": 72,
+      "target": 33,
+      "type": "参与环节"
+    },
+    {
+      "source": 73,
+      "target": 33,
+      "type": "参与环节"
+    },
+    {
+      "source": 74,
+      "target": 33,
+      "type": "参与环节"
+    },
+    {
+      "source": 75,
+      "target": 33,
+      "type": "参与环节"
+    },
+    {
+      "source": 76,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 77,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 78,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 79,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 80,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 81,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 82,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 83,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 84,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 85,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 86,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 87,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 88,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 89,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 90,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 91,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 92,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 93,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 94,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 95,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 96,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 97,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 98,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 99,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 100,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 101,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 102,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 103,
+      "target": 34,
+      "type": "参与环节"
+    },
+    {
+      "source": 104,
+      "target": 35,
+      "type": "参与环节"
+    },
+    {
+      "source": 105,
+      "target": 35,
+      "type": "参与环节"
+    },
+    {
+      "source": 106,
+      "target": 35,
+      "type": "参与环节"
+    },
+    {
+      "source": 107,
+      "target": 35,
+      "type": "参与环节"
+    },
+    {
+      "source": 108,
+      "target": 35,
+      "type": "参与环节"
+    },
+    {
+      "source": 109,
+      "target": 35,
+      "type": "参与环节"
+    },
+    {
+      "source": 110,
+      "target": 35,
+      "type": "参与环节"
+    },
+    {
+      "source": 111,
+      "target": 35,
+      "type": "参与环节"
+    },
+    {
+      "source": 112,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 113,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 114,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 115,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 116,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 117,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 118,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 119,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 120,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 121,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 122,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 123,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 124,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 125,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 126,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 127,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 128,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 129,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 130,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 131,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 132,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 133,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 134,
+      "target": 36,
+      "type": "参与环节"
+    },
+    {
+      "source": 135,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 136,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 138,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 139,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 140,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 141,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 142,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 143,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 144,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 145,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 146,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 147,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 148,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 149,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 151,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 152,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 153,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 155,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 128,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 156,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 157,
+      "target": 37,
+      "type": "参与环节"
+    },
+    {
+      "source": 157,
+      "target": 38,
+      "type": "参与环节"
+    },
+    {
+      "source": 156,
+      "target": 38,
+      "type": "参与环节"
+    },
+    {
+      "source": 112,
+      "target": 38,
+      "type": "参与环节"
+    },
+    {
+      "source": 136,
+      "target": 38,
+      "type": "参与环节"
+    },
+    {
+      "source": 158,
+      "target": 39,
+      "type": "参与环节"
+    },
+    {
+      "source": 159,
+      "target": 39,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 39,
+      "type": "参与环节"
+    },
+    {
+      "source": 160,
+      "target": 39,
+      "type": "参与环节"
+    },
+    {
+      "source": 161,
+      "target": 39,
+      "type": "参与环节"
+    },
+    {
+      "source": 162,
+      "target": 39,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 39,
+      "type": "参与环节"
+    },
+    {
+      "source": 164,
+      "target": 39,
+      "type": "参与环节"
+    },
+    {
+      "source": 165,
+      "target": 39,
+      "type": "参与环节"
+    },
+    {
+      "source": 162,
+      "target": 40,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 40,
+      "type": "参与环节"
+    },
+    {
+      "source": 166,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 167,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 168,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 169,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 170,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 171,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 172,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 173,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 174,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 175,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 176,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 41,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 178,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 159,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 158,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 160,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 161,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 179,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 180,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 181,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 182,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 183,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 184,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 185,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 186,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 187,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 188,
+      "target": 42,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 43,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 43,
+      "type": "参与环节"
+    },
+    {
+      "source": 178,
+      "target": 43,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 43,
+      "type": "参与环节"
+    },
+    {
+      "source": 176,
+      "target": 43,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 44,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 44,
+      "type": "参与环节"
+    },
+    {
+      "source": 178,
+      "target": 44,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 44,
+      "type": "参与环节"
+    },
+    {
+      "source": 162,
+      "target": 44,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 151,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 152,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 348,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 149,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 189,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 190,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 191,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 192,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 193,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 194,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 195,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 196,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 197,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 198,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 199,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 200,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 201,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 162,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 187,
+      "target": 45,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 46,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 46,
+      "type": "参与环节"
+    },
+    {
+      "source": 203,
+      "target": 46,
+      "type": "参与环节"
+    },
+    {
+      "source": 204,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 205,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 206,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 207,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 208,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 209,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 210,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 211,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 212,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 213,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 214,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 215,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 216,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 217,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 218,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 219,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 220,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 221,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 222,
+      "target": 49,
+      "type": "参与环节"
+    },
+    {
+      "source": 223,
+      "target": 49,
+      "type": "参与环节"
+    },
+    {
+      "source": 224,
+      "target": 49,
+      "type": "参与环节"
+    },
+    {
+      "source": 162,
+      "target": 49,
+      "type": "参与环节"
+    },
+    {
+      "source": 225,
+      "target": 49,
+      "type": "参与环节"
+    },
+    {
+      "source": 226,
+      "target": 50,
+      "type": "参与环节"
+    },
+    {
+      "source": 227,
+      "target": 50,
+      "type": "参与环节"
+    },
+    {
+      "source": 228,
+      "target": 50,
+      "type": "参与环节"
+    },
+    {
+      "source": 229,
+      "target": 50,
+      "type": "参与环节"
+    },
+    {
+      "source": 230,
+      "target": 50,
+      "type": "参与环节"
+    },
+    {
+      "source": 231,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 232,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 203,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 233,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 234,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 235,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 236,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 237,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 238,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 51,
+      "type": "参与环节"
+    },
+    {
+      "source": 239,
+      "target": 52,
+      "type": "参与环节"
+    },
+    {
+      "source": 240,
+      "target": 52,
+      "type": "参与环节"
+    },
+    {
+      "source": 241,
+      "target": 52,
+      "type": "参与环节"
+    },
+    {
+      "source": 242,
+      "target": 52,
+      "type": "参与环节"
+    },
+    {
+      "source": 203,
+      "target": 52,
+      "type": "参与环节"
+    },
+    {
+      "source": 243,
+      "target": 52,
+      "type": "参与环节"
+    },
+    {
+      "source": 244,
+      "target": 52,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 52,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 152,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 348,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 149,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 189,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 191,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 192,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 198,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 200,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 201,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 245,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 246,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 153,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 151,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 247,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 248,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 190,
+      "target": 53,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 152,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 162,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 249,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 250,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 163,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 152,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 154,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 162,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 202,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 249,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 250,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 251,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 252,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 253,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 254,
+      "target": 55,
+      "type": "参与环节"
+    },
+    {
+      "source": 152,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 390,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 391,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 170,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 255,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 256,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 257,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 249,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 258,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 259,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 260,
+      "target": 56,
+      "type": "参与环节"
+    },
+    {
+      "source": 261,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 262,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 263,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 264,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 265,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 266,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 267,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 268,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 269,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 270,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 271,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 272,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 273,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 274,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 275,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 276,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 277,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 278,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 279,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 280,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 281,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 282,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 283,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 284,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 285,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 286,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 287,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 288,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 289,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 290,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 291,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 292,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 293,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 294,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 295,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 296,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 297,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 298,
+      "target": 57,
+      "type": "参与环节"
+    },
+    {
+      "source": 299,
+      "target": 58,
+      "type": "参与环节"
+    },
+    {
+      "source": 300,
+      "target": 58,
+      "type": "参与环节"
+    },
+    {
+      "source": 301,
+      "target": 58,
+      "type": "参与环节"
+    },
+    {
+      "source": 302,
+      "target": 58,
+      "type": "参与环节"
+    },
+    {
+      "source": 303,
+      "target": 58,
+      "type": "参与环节"
+    },
+    {
+      "source": 304,
+      "target": 58,
+      "type": "参与环节"
+    },
+    {
+      "source": 305,
+      "target": 58,
+      "type": "参与环节"
+    },
+    {
+      "source": 159,
+      "target": 58,
+      "type": "参与环节"
+    },
+    {
+      "source": 306,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 307,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 308,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 309,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 310,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 311,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 312,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 313,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 314,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 110,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 315,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 316,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 317,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 318,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 319,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 320,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 321,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 322,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 324,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 325,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 326,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 327,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 328,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 177,
+      "target": 59,
+      "type": "参与环节"
+    },
+    {
+      "source": 329,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 330,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 331,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 332,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 333,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 334,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 335,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 336,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 337,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 338,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 339,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 150,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 340,
+      "target": 60,
+      "type": "参与环节"
+    },
+    {
+      "source": 341,
+      "target": 61,
+      "type": "参与环节"
+    },
+    {
+      "source": 342,
+      "target": 61,
+      "type": "参与环节"
+    },
+    {
+      "source": 343,
+      "target": 61,
+      "type": "参与环节"
+    },
+    {
+      "source": 344,
+      "target": 61,
+      "type": "参与环节"
+    },
+    {
+      "source": 345,
+      "target": 61,
+      "type": "参与环节"
+    },
+    {
+      "source": 346,
+      "target": 61,
+      "type": "参与环节"
+    },
+    {
+      "source": 347,
+      "target": 61,
+      "type": "参与环节"
+    },
+    {
+      "source": 348,
+      "target": 61,
+      "type": "参与环节"
+    },
+    {
+      "source": 349,
+      "target": 61,
+      "type": "参与环节"
+    },
+    {
+      "source": 350,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 351,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 352,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 353,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 354,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 110,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 315,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 355,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 356,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 357,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 358,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 359,
+      "target": 62,
+      "type": "参与环节"
+    },
+    {
+      "source": 360,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 361,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 362,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 363,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 364,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 365,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 366,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 367,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 368,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 369,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 359,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 370,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 371,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 372,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 373,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 374,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 375,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 376,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 377,
+      "target": 63,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 64,
+      "type": "参与环节"
+    },
+    {
+      "source": 378,
+      "target": 64,
+      "type": "参与环节"
+    },
+    {
+      "source": 379,
+      "target": 64,
+      "type": "参与环节"
+    },
+    {
+      "source": 79,
+      "target": 64,
+      "type": "参与环节"
+    },
+    {
+      "source": 380,
+      "target": 64,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 65,
+      "type": "参与环节"
+    },
+    {
+      "source": 379,
+      "target": 65,
+      "type": "参与环节"
+    },
+    {
+      "source": 192,
+      "target": 65,
+      "type": "参与环节"
+    },
+    {
+      "source": 381,
+      "target": 65,
+      "type": "参与环节"
+    },
+    {
+      "source": 382,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 191,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 383,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 384,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 67,
+      "type": "参与环节"
+    },
+    {
+      "source": 322,
+      "target": 67,
+      "type": "参与环节"
+    },
+    {
+      "source": 323,
+      "target": 67,
+      "type": "参与环节"
+    },
+    {
+      "source": 324,
+      "target": 67,
+      "type": "参与环节"
+    },
+    {
+      "source": 385,
+      "target": 67,
+      "type": "参与环节"
+    },
+    {
+      "source": 383,
+      "target": 67,
+      "type": "参与环节"
+    },
+    {
+      "source": 386,
+      "target": 68,
+      "type": "参与环节"
+    },
+    {
+      "source": 387,
+      "target": 68,
+      "type": "参与环节"
+    },
+    {
+      "source": 388,
+      "target": 68,
+      "type": "参与环节"
+    },
+    {
+      "source": 168,
+      "target": 68,
+      "type": "参与环节"
+    },
+    {
+      "source": 389,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 390,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 391,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 392,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 393,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 394,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 395,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 396,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 397,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 398,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 399,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 400,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 401,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 402,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 403,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 404,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 405,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 406,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 407,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 408,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 409,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 410,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 411,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 412,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 413,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 414,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 415,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 416,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 417,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 418,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 419,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 420,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 421,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 422,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 423,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 424,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 425,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 137,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "source": 426,
+      "target": 70,
+      "type": "参与环节"
+    },
+    {
+      "//": "20260323 新增下游企业实体关系",
+      "source": 383,
+      "target": 64,
+      "type": "参与环节"
+    },
+    {
+      "source": 427,
+      "target": 65,
+      "type": "参与环节"
+    },
+    {
+      "source": 428,
+      "target": 65,
+      "type": "参与环节"
+    },
+    {
+      "source": 429,
+      "target": 65,
+      "type": "参与环节"
+    },
+    {
+      "source": 430,
+      "target": 65,
+      "type": "参与环节"
+    },
+    {
+      "source": 431,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 432,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 433,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 434,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 435,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 436,
+      "target": 66,
+      "type": "参与环节"
+    },
+    {
+      "source": 437,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "source": 438,
+      "target": 69,
+      "type": "参与环节"
+    },
+    {
+      "//": "20260323 新增中游企业实体关系",
+      "source": 439,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 440,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 441,
+      "target": 54,
+      "type": "参与环节"
+    },
+    {
+      "source": 442,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 443,
+      "target": 47,
+      "type": "参与环节"
+    },
+    {
+      "source": 444,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 445,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 232,
+      "target": 48,
+      "type": "参与环节"
+    },
+    {
+      "source": 240,
+      "target": 48,
+      "type": "参与环节"
+    }
+  ]
+}

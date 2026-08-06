@@ -1,0 +1,63 @@
+<!-- 4. 政策推演视图 -->
+<div id="view-policy" class="absolute inset-0 bg-gray-50 hidden p-8 overflow-y-auto">
+    <div class="max-w-5xl mx-auto space-y-6">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-gavel text-2xl text-purple-600"></i>
+            <h2 class="text-2xl font-bold text-gray-800">政策推演实验室</h2>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border border-purple-200 space-y-3">
+            <label class="font-semibold text-gray-700 flex items-center gap-2">
+                <i class="fas fa-search text-purple-600"></i>
+                选择待分析的政策（输入关键词或直接点击下拉）
+            </label>
+            <div class="relative">
+                <input id="policy-search-input"
+                       type="text"
+                       class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 p-3 shadow-sm"
+                       placeholder="输入关键词筛选或点击加载全部..."
+                       autocomplete="off"
+                       oninput="handlePolicyInput(this.value)"
+                       onfocus="handlePolicyInput(this.value)">
+                <div id="policy-search-results" class="hidden absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-xl max-h-64 overflow-y-auto"></div>
+            </div>
+            <div id="selected-policy-container" class="hidden bg-purple-50 border border-purple-200 text-purple-800 px-4 py-3 rounded-lg flex items-center justify-between">
+                <div>
+                    <span class="text-xs text-purple-500 uppercase font-bold">当前已选</span>
+                    <div id="selected-policy-title" class="font-bold text-lg truncate max-w-3xl"></div>
+                </div>
+                <i class="fas fa-check-circle text-2xl text-purple-600"></i>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+                <button id="btn-run-policy" onclick="runPolicyAnalysis()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium shadow-md shadow-purple-200 flex items-center gap-2">
+                    <i class="fas fa-play"></i> 开始推演
+                </button>
+                <button onclick="loadPolicyList(document.getElementById('policy-search-input').value, true)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-300 flex items-center gap-2">
+                    <i class="fas fa-sync-alt"></i> 刷新列表
+                </button>
+                <button onclick="exportPolicyPdf()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2 rounded-lg text-sm font-medium shadow-md shadow-emerald-200 flex items-center gap-2">
+                    <i class="fas fa-file-pdf"></i> 导出 PDF
+                </button>
+            </div>
+            <p class="text-xs text-gray-500">选中政策后，推演会生成 LLM 报告和可视化图。</p>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div class="flex items-center gap-2 mb-2">
+                <i class="fas fa-file-alt text-gray-500"></i>
+                <span class="font-semibold text-gray-700 text-sm">LLM 推演报告</span>
+            </div>
+            <div id="policy-report" class="markdown-body text-sm text-gray-800 min-h-[140px]">等待生成...</div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div class="flex items-center gap-2 mb-2">
+                <i class="fas fa-image text-gray-500"></i>
+                <span class="font-semibold text-gray-700 text-sm">可视化结果</span>
+            </div>
+            <div id="policy-images" class="grid grid-cols-1 gap-4">
+                <div class="text-gray-400 text-sm">暂无图片，运行推演后显示。</div>
+            </div>
+        </div>
+    </div>
+</div>

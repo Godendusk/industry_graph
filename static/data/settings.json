@@ -1,0 +1,40 @@
+{
+  "chain_panorama_column": {
+    "l2": true,
+    "l2_ratio": true,
+    "l3": true,
+    "l3_ratio": false,
+    "representative": true
+  },
+  "chain_panorama_rep_picks": {
+    "ai": {
+      "17": [
+        156,
+        490,
+        508,
+        395
+      ],
+      "43": [
+        117,
+        219
+      ],
+      "52": [
+        74
+      ]
+    }
+  },
+  "chain_panorama_rep_sort": {
+    "ai": {
+      "17": [
+        395,
+        490,
+        508,
+        156
+      ],
+      "43": [
+        219,
+        117
+      ]
+    }
+  }
+}
