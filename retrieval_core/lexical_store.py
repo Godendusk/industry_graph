@@ -11,34 +11,70 @@ from typing import Any, Callable, Iterable, List, Mapping, Optional, Sequence, S
 from retrieval_core.schemas import ChunkRecord, RetrievalCandidate
 
 
-_TUPLE_MARKER = "__retrieval_core_tuple__"
+_JSON_FORMAT = "retrieval_core_json_v1"
+_JSON_MAPPING = "mapping"
+_JSON_TUPLE = "tuple"
+_JSON_LIST = "list"
+_JSON_SCALAR = "scalar"
 
 
 def _json_value(value: Any) -> Any:
-    """Convert immutable/nested metadata into a JSON-safe representation."""
+    """Encode values with tags that cannot be confused with user mappings."""
     if isinstance(value, Mapping):
-        return {str(key): _json_value(item) for key, item in value.items()}
+        return [
+            _JSON_MAPPING,
+            [[str(key), _json_value(item)] for key, item in value.items()],
+        ]
     if isinstance(value, tuple):
-        return {_TUPLE_MARKER: [_json_value(item) for item in value]}
+        return [_JSON_TUPLE, [_json_value(item) for item in value]]
     if isinstance(value, list):
-        return [_json_value(item) for item in value]
+        return [_JSON_LIST, [_json_value(item) for item in value]]
     if value is None or isinstance(value, (str, int, float, bool)):
-        return value
-    return str(value)
+        return [_JSON_SCALAR, value]
+    return [_JSON_SCALAR, str(value)]
 
 
-def _json_object(value: Mapping[str, Any]) -> Any:
-    if set(value) == {_TUPLE_MARKER} and isinstance(value[_TUPLE_MARKER], list):
-        return tuple(value[_TUPLE_MARKER])
-    return dict(value)
+def _json_restore(value: Any) -> Any:
+    if not isinstance(value, list) or len(value) != 2:
+        raise ValueError("invalid lexical metadata encoding")
+    tag, payload = value
+    if tag == _JSON_MAPPING:
+        if not isinstance(payload, list):
+            raise ValueError("invalid lexical mapping encoding")
+        restored = {}
+        for item in payload:
+            if not isinstance(item, list) or len(item) != 2:
+                raise ValueError("invalid lexical mapping item")
+            restored[str(item[0])] = _json_restore(item[1])
+        return restored
+    if tag == _JSON_TUPLE:
+        if not isinstance(payload, list):
+            raise ValueError("invalid lexical tuple encoding")
+        return tuple(_json_restore(item) for item in payload)
+    if tag == _JSON_LIST:
+        if not isinstance(payload, list):
+            raise ValueError("invalid lexical list encoding")
+        return [_json_restore(item) for item in payload]
+    if tag == _JSON_SCALAR:
+        return payload
+    raise ValueError("unknown lexical metadata encoding")
 
 
 def _dump_json(value: Any) -> str:
-    return json.dumps(_json_value(value), ensure_ascii=False, separators=(",", ":"))
+    return json.dumps(
+        [_JSON_FORMAT, _json_value(value)], ensure_ascii=False, separators=(",", ":")
+    )
 
 
 def _load_json(value: str) -> Any:
-    return json.loads(value, object_hook=_json_object)
+    decoded = json.loads(value)
+    if (
+        not isinstance(decoded, list)
+        or len(decoded) != 2
+        or decoded[0] != _JSON_FORMAT
+    ):
+        raise ValueError("invalid lexical metadata payload")
+    return _json_restore(decoded[1])
 
 
 def _field_text(value: Any) -> str:
@@ -271,7 +307,16 @@ class LexicalStore:
         if isinstance(raw_tokens, str):
             raw_tokens = raw_tokens.split()
         try:
-            return [str(token).strip() for token in raw_tokens if str(token).strip()]
+            tokens = []
+            for token in raw_tokens:
+                cleaned = "".join(
+                    character
+                    for character in str(token)
+                    if ord(character) >= 32 and not 127 <= ord(character) <= 159
+                ).strip()
+                if cleaned:
+                    tokens.append(cleaned)
+            return tokens
         except TypeError as exc:
             raise ValueError("query_tokenizer must return an iterable of tokens") from exc
 

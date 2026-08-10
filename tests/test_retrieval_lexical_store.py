@@ -215,6 +215,56 @@ class LexicalStoreTests(unittest.TestCase):
                 list(connection.execute("SELECT chunk_id FROM chunks_fts")), []
             )
 
+    def test_metadata_tuple_encoding_cannot_collide_with_user_mapping(self):
+        store = self.make_store()
+        sentinel = replace(
+            chunk("c1", "d1", 0, "内容"),
+            metadata={"__retrieval_core_tuple__": ["ordinary"]},
+        )
+        nested = replace(
+            chunk("c2", "d1", 1, "深层"),
+            metadata={
+                "nested": {"__retrieval_core_tuple__": ["ordinary"]},
+                "values": [("tuple", {"again": {"__retrieval_core_tuple__": ["ordinary"]}})],
+            },
+        )
+        store.replace_document("d1", [sentinel, nested])
+
+        candidate = store.search("内容", 10)[0]
+        neighbors = {row.chunk_id: row for row in store.neighbors("c1")}
+
+        self.assertEqual(
+            dict(candidate.metadata),
+            {
+                "__retrieval_core_tuple__": ["ordinary"],
+                "chunk_index": 0,
+                "previous_chunk_id": None,
+                "next_chunk_id": None,
+                "library": "",
+                "material_id": "",
+                "title": "",
+                "section_path": (),
+                "content_type": "",
+            },
+        )
+        self.assertEqual(
+            dict(neighbors["c2"].metadata),
+            {
+                "nested": {"__retrieval_core_tuple__": ["ordinary"]},
+                "values": [("tuple", {"again": {"__retrieval_core_tuple__": ["ordinary"]}})],
+            },
+        )
+
+    def test_query_tokenizer_control_characters_never_reach_fts_parser(self):
+        store = self.make_store()
+        store.replace_document("d1", [chunk("c1", "d1", 0, "安全")])
+        controlled = LexicalStore(
+            store.path,
+            query_tokenizer=lambda query: ["\x00", "\x01", '"', "*", "(\x02)"],
+        )
+
+        self.assertEqual(controlled.search("ignored", 10), [])
+
     def test_validates_replacement_and_custom_query_tokenizer(self):
         store = self.make_store()
         row = chunk("c1", "d1", 0, "中国移动")
