@@ -101,28 +101,27 @@ def html_to_paragraphs(raw_html: object, min_len: int = MIN_PARAGRAPH_LEN) -> Li
 
 
 def _table_blocks(table: object) -> List[Dict[str, object]]:
-    blocks: List[Dict[str, object]] = []
     caption = table.find("caption", recursive=False)
     caption_text = normalize_text(caption.get_text(" ", strip=True)) if caption else ""
-    if caption_text:
-        blocks.append({"kind": "paragraph", "text": caption_text})
+    caption_pair = f"表题：{caption_text}" if caption_text else ""
 
     rows = [row for row in table.find_all("tr") if row.find_parent("table") is table]
     if not rows:
-        return blocks
+        return [{"kind": "table", "text": caption_pair + "。"}] if caption_pair else []
 
     header_row_index = next(
         (index for index, row in enumerate(rows) if row.find_all("th", recursive=False)),
         None,
     )
     if header_row_index is None:
-        return blocks
+        return [{"kind": "table", "text": caption_pair + "。"}] if caption_pair else []
 
     header_cells = rows[header_row_index].find_all(["th", "td"], recursive=False)
     headers = [normalize_text(cell.get_text(" ", strip=True)) for cell in header_cells]
     if not any(headers):
-        return blocks
+        return [{"kind": "table", "text": caption_pair + "。"}] if caption_pair else []
 
+    blocks: List[Dict[str, object]] = []
     for row in rows[header_row_index + 1 :]:
         cells = row.find_all(["th", "td"], recursive=False)
         values = [normalize_text(cell.get_text(" ", strip=True)) for cell in cells]
@@ -131,6 +130,8 @@ def _table_blocks(table: object) -> List[Dict[str, object]]:
             for header, value in zip(headers, values)
             if header and value
         ]
+        if caption_pair:
+            pairs.insert(0, caption_pair)
         if pairs:
             blocks.append({"kind": "table", "text": "；".join(pairs) + "。"})
     return blocks
@@ -183,7 +184,9 @@ def _walk_structured_children(
             continue
 
         name = child.name.lower()
-        if name == "table":
+        if name == "br":
+            fragments.append("\n")
+        elif name == "table":
             flush()
             blocks.extend(_table_blocks(child))
         elif name in _BLOCK_TAGS and name.startswith("h"):

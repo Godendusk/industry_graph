@@ -18,6 +18,15 @@ class FakeTokenizer:
         return list(range(len(text) + extra))
 
 
+class NonMonotonicTokenizer:
+    """Make a two-character body fail while a three-character body fits."""
+
+    def encode(self, text, add_special_tokens=True):
+        body = text.rsplit("\n", 1)[-1]
+        token_count = 99 if body == "ab" else len(body) + 4
+        return list(range(token_count))
+
+
 def make_chunks(blocks, **overrides):
     arguments = {
         "blocks": blocks,
@@ -40,6 +49,19 @@ def make_chunks(blocks, **overrides):
 
 
 class StructuredHtmlTests(unittest.TestCase):
+    def test_br_preserves_visible_boundaries_in_paragraphs_and_containers(self):
+        for raw_html in (
+            "<p>line one<br>line two</p>",
+            "<div>line one<br>line two</div>",
+        ):
+            with self.subTest(raw_html=raw_html):
+                blocks = html_to_structured_blocks(raw_html)
+                self.assertEqual(
+                    blocks,
+                    [{"kind": "paragraph", "text": "line one\nline two"}],
+                )
+                self.assertNotIn("oneline", blocks[0]["text"])
+
     def test_emits_uncovered_container_and_body_text_in_document_order(self):
         cases = (
             (
@@ -135,8 +157,10 @@ class StructuredHtmlTests(unittest.TestCase):
             blocks,
             [
                 {"kind": "blockquote", "text": "表前说明。"},
-                {"kind": "paragraph", "text": "算力规模"},
-                {"kind": "table", "text": "企业：中国移动；规模：10 EFLOPS。"},
+                {
+                    "kind": "table",
+                    "text": "表题：算力规模；企业：中国移动；规模：10 EFLOPS。",
+                },
                 {"kind": "blockquote", "text": "表后结论。"},
             ],
         )
@@ -145,7 +169,17 @@ class StructuredHtmlTests(unittest.TestCase):
         self.assertEqual(joined.count("中国移动"), 1)
         self.assertEqual(
             html_to_structured_blocks("<table><caption>仅表题</caption></table>"),
-            [{"kind": "paragraph", "text": "仅表题"}],
+            [{"kind": "table", "text": "表题：仅表题。"}],
+        )
+        table_chunks = [
+            chunk
+            for chunk in make_chunks(blocks)
+            if chunk.metadata["content_type"] == "table"
+        ]
+        self.assertEqual(len(table_chunks), 1)
+        self.assertEqual(
+            table_chunks[0].text,
+            "表题：算力规模；企业：中国移动；规模：10 EFLOPS。",
         )
 
     def test_existing_text_helpers_keep_their_public_behavior(self):
@@ -187,6 +221,10 @@ class ChunkingConfigTests(unittest.TestCase):
             with self.subTest(values=values):
                 with self.assertRaisesRegex(ValueError, "ChunkingConfig"):
                     ChunkingConfig(**values)
+
+    def test_rejects_hard_limit_above_bounded_exact_search_cap(self):
+        with self.assertRaisesRegex(ValueError, "hard_max_chars.*450"):
+            ChunkingConfig(hard_max_chars=451)
 
 
 class ReportChunkingTests(unittest.TestCase):
@@ -350,6 +388,47 @@ class ReportChunkingTests(unittest.TestCase):
         )
         self.assertNotIn(".Next", "".join(chunk.text for chunk in chunks))
 
+    def test_overlap_preserves_source_boundary_whitespace_for_all_next_scripts(self):
+        config = ChunkingConfig(
+            min_chars=1,
+            target_chars=7,
+            soft_max_chars=10,
+            hard_max_chars=13,
+            overlap_chars=7,
+            max_tokens=50,
+        )
+        cases = (
+            (
+                'One. "Two." Three.',
+                ['One. ', 'One. "Two." ', '"Two." Three.'],
+            ),
+            (
+                "One. 中文。 Three.",
+                ["One. ", "One. 中文。 ", "中文。 Three."],
+            ),
+            (
+                "中文。 Done. More.",
+                ["中文。 ", "中文。 Done. ", "Done. More."],
+            ),
+            (
+                "One. (Two). Three.",
+                ["One. ", "One. (Two). ", "(Two). Three."],
+            ),
+        )
+        for source, expected in cases:
+            with self.subTest(source=source):
+                chunks = make_chunks(
+                    [{"kind": "paragraph", "text": source}], config=config
+                )
+                self.assertEqual([chunk.text for chunk in chunks], expected)
+                self.assertTrue(
+                    all(
+                        len(chunk.text) <= config.hard_max_chars
+                        and chunk.token_count <= config.max_tokens
+                        for chunk in chunks
+                    )
+                )
+
     def test_english_sentence_overlap_keeps_decimal_as_part_of_the_sentence(self):
         first_sentence = "Version 3.14 is ready."
         chunks = make_chunks(
@@ -456,6 +535,46 @@ class ReportChunkingTests(unittest.TestCase):
         self.assertTrue(
             all(len(chunk.text) >= config.min_chars for chunk in adjacent_chunks)
         )
+
+        reverse_chunks = make_chunks(
+            [
+                {"kind": "paragraph", "text": source},
+                {"kind": "paragraph", "text": "abc"},
+            ],
+            config=config,
+        )
+        self.assertEqual(
+            "".join(chunk.text for chunk in reverse_chunks), source + "\nabc"
+        )
+        self.assertTrue(
+            all(
+                len(chunk.text) >= config.min_chars
+                and len(chunk.text) <= config.hard_max_chars
+                and chunk.token_count <= config.max_tokens
+                for chunk in reverse_chunks
+            )
+        )
+
+    def test_nonmonotonic_tokenizer_finds_larger_feasible_hard_segment(self):
+        chunks = build_report_chunks(
+            blocks=[{"kind": "paragraph", "text": "abcdef"}],
+            library="l",
+            material_id="m",
+            title="T",
+            metadata={"classification_name": "C"},
+            tokenizer=NonMonotonicTokenizer(),
+            config=ChunkingConfig(
+                min_chars=1,
+                target_chars=3,
+                soft_max_chars=3,
+                hard_max_chars=3,
+                overlap_chars=0,
+                max_tokens=8,
+            ),
+        )
+
+        self.assertEqual([chunk.text for chunk in chunks], ["abc", "def"])
+        self.assertEqual("".join(chunk.text for chunk in chunks), "abcdef")
 
     def test_tables_and_sections_are_preserved_in_metadata(self):
         blocks = html_to_structured_blocks(

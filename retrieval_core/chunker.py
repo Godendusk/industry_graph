@@ -11,6 +11,9 @@ from report_generation.external_rag.text_utils import normalize_text
 from retrieval_core.schemas import ChunkRecord
 
 
+_MAX_HARD_MAX_CHARS = 450
+
+
 @dataclass(frozen=True)
 class ChunkingConfig:
     min_chars: int = 80
@@ -46,6 +49,11 @@ class ChunkingConfig:
             )
         if self.overlap_chars > self.hard_max_chars:
             raise ValueError("ChunkingConfig overlap_chars must not exceed hard_max_chars")
+        if self.hard_max_chars > _MAX_HARD_MAX_CHARS:
+            raise ValueError(
+                "ChunkingConfig hard_max_chars must not exceed the bounded exact "
+                f"search limit of {_MAX_HARD_MAX_CHARS}"
+            )
 
 
 @dataclass(frozen=True)
@@ -148,32 +156,36 @@ def _hard_split(
     remaining = text
     while remaining:
         upper_bound = min(len(remaining), config.hard_max_chars)
-        low = 1
-        high = upper_bound
-        max_fitting = 0
-        while low <= high:
-            midpoint = (low + high) // 2
-            if _fits(remaining[:midpoint], prefix, tokenizer, config):
-                max_fitting = midpoint
-                low = midpoint + 1
-            else:
-                high = midpoint - 1
-        if max_fitting == 0:
+        fit_cache = {
+            length: _fits(remaining[:length], prefix, tokenizer, config)
+            for length in range(1, upper_bound + 1)
+        }
+        fitting_lengths = [
+            length for length, fits in fit_cache.items() if fits
+        ]
+        if not fitting_lengths:
             raise ValueError(
                 "max_tokens creates an impossible token budget for nonempty chunk text"
             )
 
-        if len(remaining) <= max_fitting:
+        max_fitting = max(fitting_lengths)
+        if len(remaining) <= upper_bound and fit_cache[len(remaining)]:
             length = len(remaining)
         else:
-            length = min(config.target_chars, max_fitting)
-            tail_length = len(remaining) - length
-            tail_chunks = (tail_length + max_fitting - 1) // max_fitting
-            tail_is_feasible = tail_length >= tail_chunks * config.min_chars
-            if not tail_is_feasible:
-                total_chunks = (len(remaining) + max_fitting - 1) // max_fitting
-                if len(remaining) >= total_chunks * config.min_chars:
-                    length = (len(remaining) + total_chunks - 1) // total_chunks
+            feasible_lengths: List[int] = []
+            for candidate_length in fitting_lengths:
+                tail_length = len(remaining) - candidate_length
+                tail_chunks = (tail_length + max_fitting - 1) // max_fitting
+                if tail_length >= tail_chunks * config.min_chars:
+                    feasible_lengths.append(candidate_length)
+            candidates = feasible_lengths or fitting_lengths
+            length = min(
+                candidates,
+                key=lambda candidate: (
+                    abs(candidate - config.target_chars),
+                    -candidate,
+                ),
+            )
         pieces.append(remaining[:length])
         remaining = remaining[length:]
     return pieces
@@ -253,14 +265,16 @@ def _pack_units(
     return chunks
 
 
-def _last_complete_sentence(text: str, overlap_chars: int) -> str:
-    units = [normalize_text(unit) for unit in _slice_at_matches(text, _SENTENCE_END)]
+def _last_complete_sentence(text: str, overlap_chars: int) -> Tuple[str, str]:
+    units = _slice_at_matches(text, _SENTENCE_END)
     if not units:
-        return ""
-    sentence = units[-1]
+        return "", ""
+    raw_sentence = units[-1]
+    sentence = normalize_text(raw_sentence)
     if not _COMPLETE_SENTENCE.search(sentence) or len(sentence) > overlap_chars:
-        return ""
-    return sentence
+        return "", ""
+    boundary = raw_sentence[len(raw_sentence.rstrip()) :]
+    return sentence, boundary
 
 
 def _split_long_block(
@@ -279,15 +293,10 @@ def _split_long_block(
     for index, raw_chunk in enumerate(raw_chunks):
         text = raw_chunk
         if index and config.overlap_chars:
-            overlap = _last_complete_sentence(raw_chunks[index - 1], config.overlap_chars)
-            separator = (
-                " "
-                if overlap
-                and re.search(r"[.!?][”’\"']?$", overlap)
-                and re.match(r"[A-Za-z0-9]", raw_chunk)
-                else ""
+            overlap, boundary = _last_complete_sentence(
+                raw_chunks[index - 1], config.overlap_chars
             )
-            candidate = overlap + separator + raw_chunk
+            candidate = overlap + boundary + raw_chunk
             if overlap and _fits(candidate, prefix, tokenizer, config):
                 text = candidate
         results.append(_ChunkText(text, block.section_path, block.content_type))
@@ -335,6 +344,7 @@ def _natural_chunks(
     results: List[_ChunkText] = []
     pending: List[str] = []
     pending_key: Optional[Tuple[Tuple[str, ...], str]] = None
+    consumed_indexes = set()
 
     def prefix_for(block: _SourceBlock) -> str:
         return _fit_embedding_prefix(
@@ -353,12 +363,26 @@ def _natural_chunks(
         pending = []
         pending_key = None
 
-    for block in blocks:
+    for block_index, original_block in enumerate(blocks):
+        if block_index in consumed_indexes:
+            continue
+        block = original_block
         key = (block.section_path, block.content_type)
         prefix = prefix_for(block)
-        if len(block.text) > config.hard_max_chars or not _fits(
+        is_long = len(block.text) > config.hard_max_chars or not _fits(
             block.text, prefix, tokenizer, config
-        ):
+        )
+        if is_long and block_index + 1 < len(blocks):
+            next_block = blocks[block_index + 1]
+            next_key = (next_block.section_path, next_block.content_type)
+            if next_key == key and len(next_block.text) < config.min_chars:
+                block = _SourceBlock(
+                    block.text + "\n" + next_block.text,
+                    block.section_path,
+                    block.content_type,
+                )
+                consumed_indexes.add(block_index + 1)
+        if is_long:
             if (
                 pending
                 and pending_key == key
