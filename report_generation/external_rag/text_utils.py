@@ -7,7 +7,7 @@ import html
 import re
 from typing import Dict, Iterable, List
 
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString, Tag
 
 
 MIN_PARAGRAPH_LEN = 100
@@ -100,45 +100,29 @@ def html_to_paragraphs(raw_html: object, min_len: int = MIN_PARAGRAPH_LEN) -> Li
     return paragraphs
 
 
-def _text_without_nested_blocks(
-    node: object, excluded_tags: Iterable[str] = _BLOCK_TAGS + ["table"]
-) -> str:
-    """Return a block's own text while leaving nested blocks for later emission."""
-    excluded = set(excluded_tags)
-    parts: List[str] = []
-    for descendant in node.descendants:
-        if getattr(descendant, "name", None) is not None:
-            continue
-        parent = descendant.parent
-        nested = False
-        while parent is not None and parent is not node:
-            if parent.name in excluded:
-                nested = True
-                break
-            parent = parent.parent
-        if not nested:
-            parts.append(str(descendant))
-    return normalize_text(" ".join(parts))
-
-
 def _table_blocks(table: object) -> List[Dict[str, object]]:
+    blocks: List[Dict[str, object]] = []
+    caption = table.find("caption", recursive=False)
+    caption_text = normalize_text(caption.get_text(" ", strip=True)) if caption else ""
+    if caption_text:
+        blocks.append({"kind": "paragraph", "text": caption_text})
+
     rows = [row for row in table.find_all("tr") if row.find_parent("table") is table]
     if not rows:
-        return []
+        return blocks
 
     header_row_index = next(
         (index for index, row in enumerate(rows) if row.find_all("th", recursive=False)),
         None,
     )
     if header_row_index is None:
-        return []
+        return blocks
 
     header_cells = rows[header_row_index].find_all(["th", "td"], recursive=False)
     headers = [normalize_text(cell.get_text(" ", strip=True)) for cell in header_cells]
     if not any(headers):
-        return []
+        return blocks
 
-    blocks: List[Dict[str, object]] = []
     for row in rows[header_row_index + 1 :]:
         cells = row.find_all(["th", "td"], recursive=False)
         values = [normalize_text(cell.get_text(" ", strip=True)) for cell in cells]
@@ -150,6 +134,80 @@ def _table_blocks(table: object) -> List[Dict[str, object]]:
         if pairs:
             blocks.append({"kind": "table", "text": "；".join(pairs) + "。"})
     return blocks
+
+
+_STRUCTURED_TAGS = set(_BLOCK_TAGS) | {"table"}
+_CONTAINER_TAGS = {
+    "[document]",
+    "html",
+    "body",
+    "main",
+    "div",
+    "section",
+    "article",
+    "header",
+    "footer",
+    "aside",
+    "nav",
+    "ul",
+    "ol",
+}
+
+
+def _append_structured_text(
+    blocks: List[Dict[str, object]], kind: str, fragments: List[str]
+) -> None:
+    text = normalize_text("".join(fragments))
+    if text:
+        blocks.append({"kind": kind, "text": text})
+
+
+def _walk_structured_children(
+    parent: object,
+    blocks: List[Dict[str, object]],
+    default_kind: str = "paragraph",
+) -> None:
+    """Walk visible content once, flushing direct text around structural children."""
+    fragments: List[str] = []
+
+    def flush() -> None:
+        nonlocal fragments
+        _append_structured_text(blocks, default_kind, fragments)
+        fragments = []
+
+    for child in parent.children:
+        if isinstance(child, NavigableString):
+            fragments.append(str(child))
+            continue
+        if not isinstance(child, Tag):
+            continue
+
+        name = child.name.lower()
+        if name == "table":
+            flush()
+            blocks.extend(_table_blocks(child))
+        elif name in _BLOCK_TAGS and name.startswith("h"):
+            flush()
+            text = normalize_text(child.get_text(" ", strip=True))
+            if text:
+                blocks.append(
+                    {"kind": "heading", "text": text, "level": int(name[1])}
+                )
+        elif name == "p":
+            flush()
+            _walk_structured_children(child, blocks, default_kind)
+        elif name == "li":
+            flush()
+            _walk_structured_children(child, blocks, "list_item")
+        elif name == "blockquote":
+            flush()
+            _walk_structured_children(child, blocks, "blockquote")
+        elif name in _CONTAINER_TAGS or child.find(list(_STRUCTURED_TAGS)) is not None:
+            flush()
+            _walk_structured_children(child, blocks, default_kind)
+        else:
+            fragments.append(child.get_text("", strip=False))
+    flush()
 
 
 def html_to_structured_blocks(raw_html: object) -> List[Dict[str, object]]:
@@ -168,31 +226,7 @@ def html_to_structured_blocks(raw_html: object) -> List[Dict[str, object]]:
         tag.decompose()
 
     blocks: List[Dict[str, object]] = []
-    selected_tags = set(_BLOCK_TAGS) | {"table"}
-    kind_by_tag = {"p": "paragraph", "li": "list_item", "blockquote": "blockquote"}
-    for node in soup.find_all(list(selected_tags)):
-        if node.name != "table" and node.find_parent("table") is not None:
-            continue
-        selected_parent = node.find_parent(list(selected_tags))
-        if selected_parent is not None and selected_parent.name != "li":
-            continue
-        if node.name == "table":
-            if node.find_parent("table") is None:
-                blocks.extend(_table_blocks(node))
-            continue
-
-        text = _text_without_nested_blocks(
-            node,
-            excluded_tags=("blockquote", "table")
-            if node.name == "blockquote"
-            else _BLOCK_TAGS + ["table"],
-        )
-        if not text:
-            continue
-        if node.name.startswith("h"):
-            blocks.append({"kind": "heading", "text": text, "level": int(node.name[1])})
-        else:
-            blocks.append({"kind": kind_by_tag[node.name], "text": text})
+    _walk_structured_children(soup, blocks)
     return blocks
 
 

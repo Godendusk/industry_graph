@@ -123,13 +123,13 @@ def _slice_at_matches(text: str, pattern: re.Pattern[str]) -> List[str]:
 
 
 _SENTENCE_END = re.compile(
-    r"(?:[。！？!?]+[”’\"']?\s*|(?<!\d)\.[”’\"']?(?:\s+|$))"
+    r"(?:[。！？!?]+[”’\"']?\s*|\.[”’\"']?(?:\s+|$))"
 )
 _SEMICOLON_END = re.compile(r"[；;]+\s*")
 _ENUMERATION_START = re.compile(
     r"(?=(?:[（(]?[一二三四五六七八九十百]+[、）)]|[（(]?\d+[、.)）]))"
 )
-_COMPLETE_SENTENCE = re.compile(r"(?:[。！？!?]|(?<!\d)\.)[”’\"']?$")
+_COMPLETE_SENTENCE = re.compile(r"[。！？!?.][”’\"']?$")
 
 
 def _split_at_enumerations(text: str) -> List[str]:
@@ -147,16 +147,33 @@ def _hard_split(
     pieces: List[str] = []
     remaining = text
     while remaining:
-        upper_bound = min(len(remaining), config.target_chars, config.hard_max_chars)
-        length = upper_bound
-        while length > 0 and not _fits(
-            remaining[:length], prefix, tokenizer, config
-        ):
-            length -= 1
-        if length == 0:
+        upper_bound = min(len(remaining), config.hard_max_chars)
+        low = 1
+        high = upper_bound
+        max_fitting = 0
+        while low <= high:
+            midpoint = (low + high) // 2
+            if _fits(remaining[:midpoint], prefix, tokenizer, config):
+                max_fitting = midpoint
+                low = midpoint + 1
+            else:
+                high = midpoint - 1
+        if max_fitting == 0:
             raise ValueError(
                 "max_tokens creates an impossible token budget for nonempty chunk text"
             )
+
+        if len(remaining) <= max_fitting:
+            length = len(remaining)
+        else:
+            length = min(config.target_chars, max_fitting)
+            tail_length = len(remaining) - length
+            tail_chunks = (tail_length + max_fitting - 1) // max_fitting
+            tail_is_feasible = tail_length >= tail_chunks * config.min_chars
+            if not tail_is_feasible:
+                total_chunks = (len(remaining) + max_fitting - 1) // max_fitting
+                if len(remaining) >= total_chunks * config.min_chars:
+                    length = (len(remaining) + total_chunks - 1) // total_chunks
         pieces.append(remaining[:length])
         remaining = remaining[length:]
     return pieces
@@ -216,6 +233,23 @@ def _pack_units(
             current = candidate
     if current:
         chunks.append(current)
+    if len(chunks) > 1 and len(chunks[-1]) < config.min_chars:
+        combined = chunks[-2] + chunks[-1]
+        if _fits(combined, prefix, tokenizer, config):
+            chunks[-2:] = [combined]
+        elif len(combined) >= 2 * config.min_chars:
+            split_points = sorted(
+                range(config.min_chars, len(combined) - config.min_chars + 1),
+                key=lambda point: abs(point - config.target_chars),
+            )
+            for split_point in split_points:
+                left = combined[:split_point]
+                right = combined[split_point:]
+                if _fits(left, prefix, tokenizer, config) and _fits(
+                    right, prefix, tokenizer, config
+                ):
+                    chunks[-2:] = [left, right]
+                    break
     return chunks
 
 
@@ -246,7 +280,14 @@ def _split_long_block(
         text = raw_chunk
         if index and config.overlap_chars:
             overlap = _last_complete_sentence(raw_chunks[index - 1], config.overlap_chars)
-            candidate = overlap + raw_chunk
+            separator = (
+                " "
+                if overlap
+                and re.search(r"[.!?][”’\"']?$", overlap)
+                and re.match(r"[A-Za-z0-9]", raw_chunk)
+                else ""
+            )
+            candidate = overlap + separator + raw_chunk
             if overlap and _fits(candidate, prefix, tokenizer, config):
                 text = candidate
         results.append(_ChunkText(text, block.section_path, block.content_type))
@@ -254,7 +295,7 @@ def _split_long_block(
 
 
 def _extract_source_blocks(blocks: Sequence[Mapping[str, Any]]) -> List[_SourceBlock]:
-    section_path: List[str] = []
+    section_stack: List[Tuple[int, str]] = []
     source_blocks: List[_SourceBlock] = []
     for index, block in enumerate(blocks):
         if not isinstance(block, Mapping):
@@ -267,8 +308,9 @@ def _extract_source_blocks(blocks: Sequence[Mapping[str, Any]]) -> List[_SourceB
             level = block.get("level")
             if isinstance(level, bool) or not isinstance(level, int) or not 1 <= level <= 6:
                 raise ValueError(f"blocks[{index}] heading level must be between 1 and 6")
-            section_path = section_path[: level - 1]
-            section_path.append(text)
+            while section_stack and section_stack[-1][0] >= level:
+                section_stack.pop()
+            section_stack.append((level, text))
             continue
         if not text:
             continue
@@ -278,7 +320,8 @@ def _extract_source_blocks(blocks: Sequence[Mapping[str, Any]]) -> List[_SourceB
             content_type = "text"
         else:
             raise ValueError(f"blocks[{index}] has unsupported kind: {kind or '<empty>'}")
-        source_blocks.append(_SourceBlock(text, tuple(section_path), content_type))
+        section_path = tuple(heading for _, heading in section_stack)
+        source_blocks.append(_SourceBlock(text, section_path, content_type))
     return source_blocks
 
 
@@ -316,8 +359,24 @@ def _natural_chunks(
         if len(block.text) > config.hard_max_chars or not _fits(
             block.text, prefix, tokenizer, config
         ):
-            flush_pending()
-            results.extend(_split_long_block(block, prefix, tokenizer, config))
+            if (
+                pending
+                and pending_key == key
+                and len("\n".join(pending)) < config.min_chars
+            ):
+                combined_block = _SourceBlock(
+                    "\n".join(pending + [block.text]),
+                    block.section_path,
+                    block.content_type,
+                )
+                pending = []
+                pending_key = None
+                results.extend(
+                    _split_long_block(combined_block, prefix, tokenizer, config)
+                )
+            else:
+                flush_pending()
+                results.extend(_split_long_block(block, prefix, tokenizer, config))
             continue
         if pending_key != key:
             flush_pending()

@@ -40,6 +40,40 @@ def make_chunks(blocks, **overrides):
 
 
 class StructuredHtmlTests(unittest.TestCase):
+    def test_emits_uncovered_container_and_body_text_in_document_order(self):
+        cases = (
+            (
+                "<div>仅有容器正文。</div>",
+                [{"kind": "paragraph", "text": "仅有容器正文。"}],
+            ),
+            (
+                "<section><h2>章节</h2>标题后的容器正文。</section>",
+                [
+                    {"kind": "heading", "text": "章节", "level": 2},
+                    {"kind": "paragraph", "text": "标题后的容器正文。"},
+                ],
+            ),
+            (
+                "<body>直属正文。</body>",
+                [{"kind": "paragraph", "text": "直属正文。"}],
+            ),
+            (
+                "<div><h7>非标准标题按正文处理。</h7></div>",
+                [{"kind": "paragraph", "text": "非标准标题按正文处理。"}],
+            ),
+            (
+                "<div>容器前。<p>识别段落。</p>容器后。</div>",
+                [
+                    {"kind": "paragraph", "text": "容器前。"},
+                    {"kind": "paragraph", "text": "识别段落。"},
+                    {"kind": "paragraph", "text": "容器后。"},
+                ],
+            ),
+        )
+        for raw_html, expected in cases:
+            with self.subTest(raw_html=raw_html):
+                self.assertEqual(html_to_structured_blocks(raw_html), expected)
+
     def test_extracts_headings_text_and_table_rows_without_cell_duplicates(self):
         raw_html = """
         <script>ignored()</script><style>.ignored {}</style><noscript>ignored</noscript>
@@ -87,6 +121,31 @@ class StructuredHtmlTests(unittest.TestCase):
         self.assertEqual(
             blocks,
             [{"kind": "blockquote", "text": "这是引用中的正文。"}],
+        )
+
+    def test_nested_table_and_caption_are_preserved_once_in_document_order(self):
+        blocks = html_to_structured_blocks(
+            "<blockquote>表前说明。<table><caption>算力规模</caption>"
+            "<tr><th>企业</th><th>规模</th></tr>"
+            "<tr><td>中国移动</td><td>10 EFLOPS</td></tr>"
+            "</table>表后结论。</blockquote>"
+        )
+
+        self.assertEqual(
+            blocks,
+            [
+                {"kind": "blockquote", "text": "表前说明。"},
+                {"kind": "paragraph", "text": "算力规模"},
+                {"kind": "table", "text": "企业：中国移动；规模：10 EFLOPS。"},
+                {"kind": "blockquote", "text": "表后结论。"},
+            ],
+        )
+        joined = " ".join(block["text"] for block in blocks)
+        self.assertEqual(joined.count("算力规模"), 1)
+        self.assertEqual(joined.count("中国移动"), 1)
+        self.assertEqual(
+            html_to_structured_blocks("<table><caption>仅表题</caption></table>"),
+            [{"kind": "paragraph", "text": "仅表题"}],
         )
 
     def test_existing_text_helpers_keep_their_public_behavior(self):
@@ -183,6 +242,20 @@ class ReportChunkingTests(unittest.TestCase):
         self.assertEqual(chunks[0].metadata["section_path"], ("上篇", "建设"))
         self.assertEqual(chunks[1].metadata["section_path"], ("上篇", "应用"))
 
+    def test_heading_path_uses_actual_levels_when_intermediate_level_changes(self):
+        chunks = make_chunks(
+            [
+                {"kind": "heading", "text": "二级", "level": 2},
+                {"kind": "heading", "text": "四级", "level": 4},
+                {"kind": "paragraph", "text": "四级正文。"},
+                {"kind": "heading", "text": "三级", "level": 3},
+                {"kind": "paragraph", "text": "三级正文。"},
+            ]
+        )
+
+        self.assertEqual(chunks[0].metadata["section_path"], ("二级", "四级"))
+        self.assertEqual(chunks[1].metadata["section_path"], ("二级", "三级"))
+
     def test_long_paragraph_splits_with_bounded_sentence_overlap_and_token_cap(self):
         sentence_1 = "第一句说明建设背景。"
         sentence_2 = "第二句说明项目进展。"
@@ -253,6 +326,29 @@ class ReportChunkingTests(unittest.TestCase):
         self.assertTrue(any(overlaps))
         self.assertTrue(all(len(overlap) <= config.overlap_chars for overlap in overlaps))
         self.assertTrue(all(chunk.token_count <= config.max_tokens for chunk in chunks))
+
+    def test_year_sentence_period_splits_and_overlap_keeps_english_separator(self):
+        chunks = make_chunks(
+            [{"kind": "paragraph", "text": "Year 2026. Next sentence. Done."}],
+            config=ChunkingConfig(
+                min_chars=1,
+                target_chars=15,
+                soft_max_chars=20,
+                hard_max_chars=27,
+                overlap_chars=15,
+                max_tokens=50,
+            ),
+        )
+
+        self.assertEqual(
+            [chunk.text for chunk in chunks],
+            [
+                "Year 2026. ",
+                "Year 2026. Next sentence. ",
+                "Next sentence. Done.",
+            ],
+        )
+        self.assertNotIn(".Next", "".join(chunk.text for chunk in chunks))
 
     def test_english_sentence_overlap_keeps_decimal_as_part_of_the_sentence(self):
         first_sentence = "Version 3.14 is ready."
@@ -330,6 +426,36 @@ class ReportChunkingTests(unittest.TestCase):
         self.assertEqual("".join(chunk.text for chunk in chunks), "abcdef")
         self.assertEqual(len(chunks), len("abcdef"))
         self.assertTrue(all(chunk.text and chunk.token_count <= config.max_tokens for chunk in chunks))
+
+    def test_split_tails_and_short_block_before_long_block_meet_min_when_feasible(self):
+        config = ChunkingConfig(
+            min_chars=8,
+            target_chars=10,
+            soft_max_chars=10,
+            hard_max_chars=12,
+            overlap_chars=0,
+            max_tokens=40,
+        )
+        source = "abcdefghijklmnopqrstu"
+        hard_chunks = make_chunks(
+            [{"kind": "paragraph", "text": source}], config=config
+        )
+        adjacent_chunks = make_chunks(
+            [
+                {"kind": "paragraph", "text": "abc"},
+                {"kind": "paragraph", "text": source},
+            ],
+            config=config,
+        )
+
+        self.assertEqual("".join(chunk.text for chunk in hard_chunks), source)
+        self.assertTrue(all(len(chunk.text) >= config.min_chars for chunk in hard_chunks))
+        self.assertEqual(
+            "".join(chunk.text for chunk in adjacent_chunks), "abc\n" + source
+        )
+        self.assertTrue(
+            all(len(chunk.text) >= config.min_chars for chunk in adjacent_chunks)
+        )
 
     def test_tables_and_sections_are_preserved_in_metadata(self):
         blocks = html_to_structured_blocks(
