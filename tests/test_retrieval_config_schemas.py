@@ -49,6 +49,17 @@ class RetrievalConfigTests(unittest.TestCase):
                         config = RetrievalConfig.for_project(Path(temporary_directory))
                     self.assertEqual(config.mode, mode)
 
+    def test_for_project_strips_supported_mode_from_environment(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            with patch.dict(
+                os.environ,
+                {"REPORT_RETRIEVAL_MODE": "  hybrid_v2\t"},
+                clear=True,
+            ):
+                config = RetrievalConfig.for_project(Path(temporary_directory))
+
+        self.assertEqual(config.mode, "hybrid_v2")
+
     def test_for_project_rejects_invalid_mode(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             with patch.dict(
@@ -85,6 +96,16 @@ class ChunkRecordTests(unittest.TestCase):
         self.assertIsNone(chunk.previous_chunk_id)
         self.assertIsNone(chunk.next_chunk_id)
 
+    def test_metadata_is_immutable_and_isolated_from_source_mapping(self):
+        metadata = {"source": "report.docx"}
+        chunk = self.make_chunk(metadata=metadata)
+
+        metadata["page"] = 3
+
+        self.assertEqual(chunk.metadata, {"source": "report.docx"})
+        with self.assertRaises(TypeError):
+            chunk.metadata["page"] = 3
+
 
 class RetrievalCandidateTests(unittest.TestCase):
     def test_from_chunk_preserves_identity_text_and_metadata(self):
@@ -106,9 +127,31 @@ class RetrievalCandidateTests(unittest.TestCase):
         self.assertEqual(candidate.chunk_id, chunk.chunk_id)
         self.assertEqual(candidate.document_id, chunk.document_id)
         self.assertEqual(candidate.text, chunk.text)
-        self.assertIs(candidate.metadata, metadata)
+        self.assertEqual(candidate.metadata, metadata)
+        self.assertIsNot(candidate.metadata, metadata)
         self.assertIsNone(candidate.dense_rank)
         self.assertEqual(candidate.diagnostics, {})
+
+    def test_metadata_and_diagnostics_are_immutable_and_isolated_from_inputs(self):
+        metadata = {"source": "report.docx"}
+        diagnostics = {"stage": "dense"}
+        candidate = RetrievalCandidate(
+            chunk_id="document-1:0",
+            document_id="document-1",
+            text="A useful passage.",
+            metadata=metadata,
+            diagnostics=diagnostics,
+        )
+
+        metadata["page"] = 3
+        diagnostics["latency_ms"] = 12.5
+
+        self.assertEqual(candidate.metadata, {"source": "report.docx"})
+        self.assertEqual(candidate.diagnostics, {"stage": "dense"})
+        with self.assertRaises(TypeError):
+            candidate.metadata["page"] = 3
+        with self.assertRaises(TypeError):
+            candidate.diagnostics["latency_ms"] = 12.5
 
 
 class RetrievalResultTests(unittest.TestCase):
@@ -124,6 +167,38 @@ class RetrievalResultTests(unittest.TestCase):
         self.assertIsNot(first.timings, second.timings)
         with self.assertRaises(AttributeError):
             first.status = "error"
+
+    def test_container_fields_are_immutable_and_isolated_from_inputs(self):
+        candidate = RetrievalCandidate(
+            chunk_id="document-1:0",
+            document_id="document-1",
+            text="A useful passage.",
+            metadata={"source": "report.docx"},
+        )
+        candidates = [candidate]
+        warnings = ["stale index"]
+        timings = {"retrieve": 0.2}
+        result = RetrievalResult(
+            status="ok",
+            query="steel",
+            candidates=candidates,
+            warnings=warnings,
+            timings=timings,
+        )
+
+        candidates.append(candidate)
+        warnings.append("fallback used")
+        timings["rerank"] = 0.1
+
+        self.assertEqual(result.candidates, (candidate,))
+        self.assertEqual(result.warnings, ("stale index",))
+        self.assertEqual(result.timings, {"retrieve": 0.2})
+        with self.assertRaises(AttributeError):
+            result.candidates.append(candidate)
+        with self.assertRaises(AttributeError):
+            result.warnings.append("fallback used")
+        with self.assertRaises(TypeError):
+            result.timings["rerank"] = 0.1
 
 
 if __name__ == "__main__":

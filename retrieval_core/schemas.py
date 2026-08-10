@@ -1,7 +1,8 @@
 """Shared records exchanged by report retrieval components."""
 
 from dataclasses import dataclass, field
-from typing import Any, Dict, Mapping, Optional, Tuple
+from types import MappingProxyType
+from typing import Any, Mapping, Optional, Tuple
 
 
 @dataclass(frozen=True)
@@ -22,6 +23,7 @@ class ChunkRecord:
         for field_name in ("chunk_id", "document_id", "text"):
             if not getattr(self, field_name):
                 raise ValueError(f"{field_name} must not be empty")
+        object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
 
 
 @dataclass
@@ -41,7 +43,11 @@ class RetrievalCandidate:
     rerank_score: Optional[float] = None
     business_score: Optional[float] = None
     final_rank: Optional[int] = None
-    diagnostics: Dict[str, Any] = field(default_factory=dict)
+    diagnostics: Mapping[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        self.metadata = MappingProxyType(dict(self.metadata))
+        self.diagnostics = MappingProxyType(dict(self.diagnostics))
 
     @classmethod
     def from_chunk(cls, chunk: ChunkRecord) -> "RetrievalCandidate":
@@ -59,6 +65,11 @@ class RetrievalResult:
     query: str
     candidates: Tuple[RetrievalCandidate, ...] = field(default_factory=tuple)
     warnings: Tuple[str, ...] = field(default_factory=tuple)
-    timings: Dict[str, float] = field(default_factory=dict)
+    timings: Mapping[str, float] = field(default_factory=dict)
     retrieval_version: str = "hybrid_v2"
     message: str = ""
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "candidates", tuple(self.candidates))
+        object.__setattr__(self, "warnings", tuple(self.warnings))
+        object.__setattr__(self, "timings", MappingProxyType(dict(self.timings)))

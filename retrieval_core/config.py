@@ -22,7 +22,7 @@ class RetrievalConfig:
     @classmethod
     def for_project(cls, project_root: Path) -> "RetrievalConfig":
         root = Path(project_root).resolve()
-        mode = os.environ.get("REPORT_RETRIEVAL_MODE", "legacy")
+        mode = os.environ.get("REPORT_RETRIEVAL_MODE", "legacy").strip()
         supported_modes = {"legacy", "compare", "hybrid_v2"}
         if mode not in supported_modes:
             raise ValueError(
