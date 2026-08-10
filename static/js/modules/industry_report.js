@@ -10,6 +10,8 @@ let industryReportWorkspace = {
     reportTitle: "人工智能产业报告",
     abstractText: "",
     industry: "ai",
+    intent: null,
+    planner: null,
     outline: [],
     writingTasks: [],
     bodySections: [],
@@ -33,7 +35,7 @@ const INDUSTRY_REPORT_STAGE_LABELS = {
 
 const INDUSTRY_REPORT_FLOW_STEPS = [
     { key: "requirement", title: "需求输入", detail: "填写主题、标题和参数" },
-    { key: "outline", title: "生成大纲", detail: "生成并编辑报告章节" },
+    { key: "outline", title: "意图规划与大纲", detail: "理解意图、规划并生成章节" },
     { key: "coordinator", title: "统筹任务", detail: "检索资料并拆分写作任务" },
     { key: "body", title: "生成正文", detail: "按章节生成报告内容" },
     { key: "review", title: "预览导出", detail: "查看、重写、保存或导出" },
@@ -49,8 +51,40 @@ function getIndustryReportIndustryName(value) {
         embodied: "具身智能",
         low_altitude: "低空经济",
         sea: "海洋经济",
+        quantum: "量子科技",
+        biology: "生物制造",
+        brain: "脑机接口",
+        material: "新材料",
     };
     return map[value || getIndustryReportCurrentIndustry()] || "人工智能";
+}
+
+function getIndustryReportDefaultTitle(industry = getIndustryReportCurrentIndustry()) {
+    return `${getIndustryReportIndustryName(industry)}产业报告`;
+}
+
+function appendIndustryReportWarnings(items) {
+    const existing = industryReportWorkspace.warnings || [];
+    const combined = [...existing, ...(Array.isArray(items) ? items : [])];
+    const seen = new Set();
+    industryReportWorkspace.warnings = combined.filter(item => {
+        const key = JSON.stringify(item || {});
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+}
+
+function getIndustryReportRagWarning() {
+    return (industryReportWorkspace.warnings || []).find(item =>
+        item?.code === "rag_store_empty"
+        || String(item?.message || "").includes("RAG 向量库暂无资料")
+    );
+}
+
+function setIndustryReportCompletionStatus(successText) {
+    const ragWarning = getIndustryReportRagWarning();
+    setIndustryReportStatus(ragWarning?.message || successText, ragWarning ? "info" : "success");
 }
 
 function setIndustryReportBusy(isBusy, text = "") {
@@ -396,19 +430,30 @@ async function industryReportApi(path, options = {}) {
 
 function syncIndustryReportHeader() {
     const industry = getIndustryReportCurrentIndustry();
-    industryReportWorkspace.industry = industry;
+    if (!industryReportWorkspace.intent) industryReportWorkspace.industry = industry;
     const pill = document.getElementById("report-industry-pill");
     if (pill) {
-        const name = getIndustryReportIndustryName(industry);
+        const name = industryReportWorkspace.intent?.industry || getIndustryReportIndustryName(industry);
         pill.textContent = name;
-        const unsupported = industry !== "ai";
-        pill.className = unsupported
-            ? "text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100"
-            : "text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100";
+        pill.className = "text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100";
     }
 }
 
+function applyIndustryReportResolvedIndustry(industry, industryName) {
+    if (!industry || industry === getIndustryReportCurrentIndustry()) return;
+    // 自动切换标题识别出的受支持行业，但不派发 industryChanged，避免清空刚生成的报告工作区。
+    window.currentIndustry = industry;
+    const input = document.getElementById("industry-search-input");
+    if (input) {
+        input.value = industryName || getIndustryReportIndustryName(industry);
+        input.setAttribute("readonly", "readonly");
+    }
+    if (typeof loadIndustryData === "function") loadIndustryData(industry);
+}
+
 function resetIndustryReportWorkspace() {
+    const industry = getIndustryReportCurrentIndustry();
+    const defaultTitle = getIndustryReportDefaultTitle(industry);
     industryReportWorkspace = {
         historyId: "",
         currentStage: "idle",
@@ -416,9 +461,11 @@ function resetIndustryReportWorkspace() {
         completedSteps: [],
         flowCollapsed: false,
         userPrompt: "",
-        reportTitle: "人工智能产业报告",
+        reportTitle: defaultTitle,
         abstractText: "",
-        industry: getIndustryReportCurrentIndustry(),
+        industry,
+        intent: null,
+        planner: null,
         outline: [],
         writingTasks: [],
         bodySections: [],
@@ -429,7 +476,7 @@ function resetIndustryReportWorkspace() {
         busy: false,
     };
     const titleInput = document.getElementById("industry-report-title");
-    if (titleInput) titleInput.value = "人工智能产业报告";
+    if (titleInput) titleInput.value = defaultTitle;
     renderIndustryReportOutline([]);
     renderIndustryReportProgress([]);
     renderIndustryReportPreview();
@@ -449,35 +496,35 @@ function getIndustryReportFormValues() {
 
 async function generateIndustryReportOutline() {
     const { prompt, title, industry } = getIndustryReportFormValues();
-    if (!prompt) {
-        setIndustryReportStatus("请先输入报告需求", "error");
+    if (!title) {
+        setIndustryReportStatus("请先输入报告标题", "error");
         return;
     }
-    if (industry !== "ai") {
-        setIndustryReportStatus("当前后端报告生成只支持人工智能产业，请切换到人工智能后再生成", "error");
-        return;
-    }
-
-    setIndustryReportBusy(true, "正在生成大纲...");
+    setIndustryReportBusy(true, "正在理解报告意图并规划大纲...");
     clearIndustryReportStepDone(["outline", "coordinator", "body", "review"]);
     markIndustryReportStepDone("requirement");
     setIndustryReportStage("outline", "正在生成推荐大纲");
     try {
         const data = await industryReportApi("/api/report/outline", {
             method: "POST",
-            body: JSON.stringify({ user_prompt: prompt, industry }),
+            body: JSON.stringify({ title, user_requirement: prompt, industry }),
         });
+        applyIndustryReportResolvedIndustry(data.resolved_industry, data.resolved_industry_name);
         industryReportWorkspace.userPrompt = prompt;
         industryReportWorkspace.historyId = "";
-        industryReportWorkspace.reportTitle = data.report_title || title;
-        industryReportWorkspace.industry = industry;
+        industryReportWorkspace.reportTitle = title;
+        industryReportWorkspace.industry = data.resolved_industry || "";
+        industryReportWorkspace.intent = data.intent || null;
+        industryReportWorkspace.planner = data.planner || null;
         industryReportWorkspace.outline = normalizeIndustryReportOutline(data.outline || []);
-        industryReportWorkspace.warnings = data.warnings || [];
+        industryReportWorkspace.warnings = [];
+        appendIndustryReportWarnings(data.warnings);
         industryReportWorkspace.writingTasks = [];
         industryReportWorkspace.bodySections = [];
         industryReportWorkspace.abstractText = "";
         const titleInput = document.getElementById("industry-report-title");
-        if (titleInput) titleInput.value = industryReportWorkspace.reportTitle;
+        if (titleInput) titleInput.value = title;
+        syncIndustryReportHeader();
         renderIndustryReportOutline(industryReportWorkspace.outline);
         renderIndustryReportProgress([
             { key: "outline", title: "推荐大纲", status: "done", detail: `${countIndustryReportSubsections(industryReportWorkspace.outline)} 个二级标题` },
@@ -488,7 +535,7 @@ async function generateIndustryReportOutline() {
         markIndustryReportStepDone("requirement");
         markIndustryReportStepDone("outline");
         setIndustryReportStage("outline", "推荐大纲已生成，可编辑后确认");
-        setIndustryReportStatus("推荐大纲已生成，可继续编辑", "success");
+        setIndustryReportCompletionStatus("推荐大纲已生成，可继续编辑");
     } catch (err) {
         setIndustryReportStage("error", "大纲生成失败");
         setIndustryReportStatus(`大纲生成失败：${err.message}`, "error");
@@ -641,13 +688,11 @@ function removeIndustryReportSubsection(sectionIndex, subIndex) {
 
 async function prepareIndustryReportTasks() {
     const { prompt, title, industry } = getIndustryReportFormValues();
+    const effectivePrompt = prompt || title;
+    const reportIndustry = industryReportWorkspace.intent ? industryReportWorkspace.industry : industry;
     industryReportWorkspace.outline = readIndustryReportOutlineFromDom();
-    if (!prompt) {
-        setIndustryReportStatus("请先输入报告需求", "error");
-        return null;
-    }
-    if (industry !== "ai") {
-        setIndustryReportStatus("当前后端报告生成只支持人工智能产业", "error");
+    if (!title) {
+        setIndustryReportStatus("请先输入报告标题", "error");
         return null;
     }
     if (!countIndustryReportSubsections(industryReportWorkspace.outline)) {
@@ -661,18 +706,18 @@ async function prepareIndustryReportTasks() {
         const data = await industryReportApi("/api/report/coordinator", {
             method: "POST",
             body: JSON.stringify({
-                user_prompt: prompt,
+                user_prompt: effectivePrompt,
                 report_title: title,
-                industry,
+                industry: reportIndustry,
                 outline: industryReportWorkspace.outline,
                 top_k: getIndustryReportNumber("industry-report-top-k", 10),
             }),
         });
         industryReportWorkspace.userPrompt = prompt;
         industryReportWorkspace.reportTitle = title;
-        industryReportWorkspace.industry = industry;
+        industryReportWorkspace.industry = reportIndustry;
         industryReportWorkspace.writingTasks = data.writing_tasks || [];
-        industryReportWorkspace.warnings = data.warnings || [];
+        appendIndustryReportWarnings(data.warnings);
         renderIndustryReportProgress([
             { key: "outline", title: "推荐大纲", status: "done", detail: `${countIndustryReportSubsections(industryReportWorkspace.outline)} 个二级标题` },
             { key: "coordinator", title: "写作任务", status: "done", detail: `${industryReportWorkspace.writingTasks.length} 个任务` },
@@ -682,7 +727,7 @@ async function prepareIndustryReportTasks() {
         markIndustryReportStepDone("outline");
         markIndustryReportStepDone("coordinator");
         setIndustryReportStage("coordinator", "写作任务已生成");
-        setIndustryReportStatus("大纲已确认，写作任务已生成", "success");
+        setIndustryReportCompletionStatus("大纲已确认，写作任务已生成");
         return data;
     } catch (err) {
         setIndustryReportStage("error", "写作任务生成失败");
@@ -699,6 +744,8 @@ async function startIndustryReportGeneration() {
         if (!prepared) return;
     }
     const { prompt, title, industry } = getIndustryReportFormValues();
+    const effectivePrompt = prompt || title;
+    const reportIndustry = industryReportWorkspace.intent ? industryReportWorkspace.industry : industry;
     setIndustryReportBusy(true, "正在生成正文，这一步可能需要较长时间...");
     clearIndustryReportStepDone(["body", "review"]);
     setIndustryReportStage("body", "正在生成正文");
@@ -707,15 +754,15 @@ async function startIndustryReportGeneration() {
         const data = await industryReportApi("/api/report/body", {
             method: "POST",
             body: JSON.stringify({
-                user_prompt: prompt,
+                user_prompt: effectivePrompt,
                 report_title: title,
-                industry,
+                industry: reportIndustry,
                 writing_tasks: industryReportWorkspace.writingTasks,
                 max_workers: getIndustryReportNumber("industry-report-workers", 3),
             }),
         });
         industryReportWorkspace.bodySections = normalizeIndustryReportBodySections(data.body_sections || []);
-        industryReportWorkspace.warnings = data.warnings || [];
+        appendIndustryReportWarnings(data.warnings);
         try {
             setIndustryReportStatus("正文已生成，正在生成摘要...", "loading");
             industryReportWorkspace.abstractText = await generateIndustryReportSummaryForWord(title, industryReportWorkspace.bodySections);
@@ -730,7 +777,7 @@ async function startIndustryReportGeneration() {
         markIndustryReportStepDone("coordinator");
         markIndustryReportStepDone("body");
         setIndustryReportStage("done", "报告正文已生成");
-        setIndustryReportStatus("报告正文已生成", "success");
+        setIndustryReportCompletionStatus("报告正文已生成");
     } catch (err) {
         renderIndustryReportProgress(buildIndustryReportTaskProgress("failed"));
         setIndustryReportStage("error", "正文生成失败");
@@ -984,7 +1031,7 @@ function buildIndustryReportGraphLink(nodeId) {
         view: "graph",
         subview: "graph",
         node: String(nodeId),
-        industry: industryReportWorkspace.industry || getIndustryReportCurrentIndustry(),
+        industry: industryReportWorkspace.industry ?? getIndustryReportCurrentIndustry(),
     });
     return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
 }
@@ -1031,7 +1078,7 @@ async function recommendIndustryReportMaterials() {
             body: JSON.stringify({
                 rewrite_prompt: rewritePrompt,
                 report_title: industryReportWorkspace.reportTitle,
-                industry: industryReportWorkspace.industry || "ai",
+                industry: industryReportWorkspace.industry ?? "ai",
                 body_section: section,
                 top_k: getIndustryReportNumber("industry-report-top-k", 10),
             }),
@@ -1112,7 +1159,7 @@ async function rewriteIndustryReportSection() {
             body: JSON.stringify({
                 rewrite_prompt: rewritePrompt,
                 report_title: industryReportWorkspace.reportTitle,
-                industry: industryReportWorkspace.industry || "ai",
+                industry: industryReportWorkspace.industry ?? "ai",
                 body_section: section,
                 graph_retrieval: industryReportWorkspace.rewriteMaterials.graph_retrieval || {},
                 selected_external_evidence_blocks: selected,
@@ -1187,8 +1234,10 @@ function buildIndustryReportHistoryRecord() {
         id: industryReportWorkspace.historyId || `local_report_${Date.now()}`,
         title,
         prompt,
+        intent: industryReportWorkspace.intent || null,
+        planner: industryReportWorkspace.planner || null,
         abstractText: industryReportWorkspace.abstractText || "",
-        industry: industryReportWorkspace.industry || getIndustryReportCurrentIndustry(),
+        industry: industryReportWorkspace.industry ?? getIndustryReportCurrentIndustry(),
         outline: industryReportWorkspace.outline || [],
         writingTasks: industryReportWorkspace.writingTasks || [],
         bodySections: industryReportWorkspace.bodySections || [],
@@ -1270,6 +1319,8 @@ async function loadSelectedIndustryReportHistory() {
         reportTitle: record.title || "产业报告",
         abstractText: record.abstractText || "",
         industry: record.industry || "ai",
+        intent: record.intent || null,
+        planner: record.planner || null,
         outline: record.outline || [],
         writingTasks: record.writingTasks || [],
         bodySections: record.bodySections || [],
@@ -1392,7 +1443,7 @@ async function exportIndustryReportWord() {
             body: JSON.stringify({
                 report_title: title,
                 abstract_text: abstractText,
-                industry: industryReportWorkspace.industry || getIndustryReportCurrentIndustry(),
+                industry: industryReportWorkspace.industry ?? getIndustryReportCurrentIndustry(),
                 body_sections: bodySections,
             }),
         });
@@ -1417,7 +1468,7 @@ async function generateIndustryReportSummaryForWord(title, bodySections) {
         method: "POST",
         body: JSON.stringify({
             report_title: title,
-            industry: industryReportWorkspace.industry || getIndustryReportCurrentIndustry(),
+            industry: industryReportWorkspace.industry ?? getIndustryReportCurrentIndustry(),
             outline: industryReportWorkspace.outline || [],
             body_sections: bodySections,
         }),
@@ -1608,7 +1659,7 @@ function escapeIndustryReportJs(value) {
 }
 
 document.addEventListener("industryChanged", () => {
-    syncIndustryReportHeader();
+    resetIndustryReportWorkspace();
 });
 
 window.addEventListener("load", () => {

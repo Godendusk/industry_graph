@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, List
 
-from .client import EXTERNAL_LIBRARIES
+from .client import get_external_libraries
+from ..industry_config import get_vector_db_path
 
 
 REPORT_GENERATION_DIR = Path(__file__).resolve().parents[1]
@@ -18,15 +18,9 @@ BATCH_SIZE = 128
 # 限制嵌入模型使用的 CPU 线程数，避免编码时 CPU 占用过高（默认 4 线程）
 MAX_ENCODE_THREADS = 4
 
-# 在模块导入时立即设置线程限制，确保在 numpy/torch 等库加载前生效
-# Docker 环境中若未设置这些变量，BLAS 后端会使用全部 CPU 核心
-for _var in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS",
-             "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
-    os.environ[_var] = os.environ.get(_var, str(MAX_ENCODE_THREADS))
-
 _embedding_model: Any = None
 _embedding_model_lock = Lock()
-_chroma_client: Any = None
+_chroma_clients: Dict[str, Any] = {}
 _chroma_client_lock = Lock()
 
 
@@ -45,30 +39,47 @@ def get_embedding_model():
     if _embedding_model is None:
         with _embedding_model_lock:
             if _embedding_model is None:
+                try:
+                    import torch
+
+                    torch.set_num_threads(MAX_ENCODE_THREADS)
+                except Exception:
+                    pass
                 from sentence_transformers import SentenceTransformer
 
                 _embedding_model = SentenceTransformer(str(MODEL_PATH), device=_device())
     return _embedding_model
 
 
-def get_chroma_client():
-    global _chroma_client
-
-    if _chroma_client is None:
+def get_chroma_client(industry: str = "ai"):
+    normalized_industry = str(industry or "").strip()
+    if normalized_industry not in _chroma_clients:
         with _chroma_client_lock:
-            if _chroma_client is None:
+            if normalized_industry not in _chroma_clients:
                 import chromadb
 
-                VECTOR_DB_DIR.mkdir(parents=True, exist_ok=True)
-                _chroma_client = chromadb.PersistentClient(path=str(VECTOR_DB_DIR))
-    return _chroma_client
+                vector_db_path = get_vector_db_path(normalized_industry)
+                vector_db_path.mkdir(parents=True, exist_ok=True)
+                try:
+                    chroma_path = vector_db_path.relative_to(Path.cwd())
+                except ValueError:
+                    chroma_path = vector_db_path
+                _chroma_clients[normalized_industry] = chromadb.PersistentClient(
+                    path=str(chroma_path)
+                )
+    return _chroma_clients[normalized_industry]
 
 
-def get_collection(library: str):
-    if library not in EXTERNAL_LIBRARIES:
+def has_vector_store(industry: str) -> bool:
+    return (get_vector_db_path(industry) / "chroma.sqlite3").is_file()
+
+
+def get_collection(library: str, industry: str = "ai"):
+    libraries = get_external_libraries(industry)
+    if library not in libraries:
         raise ValueError(f"Unknown external library: {library}")
-    collection_name = EXTERNAL_LIBRARIES[library]["collection"]
-    return get_chroma_client().get_or_create_collection(name=collection_name)
+    collection_name = libraries[library]["collection"]
+    return get_chroma_client(industry).get_or_create_collection(name=collection_name)
 
 
 def build_paragraph_ids(library: str, material_id: str, paragraph_count: int) -> List[str]:
@@ -78,10 +89,10 @@ def build_paragraph_ids(library: str, material_id: str, paragraph_count: int) ->
     ]
 
 
-def delete_existing_material(library: str, material_id: str, old_chunk_count: int) -> None:
+def delete_existing_material(library: str, material_id: str, old_chunk_count: int, industry: str = "ai") -> None:
     if old_chunk_count <= 0:
         return
-    collection = get_collection(library)
+    collection = get_collection(library, industry=industry)
     old_ids = build_paragraph_ids(library, material_id, old_chunk_count)
     try:
         collection.delete(ids=old_ids)
@@ -95,13 +106,14 @@ def upsert_paragraphs(
     material_id: str,
     paragraphs: List[str],
     metadatas: List[Dict[str, Any]],
+    industry: str = "ai",
 ) -> List[str]:
     if not paragraphs:
         return []
     if len(paragraphs) != len(metadatas):
         raise ValueError("paragraphs and metadatas length mismatch")
 
-    collection = get_collection(library)
+    collection = get_collection(library, industry=industry)
     ids = build_paragraph_ids(library, material_id, len(paragraphs))
     model = get_embedding_model()
 

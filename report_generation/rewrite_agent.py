@@ -10,12 +10,10 @@ from typing import Any, List
 from llm_client import llm
 
 from .external_rag.retriever import retrieve_external_rag
-from .graph_retriever import retrieve_ai_graph
+from .graph_retriever import retrieve_industry_graph
+from .industry_config import SUPPORTED_INDUSTRIES
 
 
-SUPPORTED_INDUSTRIES = {
-    "ai": "人工智能",
-}
 DEFAULT_TOP_K = 10
 DEFAULT_MAX_TOKENS = 5000
 
@@ -59,9 +57,10 @@ def recommend_rewrite_materials(
     )
 
     warnings: List[dict] = []
-    graph_retrieval = _retrieve_graph_for_rewrite(rewrite_retrieval_query, warnings)
+    graph_retrieval = _retrieve_graph_for_rewrite(rewrite_retrieval_query, normalized_industry, warnings)
     external_rag_retrieval = _retrieve_external_rag_for_rewrite(
         query=rewrite_retrieval_query,
+        industry=normalized_industry,
         top_k=normalized_top_k,
         warnings=warnings,
     )
@@ -200,9 +199,9 @@ def _build_rewrite_retrieval_query(
     )
 
 
-def _retrieve_graph_for_rewrite(query: str, warnings: List[dict]) -> dict:
+def _retrieve_graph_for_rewrite(query: str, industry: str, warnings: List[dict]) -> dict:
     try:
-        result = retrieve_ai_graph(query)
+        result = retrieve_industry_graph(query, industry=industry)
     except Exception as exc:
         warning = {
             "stage": "graph_retrieval",
@@ -227,9 +226,9 @@ def _retrieve_graph_for_rewrite(query: str, warnings: List[dict]) -> dict:
     return normalized
 
 
-def _retrieve_external_rag_for_rewrite(query: str, top_k: int, warnings: List[dict]) -> dict:
+def _retrieve_external_rag_for_rewrite(query: str, industry: str, top_k: int, warnings: List[dict]) -> dict:
     try:
-        result = retrieve_external_rag(query, top_k=top_k)
+        result = retrieve_external_rag(query, industry=industry, top_k=top_k)
     except Exception as exc:
         warning = {
             "stage": "external_rag_retrieval",
@@ -256,7 +255,7 @@ def _retrieve_external_rag_for_rewrite(query: str, top_k: int, warnings: List[di
         warnings.append(
             {
                 "stage": "external_rag_retrieval",
-                "message": item,
+                "message": item.get("message", str(item)) if isinstance(item, dict) else item,
             }
         )
     return normalized

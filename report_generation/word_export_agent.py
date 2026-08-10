@@ -6,12 +6,10 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, List
+from .industry_config import SUPPORTED_INDUSTRIES
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SUPPORTED_INDUSTRIES = {
-    "ai": "人工智能",
-}
 DEFAULT_OUTPUT_DIR = "report_generation/outputs"
 
 
@@ -25,18 +23,12 @@ def export_report_docx(
     """Export the final report as a formatted DOCX file."""
     normalized_title = _safe_text(report_title)
     normalized_abstract = _safe_text(abstract_text)
-    normalized_industry = _safe_text(industry) or "ai"
+    normalized_industry = _safe_text(industry)
 
     if not normalized_title:
         return _error_response("report_title cannot be empty", normalized_industry, "")
 
-    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry)
-    if not industry_name:
-        return _error_response(
-            f"unsupported industry: {normalized_industry}",
-            normalized_industry,
-            "",
-        )
+    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry, "未配置行业")
 
     if not normalized_abstract:
         return _error_response("abstract_text cannot be empty", normalized_industry, industry_name)

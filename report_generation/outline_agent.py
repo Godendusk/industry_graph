@@ -13,111 +13,107 @@ from typing import Any, Dict, List, Optional
 from llm_client import llm
 
 from .external_rag.retriever import retrieve_external_rag
-from .graph_retriever import retrieve_ai_graph
+from .graph_retriever import retrieve_industry_graph
+from .intent_agent import parse_report_intent
+from .planner_agent import plan_report
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TEMPLATE_PATH = PROJECT_ROOT / "产业链报告模板.docx"
-SUPPORTED_INDUSTRIES = {
-    "ai": "人工智能",
-}
 BODY_SUBSECTION_MIN = 2
 BODY_SUBSECTION_MAX = 4
 
 
 def generate_report_outline(
-    user_prompt: str,
-    industry: str = "ai",
-    template_path: Optional[str] = None,
+    title: str,
+    user_requirement: str = "",
+    industry: str = "",
 ) -> dict:
-    """Generate report title and per-section second-level outline."""
-    normalized_prompt = str(user_prompt or "").strip()
-    normalized_industry = str(industry or "ai").strip() or "ai"
+    """按 Intent → Planner → Outline 流程生成报告大纲。"""
+    report_title = str(title or "").strip()
+    normalized_requirement = str(user_requirement or "").strip()
+    if not report_title:
+        return _error_response("title cannot be empty", "", "")
 
-    if not normalized_prompt:
-        return _error_response("user_prompt cannot be empty", normalized_industry, "")
+    # Intent 必须忠实保留标题；页面当前行业只作上下文，不覆盖标题识别结果。
+    intent_result = parse_report_intent(report_title, normalized_requirement)
+    if intent_result.get("status") != "success":
+        return intent_result
+    intent = intent_result["intent"]
+    resolved_industry = intent_result.get("resolved_industry", "")
+    resolved_industry_name = intent_result.get("resolved_industry_name", "")
 
-    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry)
-    if not industry_name:
-        return _error_response(
-            f"unsupported industry: {normalized_industry}",
-            normalized_industry,
-            "",
-        )
+    # Planner 只消费已经校验的 Intent，不直接重新理解标题。
+    planner_result = plan_report(intent, resolved_industry=resolved_industry)
+    if planner_result.get("status") != "success":
+        planner_result["intent"] = intent
+        return planner_result
+    planner = planner_result["planner"]
 
-    try:
-        template = _parse_template(Path(template_path) if template_path else DEFAULT_TEMPLATE_PATH)
-    except Exception as exc:
-        return _error_response(
-            f"failed to parse template: {exc}",
-            normalized_industry,
-            industry_name,
-        )
-
-    title_result = _generate_report_title(
-        user_prompt=normalized_prompt,
-        industry_name=industry_name,
-        title_requirement=template.get("title_requirement", ""),
-    )
-    if title_result["status"] != "success":
-        title_result.update(
-            {
-                "industry": normalized_industry,
-                "industry_name": industry_name,
-                "user_prompt": normalized_prompt,
-            }
-        )
-        return title_result
-
-    report_title = title_result["report_title"]
+    effective_prompt = normalized_requirement or report_title
     warnings: List[dict] = []
+    warnings.extend(intent_result.get("warnings") or [])
+    warnings.extend(planner_result.get("warnings") or [])
     outline: List[dict] = []
 
-    if template.get("abstract_requirement"):
-        outline.append(
-            {
-                "level1_id": "S1",
-                "level1_title": "摘要",
-                "section_type": "abstract",
-                "template_requirement": template["abstract_requirement"],
-                "subsections": [],
-            }
-        )
-
-    body_sections = template.get("body_sections") or []
-    section_offset = 2 if outline else 1
-    for index, section in enumerate(body_sections, section_offset):
+    # Planner 的章节直接成为一级章节，不再套用 Word 固定一级章节模板。
+    for index, section in enumerate(planner.get("chapters") or [], 1):
         level1_id = f"S{index}"
-        level1_title = _replace_industry_placeholder(section["title"], industry_name)
-        template_requirement = section.get("requirement", "")
+        level1_title = str(section.get("title") or "").strip()
+        research_question = str(section.get("research_question") or "").strip()
+        content_requirements = section.get("content_requirements") or []
+        evidence_requirements = section.get("evidence_requirements") or []
+        template_requirement = _format_planner_requirement(
+            research_question,
+            content_requirements,
+            evidence_requirements,
+        )
         section_warnings: List[dict] = []
         section_retrieval_query = _build_section_retrieval_query(
-            user_prompt=normalized_prompt,
-            industry_name=industry_name,
+            user_prompt=effective_prompt,
+            industry_name=intent.get("industry", ""),
             report_title=report_title,
             level1_title=level1_title,
             template_requirement=template_requirement,
         )
 
-        graph_retrieval = _retrieve_graph_for_section(
-            query=section_retrieval_query,
-            level1_id=level1_id,
-            warnings=warnings,
-            section_warnings=section_warnings,
-        )
-        external_rag_retrieval = _retrieve_external_rag_for_section(
-            query=section_retrieval_query,
-            level1_id=level1_id,
-            warnings=warnings,
-            section_warnings=section_warnings,
-        )
+        # 产业图谱和外部 RAG 都是可选证据源，不可用时不能阻断大纲。
+        if (
+            planner.get("need_industry_graph")
+            and planner.get("industry_graph_available")
+            and resolved_industry
+        ):
+            graph_retrieval = _retrieve_graph_for_section(
+                query=section_retrieval_query,
+                industry=resolved_industry,
+                level1_id=level1_id,
+                warnings=warnings,
+                section_warnings=section_warnings,
+            )
+        else:
+            graph_retrieval = {"status": "skipped", "graph_evidence_blocks": []}
 
+        if resolved_industry:
+            external_rag_retrieval = _retrieve_external_rag_for_section(
+                query=section_retrieval_query,
+                industry=resolved_industry,
+                level1_id=level1_id,
+                warnings=warnings,
+                section_warnings=section_warnings,
+            )
+        else:
+            external_rag_retrieval = {"status": "skipped", "evidence_blocks": []}
+
+        # 二级标题必须严格围绕 Planner 为当前章定义的问题和证据要求。
         subsection_result = _generate_section_subsections(
-            user_prompt=normalized_prompt,
-            industry_name=industry_name,
+            user_prompt=effective_prompt,
+            industry_name=intent.get("industry", ""),
             report_title=report_title,
             level1_title=level1_title,
             template_requirement=template_requirement,
+            research_question=research_question,
+            content_requirements=content_requirements,
+            evidence_requirements=evidence_requirements,
             graph_context_text=graph_retrieval.get("graph_context_text", ""),
             rag_context_text=external_rag_retrieval.get("rag_context_text", ""),
         )
@@ -147,6 +143,9 @@ def generate_report_outline(
                 "level1_title": level1_title,
                 "section_type": "body",
                 "template_requirement": template_requirement,
+                "research_question": research_question,
+                "content_requirements": content_requirements,
+                "evidence_requirements": evidence_requirements,
                 "section_retrieval_query": section_retrieval_query,
                 "graph_retrieval": graph_retrieval,
                 "external_rag_retrieval": external_rag_retrieval,
@@ -157,10 +156,15 @@ def generate_report_outline(
 
     return {
         "status": "success",
-        "industry": normalized_industry,
-        "industry_name": industry_name,
-        "user_prompt": normalized_prompt,
+        "industry": resolved_industry,
+        "industry_name": resolved_industry_name or intent.get("industry", ""),
+        "resolved_industry": resolved_industry,
+        "resolved_industry_name": resolved_industry_name,
+        "user_requirement": normalized_requirement,
+        "effective_user_prompt": effective_prompt,
         "report_title": report_title,
+        "intent": intent,
+        "planner": planner,
         "outline": outline,
         "flat_subsections": _build_flat_subsections(outline),
         "warnings": warnings,
@@ -168,6 +172,7 @@ def generate_report_outline(
 
 
 def _parse_template(path: Path) -> dict:
+    """解析 Word 模板中的标题、摘要要求和一级正文章节。"""
     if not path.exists():
         raise FileNotFoundError(str(path))
 
@@ -304,6 +309,7 @@ def _build_section_retrieval_query(
     level1_title: str,
     template_requirement: str,
 ) -> str:
+    # 检索问题同时带上报告主题和当前章节要求，减少跨章节资料干扰。
     return "\n".join(
         [
             f"用户需求：{user_prompt}",
@@ -318,12 +324,13 @@ def _build_section_retrieval_query(
 
 def _retrieve_graph_for_section(
     query: str,
+    industry: str,
     level1_id: str,
     warnings: List[dict],
     section_warnings: List[dict],
 ) -> dict:
     try:
-        result = retrieve_ai_graph(query)
+        result = retrieve_industry_graph(query, industry=industry)
     except Exception as exc:
         warning = {
             "level1_id": level1_id,
@@ -351,12 +358,13 @@ def _retrieve_graph_for_section(
 
 def _retrieve_external_rag_for_section(
     query: str,
+    industry: str,
     level1_id: str,
     warnings: List[dict],
     section_warnings: List[dict],
 ) -> dict:
     try:
-        result = retrieve_external_rag(query, top_k=10)
+        result = retrieve_external_rag(query, industry=industry, top_k=10)
     except Exception as exc:
         warning = {
             "level1_id": level1_id,
@@ -380,7 +388,7 @@ def _retrieve_external_rag_for_section(
         warning = {
             "level1_id": level1_id,
             "stage": "external_rag_retrieval",
-            "message": item,
+            "message": item.get("message", str(item)) if isinstance(item, dict) else item,
         }
         warnings.append(warning)
         section_warnings.append(warning)
@@ -411,6 +419,9 @@ def _generate_section_subsections(
     report_title: str,
     level1_title: str,
     template_requirement: str,
+    research_question: str,
+    content_requirements: List[str],
+    evidence_requirements: List[str],
     graph_context_text: str,
     rag_context_text: str,
 ) -> dict:
@@ -440,6 +451,15 @@ JSON 必须包含 subsections 数组。
 【当前一级大纲要求】
 {template_requirement}
 
+【本章必须回答的研究问题】
+{research_question}
+
+【Planner 内容要求】
+{json.dumps(content_requirements, ensure_ascii=False)}
+
+【Planner 证据要求】
+{json.dumps(evidence_requirements, ensure_ascii=False)}
+
 【当前一级大纲的知识图谱检索结果】
 {graph_context_text or "未检索到可用知识图谱上下文。"}
 
@@ -455,7 +475,7 @@ JSON 必须包含 subsections 数组。
 6. suggested_query 应适合后续统筹智能体或正文生成智能体再次检索。
 7. 不要生成正文。
 8. 生成的二级标题之间需要有较大的独立性，不要生成高度相似的二级标题。
-9. 生成二级标题时要重点参考关注当前的一级标题，不要生成关联度不高的二级标题，比如一级标题让你分析现状你就分析现状，不要自作主张去分析突出问题和对策建议；一级标题让你分析对策建议你就分析对策建议，不要自作主张去分析现状和问题；一级标题让你分析现状你就分析现状，不要自作主张去分析突出问题和对策建议，绝对不要做多余的事。
+9. 生成二级标题时必须以本章 research_question 为边界，不得加入 Planner 未要求或 Intent 禁止扩展的分析方向。
 
 【输出格式】
 {{
@@ -506,6 +526,7 @@ def _normalize_subsections(
     warnings: List[dict],
     section_warnings: List[dict],
 ) -> List[dict]:
+    # 统一清洗 LLM 输出，并限制每个一级章节下的二级标题数量。
     subsections = []
     for item in raw_subsections:
         if not isinstance(item, dict):
@@ -520,6 +541,7 @@ def _normalize_subsections(
                 "title": title,
                 "writing_focus": writing_focus,
                 "suggested_query": suggested_query,
+                "generation_instruction": writing_focus,
             }
         )
 
@@ -545,6 +567,20 @@ def _normalize_subsections(
     for index, subsection in enumerate(subsections, 1):
         subsection["outline_id"] = f"{level1_id}.{index}"
     return subsections
+
+
+def _format_planner_requirement(
+    research_question: str,
+    content_requirements: List[str],
+    evidence_requirements: List[str],
+) -> str:
+    """将 Planner 章节约束适配为下游沿用的 template_requirement 文本。"""
+    parts = [f"研究问题：{research_question}"]
+    if content_requirements:
+        parts.append("内容要求：" + "；".join(content_requirements))
+    if evidence_requirements:
+        parts.append("证据要求：" + "；".join(evidence_requirements))
+    return "\n".join(parts)
 
 
 def _build_flat_subsections(outline: List[dict]) -> List[dict]:

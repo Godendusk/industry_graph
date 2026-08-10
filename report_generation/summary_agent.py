@@ -9,13 +9,11 @@ from pathlib import Path
 from typing import Any, List, Optional
 
 from llm_client import llm
+from .industry_config import SUPPORTED_INDUSTRIES
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TEMPLATE_PATH = PROJECT_ROOT / "产业链报告模板.docx"
-SUPPORTED_INDUSTRIES = {
-    "ai": "人工智能",
-}
 DEFAULT_MAX_TOKENS = 5000
 
 
@@ -28,18 +26,12 @@ def generate_report_summary(
 ) -> dict:
     """Generate report abstract from the final outline and body sections."""
     normalized_title = _safe_text(report_title)
-    normalized_industry = _safe_text(industry) or "ai"
+    normalized_industry = _safe_text(industry)
 
     if not normalized_title:
         return _error_response("report_title cannot be empty", normalized_industry, "")
 
-    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry)
-    if not industry_name:
-        return _error_response(
-            f"unsupported industry: {normalized_industry}",
-            normalized_industry,
-            "",
-        )
+    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry, "未配置行业")
 
     if not isinstance(outline, list):
         return _error_response("outline must be an array", normalized_industry, industry_name)

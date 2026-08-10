@@ -54,7 +54,10 @@ RAG/output.md
 RAG/output.html
 
 # Generated report-generation external RAG vector store/state
-report_generation/vector_db/
+report_generation/vector_db/*
+!report_generation/vector_db/*/
+report_generation/vector_db/*/*
+!report_generation/vector_db/*/.gitkeep
 
 # Report-generation test outputs
 outline_agent_test_result.json

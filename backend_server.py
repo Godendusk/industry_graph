@@ -240,13 +240,30 @@ def rag_query():
 @token_required
 def report_outline():
     data = request.json or {}
-    user_prompt = str(data.get("user_prompt") or "").strip()
-    industry = str(data.get("industry") or "ai").strip() or "ai"
+    title = str(data.get("title") or "").strip()
+    user_requirement = str(data.get("user_requirement") or "").strip()
+    industry = str(data.get("industry") or "").strip()
 
-    if not user_prompt:
-        return jsonify({"status": "error", "message": "user_prompt cannot be empty"}), 400
+    if not title:
+        return jsonify({"status": "error", "message": "title cannot be empty"}), 400
 
-    result = generate_report_outline(user_prompt=user_prompt, industry=industry)
+    result = generate_report_outline(
+        title=title,
+        user_requirement=user_requirement,
+        industry=industry,
+    )
+    # 记录两阶段中间结果，便于定位意图偏差或规划失败。
+    log_action(
+        "report_intent_planner",
+        result.get("status", "error"),
+        result.get("message", ""),
+        {
+            "title": title,
+            "intent": result.get("intent"),
+            "planner": result.get("planner"),
+            "resolved_industry": result.get("resolved_industry", ""),
+        },
+    )
     if result.get("status") != "success":
         return jsonify(result), 400
     return jsonify(result)
