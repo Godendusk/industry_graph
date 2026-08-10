@@ -84,6 +84,9 @@ class ModelManagerTests(unittest.TestCase):
         device_errors = (
             NotImplementedError("operator not implemented for MPS"),
             RuntimeError("not implemented for MPS"),
+            RuntimeError(
+                "The operator aten::foo is not currently implemented for the MPS device."
+            ),
             RuntimeError("not supported on the MPS device"),
             RuntimeError("PyTorch is not linked with support for mps devices"),
             RuntimeError("MPS backend out of memory"),
@@ -239,6 +242,26 @@ class ModelManagerTests(unittest.TestCase):
         self.assertEqual(creations, [(Path("/virtual/embedding"), "mps"), (Path("/virtual/embedding"), "cpu")])
         self.assertEqual(len(mps_model.calls), 2)  # health, then failing real inference
         self.assertEqual(len(cpu_model.calls), 2)  # retry, then subsequent inference
+        self.assertEqual(manager.embedding_device, "cpu")
+
+    def test_currently_not_implemented_pytorch_operator_reloads_embedding_on_cpu(self):
+        creations = []
+        mps_model = EmbeddingModel(
+            fail_on_call=2,
+            failure=RuntimeError(
+                "The operator aten::foo is not currently implemented for the MPS device."
+            ),
+        )
+        cpu_model = EmbeddingModel()
+
+        def factory(path, device):
+            creations.append(device)
+            return mps_model if device == "mps" else cpu_model
+
+        manager = self.make_manager(mps_available=True, embedding_factory=factory)
+
+        self.assertEqual(manager.embed_documents(["doc"]), [[0.0, 1.0]])
+        self.assertEqual(creations, ["mps", "cpu"])
         self.assertEqual(manager.embedding_device, "cpu")
 
     def test_mps_creation_failure_falls_back_but_cpu_failure_propagates(self):

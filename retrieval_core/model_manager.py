@@ -22,7 +22,7 @@ _MPS_DEVICE_ERROR_PATTERNS = tuple(
     re.compile(pattern, re.IGNORECASE | re.DOTALL)
     for pattern in (
         # An operator or operation is unavailable on the named accelerator.
-        r"\bnot implemented\s+(?:for|on)\s+(?:the\s+)?(?:mps|metal)(?:\s+devices?)?\b",
+        r"\bnot\s+(?:currently\s+)?implemented\s+(?:for|on)\s+(?:the\s+)?(?:mps|metal)(?:\s+devices?)?\b",
         r"\b(?:not supported|unsupported)\s+(?:for|on|by)\s+(?:the\s+)?(?:mps|metal)(?:\s+devices?)?\b",
         r"\b(?:mps|metal)\b.{0,40}\b(?:operator|operation)\b.{0,40}\b(?:not implemented|not supported|unsupported)\b",
         # PyTorch/build linkage explicitly lacks accelerator support.
