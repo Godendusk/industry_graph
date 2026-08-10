@@ -21,16 +21,24 @@ class ChunkingConfig:
     max_tokens: int = 480
 
     def __post_init__(self) -> None:
-        values = (
+        positive_values = (
             self.min_chars,
             self.target_chars,
             self.soft_max_chars,
             self.hard_max_chars,
-            self.overlap_chars,
             self.max_tokens,
         )
-        if any(isinstance(value, bool) or not isinstance(value, int) or value <= 0 for value in values):
+        if any(
+            isinstance(value, bool) or not isinstance(value, int) or value <= 0
+            for value in positive_values
+        ):
             raise ValueError("ChunkingConfig limits must be positive integers")
+        if (
+            isinstance(self.overlap_chars, bool)
+            or not isinstance(self.overlap_chars, int)
+            or self.overlap_chars < 0
+        ):
+            raise ValueError("ChunkingConfig overlap_chars must be a nonnegative integer")
         if not self.min_chars <= self.target_chars <= self.soft_max_chars <= self.hard_max_chars:
             raise ValueError(
                 "ChunkingConfig requires min_chars <= target_chars <= "
@@ -81,18 +89,13 @@ def _fit_embedding_prefix(
     if any(not component for component in components):
         raise ValueError("embedding prefix components must not be empty")
 
-    while True:
-        prefix = "\n".join(components) + "\n"
-        if _token_count(tokenizer, prefix + sample_character) <= max_tokens:
-            return prefix
-        candidates = [index for index, component in enumerate(components) if len(component) > 1]
-        if not candidates:
-            raise ValueError(
-                "max_tokens creates an impossible token budget for required "
-                "classification, title, section, and nonempty text"
-            )
-        longest = max(candidates, key=lambda index: (len(components[index]), -index))
-        components[longest] = components[longest][:-1]
+    prefix = "\n".join(components) + "\n"
+    if _token_count(tokenizer, prefix + sample_character) > max_tokens:
+        raise ValueError(
+            "embedding prefix exceeds the token budget for required "
+            "classification, title, section, and nonempty text"
+        )
+    return prefix
 
 
 def _fits(
@@ -207,12 +210,12 @@ def _pack_units(
         needs_companion = len(current) < config.min_chars
         within_hard = _fits(candidate, prefix, tokenizer, config)
         if current and not within_target and not (needs_companion and within_hard):
-            chunks.append(normalize_text(current))
+            chunks.append(current)
             current = unit
         else:
             current = candidate
     if current:
-        chunks.append(normalize_text(current))
+        chunks.append(current)
     return chunks
 
 
@@ -241,7 +244,7 @@ def _split_long_block(
     results: List[_ChunkText] = []
     for index, raw_chunk in enumerate(raw_chunks):
         text = raw_chunk
-        if index:
+        if index and config.overlap_chars:
             overlap = _last_complete_sentence(raw_chunks[index - 1], config.overlap_chars)
             candidate = overlap + raw_chunk
             if overlap and _fits(candidate, prefix, tokenizer, config):

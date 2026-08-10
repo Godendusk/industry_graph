@@ -120,7 +120,7 @@ class ChunkingConfigTests(unittest.TestCase):
             {"min_chars": 30, "target_chars": 20},
             {"target_chars": 50, "soft_max_chars": 40},
             {"soft_max_chars": 70, "hard_max_chars": 60},
-            {"overlap_chars": 0},
+            {"overlap_chars": -1},
             {"overlap_chars": 81, "hard_max_chars": 80},
             {"max_tokens": 0},
         )
@@ -131,6 +131,25 @@ class ChunkingConfigTests(unittest.TestCase):
 
 
 class ReportChunkingTests(unittest.TestCase):
+    def test_rejects_lossy_embedding_prefix_when_context_exhausts_token_budget(self):
+        with self.assertRaisesRegex(ValueError, "embedding prefix.*token budget"):
+            build_report_chunks(
+                blocks=[{"kind": "paragraph", "text": "正文"}],
+                library="company_case",
+                material_id="m1",
+                title="很长的资料标题用于验证上下文绝不能被静默截断",
+                metadata={"classification_name": "很长的分类名称用于验证上下文绝不能被静默截断"},
+                tokenizer=FakeTokenizer(),
+                config=ChunkingConfig(
+                    min_chars=1,
+                    target_chars=2,
+                    soft_max_chars=3,
+                    hard_max_chars=4,
+                    overlap_chars=0,
+                    max_tokens=12,
+                ),
+            )
+
     def test_short_blocks_merge_inside_same_heading(self):
         chunks = make_chunks(
             [
@@ -225,6 +244,46 @@ class ReportChunkingTests(unittest.TestCase):
 
         self.assertEqual([chunk.text for chunk in chunks], [first, second])
         self.assertFalse(chunks[1].text.startswith(first[-8:]))
+
+    def test_zero_overlap_preserves_spaces_across_hard_and_sentence_splits(self):
+        config = ChunkingConfig(
+            min_chars=1,
+            target_chars=5,
+            soft_max_chars=5,
+            hard_max_chars=6,
+            overlap_chars=0,
+            max_tokens=40,
+        )
+        for source in ("one two three", "One. Two. Three."):
+            with self.subTest(source=source):
+                chunks = make_chunks(
+                    [{"kind": "paragraph", "text": source}], config=config
+                )
+                self.assertGreater(len(chunks), 1)
+                self.assertEqual("".join(chunk.text for chunk in chunks), normalize_text(source))
+
+    def test_tiny_hard_split_budget_makes_bounded_nonempty_progress(self):
+        config = ChunkingConfig(
+            min_chars=1,
+            target_chars=1,
+            soft_max_chars=1,
+            hard_max_chars=1,
+            overlap_chars=0,
+            max_tokens=7,
+        )
+        chunks = build_report_chunks(
+            blocks=[{"kind": "paragraph", "text": "abcdef"}],
+            library="l",
+            material_id="m",
+            title="T",
+            metadata={"classification_name": "C"},
+            tokenizer=FakeTokenizer(),
+            config=config,
+        )
+
+        self.assertEqual("".join(chunk.text for chunk in chunks), "abcdef")
+        self.assertEqual(len(chunks), len("abcdef"))
+        self.assertTrue(all(chunk.text and chunk.token_count <= config.max_tokens for chunk in chunks))
 
     def test_tables_and_sections_are_preserved_in_metadata(self):
         blocks = html_to_structured_blocks(
