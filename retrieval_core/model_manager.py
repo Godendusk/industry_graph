@@ -32,6 +32,50 @@ def select_device(mps_available: Optional[bool] = None) -> str:
     return "mps" if mps_available else "cpu"
 
 
+def _is_mps_device_error(error: BaseException) -> bool:
+    """Return whether an exception clearly indicates an MPS device failure.
+
+    RuntimeError is also used by model libraries for invalid inputs, shapes,
+    and application errors.  Those errors must remain visible to callers; only
+    explicit backend/device failures are eligible for the one-time CPU retry.
+    """
+    if isinstance(error, NotImplementedError):
+        return True
+    if not isinstance(error, RuntimeError):
+        return False
+
+    message = str(error).casefold()
+    if "mps" in message or "metal" in message:
+        return True
+    failure_markers = (
+        "unsupported",
+        "not supported",
+        "not implemented",
+        "unavailable",
+        "not available",
+        "failed",
+        "failure",
+        "error",
+        "out of memory",
+    )
+    if "backend" in message and any(marker in message for marker in failure_markers):
+        return True
+    if "operator" in message and any(marker in message for marker in failure_markers):
+        return True
+    if "allocat" in message and any(marker in message for marker in failure_markers):
+        return True
+    return any(
+        marker in message
+        for marker in (
+            "device failed",
+            "device failure",
+            "device unavailable",
+            "device not available",
+            "device error",
+        )
+    )
+
+
 def _missing_path(path: Path) -> FileNotFoundError:
     return FileNotFoundError(errno.ENOENT, "Local model path does not exist", str(path))
 
@@ -174,7 +218,7 @@ class ModelManager:
         try:
             model = self._create_embedding(device)
         except RuntimeError as error:
-            if device != "mps":
+            if device != "mps" or not _is_mps_device_error(error):
                 raise
             self._fall_back_to_cpu("embedding model", error)
             model = self._create_embedding("cpu")
@@ -201,7 +245,7 @@ class ModelManager:
         try:
             model = self._create_reranker(device)
         except RuntimeError as error:
-            if device != "mps":
+            if device != "mps" or not _is_mps_device_error(error):
                 raise
             self._fall_back_to_cpu("reranker model", error)
             model = self._create_reranker("cpu")
@@ -231,7 +275,7 @@ class ModelManager:
                     show_progress_bar=False,
                 )
             except RuntimeError as error:
-                if inference_device != "mps":
+                if inference_device != "mps" or not _is_mps_device_error(error):
                     raise
                 self._fall_back_to_cpu("embedding inference", error)
                 model, _ = self._embedding_locked()
@@ -270,7 +314,7 @@ class ModelManager:
             try:
                 values = model.predict(pairs, batch_size=batch_size)
             except RuntimeError as error:
-                if inference_device != "mps":
+                if inference_device != "mps" or not _is_mps_device_error(error):
                     raise
                 self._fall_back_to_cpu("reranker inference", error)
                 model, _ = self._reranker_locked()
