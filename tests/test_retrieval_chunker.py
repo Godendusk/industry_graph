@@ -182,6 +182,25 @@ class StructuredHtmlTests(unittest.TestCase):
             "表题：算力规模；企业：中国移动；规模：10 EFLOPS。",
         )
 
+    def test_header_only_and_empty_row_tables_retain_caption_and_headers_once(self):
+        for raw_html in (
+            "<table><caption>Capacity</caption><tr><th>Name</th></tr></table>",
+            "<table><caption>Capacity</caption><tr><th>Name</th></tr>"
+            "<tr><td></td></tr></table>",
+        ):
+            with self.subTest(raw_html=raw_html):
+                blocks = html_to_structured_blocks(raw_html)
+                self.assertEqual(
+                    blocks,
+                    [{"kind": "table", "text": "表题：Capacity；表头：Name。"}],
+                )
+                self.assertEqual(blocks[0]["text"].count("Capacity"), 1)
+                self.assertEqual(blocks[0]["text"].count("Name"), 1)
+                chunks = make_chunks(blocks)
+                self.assertEqual(len(chunks), 1)
+                self.assertEqual(chunks[0].metadata["content_type"], "table")
+                self.assertEqual(chunks[0].text, "表题：Capacity；表头：Name。")
+
     def test_existing_text_helpers_keep_their_public_behavior(self):
         self.assertEqual(normalize_text(" A\u00a0 B \n\n\n C "), "A B \n\n C")
         self.assertEqual(
@@ -575,6 +594,61 @@ class ReportChunkingTests(unittest.TestCase):
 
         self.assertEqual([chunk.text for chunk in chunks], ["abc", "def"])
         self.assertEqual("".join(chunk.text for chunk in chunks), "abcdef")
+
+    def test_full_trailing_short_run_rebalances_and_respects_boundaries(self):
+        config = ChunkingConfig(
+            min_chars=8,
+            target_chars=10,
+            soft_max_chars=10,
+            hard_max_chars=12,
+            overlap_chars=0,
+            max_tokens=40,
+        )
+        long_text = "abcdefghijklmnopqrstu"
+        chunks = make_chunks(
+            [
+                {"kind": "paragraph", "text": long_text},
+                {"kind": "paragraph", "text": "abc"},
+                {"kind": "paragraph", "text": "def"},
+            ],
+            config=config,
+        )
+        self.assertEqual(
+            "".join(chunk.text for chunk in chunks), long_text + "\nabc\ndef"
+        )
+        self.assertTrue(
+            all(
+                config.min_chars <= len(chunk.text) <= config.hard_max_chars
+                and chunk.token_count <= config.max_tokens
+                for chunk in chunks
+            )
+        )
+
+        combined_short = make_chunks(
+            [
+                {"kind": "paragraph", "text": "ab"},
+                {"kind": "paragraph", "text": "cdefgh"},
+            ],
+            config=config,
+        )
+        self.assertEqual([chunk.text for chunk in combined_short], ["ab\ncdefgh"])
+        self.assertGreaterEqual(len(combined_short[0].text), config.min_chars)
+
+        bounded = make_chunks(
+            [
+                {"kind": "heading", "text": "甲", "level": 2},
+                {"kind": "paragraph", "text": long_text},
+                {"kind": "heading", "text": "乙", "level": 2},
+                {"kind": "paragraph", "text": "abc"},
+                {"kind": "table", "text": "短表。"},
+            ],
+            config=config,
+        )
+        self.assertEqual(bounded[-2].metadata["section_path"], ("乙",))
+        self.assertEqual(bounded[-2].metadata["content_type"], "text")
+        self.assertEqual(bounded[-2].text, "abc")
+        self.assertEqual(bounded[-1].metadata["content_type"], "table")
+        self.assertEqual(bounded[-1].text, "短表。")
 
     def test_tables_and_sections_are_preserved_in_metadata(self):
         blocks = html_to_structured_blocks(

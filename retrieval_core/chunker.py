@@ -372,16 +372,23 @@ def _natural_chunks(
         is_long = len(block.text) > config.hard_max_chars or not _fits(
             block.text, prefix, tokenizer, config
         )
-        if is_long and block_index + 1 < len(blocks):
-            next_block = blocks[block_index + 1]
-            next_key = (next_block.section_path, next_block.content_type)
-            if next_key == key and len(next_block.text) < config.min_chars:
+        if is_long:
+            trailing_texts: List[str] = []
+            next_index = block_index + 1
+            while next_index < len(blocks):
+                next_block = blocks[next_index]
+                next_key = (next_block.section_path, next_block.content_type)
+                if next_key != key or len(next_block.text) >= config.min_chars:
+                    break
+                trailing_texts.append(next_block.text)
+                consumed_indexes.add(next_index)
+                next_index += 1
+            if trailing_texts:
                 block = _SourceBlock(
-                    block.text + "\n" + next_block.text,
+                    "\n".join([block.text] + trailing_texts),
                     block.section_path,
                     block.content_type,
                 )
-                consumed_indexes.add(block_index + 1)
         if is_long:
             if (
                 pending

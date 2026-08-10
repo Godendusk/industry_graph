@@ -120,20 +120,23 @@ def _table_blocks(table: object) -> List[Dict[str, object]]:
     headers = [normalize_text(cell.get_text(" ", strip=True)) for cell in header_cells]
     if not any(headers):
         return [{"kind": "table", "text": caption_pair + "。"}] if caption_pair else []
+    header_pair = "表头：" + "；".join(header for header in headers if header)
 
     blocks: List[Dict[str, object]] = []
     for row in rows[header_row_index + 1 :]:
         cells = row.find_all(["th", "td"], recursive=False)
         values = [normalize_text(cell.get_text(" ", strip=True)) for cell in cells]
-        pairs = [
+        data_pairs = [
             f"{header}：{value}"
             for header, value in zip(headers, values)
             if header and value
         ]
-        if caption_pair:
-            pairs.insert(0, caption_pair)
-        if pairs:
+        if data_pairs:
+            pairs = ([caption_pair] if caption_pair else []) + data_pairs
             blocks.append({"kind": "table", "text": "；".join(pairs) + "。"})
+    if not blocks:
+        pairs = ([caption_pair] if caption_pair else []) + [header_pair]
+        blocks.append({"kind": "table", "text": "；".join(pairs) + "。"})
     return blocks
 
 
