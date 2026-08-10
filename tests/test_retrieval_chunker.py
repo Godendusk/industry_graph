@@ -224,6 +224,52 @@ class ReportChunkingTests(unittest.TestCase):
         self.assertTrue(any(overlaps))
         self.assertTrue(all(len(overlap) <= config.overlap_chars for overlap in overlaps))
 
+    def test_long_english_paragraph_uses_bounded_complete_sentence_overlap(self):
+        sentences = ("One. ", "Two. ", "Three. ", "Four.")
+        config = ChunkingConfig(
+            min_chars=1,
+            target_chars=10,
+            soft_max_chars=12,
+            hard_max_chars=14,
+            overlap_chars=6,
+            max_tokens=40,
+        )
+        chunks = make_chunks(
+            [{"kind": "paragraph", "text": "".join(sentences)}], config=config
+        )
+
+        overlaps = []
+        for previous, current in zip(chunks, chunks[1:]):
+            overlap = next(
+                (
+                    sentence.strip()
+                    for sentence in sentences
+                    if previous.text.rstrip().endswith(sentence.strip())
+                    and current.text.startswith(sentence.strip())
+                ),
+                "",
+            )
+            overlaps.append(overlap)
+        self.assertTrue(any(overlaps))
+        self.assertTrue(all(len(overlap) <= config.overlap_chars for overlap in overlaps))
+        self.assertTrue(all(chunk.token_count <= config.max_tokens for chunk in chunks))
+
+    def test_english_sentence_overlap_keeps_decimal_as_part_of_the_sentence(self):
+        first_sentence = "Version 3.14 is ready."
+        chunks = make_chunks(
+            [{"kind": "paragraph", "text": first_sentence + " Next step. Done."}],
+            config=ChunkingConfig(
+                min_chars=1,
+                target_chars=15,
+                soft_max_chars=30,
+                hard_max_chars=38,
+                overlap_chars=30,
+                max_tokens=80,
+            ),
+        )
+
+        self.assertTrue(any(chunk.text.startswith(first_sentence) for chunk in chunks[1:]))
+
     def test_natural_blocks_do_not_receive_mechanical_overlap(self):
         first = "甲" * 22 + "。"
         second = "乙" * 22 + "。"

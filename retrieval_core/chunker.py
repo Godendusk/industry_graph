@@ -129,7 +129,7 @@ _SEMICOLON_END = re.compile(r"[；;]+\s*")
 _ENUMERATION_START = re.compile(
     r"(?=(?:[（(]?[一二三四五六七八九十百]+[、）)]|[（(]?\d+[、.)）]))"
 )
-_COMPLETE_SENTENCE = re.compile(r"[。！？!?][”’\"']?$")
+_COMPLETE_SENTENCE = re.compile(r"(?:[。！？!?]|(?<!\d)\.)[”’\"']?$")
 
 
 def _split_at_enumerations(text: str) -> List[str]:
