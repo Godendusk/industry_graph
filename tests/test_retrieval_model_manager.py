@@ -82,19 +82,27 @@ class ModelManagerTests(unittest.TestCase):
 
     def test_mps_error_classifier_is_narrow_and_covers_device_failures(self):
         device_errors = (
-            NotImplementedError("missing operation"),
-            RuntimeError("MPS command buffer failed"),
-            RuntimeError("Metal backend unavailable"),
-            RuntimeError("backend initialization error"),
-            RuntimeError("operator unsupported"),
-            RuntimeError("allocation error"),
-            RuntimeError("device failure"),
+            NotImplementedError("operator not implemented for MPS"),
+            RuntimeError("not implemented for MPS"),
+            RuntimeError("not supported on the MPS device"),
+            RuntimeError("PyTorch is not linked with support for mps devices"),
+            RuntimeError("MPS backend out of memory"),
+            RuntimeError("MPS device is not available"),
+            RuntimeError("placeholder storage has not been allocated on MPS"),
+            RuntimeError("Metal backend failure"),
+            RuntimeError("Metal allocation failed"),
+            RuntimeError("Metal device failure"),
         )
         application_errors = (
             RuntimeError("invalid user input"),
             RuntimeError("shape mismatch"),
             RuntimeError("bad batch"),
             RuntimeError("application error"),
+            RuntimeError("MPS input invalid"),
+            RuntimeError("MPS business rule failed"),
+            RuntimeError("Metal document invalid"),
+            NotImplementedError("unrelated feature"),
+            NotImplementedError("MPS input validation is not implemented"),
             ValueError("MPS input invalid"),
         )
 
@@ -211,7 +219,10 @@ class ModelManagerTests(unittest.TestCase):
 
     def test_mps_health_inference_and_later_runtime_failure_reload_cpu_once(self):
         creations = []
-        mps_model = EmbeddingModel(fail_on_call=2)
+        mps_model = EmbeddingModel(
+            fail_on_call=2,
+            failure=RuntimeError("not supported on the MPS device"),
+        )
         cpu_model = EmbeddingModel()
 
         def factory(path, device):
@@ -259,67 +270,77 @@ class ModelManagerTests(unittest.TestCase):
         self.assertEqual(creations, ["mps"])
 
     def test_arbitrary_runtime_from_mps_factories_propagates_without_cpu_fallback(self):
+        failures = (
+            RuntimeError("MPS business rule failed"),
+            NotImplementedError("unrelated feature"),
+        )
         for component in ("embedding", "reranker"):
-            with self.subTest(component=component):
-                failure = RuntimeError("application error")
+            for failure in failures:
+                with self.subTest(component=component, failure=type(failure).__name__):
+                    creations = []
+
+                    def failing_factory(path, device):
+                        creations.append(device)
+                        raise failure
+
+                    manager = self.make_manager(
+                        mps_available=True,
+                        embedding_factory=(
+                            failing_factory
+                            if component == "embedding"
+                            else lambda path, device: EmbeddingModel()
+                        ),
+                        reranker_factory=(
+                            failing_factory
+                            if component == "reranker"
+                            else lambda path, device: RerankerModel()
+                        ),
+                    )
+                    with self.assertRaises(type(failure)) as caught:
+                        if component == "embedding":
+                            manager.embed_documents(["doc"])
+                        else:
+                            manager.rerank_pairs("q", ["doc"])
+
+                    self.assertIs(caught.exception, failure)
+                    self.assertEqual(creations, ["mps"])
+                    self.assertIsNone(
+                        manager.embedding_device
+                        if component == "embedding"
+                        else manager.reranker_device
+                    )
+
+    def test_arbitrary_runtime_from_mps_health_check_does_not_fallback(self):
+        failures = (
+            RuntimeError("MPS input invalid"),
+            NotImplementedError("unrelated health feature"),
+        )
+        for failure in failures:
+            with self.subTest(failure=type(failure).__name__):
                 creations = []
 
-                def failing_factory(path, device):
+                def factory(path, device):
                     creations.append(device)
-                    raise failure
+                    return EmbeddingModel(fail_on_call=1, failure=failure)
 
                 manager = self.make_manager(
-                    mps_available=True,
-                    embedding_factory=(
-                        failing_factory
-                        if component == "embedding"
-                        else lambda path, device: EmbeddingModel()
-                    ),
-                    reranker_factory=(
-                        failing_factory
-                        if component == "reranker"
-                        else lambda path, device: RerankerModel()
-                    ),
+                    mps_available=True, embedding_factory=factory
                 )
-                with self.assertRaises(RuntimeError) as caught:
-                    if component == "embedding":
-                        manager.embed_documents(["doc"])
-                    else:
-                        manager.rerank_pairs("q", ["doc"])
+                with self.assertRaises(type(failure)) as caught:
+                    manager.embed_documents(["doc"])
 
                 self.assertIs(caught.exception, failure)
                 self.assertEqual(creations, ["mps"])
-                self.assertIsNone(
-                    manager.embedding_device
-                    if component == "embedding"
-                    else manager.reranker_device
-                )
-
-    def test_arbitrary_runtime_from_mps_health_check_does_not_fallback(self):
-        failure = RuntimeError("shape mismatch")
-        creations = []
-
-        def factory(path, device):
-            creations.append(device)
-            return EmbeddingModel(fail_on_call=1, failure=failure)
-
-        manager = self.make_manager(mps_available=True, embedding_factory=factory)
-        with self.assertRaises(RuntimeError) as caught:
-            manager.embed_documents(["doc"])
-
-        self.assertIs(caught.exception, failure)
-        self.assertEqual(creations, ["mps"])
-        self.assertIsNone(manager.embedding_device)
+                self.assertIsNone(manager.embedding_device)
 
     def test_arbitrary_runtime_from_mps_query_document_and_rerank_propagates(self):
         cases = (
-            ("query", "invalid user input"),
-            ("document", "bad batch"),
-            ("rerank", "application error"),
+            ("query", RuntimeError("MPS input invalid")),
+            ("document", NotImplementedError("unrelated document feature")),
+            ("rerank", RuntimeError("Metal document invalid")),
         )
-        for operation, message in cases:
+        for operation, failure in cases:
             with self.subTest(operation=operation):
-                failure = RuntimeError(message)
                 creations = []
                 if operation == "rerank":
                     model = RerankerModel(fail_on_call=2, failure=failure)
@@ -347,7 +368,7 @@ class ModelManagerTests(unittest.TestCase):
                     else:
                         call = lambda: manager.embed_documents(["doc"])
 
-                with self.assertRaises(RuntimeError) as caught:
+                with self.assertRaises(type(failure)) as caught:
                     call()
 
                 self.assertIs(caught.exception, failure)
@@ -361,7 +382,10 @@ class ModelManagerTests(unittest.TestCase):
 
     def test_reranker_mps_runtime_failure_reloads_cpu_and_retries_once(self):
         creations = []
-        mps_model = RerankerModel(fail_on_call=2, failure=NotImplementedError("mps op"))
+        mps_model = RerankerModel(
+            fail_on_call=2,
+            failure=NotImplementedError("operator not implemented for MPS"),
+        )
         cpu_model = RerankerModel()
 
         def factory(path, device):
@@ -376,7 +400,12 @@ class ModelManagerTests(unittest.TestCase):
     def test_any_mps_fallback_discards_other_loaded_mps_model_for_future_calls(self):
         embedding_creations = []
         reranker_creations = []
-        mps_embedding = EmbeddingModel(fail_on_call=2)
+        mps_embedding = EmbeddingModel(
+            fail_on_call=2,
+            failure=RuntimeError(
+                "placeholder storage has not been allocated on MPS"
+            ),
+        )
         mps_reranker = RerankerModel()
         cpu_reranker = RerankerModel()
 

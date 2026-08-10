@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import errno
 import logging
+import re
 from pathlib import Path
 from threading import Lock
 from typing import Any, Callable, List, Optional, Sequence, Tuple
@@ -13,6 +14,31 @@ LOGGER = logging.getLogger(__name__)
 BGE_QUERY_INSTRUCTION = "为这个句子生成表示以用于检索相关文章："
 
 ModelFactory = Callable[[Path, str], Any]
+
+# Fallback is intentionally allowlisted by phrase shape, not exception class or
+# a bare mention of MPS/Metal.  Model libraries also use RuntimeError and
+# NotImplementedError for inputs and application features.
+_MPS_DEVICE_ERROR_PATTERNS = tuple(
+    re.compile(pattern, re.IGNORECASE | re.DOTALL)
+    for pattern in (
+        # An operator or operation is unavailable on the named accelerator.
+        r"\bnot implemented\s+(?:for|on)\s+(?:the\s+)?(?:mps|metal)(?:\s+devices?)?\b",
+        r"\b(?:not supported|unsupported)\s+(?:for|on|by)\s+(?:the\s+)?(?:mps|metal)(?:\s+devices?)?\b",
+        r"\b(?:mps|metal)\b.{0,40}\b(?:operator|operation)\b.{0,40}\b(?:not implemented|not supported|unsupported)\b",
+        # PyTorch/build linkage explicitly lacks accelerator support.
+        r"\bnot linked with support for\s+(?:the\s+)?(?:mps|metal)(?:\s+devices?)?\b",
+        # The named backend itself is unavailable, failed, or exhausted.
+        r"\b(?:mps|metal)\s+backend\b.{0,40}\b(?:unavailable|not available|failed|failure|out of memory|allocation failed|allocation failure)\b",
+        # The named device itself is unavailable, failed, or exhausted.
+        r"\b(?:mps|metal)\s+devices?\b.{0,40}\b(?:unavailable|not available|failed|failure|out of memory|allocation failed|allocation failure)\b",
+        # Storage or another resource could not be allocated on MPS/Metal.
+        r"\b(?:not|never)\s+been allocated\s+(?:on|for)\s+(?:the\s+)?(?:mps|metal)\b",
+        r"\b(?:failed|unable)\s+to allocate\b.{0,80}\b(?:on|for)\s+(?:the\s+)?(?:mps|metal)\b",
+        r"\b(?:mps|metal)\b.{0,40}\ballocat(?:e|ed|ion)\b.{0,40}\b(?:failed|failure|out of memory)\b",
+        # Command-buffer failure is an explicit accelerator execution failure.
+        r"\b(?:mps|metal)\s*command\s*buffer\b.{0,40}\b(?:failed|failure|error)\b",
+    )
+)
 
 
 def select_device(mps_available: Optional[bool] = None) -> str:
@@ -39,41 +65,9 @@ def _is_mps_device_error(error: BaseException) -> bool:
     and application errors.  Those errors must remain visible to callers; only
     explicit backend/device failures are eligible for the one-time CPU retry.
     """
-    if isinstance(error, NotImplementedError):
-        return True
     if not isinstance(error, RuntimeError):
         return False
-
-    message = str(error).casefold()
-    if "mps" in message or "metal" in message:
-        return True
-    failure_markers = (
-        "unsupported",
-        "not supported",
-        "not implemented",
-        "unavailable",
-        "not available",
-        "failed",
-        "failure",
-        "error",
-        "out of memory",
-    )
-    if "backend" in message and any(marker in message for marker in failure_markers):
-        return True
-    if "operator" in message and any(marker in message for marker in failure_markers):
-        return True
-    if "allocat" in message and any(marker in message for marker in failure_markers):
-        return True
-    return any(
-        marker in message
-        for marker in (
-            "device failed",
-            "device failure",
-            "device unavailable",
-            "device not available",
-            "device error",
-        )
-    )
+    return any(pattern.search(str(error)) for pattern in _MPS_DEVICE_ERROR_PATTERNS)
 
 
 def _missing_path(path: Path) -> FileNotFoundError:
