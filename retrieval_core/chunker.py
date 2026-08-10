@@ -146,12 +146,59 @@ def _split_at_enumerations(text: str) -> List[str]:
     return [text[starts[index] : starts[index + 1]] for index in range(len(starts) - 1)]
 
 
+def _all_minimum_partition(
+    text: str,
+    prefix: str,
+    tokenizer: object,
+    config: ChunkingConfig,
+) -> Optional[List[str]]:
+    """Return an exact all-minimum partition when one exists within hard limits."""
+    text_length = len(text)
+    next_lengths: List[Optional[int]] = [None] * (text_length + 1)
+    next_lengths[text_length] = 0
+    fit_cache: dict[Tuple[int, int], bool] = {}
+    preferred_lengths = sorted(
+        range(config.min_chars, config.hard_max_chars + 1),
+        key=lambda length: (abs(length - config.target_chars), -length),
+    )
+
+    for start in range(text_length - 1, -1, -1):
+        for length in preferred_lengths:
+            end = start + length
+            if end > text_length or next_lengths[end] is None:
+                continue
+            cache_key = (start, end)
+            if cache_key not in fit_cache:
+                fit_cache[cache_key] = _fits(
+                    text[start:end], prefix, tokenizer, config
+                )
+            if fit_cache[cache_key]:
+                next_lengths[start] = length
+                break
+
+    if next_lengths[0] is None:
+        return None
+    pieces: List[str] = []
+    position = 0
+    while position < text_length:
+        length = next_lengths[position]
+        if length is None or length <= 0:
+            raise RuntimeError("invalid minimum-size partition state")
+        pieces.append(text[position : position + length])
+        position += length
+    return pieces
+
+
 def _hard_split(
     text: str,
     prefix: str,
     tokenizer: object,
     config: ChunkingConfig,
 ) -> List[str]:
+    all_minimum = _all_minimum_partition(text, prefix, tokenizer, config)
+    if all_minimum is not None:
+        return all_minimum
+
     pieces: List[str] = []
     remaining = text
     while remaining:
@@ -289,6 +336,12 @@ def _split_long_block(
         tokenizer,
         config,
     )
+    if any(len(raw_chunk) < config.min_chars for raw_chunk in raw_chunks):
+        all_minimum = _all_minimum_partition(
+            block.text, prefix, tokenizer, config
+        )
+        if all_minimum is not None:
+            raw_chunks = all_minimum
     results: List[_ChunkText] = []
     for index, raw_chunk in enumerate(raw_chunks):
         text = raw_chunk

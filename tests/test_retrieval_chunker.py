@@ -650,6 +650,46 @@ class ReportChunkingTests(unittest.TestCase):
         self.assertEqual(bounded[-1].metadata["content_type"], "table")
         self.assertEqual(bounded[-1].text, "短表。")
 
+    def test_exact_partition_avoids_short_chunk_when_all_minimum_is_feasible(self):
+        source = "abcdefghij"
+        config = ChunkingConfig(
+            min_chars=5,
+            target_chars=5,
+            soft_max_chars=5,
+            hard_max_chars=7,
+            overlap_chars=0,
+            max_tokens=40,
+        )
+        chunks = make_chunks(
+            [
+                {"kind": "paragraph", "text": source},
+                {"kind": "paragraph", "text": "x"},
+                {"kind": "paragraph", "text": "y"},
+            ],
+            config=config,
+        )
+
+        self.assertEqual([len(chunk.text) for chunk in chunks], [7, 7])
+        self.assertEqual("".join(chunk.text for chunk in chunks), source + "\nx\ny")
+        self.assertTrue(
+            all(
+                chunk.token_count <= config.max_tokens
+                and len(chunk.text) <= config.hard_max_chars
+                for chunk in chunks
+            )
+        )
+
+        sentence_source = "A. abcdefghij"
+        sentence_chunks = make_chunks(
+            [{"kind": "paragraph", "text": sentence_source}], config=config
+        )
+        self.assertEqual(
+            "".join(chunk.text for chunk in sentence_chunks), sentence_source
+        )
+        self.assertTrue(
+            all(len(chunk.text) >= config.min_chars for chunk in sentence_chunks)
+        )
+
     def test_tables_and_sections_are_preserved_in_metadata(self):
         blocks = html_to_structured_blocks(
             "<h1>总体</h1><h3>智算布局</h3>"
