@@ -453,6 +453,48 @@ class LexicalStore:
             ).fetchone()
         return None if row is None else str(row["metadata_value"])
 
+    def update_index_metadata(
+        self,
+        key: str,
+        update: Callable[[Optional[str]], Optional[str]],
+    ) -> Optional[str]:
+        """Atomically read, transform, and write one metadata value.
+
+        ``BEGIN IMMEDIATE`` serializes independent processes before the read,
+        preventing lost updates when the value contains a shared manifest.
+        """
+        if not isinstance(key, str) or not key:
+            raise ValueError("metadata key must be a nonempty string")
+        if not callable(update):
+            raise ValueError("update must be callable")
+        with self._connection() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                row = connection.execute(
+                    "SELECT metadata_value FROM index_metadata WHERE metadata_key = ?",
+                    (key,),
+                ).fetchone()
+                current = None if row is None else str(row["metadata_value"])
+                value = update(current)
+                if value is not None and not isinstance(value, str):
+                    raise ValueError("updated metadata value must be a string or None")
+                if value is None:
+                    connection.execute(
+                        "DELETE FROM index_metadata WHERE metadata_key = ?", (key,)
+                    )
+                else:
+                    connection.execute(
+                        "INSERT INTO index_metadata (metadata_key, metadata_value) "
+                        "VALUES (?, ?) ON CONFLICT(metadata_key) DO UPDATE SET "
+                        "metadata_value = excluded.metadata_value",
+                        (key, value),
+                    )
+                connection.commit()
+                return value
+            except BaseException:
+                connection.rollback()
+                raise
+
     def ids_for_document(self, document_id: str) -> Set[str]:
         with self._connection() as connection:
             rows = connection.execute(

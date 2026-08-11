@@ -1,4 +1,6 @@
 import gc
+import json
+import multiprocessing
 import sqlite3
 import tempfile
 import unittest
@@ -8,6 +10,18 @@ from pathlib import Path
 
 from retrieval_core.lexical_store import LexicalStore
 from retrieval_core.schemas import ChunkRecord
+
+
+def _metadata_process_update(path, name, barrier):
+    store = LexicalStore(Path(path))
+    barrier.wait()
+
+    def update(raw):
+        values = {} if raw is None else json.loads(raw)
+        values[name] = True
+        return json.dumps(values, sort_keys=True)
+
+    store.update_index_metadata("concurrent", update)
 
 
 def chunk(
@@ -214,6 +228,28 @@ class LexicalStoreTests(unittest.TestCase):
             self.assertEqual(
                 list(connection.execute("SELECT chunk_id FROM chunks_fts")), []
             )
+
+    def test_index_metadata_update_is_atomic_across_processes(self):
+        store = self.make_store()
+        context = multiprocessing.get_context("fork")
+        barrier = context.Barrier(2)
+        processes = [
+            context.Process(
+                target=_metadata_process_update,
+                args=(str(store.path), name, barrier),
+            )
+            for name in ("d1", "d2")
+        ]
+        for process in processes:
+            process.start()
+        for process in processes:
+            process.join(10)
+            self.assertEqual(process.exitcode, 0)
+
+        self.assertEqual(
+            json.loads(store.get_index_metadata("concurrent")),
+            {"d1": True, "d2": True},
+        )
 
     def test_metadata_tuple_encoding_cannot_collide_with_user_mapping(self):
         store = self.make_store()
