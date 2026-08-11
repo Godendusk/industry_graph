@@ -622,6 +622,35 @@ class HybridRetrievalPipelineTests(unittest.TestCase):
         self.assertEqual(result.status, "success")
         self.assertTrue(all(value == 0.0 for value in result.timings.values()))
 
+    def test_normal_callable_mock_like_descriptors_are_never_accessed(self):
+        calls = []
+
+        class LegacyCallable:
+            @property
+            def _mock_wraps(self):
+                raise RuntimeError("descriptor must not be inspected")
+
+            @property
+            def side_effect(self):
+                raise RuntimeError("descriptor must not be inspected")
+
+            def __call__(self, query, rows, limit):
+                calls.append((query, len(rows), limit))
+                return list(reversed(rows))
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: [
+                candidate("a", dense_rank=1),
+                candidate("b", dense_rank=2),
+            ],
+            rerank=LegacyCallable(),
+            rerank_limit=2,
+        ).retrieve("steel", None, 2)
+
+        self.assertEqual([row.chunk_id for row in result.candidates], ["b", "a"])
+        self.assertEqual(result.warnings, ())
+        self.assertEqual(calls, [("steel", 2, 2)])
+
 
 if __name__ == "__main__":
     unittest.main()

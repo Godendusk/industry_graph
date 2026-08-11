@@ -7,6 +7,7 @@ from itertools import islice
 import math
 from time import monotonic
 from typing import Any, Callable, Optional, Sequence
+from unittest.mock import Mock as StdlibMock
 
 from retrieval_core._copying import deep_copy_mapping
 from retrieval_core.fusion import reciprocal_rank_fusion
@@ -165,14 +166,16 @@ class HybridRetrievalPipeline:
         """
 
         signature_target = rerank
-        mock_wraps = getattr(rerank, "_mock_wraps", None)
-        side_effect = getattr(rerank, "side_effect", None)
-        if callable(mock_wraps):
-            signature_target = mock_wraps
-        elif callable(side_effect) and not (
-            isinstance(side_effect, type) and issubclass(side_effect, BaseException)
-        ):
-            signature_target = side_effect
+        if isinstance(rerank, StdlibMock):
+            mock_wraps = rerank._mock_wraps
+            side_effect = rerank.side_effect
+            if callable(mock_wraps):
+                signature_target = mock_wraps
+            elif callable(side_effect) and not (
+                isinstance(side_effect, type)
+                and issubclass(side_effect, BaseException)
+            ):
+                signature_target = side_effect
 
         try:
             rerank_signature = signature(signature_target)

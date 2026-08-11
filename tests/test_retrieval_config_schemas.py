@@ -2,10 +2,12 @@ import os
 import tempfile
 import unittest
 from dataclasses import FrozenInstanceError
+from datetime import datetime, time, timedelta, timezone, tzinfo
 from enum import Enum
 from numbers import Number
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from unittest.mock import patch
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from retrieval_core import (
     ChunkRecord,
@@ -68,6 +70,24 @@ class MutableNumber(Number):
 
 class MutableValueEnum(Enum):
     ROW = ["mutable"]
+
+
+class MutableWindowsPath(PureWindowsPath):
+    pass
+
+
+class MutableTimezone(tzinfo):
+    def __init__(self, hours):
+        self.hours = [hours]
+
+    def utcoffset(self, value):
+        return timedelta(hours=self.hours[0])
+
+    def dst(self, value):
+        return None
+
+    def tzname(self, value):
+        return "mutable"
 
 
 class RetrievalConfigTests(unittest.TestCase):
@@ -448,6 +468,68 @@ class RetrievalResultTests(unittest.TestCase):
         self.assertEqual(result.timings["dense"], 0.25)
         self.assertIs(type(result.candidate_counts["dense"]), int)
         self.assertEqual(result.candidate_counts["dense"], 2)
+
+    def test_windows_path_flavor_and_mutable_subclass_are_preserved_safely(self):
+        windows_path = PureWindowsPath("C:/reports/steel.pdf")
+        mutable_path = MutableWindowsPath("D:/reports/coal.pdf")
+        mutable_path.items = ["writable"]
+
+        candidate = RetrievalCandidate(
+            chunk_id="document-1:0",
+            document_id="document-1",
+            text="A useful passage.",
+            metadata={"windows": windows_path, "mutable": mutable_path},
+        )
+        mutable_path.items.append("changed")
+
+        self.assertIs(type(candidate.metadata["windows"]), PureWindowsPath)
+        self.assertEqual(candidate.metadata["windows"], windows_path)
+        self.assertIs(type(candidate.metadata["mutable"]), PureWindowsPath)
+        self.assertEqual(
+            candidate.metadata["mutable"],
+            PureWindowsPath("D:/reports/coal.pdf"),
+        )
+        self.assertFalse(hasattr(candidate.metadata["mutable"], "items"))
+
+    def test_custom_mutable_timezone_fails_closed_for_datetime_and_time(self):
+        mutable_timezone = MutableTimezone(2)
+        values = [
+            datetime(2026, 1, 2, 3, 4, tzinfo=mutable_timezone),
+            time(3, 4, tzinfo=mutable_timezone),
+        ]
+
+        for value in values:
+            with self.subTest(value=value):
+                with self.assertRaisesRegex(TypeError, "timezone"):
+                    RetrievalCandidate(
+                        chunk_id="document-1:0",
+                        document_id="document-1",
+                        text="A useful passage.",
+                        metadata={"temporal": value},
+                    )
+
+    def test_naive_and_immutable_stdlib_temporal_values_remain_supported(self):
+        values = {
+            "naive_datetime": datetime(2026, 1, 2, 3, 4),
+            "naive_time": time(3, 4),
+            "utc": datetime(2026, 1, 2, 3, 4, tzinfo=timezone.utc),
+            "fixed": time(3, 4, tzinfo=timezone(timedelta(hours=5, minutes=30))),
+        }
+        try:
+            values["zoneinfo"] = datetime(
+                2026, 1, 2, 3, 4, tzinfo=ZoneInfo("UTC")
+            )
+        except ZoneInfoNotFoundError:
+            pass
+
+        candidate = RetrievalCandidate(
+            chunk_id="document-1:0",
+            document_id="document-1",
+            text="A useful passage.",
+            metadata=values,
+        )
+
+        self.assertEqual(dict(candidate.metadata), values)
 
 
 if __name__ == "__main__":

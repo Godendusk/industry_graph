@@ -2,13 +2,14 @@
 
 from collections.abc import Mapping
 from copy import deepcopy
-from datetime import date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
-from pathlib import PurePath
+from pathlib import PurePath, PurePosixPath, PureWindowsPath
 from types import MappingProxyType
 from typing import Any
 from uuid import UUID
+from zoneinfo import ZoneInfo
 
 
 def deep_copy_value(value: Any, memo: dict[int, Any] | None = None) -> Any:
@@ -94,10 +95,18 @@ def deep_freeze_value(
         return str(value)
     if isinstance(value, bytes):
         return bytes(value)
-    if type(value) in (Decimal, date, datetime, time, timedelta, UUID):
+    if type(value) in (datetime, time):
+        if value.tzinfo is None or type(value.tzinfo) in (timezone, ZoneInfo):
+            return value
+        raise TypeError("timezone information cannot be proven immutable")
+    if type(value) in (Decimal, date, timedelta, UUID):
         return value
+    if isinstance(value, PureWindowsPath):
+        return PureWindowsPath(value)
+    if isinstance(value, PurePosixPath):
+        return PurePosixPath(value)
     if isinstance(value, PurePath):
-        return PurePath(str(value))
+        raise TypeError("path flavor cannot be made immutable safely")
     if memo is None:
         memo = {}
     if active is None:
