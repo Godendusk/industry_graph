@@ -9,6 +9,10 @@
 
 系统默认不依赖传统数据库：大多数数据都以本地文件（`JSON/XLSX/PNG/MD`）形式落盘。
 
+## 产业报告 Hybrid RAG（v2）
+
+默认仍使用 `legacy`。可通过 `REPORT_RETRIEVAL_MODE=compare` 影子比较，或在 v2 READY 已验证后使用 `hybrid_v2`；回滚只需恢复 `legacy`。模型下载必须显式执行 `scripts/provision_retrieval_models.py`，索引先运行 `scripts/build_report_hybrid_index.py --source legacy-chroma --dry-run`。旧 Chroma 无法恢复 v1 未提取的 HTML 表格文本。详细评测与人工审核要求见 `evaluation/report_retrieval/README.md`。
+
 ---
 
 ## 1. 主要功能（四大模块）
