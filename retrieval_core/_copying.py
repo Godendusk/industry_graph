@@ -2,8 +2,14 @@
 
 from collections.abc import Mapping
 from copy import deepcopy
+from datetime import date, datetime, time, timedelta
+from decimal import Decimal
+from enum import Enum
+from numbers import Number
+from pathlib import PurePath
 from types import MappingProxyType
 from typing import Any
+from uuid import UUID
 
 
 def deep_copy_value(value: Any, memo: dict[int, Any] | None = None) -> Any:
@@ -66,21 +72,76 @@ def deep_copy_mapping(mapping: Mapping) -> dict:
     return dict(copied)
 
 
-def deep_freeze_value(value: Any) -> Any:
+_IMMUTABLE_SCALARS = (
+    str,
+    bytes,
+    Number,
+    Decimal,
+    Enum,
+    date,
+    datetime,
+    time,
+    timedelta,
+    PurePath,
+    UUID,
+)
+
+
+def deep_freeze_value(
+    value: Any,
+    memo: dict[int, Any] | None = None,
+    active: set[int] | None = None,
+) -> Any:
     """Recursively isolate and freeze common JSON-like container values."""
 
+    if value is None or isinstance(value, _IMMUTABLE_SCALARS):
+        return value
+    if memo is None:
+        memo = {}
+    if active is None:
+        active = set()
+    value_id = id(value)
+    if value_id in memo:
+        return memo[value_id]
+    if value_id in active:
+        raise ValueError("metadata cycle cannot be represented immutably")
+
+    to_list = getattr(value, "tolist", None)
+    if hasattr(value, "shape") and callable(to_list):
+        active.add(value_id)
+        try:
+            frozen = deep_freeze_value(to_list(), memo, active)
+        except (TypeError, ValueError):
+            raise
+        except Exception as error:
+            raise TypeError("array-like value could not be made immutable") from error
+        finally:
+            active.remove(value_id)
+        memo[value_id] = frozen
+        return frozen
+
+    active.add(value_id)
     if isinstance(value, Mapping):
-        return MappingProxyType(
+        frozen = MappingProxyType(
             {
-                deep_copy_value(key): deep_freeze_value(item)
+                deep_freeze_value(key, memo, active): deep_freeze_value(
+                    item, memo, active
+                )
                 for key, item in value.items()
             }
         )
-    if isinstance(value, (list, tuple)):
-        return tuple(deep_freeze_value(item) for item in value)
-    if isinstance(value, (set, frozenset)):
-        return frozenset(deep_freeze_value(item) for item in value)
-    return deep_copy_value(value)
+    elif isinstance(value, (list, tuple)):
+        frozen = tuple(deep_freeze_value(item, memo, active) for item in value)
+    elif isinstance(value, (set, frozenset)):
+        frozen = frozenset(deep_freeze_value(item, memo, active) for item in value)
+    else:
+        active.remove(value_id)
+        raise TypeError(
+            f"value of type {type(value).__name__} cannot be made immutable"
+        )
+    active.remove(value_id)
+    memo[value_id] = frozen
+    return frozen
 
 
 def deep_freeze_mapping(mapping: Mapping) -> Mapping:

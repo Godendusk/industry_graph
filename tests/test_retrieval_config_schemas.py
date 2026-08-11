@@ -18,6 +18,15 @@ class MutableBox:
         self.values = list(values)
 
 
+class ArrayLike:
+    def __init__(self, values):
+        self.values = values
+        self.shape = (len(values),)
+
+    def tolist(self):
+        return self.values
+
+
 class RetrievalConfigTests(unittest.TestCase):
     def test_for_project_uses_exact_defaults(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
@@ -274,21 +283,74 @@ class RetrievalResultTests(unittest.TestCase):
         with self.assertRaises(AttributeError):
             frozen_context["attempts"][1]["labels"].add("changed")
 
-    def test_candidates_are_snapshotted_with_opaque_values_isolated(self):
+    def test_candidates_are_snapshotted_with_immutable_values_isolated(self):
+        source = [1]
         candidate = RetrievalCandidate(
             chunk_id="document-1:0",
             document_id="document-1",
             text="A useful passage.",
-            metadata={"opaque": MutableBox([1])},
+            metadata={"items": source},
         )
 
         result = RetrievalResult(
             status="success", query="steel", candidates=[candidate]
         )
-        candidate.metadata["opaque"].values.append(2)
+        source.append(2)
 
         self.assertIsNot(result.candidates[0], candidate)
-        self.assertEqual(result.candidates[0].metadata["opaque"].values, [1])
+        self.assertEqual(result.candidates[0].metadata["items"], (1,))
+
+    def test_self_referential_warning_fails_fast_with_clear_cycle_error(self):
+        warning = {"stage": "dense"}
+        warning["context"] = warning
+
+        with self.assertRaisesRegex(ValueError, "cycle"):
+            RetrievalResult(status="error", query="steel", warnings=[warning])
+
+    def test_array_like_candidate_metadata_becomes_immutable_nested_values(self):
+        source = ArrayLike([[1, 2], [3, 4]])
+
+        candidate = RetrievalCandidate(
+            chunk_id="document-1:0",
+            document_id="document-1",
+            text="A useful passage.",
+            metadata={"vector": source},
+        )
+        source.values[0].append(9)
+
+        self.assertEqual(candidate.metadata["vector"], ((1, 2), (3, 4)))
+        with self.assertRaises(TypeError):
+            candidate.metadata["vector"][0] += (9,)
+
+    def test_opaque_mutable_candidate_metadata_fails_closed(self):
+        with self.assertRaisesRegex(TypeError, "immutable"):
+            RetrievalCandidate(
+                chunk_id="document-1:0",
+                document_id="document-1",
+                text="A useful passage.",
+                metadata={"opaque": MutableBox([1])},
+            )
+
+    def test_timings_and_candidate_counts_reject_nested_or_invalid_values(self):
+        invalid_results = [
+            lambda: RetrievalResult(
+                status="success", query="steel", timings={"dense": [0.1]}
+            ),
+            lambda: RetrievalResult(
+                status="success", query="steel", timings={"dense": -0.1}
+            ),
+            lambda: RetrievalResult(
+                status="success", query="steel", candidate_counts={"dense": True}
+            ),
+            lambda: RetrievalResult(
+                status="success", query="steel", candidate_counts={"dense": -1}
+            ),
+        ]
+
+        for make_result in invalid_results:
+            with self.subTest(make_result=make_result):
+                with self.assertRaises(ValueError):
+                    make_result()
 
 
 if __name__ == "__main__":

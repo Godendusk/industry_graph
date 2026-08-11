@@ -1,10 +1,41 @@
 """Shared records exchanged by report retrieval components."""
 
 from dataclasses import dataclass, field, replace
+import math
+from numbers import Real
 from types import MappingProxyType
 from typing import Any, Mapping, Optional, Tuple
 
 from retrieval_core._copying import deep_freeze_mapping
+
+
+def _frozen_timings(values: Mapping[str, float]) -> Mapping[str, float]:
+    for stage, value in values.items():
+        if (
+            not isinstance(stage, str)
+            or not stage
+            or isinstance(value, bool)
+            or not isinstance(value, Real)
+            or not math.isfinite(value)
+            or value < 0
+        ):
+            raise ValueError("timings must map stage names to finite non-negative numbers")
+    return deep_freeze_mapping(values)
+
+
+def _frozen_candidate_counts(values: Mapping[str, int]) -> Mapping[str, int]:
+    for stage, value in values.items():
+        if (
+            not isinstance(stage, str)
+            or not stage
+            or isinstance(value, bool)
+            or not isinstance(value, int)
+            or value < 0
+        ):
+            raise ValueError(
+                "candidate_counts must map stage names to non-negative integers"
+            )
+    return deep_freeze_mapping(values)
 
 
 @dataclass(frozen=True)
@@ -85,9 +116,9 @@ class RetrievalResult:
             "warnings",
             tuple(deep_freeze_mapping(warning) for warning in self.warnings),
         )
-        object.__setattr__(self, "timings", MappingProxyType(dict(self.timings)))
+        object.__setattr__(self, "timings", _frozen_timings(self.timings))
         object.__setattr__(
             self,
             "candidate_counts",
-            MappingProxyType(dict(self.candidate_counts)),
+            _frozen_candidate_counts(self.candidate_counts),
         )

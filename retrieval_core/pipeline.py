@@ -3,6 +3,7 @@
 from collections.abc import Iterable
 from dataclasses import replace
 from inspect import signature
+from itertools import islice
 import math
 from time import monotonic
 from typing import Any, Callable, Optional, Sequence
@@ -37,8 +38,12 @@ def _candidate_copy(
 
 def _candidate_copies(
     candidates: Iterable[RetrievalCandidate],
+    limit: int,
 ) -> list[RetrievalCandidate]:
-    rows = list(candidates)
+    try:
+        rows = list(islice(iter(candidates), limit))
+    except TypeError as error:
+        raise ValueError("candidates must be iterable") from error
     if any(not isinstance(row, RetrievalCandidate) for row in rows):
         raise ValueError("candidates must contain RetrievalCandidate rows")
     return [_candidate_copy(row) for row in rows]
@@ -110,7 +115,7 @@ class HybridRetrievalPipeline:
         self._dense_search = dense_search
         self._lexical_search = lexical_search
         self._rerank = rerank
-        self._rerank_uses_keyword_limits = self._uses_keyword_rerank_limits(rerank)
+        self._rerank_call_shape = self._select_rerank_call_shape(rerank)
         self._business_adjust = business_adjust
         self._neighbor_expand = neighbor_expand
         self._fusion = fusion
@@ -152,27 +157,62 @@ class HybridRetrievalPipeline:
         }
 
     @staticmethod
-    def _uses_keyword_rerank_limits(rerank: Callable[..., object]) -> bool:
+    def _select_rerank_call_shape(rerank: Callable[..., object]) -> str:
+        """Select a compatible call shape without executing the dependency.
+
+        Callables whose signatures cannot be inspected use the historical
+        three-positional-argument shape; wrappers can make another API explicit.
+        """
+
         try:
-            parameters = signature(rerank).parameters
+            rerank_signature = signature(rerank)
         except (TypeError, ValueError):
-            return False
-        return "final_limit" in parameters and "rerank_limit" in parameters
+            return "legacy_positional"
+        calls = (
+            (
+                "modern_keyword",
+                ("query", ()),
+                {"final_limit": 1, "rerank_limit": 1},
+            ),
+            ("modern_positional", ("query", (), 1, 1), {}),
+            ("legacy_positional", ("query", (), 1), {}),
+        )
+        for shape, args, kwargs in calls:
+            try:
+                rerank_signature.bind(*args, **kwargs)
+            except TypeError:
+                continue
+            return shape
+        raise ValueError("rerank callable has no supported call shape")
 
     def _call_reranker(
         self, query: str, candidates: Sequence[RetrievalCandidate]
     ) -> Iterable[RetrievalCandidate]:
-        if self._rerank_uses_keyword_limits:
+        if self._rerank_call_shape == "modern_keyword":
             return self._rerank(
                 query,
                 candidates,
                 final_limit=self.rerank_limit,
                 rerank_limit=self.rerank_limit,
             )
+        if self._rerank_call_shape == "modern_positional":
+            return self._rerank(
+                query, candidates, self.rerank_limit, self.rerank_limit
+            )
         return self._rerank(query, candidates, self.rerank_limit)
 
-    def _elapsed(self, started: float) -> float:
-        return max(0.0, float(self._clock() - started))
+    def _now(self) -> Optional[float]:
+        try:
+            value = float(self._clock())
+        except Exception:
+            return None
+        return value if math.isfinite(value) else None
+
+    def _elapsed(self, started: Optional[float]) -> float:
+        ended = self._now()
+        if started is None or ended is None:
+            return 0.0
+        return max(0.0, ended - started)
 
     def retrieve(
         self, query: str, libraries: Optional[Iterable[str]], top_k: int
@@ -190,7 +230,7 @@ class HybridRetrievalPipeline:
         dense_failed = False
         lexical_failed = False
 
-        started = self._clock()
+        started = self._now()
         try:
             vector = self._embed_query(query)
         except Exception as error:
@@ -200,10 +240,11 @@ class HybridRetrievalPipeline:
             timings["embed"] = self._elapsed(started)
 
         if not dense_failed:
-            started = self._clock()
+            started = self._now()
             try:
                 dense_rows = _candidate_copies(
-                    self._dense_search(vector, self.dense_limit, selected_libraries)
+                    self._dense_search(vector, self.dense_limit, selected_libraries),
+                    self.dense_limit,
                 )
             except Exception as error:
                 dense_failed = True
@@ -212,10 +253,11 @@ class HybridRetrievalPipeline:
                 timings["dense"] = self._elapsed(started)
 
         counts["dense"] = len(dense_rows)
-        started = self._clock()
+        started = self._now()
         try:
             lexical_rows = _candidate_copies(
-                self._lexical_search(query, self.lexical_limit, selected_libraries)
+                self._lexical_search(query, self.lexical_limit, selected_libraries),
+                self.lexical_limit,
             )
         except Exception as error:
             lexical_failed = True
@@ -234,7 +276,7 @@ class HybridRetrievalPipeline:
                 message="Both dense and lexical recall routes failed.",
             )
 
-        started = self._clock()
+        started = self._now()
         try:
             fused_rows = _candidate_copies(
                 self._fusion(
@@ -243,7 +285,8 @@ class HybridRetrievalPipeline:
                     rrf_k=self.rrf_k,
                     limit=self.rerank_limit,
                     per_document_limit=self.per_document_limit,
-                )
+                ),
+                self.rerank_limit,
             )
         except Exception as error:
             timings["fusion"] = self._elapsed(started)
@@ -259,11 +302,20 @@ class HybridRetrievalPipeline:
         timings["fusion"] = self._elapsed(started)
         counts["fused"] = len(fused_rows)
 
-        started = self._clock()
+        rerank_input = []
+        for row in fused_rows:
+            diagnostics = dict(row.diagnostics)
+            diagnostics.pop("reranker_fallback", None)
+            rerank_input.append(_candidate_copy(row, diagnostics=diagnostics))
+
+        started = self._now()
         try:
             reranked_rows = _candidate_copies(
-                self._call_reranker(query, _candidate_copies(fused_rows))
-            )[: self.rerank_limit]
+                self._call_reranker(
+                    query, _candidate_copies(rerank_input, self.rerank_limit)
+                ),
+                self.rerank_limit,
+            )
             if any(
                 row.diagnostics.get("reranker_fallback") is True
                 for row in reranked_rows
@@ -277,17 +329,27 @@ class HybridRetrievalPipeline:
                 )
         except Exception as error:
             warnings.append(self._warning("rerank", error))
-            reranked_rows = _candidate_copies(fused_rows)
+            reranked_rows = _candidate_copies(rerank_input, self.rerank_limit)
         finally:
             timings["rerank"] = self._elapsed(started)
         counts["reranked"] = len(reranked_rows)
 
         business_rows = self._run_hook(
-            "business", self._business_adjust, reranked_rows, timings, warnings
+            "business",
+            self._business_adjust,
+            reranked_rows,
+            self.rerank_limit,
+            timings,
+            warnings,
         )
         counts["business"] = len(business_rows)
         expanded_rows = self._run_hook(
-            "neighbor", self._neighbor_expand, business_rows, timings, warnings
+            "neighbor",
+            self._neighbor_expand,
+            business_rows,
+            top_k,
+            timings,
+            warnings,
         )
         counts["expanded"] = len(expanded_rows)
 
@@ -310,13 +372,16 @@ class HybridRetrievalPipeline:
         stage: str,
         hook: Callable[[Sequence[RetrievalCandidate]], Iterable[RetrievalCandidate]],
         previous: Sequence[RetrievalCandidate],
+        limit: int,
         timings: dict[str, float],
         warnings: list[dict[str, str]],
     ) -> list[RetrievalCandidate]:
-        fallback = _candidate_copies(previous)
-        started = self._clock()
+        fallback = _candidate_copies(previous, limit)
+        started = self._now()
         try:
-            result = _candidate_copies(hook(_candidate_copies(previous)))
+            result = _candidate_copies(
+                hook(_candidate_copies(previous, limit)), limit
+            )
         except Exception as error:
             warnings.append(self._warning(stage, error))
             result = fallback

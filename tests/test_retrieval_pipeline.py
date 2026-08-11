@@ -1,5 +1,6 @@
 import math
 from functools import partial
+from itertools import repeat
 import unittest
 
 from retrieval_core import HybridRetrievalPipeline, RetrievalCandidate
@@ -191,7 +192,7 @@ class HybridRetrievalPipelineTests(unittest.TestCase):
                 "fused": 2,
                 "reranked": 2,
                 "business": 2,
-                "expanded": 3,
+                "expanded": 2,
                 "final": 2,
             },
         )
@@ -346,6 +347,238 @@ class HybridRetrievalPipelineTests(unittest.TestCase):
         self.assertTrue(
             all(row.diagnostics["reranker_fallback"] for row in result.candidates)
         )
+
+    def test_modern_kwargs_reranker_shape_is_bound_without_trial_execution(self):
+        calls = []
+
+        def modern(query, rows, **kwargs):
+            calls.append((query, len(rows), kwargs))
+            return rows
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: [
+                candidate("a", dense_rank=1)
+            ],
+            rerank=modern,
+            rerank_limit=3,
+        ).retrieve("steel", None, 1)
+
+        self.assertEqual(result.status, "success")
+        self.assertEqual(
+            calls,
+            [("steel", 1, {"final_limit": 3, "rerank_limit": 3})],
+        )
+        self.assertEqual(result.warnings, ())
+
+    def test_positional_only_modern_reranker_shape_is_bound_once(self):
+        calls = []
+
+        def modern(query, rows, final_limit, rerank_limit, /):
+            calls.append((query, len(rows), final_limit, rerank_limit))
+            return rows
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: [
+                candidate("a", dense_rank=1)
+            ],
+            rerank=modern,
+            rerank_limit=3,
+        ).retrieve("steel", None, 1)
+
+        self.assertEqual(result.status, "success")
+        self.assertEqual(calls, [("steel", 1, 3, 3)])
+        self.assertEqual(result.warnings, ())
+
+    def test_noncompliant_fusion_is_bounded_before_rerank_and_hooks(self):
+        seen = {}
+
+        def rerank(query, rows, limit):
+            seen["rerank_count"] = len(rows)
+            return rows
+
+        result = self.make_pipeline(
+            fusion=lambda *args, **kwargs: [
+                candidate(f"c{index}") for index in range(100)
+            ],
+            rerank=rerank,
+            rerank_limit=3,
+        ).retrieve("steel", None, 10)
+
+        self.assertEqual(seen["rerank_count"], 3)
+        self.assertEqual(result.candidate_counts["fused"], 3)
+        self.assertLessEqual(result.candidate_counts["reranked"], 3)
+        self.assertLessEqual(result.candidate_counts["business"], 3)
+        self.assertLessEqual(result.candidate_counts["expanded"], 3)
+
+    def test_each_iterable_dependency_is_consumed_only_to_its_stage_limit(self):
+        pulls = {}
+
+        def guarded(stage, allowed, **overrides):
+            for index in range(allowed):
+                pulls[stage] = pulls.get(stage, 0) + 1
+                yield candidate(f"{stage}-{index}", **overrides)
+            raise AssertionError(f"{stage} was over-consumed")
+
+        def fusion(*args, **kwargs):
+            return guarded("fusion", 4)
+
+        def rerank(query, rows, limit):
+            return guarded("rerank", 4)
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: guarded(
+                "dense", 2, dense_rank=1
+            ),
+            lexical_search=lambda query, limit, libraries: guarded(
+                "lexical", 3, bm25_rank=1
+            ),
+            fusion=fusion,
+            rerank=rerank,
+            business_adjust=lambda rows: guarded("business", 4),
+            neighbor_expand=lambda rows: guarded("neighbor", 2),
+            dense_limit=2,
+            lexical_limit=3,
+            rerank_limit=4,
+        ).retrieve("steel", None, 2)
+
+        self.assertEqual(result.status, "success")
+        self.assertEqual(
+            pulls,
+            {
+                "dense": 2,
+                "lexical": 3,
+                "fusion": 4,
+                "rerank": 4,
+                "business": 4,
+                "neighbor": 2,
+            },
+        )
+        self.assertEqual(result.candidate_counts["final"], 2)
+
+    def test_infinite_iterable_dependencies_are_bounded(self):
+        row = candidate("repeated")
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: repeat(row),
+            lexical_search=lambda query, limit, libraries: repeat(row),
+            fusion=lambda *args, **kwargs: repeat(row),
+            rerank=lambda query, rows, limit: repeat(row),
+            business_adjust=lambda rows: repeat(row),
+            neighbor_expand=lambda rows: repeat(row),
+            dense_limit=2,
+            lexical_limit=3,
+            rerank_limit=4,
+        ).retrieve("steel", None, 2)
+
+        self.assertEqual(result.status, "success")
+        self.assertEqual(
+            result.candidate_counts,
+            {
+                "dense": 2,
+                "lexical": 3,
+                "fused": 4,
+                "reranked": 4,
+                "business": 4,
+                "expanded": 2,
+                "final": 2,
+            },
+        )
+
+    def test_stale_fallback_diagnostic_does_not_warn_for_current_rerank(self):
+        stale = candidate(
+            "a",
+            dense_rank=1,
+            diagnostics={"reranker_fallback": True, "source": "previous-stage"},
+        )
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: [stale],
+            rerank=lambda query, rows, limit: rows,
+        ).retrieve("steel", None, 1)
+
+        self.assertEqual(result.status, "success")
+        self.assertEqual(result.warnings, ())
+        self.assertNotIn("reranker_fallback", result.candidates[0].diagnostics)
+        self.assertEqual(
+            result.candidates[0].diagnostics["source"], "previous-stage"
+        )
+
+    def test_clock_failure_does_not_override_dense_failure_or_lexical_recovery(self):
+        clock_calls = []
+
+        def failing_clock():
+            clock_calls.append(len(clock_calls) + 1)
+            if len(clock_calls) <= 3:
+                return float(len(clock_calls))
+            raise RuntimeError("clock unavailable")
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: (_ for _ in ()).throw(
+                RuntimeError("dense unavailable")
+            ),
+            lexical_search=lambda query, limit, libraries: [
+                candidate("lexical", bm25_rank=1)
+            ],
+            clock=failing_clock,
+        ).retrieve("steel", None, 1)
+
+        self.assertEqual(result.status, "success")
+        self.assertEqual(result.candidates[0].chunk_id, "lexical")
+        self.assertEqual([warning["stage"] for warning in result.warnings], ["dense"])
+        self.assertEqual(result.timings["dense"], 0.0)
+        self.assertTrue(all(value >= 0 for value in result.timings.values()))
+
+    def test_nonfinite_clock_values_degrade_to_zero_timings(self):
+        clock_values = [0.0]
+
+        def nonfinite_clock():
+            return clock_values.pop() if clock_values else math.inf
+
+        result = self.make_pipeline(clock=nonfinite_clock).retrieve("steel", None, 1)
+
+        self.assertEqual(result.status, "success")
+        self.assertTrue(all(value == 0.0 for value in result.timings.values()))
+
+    def test_invalid_dependency_outputs_follow_stage_degradation_rules(self):
+        lexical = candidate("lexical", bm25_rank=1)
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: None,
+            lexical_search=lambda query, limit, libraries: [lexical],
+            rerank=lambda query, rows, limit: 7,
+            business_adjust=lambda rows: None,
+            neighbor_expand=lambda rows: lexical,
+        ).retrieve("steel", None, 1)
+
+        self.assertEqual(result.status, "success")
+        self.assertEqual(result.candidates[0].chunk_id, "lexical")
+        self.assertEqual(
+            [warning["stage"] for warning in result.warnings],
+            ["dense", "rerank", "business", "neighbor"],
+        )
+
+    def test_signature_unavailable_callable_uses_documented_legacy_shape(self):
+        calls = []
+
+        class LegacyCallable:
+            @property
+            def __signature__(self):
+                raise ValueError("signature unavailable")
+
+            def __call__(self, query, rows, limit):
+                calls.append((query, len(rows), limit))
+                return rows
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: [
+                candidate("a", dense_rank=1)
+            ],
+            rerank=LegacyCallable(),
+            rerank_limit=3,
+        ).retrieve("steel", None, 1)
+
+        self.assertEqual(result.status, "success")
+        self.assertEqual(calls, [("steel", 1, 3)])
 
 
 if __name__ == "__main__":

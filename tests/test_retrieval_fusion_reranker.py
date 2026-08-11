@@ -234,12 +234,13 @@ class ReciprocalRankFusionTests(unittest.TestCase):
         )[0]
         with self.assertRaises(AttributeError):
             result.metadata["nested"]["items"].append(2)
-        result.metadata["vector"].values[0] = 9
+        with self.assertRaises(TypeError):
+            result.metadata["vector"] += (9,)
         with self.assertRaises(AttributeError):
             result.diagnostics["trace"]["steps"].append("fusion")
 
         self.assertEqual(original.metadata["nested"]["items"], (1,))
-        self.assertEqual(original.metadata["vector"].values, [1, 2])
+        self.assertEqual(original.metadata["vector"], (1, 2))
         self.assertEqual(original.diagnostics["trace"]["steps"], ("dense",))
         with self.assertRaises(TypeError):
             result.metadata["new"] = "value"
@@ -440,12 +441,13 @@ class RerankerTests(unittest.TestCase):
         )[0]
         with self.assertRaises(AttributeError):
             result.metadata["nested"]["items"].append(2)
-        result.metadata["vector"].values[0] = 9
+        with self.assertRaises(TypeError):
+            result.metadata["vector"] += (9,)
         with self.assertRaises(AttributeError):
             result.diagnostics["trace"]["steps"].append("rerank")
 
         self.assertEqual(original.metadata["nested"]["items"], (1,))
-        self.assertEqual(original.metadata["vector"].values, [1, 2])
+        self.assertEqual(original.metadata["vector"], (1, 2))
         self.assertEqual(original.diagnostics["trace"]["steps"], ("fusion",))
         with self.assertRaises(TypeError):
             result.diagnostics["new"] = "value"
