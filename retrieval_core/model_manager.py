@@ -29,8 +29,14 @@ _MPS_DEVICE_ERROR_PATTERNS = tuple(
         r"\bnot linked with support for\s+(?:the\s+)?(?:mps|metal)(?:\s+devices?)?\b",
         # The named backend itself is unavailable, failed, or exhausted.
         r"\b(?:mps|metal)\s+backend\b.{0,40}\b(?:unavailable|not available|failed|failure|out of memory|allocation failed|allocation failure)\b",
+        r"\b(?:mps|metal)\s+backend\b.{0,40}\b(?:is\s+)?not supported\b",
         # The named device itself is unavailable, failed, or exhausted.
         r"\b(?:mps|metal)\s+devices?\b.{0,40}\b(?:unavailable|not available|failed|failure|out of memory|allocation failed|allocation failure)\b",
+        r"\b(?:mps|metal)\s+devices?\b.{0,40}\b(?:not found|could not be initialized|failed to initialize)\b",
+        # The named accelerator explicitly rejects an operator.
+        r"\b(?:mps|metal)\b.{0,20}\bdoes not support\b.{0,60}\b(?:op|operator|operation)\b",
+        # Common terse allocator message includes only the accelerator prefix.
+        r"\b(?:mps|metal)\b\s*:\s*out of memory\b",
         # Storage or another resource could not be allocated on MPS/Metal.
         r"\b(?:not|never)\s+been allocated\s+(?:on|for)\s+(?:the\s+)?(?:mps|metal)\b",
         r"\b(?:failed|unable)\s+to allocate\b.{0,80}\b(?:on|for)\s+(?:the\s+)?(?:mps|metal)\b",

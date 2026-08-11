@@ -1,6 +1,8 @@
 import copy
 import importlib.util
 import tempfile
+import threading
+import time
 import unittest
 from pathlib import Path
 
@@ -32,7 +34,7 @@ def chunk(chunk_id="c1", document_id="d1", index=0, **metadata):
 
 
 class FakeCollection:
-    def __init__(self):
+    def __init__(self, *, metadata_marker=False, metadata=None, configuration=None):
         self.upsert_calls = []
         self.delete_calls = []
         self.query_calls = []
@@ -40,6 +42,10 @@ class FakeCollection:
         self.query_result = {}
         self.get_handler = None
         self.item_count = 0
+        if metadata_marker:
+            self.metadata = metadata
+        if configuration is not None:
+            self.configuration = configuration
 
     def upsert(self, **kwargs):
         self.upsert_calls.append(copy.deepcopy(kwargs))
@@ -96,7 +102,9 @@ class DenseStoreTests(unittest.TestCase):
             self.assertEqual(store.all_chunk_ids(), {"c2"})
 
     def test_collection_is_lazy_and_configured_for_cosine(self):
-        collection = FakeCollection()
+        collection = FakeCollection(
+            metadata_marker=True, metadata={"hnsw:space": "cosine"}
+        )
         client = FakeClient(collection)
         paths = []
         store = DenseStore(
@@ -112,6 +120,138 @@ class DenseStoreTests(unittest.TestCase):
             [{"name": COLLECTION_NAME, "metadata": {"hnsw:space": "cosine"}}],
         )
         self.assertEqual(COLLECTION_NAME, "report_external_v2")
+
+    def test_lazy_collection_rejects_explicit_non_cosine_metadata(self):
+        collection = FakeCollection(
+            metadata_marker=True, metadata={"hnsw:space": "l2"}
+        )
+        store = DenseStore(
+            path=Path("/virtual/chroma"),
+            client_factory=lambda path: FakeClient(collection),
+        )
+
+        with self.assertRaisesRegex(ValueError, "report_external_v2.*l2.*cosine"):
+            store.count()
+
+    def test_injected_collection_rejects_explicit_non_cosine_metadata(self):
+        collection = FakeCollection(
+            metadata_marker=True, metadata={"hnsw:space": "l2"}
+        )
+
+        with self.assertRaisesRegex(ValueError, "report_external_v2.*l2.*cosine"):
+            DenseStore(collection=collection)
+
+    def test_lazy_collection_validates_modern_configuration_and_allows_opaque_fake(self):
+        cosine = FakeCollection(configuration={"hnsw": {"space": "cosine"}})
+        cosine_store = DenseStore(
+            path=Path("/virtual/cosine"),
+            client_factory=lambda path: FakeClient(cosine),
+        )
+        self.assertEqual(cosine_store.count(), 0)
+
+        inner_product = FakeCollection(
+            configuration={"hnsw_configuration": {"space": "ip"}}
+        )
+        ip_store = DenseStore(
+            path=Path("/virtual/ip"),
+            client_factory=lambda path: FakeClient(inner_product),
+        )
+        with self.assertRaisesRegex(ValueError, "report_external_v2.*ip.*cosine"):
+            ip_store.count()
+
+        opaque_store = DenseStore(
+            path=Path("/virtual/opaque"),
+            client_factory=lambda path: FakeClient(FakeCollection()),
+        )
+        self.assertEqual(opaque_store.count(), 0)
+
+    def test_lazy_collection_rejects_non_cosine_configuration_despite_metadata(self):
+        collection = FakeCollection(
+            metadata_marker=True,
+            metadata={"hnsw:space": "cosine"},
+            configuration={"hnsw_configuration": {"space": "l2"}},
+        )
+        store = DenseStore(
+            path=Path("/virtual/chroma"),
+            client_factory=lambda path: FakeClient(collection),
+        )
+
+        with self.assertRaisesRegex(ValueError, "report_external_v2.*l2.*cosine"):
+            store.count()
+
+    def test_lazy_collection_rejects_non_cosine_spann_configuration(self):
+        collection = FakeCollection(configuration={"spann": {"space": "l2"}})
+        store = DenseStore(
+            path=Path("/virtual/chroma"),
+            client_factory=lambda path: FakeClient(collection),
+        )
+
+        with self.assertRaisesRegex(ValueError, "report_external_v2.*l2.*cosine"):
+            store.count()
+
+    def test_concurrent_first_access_initializes_one_client_and_collection(self):
+        collection = FakeCollection(
+            metadata_marker=True, metadata={"hnsw:space": "cosine"}
+        )
+        client = FakeClient(collection)
+        factory_calls = []
+        errors = []
+
+        def factory(path):
+            factory_calls.append(path)
+            time.sleep(0.03)
+            return client
+
+        store = DenseStore(path=Path("/virtual/chroma"), client_factory=factory)
+        barrier = threading.Barrier(8)
+
+        def access():
+            try:
+                barrier.wait()
+                self.assertEqual(store.count(), 0)
+            except BaseException as error:  # assertion below reports worker failures
+                errors.append(error)
+
+        threads = [threading.Thread(target=access) for _ in range(8)]
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+        self.assertEqual(errors, [])
+        self.assertEqual(factory_calls, [Path("/virtual/chroma")])
+        self.assertEqual(len(client.calls), 1)
+        self.assertIs(store._client, client)
+        self.assertIs(store._collection_value, collection)
+
+    def test_collection_retry_reuses_client_after_acquisition_failure(self):
+        collection = FakeCollection(
+            metadata_marker=True, metadata={"hnsw:space": "cosine"}
+        )
+
+        class FlakyClient:
+            def __init__(self):
+                self.calls = 0
+
+            def get_or_create_collection(self, **kwargs):
+                self.calls += 1
+                if self.calls == 1:
+                    raise RuntimeError("temporary collection failure")
+                return collection
+
+        client = FlakyClient()
+        factory_calls = []
+        store = DenseStore(
+            path=Path("/virtual/chroma"),
+            client_factory=lambda path: factory_calls.append(path) or client,
+        )
+
+        with self.assertRaisesRegex(RuntimeError, "temporary collection failure"):
+            store.count()
+        self.assertEqual(store.count(), 0)
+        self.assertEqual(factory_calls, [Path("/virtual/chroma")])
+        self.assertEqual(client.calls, 2)
+        self.assertIs(store._client, client)
 
     def test_upsert_writes_explicit_vectors_text_and_safe_metadata_in_batches(self):
         collection = FakeCollection()

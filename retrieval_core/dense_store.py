@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 from pathlib import Path
+from threading import RLock
 from typing import Any, Callable, Iterable, List, Mapping, Optional, Sequence, Set
 
 from retrieval_core.schemas import ChunkRecord, RetrievalCandidate
@@ -12,6 +13,71 @@ from retrieval_core.schemas import ChunkRecord, RetrievalCandidate
 
 COLLECTION_NAME = "report_external_v2"
 _JSON_PREFIX = "__retrieval_core_json_v1__:"
+
+
+def _mapping_path(value: Any, *path: str) -> Any:
+    for key in path:
+        if not isinstance(value, Mapping) or key not in value:
+            return None
+        value = value[key]
+    return value
+
+
+def _collection_metric(collection: Any) -> Optional[str]:
+    """Read the configured distance metric from known Chroma representations."""
+    sources = []
+    for attribute in ("metadata", "configuration", "configuration_json"):
+        try:
+            value = getattr(collection, attribute)
+        except (AttributeError, RuntimeError, ValueError):
+            continue
+        if callable(value):
+            try:
+                value = value()
+            except (TypeError, RuntimeError, ValueError):
+                continue
+        sources.append(value)
+
+    paths = (
+        ("hnsw:space",),
+        ("hnsw_space",),
+        ("hnsw", "space"),
+        ("hnsw_configuration", "space"),
+        ("spann", "space"),
+        ("spann_configuration", "space"),
+    )
+    metrics = []
+    for source in sources:
+        for path in paths:
+            metric = _mapping_path(source, *path)
+            if isinstance(metric, str) and metric.strip():
+                metrics.append(metric.strip().lower())
+        for attribute in (
+            "hnsw",
+            "hnsw_configuration",
+            "spann",
+            "spann_configuration",
+        ):
+            nested = getattr(source, attribute, None)
+            metric = (
+                _mapping_path(nested, "space")
+                if isinstance(nested, Mapping)
+                else getattr(nested, "space", None)
+            )
+            if isinstance(metric, str) and metric.strip():
+                metrics.append(metric.strip().lower())
+    return next((metric for metric in metrics if metric != "cosine"), None) or (
+        metrics[0] if metrics else None
+    )
+
+
+def _validate_cosine_collection(collection: Any) -> None:
+    metric = _collection_metric(collection)
+    if metric is not None and metric != "cosine":
+        raise ValueError(
+            f"Chroma collection {COLLECTION_NAME!r} uses {metric!r} distance; "
+            "cosine is required"
+        )
 
 
 def _json_value(value: Any) -> Any:
@@ -126,30 +192,39 @@ class DenseStore:
         for name, value in (("batch_size", batch_size), ("page_size", page_size)):
             if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
                 raise ValueError(f"{name} must be a positive integer")
+        if collection is not None:
+            _validate_cosine_collection(collection)
         self.path = None if path is None else Path(path)
         self._collection_value = collection
         self._client_factory = client_factory
         self._client: Any = None
+        self._collection_lock = RLock()
         self.batch_size = batch_size
         self.page_size = page_size
 
     def _collection(self) -> Any:
         if self._collection_value is not None:
             return self._collection_value
-        if self.path is None:
-            raise ValueError("path is required when collection is not injected")
-        if self._client_factory is None:
-            # Construction is intentionally delayed until the store is used.
-            self.path.mkdir(parents=True, exist_ok=True)
-            import chromadb
+        with self._collection_lock:
+            if self._collection_value is not None:
+                return self._collection_value
+            if self.path is None:
+                raise ValueError("path is required when collection is not injected")
+            if self._client is None:
+                if self._client_factory is None:
+                    # Construction is intentionally delayed until the store is used.
+                    self.path.mkdir(parents=True, exist_ok=True)
+                    import chromadb
 
-            self._client = chromadb.PersistentClient(path=str(self.path))
-        else:
-            self._client = self._client_factory(self.path)
-        self._collection_value = self._client.get_or_create_collection(
-            name=COLLECTION_NAME, metadata={"hnsw:space": "cosine"}
-        )
-        return self._collection_value
+                    self._client = chromadb.PersistentClient(path=str(self.path))
+                else:
+                    self._client = self._client_factory(self.path)
+            collection = self._client.get_or_create_collection(
+                name=COLLECTION_NAME, metadata={"hnsw:space": "cosine"}
+            )
+            _validate_cosine_collection(collection)
+            self._collection_value = collection
+            return self._collection_value
 
     @staticmethod
     def _metadata(chunk: ChunkRecord) -> Mapping[str, Any]:

@@ -95,6 +95,11 @@ class ModelManagerTests(unittest.TestCase):
             RuntimeError("Metal backend failure"),
             RuntimeError("Metal allocation failed"),
             RuntimeError("Metal device failure"),
+            RuntimeError("MPS backend is not supported on this device"),
+            RuntimeError("MPS device not found"),
+            RuntimeError("Metal device could not be initialized"),
+            RuntimeError("MPS does not support cumsum op with int64 input"),
+            RuntimeError("MPS: out of memory"),
         )
         application_errors = (
             RuntimeError("invalid user input"),
@@ -107,10 +112,30 @@ class ModelManagerTests(unittest.TestCase):
             NotImplementedError("unrelated feature"),
             NotImplementedError("MPS input validation is not implemented"),
             ValueError("MPS input invalid"),
+            RuntimeError("backend is not supported on this device"),
+            RuntimeError("device not found"),
+            RuntimeError("operator does not support int64 input"),
+            RuntimeError("out of memory"),
         )
 
         self.assertTrue(all(_is_mps_device_error(error) for error in device_errors))
         self.assertFalse(any(_is_mps_device_error(error) for error in application_errors))
+
+    def test_explicit_mps_operator_failure_retries_on_cpu_exactly_once(self):
+        creations = []
+
+        def factory(path, device):
+            creations.append(device)
+            if device == "mps":
+                raise RuntimeError("MPS does not support cumsum op with int64 input")
+            return EmbeddingModel()
+
+        manager = self.make_manager(mps_available=True, embedding_factory=factory)
+
+        self.assertEqual(manager.embed_documents(["doc"]), [[0.0, 1.0]])
+        self.assertEqual(manager.embed_documents(["later"]), [[0.0, 1.0]])
+        self.assertEqual(creations, ["mps", "cpu"])
+        self.assertEqual(manager.embedding_device, "cpu")
 
     def test_preferred_device_override_supports_factory_only_construction(self):
         model = EmbeddingModel()
