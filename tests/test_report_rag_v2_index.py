@@ -9,11 +9,13 @@ import tempfile
 import threading
 import time
 import unittest
+from unittest.mock import Mock
 from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
 
 from retrieval_core.lexical_store import LexicalStore
 from retrieval_core.schemas import ChunkRecord
+from scripts.build_report_hybrid_index import build_from_legacy
 
 
 v2_index = importlib.import_module("report_generation.external_rag.v2_index")
@@ -128,6 +130,36 @@ class FakeDense:
         return self.vector_dimension
 
 
+class _BuilderTokenizer:
+    def encode(self, text, add_special_tokens=True):
+        return list(range(len(text) + (2 if add_special_tokens else 0)))
+
+
+class _BuilderCollection:
+    def __init__(self, library):
+        self.library = library
+
+    def get(self, include):
+        return {
+            "ids": [self.library + "-2", self.library + "-1"],
+            "documents": ["第二段说明建设进展。", "第一段说明建设背景。"],
+            "metadatas": [
+                {"library": self.library, "material_id": "m1", "paragraph_index": 1, "title": self.library + "资料"},
+                {"library": self.library, "material_id": "m1", "paragraph_index": 0, "title": self.library + "资料"},
+            ],
+        }
+
+
+class _BuilderLegacyClient:
+    def get_collection(self, name):
+        libraries = {
+            "report_policy_ai": "policy", "report_speech_ai": "speech",
+            "report_expert_view_ai": "expert_view", "report_company_case_ai": "company_case",
+            "report_research_report_ai": "research_report",
+        }
+        return _BuilderCollection(libraries[name])
+
+
 def _writer_process_update(path, document_id, barrier):
     lexical = LexicalStore(Path(path))
     dense = FakeDense()
@@ -174,6 +206,33 @@ def writer(dense=None, lexical=None, directory=None, **kwargs):
 
 
 class V2IndexWriterTests(unittest.TestCase):
+    def test_legacy_dry_run_groups_sorts_and_reports_all_libraries_without_writes(self):
+        writer = Mock()
+        report = build_from_legacy(
+            legacy_client=_BuilderLegacyClient(),
+            writer=writer,
+            tokenizer=_BuilderTokenizer(),
+            dry_run=True,
+        )
+
+        self.assertEqual(report["source"], "legacy_chroma")
+        self.assertEqual(report["materials"], 5)
+        self.assertEqual(report["libraries"], ["company_case", "expert_view", "policy", "research_report", "speech"])
+        self.assertEqual(report["chunks"]["count"], 5)
+        self.assertIn("p95_tokens", report["chunks"])
+        self.assertEqual(writer.method_calls, [])
+
+    def test_full_build_requires_model_paths_and_exact_success_before_ready(self):
+        writer = Mock()
+        writer.upsert_document.return_value = IndexWriteResult("success", "external:v2:policy:m1")
+        with tempfile.TemporaryDirectory() as directory:
+            report = build_from_legacy(
+                legacy_client=_BuilderLegacyClient(), writer=writer,
+                tokenizer=_BuilderTokenizer(), dry_run=False,
+                embedding_model_path=Path(directory) / "missing",
+            )
+        self.assertEqual(report["status"], "error")
+        self.assertFalse(writer.mark_ready.called)
     def test_write_result_and_ready_facts_are_deeply_immutable(self):
         diagnostics = {"nested": [{"values": [1, 2]}]}
         ids = ["c1"]
