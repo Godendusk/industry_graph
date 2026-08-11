@@ -39,6 +39,19 @@ def result(query, rows=(), status="success", warnings=()):
     )
 
 
+def forged_result(query, candidates, status="success", warnings=()):
+    value = object.__new__(RetrievalResult)
+    object.__setattr__(value, "status", status)
+    object.__setattr__(value, "query", query)
+    object.__setattr__(value, "candidates", candidates)
+    object.__setattr__(value, "warnings", warnings)
+    object.__setattr__(value, "timings", {})
+    object.__setattr__(value, "candidate_counts", {})
+    object.__setattr__(value, "retrieval_version", "hybrid_v2")
+    object.__setattr__(value, "message", "")
+    return value
+
+
 class ReportQueryTests(unittest.TestCase):
     def test_focuses_labeled_fields_by_priority_and_drops_generic_tail(self):
         raw = """用户需求：分析国资央企数字化转型
@@ -85,6 +98,48 @@ class ReportQueryTests(unittest.TestCase):
 
         self.assertEqual(focused.current_subsection, "央企智算中心布局")
         self.assertEqual(focused.semantic_query, "央企智算中心布局")
+
+    def test_same_line_label_appends_all_continuations_until_next_label(self):
+        focused = build_report_query(
+            "当前二级标题：央企智算中心\n布局与建设路径\n区域协同\n"
+            "当前一级标题：算力基础设施"
+        )
+
+        self.assertEqual(
+            focused.current_subsection, "央企智算中心 布局与建设路径 区域协同"
+        )
+        self.assertEqual(focused.current_section, "算力基础设施")
+        self.assertTrue(focused.semantic_query.startswith(focused.current_subsection))
+
+    def test_continuation_boundaries_do_not_leak_free_text_or_retrieval_goal(self):
+        focused = build_report_query(
+            "模板开场白不得进入查询\n"
+            "当前二级标题：央企智算中心布局\n"
+            "检索目标：检索依据\n问题、政策、案例和建议"
+        )
+
+        self.assertEqual(focused.current_subsection, "央企智算中心布局")
+        self.assertEqual(focused.retrieval_goal, "检索依据 问题、政策、案例和建议")
+        self.assertNotIn("模板开场白", focused.semantic_query)
+        self.assertNotIn("问题、政策、案例和建议", focused.semantic_query)
+
+    def test_blank_paragraph_ends_continuation_and_prevents_tail_leakage(self):
+        focused = build_report_query(
+            "当前二级标题：央企智算中心布局\n\n"
+            "模板尾注不应进入检索\n报告标题：产业报告"
+        )
+
+        self.assertEqual(focused.current_subsection, "央企智算中心布局")
+        self.assertNotIn("模板尾注", focused.semantic_query)
+
+    def test_duplicate_label_and_its_continuations_do_not_override_first_value(self):
+        focused = build_report_query(
+            "当前二级标题：首值\n首值续行\n"
+            "当前二级标题：次值\n次值续行"
+        )
+
+        self.assertEqual(focused.current_subsection, "首值 首值续行")
+        self.assertEqual(focused.semantic_query, "首值 首值续行")
 
     def test_bm25_normalizes_deduplicates_and_uses_injected_tokenizer(self):
         seen = []
@@ -140,6 +195,36 @@ class ReportQueryTests(unittest.TestCase):
         self.assertEqual(focused.bm25_terms, ("央企智算中心", "布局"))
         self.assertEqual(len(instances), 1)
         self.assertIn("央企智算中心", instances[0].words)
+
+    def test_local_jieba_generator_is_consumed_only_to_term_cap(self):
+        class GuardedTerms:
+            def __init__(self):
+                self.pulls = 0
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                if self.pulls >= 512:
+                    raise AssertionError("read past BM25 term cap")
+                value = f"term{self.pulls}"
+                self.pulls += 1
+                return value
+
+        guarded = GuardedTerms()
+
+        class FakeTokenizer:
+            def add_word(self, word):
+                pass
+
+            def cut(self, text, HMM=False):
+                return guarded
+
+        with patch.dict(sys.modules, {"jieba": SimpleNamespace(Tokenizer=FakeTokenizer)}):
+            focused = build_report_query("当前二级标题：央企智算中心布局")
+
+        self.assertEqual(len(focused.bm25_terms), 512)
+        self.assertEqual(guarded.pulls, 512)
 
     def test_bm25_tokenizer_output_consumption_is_bounded(self):
         terms = [f"term{index}" for index in range(600)]
@@ -288,6 +373,177 @@ class SoftRoutingTests(unittest.TestCase):
         self.assertEqual(set(calls[0]), ALL_LIBRARIES)
         self.assertEqual(len(routed.candidates), 1)
 
+    def test_malformed_preferred_candidate_stream_discards_partial_and_falls_back(self):
+        calls = []
+        pipeline_warning = {"stage": "dense", "code": "degraded"}
+
+        def malformed():
+            yield candidate("partial")
+            raise RuntimeError("private stream details")
+
+        def retrieve(query, libraries, top_k):
+            calls.append(tuple(libraries))
+            if len(calls) == 1:
+                return forged_result(
+                    query,
+                    malformed(),
+                    warnings=(pipeline_warning,),
+                )
+            return result(query, [candidate("fallback")])
+
+        routed = retrieve_with_soft_routing(
+            retrieve, "监管要求", route_libraries("政策环境"), 2
+        )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual([row.chunk_id for row in routed.candidates], ["fallback"])
+        self.assertEqual(routed.attempts[0].status, "error")
+        self.assertEqual(routed.attempts[0].candidates, ())
+        self.assertEqual(routed.attempts[0].error_type, "RuntimeError")
+        self.assertEqual(routed.attempts[0].warnings[0]["stage"], "dense")
+        self.assertEqual(routed.attempts[0].warnings[1]["stage"], "soft_routing")
+        pipeline_warning["code"] = "changed"
+        self.assertEqual(routed.attempts[0].warnings[0]["code"], "degraded")
+        self.assertNotIn("private stream details", repr(routed))
+
+    def test_infinite_unique_candidate_stream_stops_at_top_k(self):
+        class GuardedCandidates:
+            def __init__(self):
+                self.pulls = 0
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                if self.pulls >= 2:
+                    raise AssertionError("read beyond enough viable candidates")
+                row = candidate(f"c{self.pulls}")
+                self.pulls += 1
+                return row
+
+        guarded = GuardedCandidates()
+        routed = retrieve_with_soft_routing(
+            lambda query, *_: forged_result(query, guarded),
+            "产业概况",
+            route_libraries("产业概况"),
+            2,
+        )
+
+        self.assertEqual([row.chunk_id for row in routed.candidates], ["c0", "c1"])
+        self.assertEqual(guarded.pulls, 2)
+
+    def test_duplicate_stream_scan_is_bounded_before_fallback(self):
+        class GuardedDuplicates:
+            def __init__(self):
+                self.pulls = 0
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                limit = 2 + 32
+                if self.pulls >= limit:
+                    raise AssertionError("read beyond routing scan cap")
+                self.pulls += 1
+                return candidate("duplicate")
+
+        guarded = GuardedDuplicates()
+        calls = []
+
+        def retrieve(query, libraries, top_k):
+            calls.append(tuple(libraries))
+            if len(calls) == 1:
+                return forged_result(query, guarded)
+            return result(query, [candidate("fallback")])
+
+        routed = retrieve_with_soft_routing(
+            retrieve, "企业案例", route_libraries("企业案例"), 2
+        )
+
+        self.assertEqual(guarded.pulls, 2 + 32)
+        self.assertEqual([row.chunk_id for row in routed.candidates], ["duplicate", "fallback"])
+
+    def test_general_invalid_result_returns_structured_error_attempt(self):
+        routed = retrieve_with_soft_routing(
+            lambda *_: [], "产业概况", route_libraries("产业概况"), 2
+        )
+
+        self.assertEqual(routed.candidates, ())
+        self.assertEqual(len(routed.attempts), 1)
+        self.assertEqual(routed.attempts[0].status, "error")
+        self.assertEqual(routed.attempts[0].error_type, "TypeError")
+
+    def test_successful_attempt_preserves_all_structured_pipeline_warnings(self):
+        warnings = [{"stage": f"stage-{index}"} for index in range(70)]
+        routed = retrieve_with_soft_routing(
+            lambda query, *_: result(query, [candidate("c1")], warnings=warnings),
+            "产业概况",
+            route_libraries("产业概况"),
+            1,
+        )
+
+        self.assertEqual(len(routed.attempts[0].warnings), 70)
+        self.assertEqual(routed.attempts[0].warnings[-1]["stage"], "stage-69")
+
+    def test_unbounded_warning_iterable_preserves_bounded_prefix_and_fails(self):
+        class GuardedWarnings:
+            def __init__(self):
+                self.pulls = 0
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                if self.pulls >= 129:
+                    raise AssertionError("warning iterable read past overflow probe")
+                warning = {"stage": f"warning-{self.pulls}"}
+                self.pulls += 1
+                return warning
+
+        guarded = GuardedWarnings()
+        routed = retrieve_with_soft_routing(
+            lambda query, *_: forged_result(
+                query, (candidate("c1"),), warnings=guarded
+            ),
+            "产业概况",
+            route_libraries("产业概况"),
+            1,
+        )
+
+        self.assertEqual(guarded.pulls, 129)
+        self.assertEqual(routed.candidates, ())
+        self.assertEqual(routed.attempts[0].status, "error")
+        self.assertEqual(routed.attempts[0].error_type, "ValueError")
+        self.assertEqual(len(routed.attempts[0].warnings), 129)
+        self.assertEqual(routed.attempts[0].warnings[0]["stage"], "warning-0")
+        self.assertEqual(routed.attempts[0].warnings[-1]["stage"], "soft_routing")
+
+    def test_raising_warning_stream_preserves_valid_prefix_and_falls_back(self):
+        calls = []
+
+        def malformed_warnings():
+            yield {"stage": "dense", "code": "degraded"}
+            raise RuntimeError("private warning details")
+
+        def retrieve(query, libraries, top_k):
+            calls.append(tuple(libraries))
+            if len(calls) == 1:
+                return forged_result(
+                    query, (candidate("unused"),), warnings=malformed_warnings()
+                )
+            return result(query, [candidate("fallback")])
+
+        routed = retrieve_with_soft_routing(
+            retrieve, "监管要求", route_libraries("政策环境"), 1
+        )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual([row.chunk_id for row in routed.candidates], ["fallback"])
+        self.assertEqual(routed.attempts[0].error_type, "RuntimeError")
+        self.assertEqual(routed.attempts[0].warnings[0]["stage"], "dense")
+        self.assertEqual(routed.attempts[0].warnings[1]["stage"], "soft_routing")
+        self.assertNotIn("private warning details", repr(routed))
+
     def test_blank_candidates_do_not_count_and_inputs_are_not_mutated(self):
         source_rows = [candidate("c1", ""), candidate("c2")]
         original = list(source_rows)
@@ -311,7 +567,6 @@ class SoftRoutingTests(unittest.TestCase):
             (None, "q", route, 1),
             (lambda *_: result("q"), " ", route, 1),
             (lambda *_: result("q"), "q", route, 0),
-            (lambda *_: [], "q", route, 1),
         ]
         for args in bad_cases:
             with self.subTest(args=args):

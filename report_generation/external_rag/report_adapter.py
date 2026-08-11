@@ -28,6 +28,8 @@ ALL_LIBRARIES = (
     "research_report",
 )
 MAX_BM25_TERMS = 512
+_ROUTING_CANDIDATE_SCAN_ALLOWANCE = 32
+_ROUTING_WARNING_LIMIT = 128
 
 _CUSTOM_WORDS = (
     "央企智算中心",
@@ -156,23 +158,31 @@ def build_report_query(
     parsed = {field_name: "" for field_name in _LABELS.values()}
     unlabeled = []
     found_label = False
-    pending_empty_field = None
+    seen_fields = set()
+    active_field = None
+    accept_continuations = False
     for line in raw_query.splitlines():
         match = _LABELED_LINE.match(line)
         if match:
             found_label = True
             field_name = _LABELS[match.group(1)]
             value = _clean_space(match.group(2))
-            if value and not parsed[field_name]:
+            active_field = field_name
+            accept_continuations = field_name not in seen_fields
+            if accept_continuations:
+                seen_fields.add(field_name)
                 parsed[field_name] = value
-            pending_empty_field = field_name if not value and not parsed[field_name] else None
         elif line.strip():
             value = _clean_space(line)
-            if pending_empty_field is not None:
-                parsed[pending_empty_field] = value
-                pending_empty_field = None
+            if active_field is not None and accept_continuations:
+                parsed[active_field] = _clean_space(
+                    f"{parsed[active_field]} {value}"
+                )
             else:
                 unlabeled.append(value)
+        else:
+            active_field = None
+            accept_continuations = False
 
     unlabeled_text = _clean_space(" ".join(unlabeled))
     if found_label:
@@ -455,7 +465,7 @@ def _bm25_terms(text: str, injected: Any) -> Tuple[str, ...]:
     return tuple(terms)
 
 
-def _local_jieba_tokens(text: str) -> Optional[list[str]]:
+def _local_jieba_tokens(text: str) -> Optional[Iterable[str]]:
     try:
         import jieba
     except ImportError:
@@ -463,7 +473,7 @@ def _local_jieba_tokens(text: str) -> Optional[list[str]]:
     tokenizer = jieba.Tokenizer()
     for word in _CUSTOM_WORDS:
         tokenizer.add_word(word)
-    return list(tokenizer.cut(text, HMM=False))
+    return tokenizer.cut(text, HMM=False)
 
 
 def _regex_industry_tokens(text: str) -> list[str]:
@@ -493,27 +503,116 @@ def _regex_industry_tokens(text: str) -> list[str]:
 
 def _run_attempt(retrieve, query, libraries, top_k) -> RoutingAttempt:
     scope = tuple(libraries)
+    preserved_warnings = ()
     try:
         result = retrieve(query, scope, top_k)
+        if not isinstance(result, RetrievalResult):
+            raise TypeError("retrieve must return a RetrievalResult")
+        preserved_warnings, warning_error_type = _snapshot_attempt_warnings(
+            result.warnings, query
+        )
+        if warning_error_type:
+            return _failed_attempt(scope, warning_error_type, preserved_warnings)
+        candidates = _consume_viable_candidates(result.candidates, top_k)
+        sanitized_result = RetrievalResult(
+            status=result.status,
+            query=result.query,
+            candidates=candidates,
+            warnings=preserved_warnings,
+            timings=result.timings,
+            candidate_counts=result.candidate_counts,
+            retrieval_version=result.retrieval_version,
+            message=result.message,
+        )
     except Exception as error:
-        warning = MappingProxyType(
-            {"stage": "soft_routing", "error_type": type(error).__name__}
+        return _failed_attempt(
+            scope, type(error).__name__, preserved_warnings
         )
-        return RoutingAttempt(
-            libraries=scope,
-            status="error",
-            warnings=(warning,),
-            error_type=type(error).__name__,
-        )
-    if not isinstance(result, RetrievalResult):
-        raise TypeError("retrieve must return a RetrievalResult")
     return RoutingAttempt(
         libraries=scope,
-        status=result.status,
-        candidates=tuple(result.candidates),
-        warnings=tuple(result.warnings),
-        result=result,
+        status=sanitized_result.status,
+        candidates=sanitized_result.candidates,
+        warnings=sanitized_result.warnings,
+        result=sanitized_result,
     )
+
+
+def _snapshot_attempt_warnings(
+    warnings: Any, query: str
+) -> Tuple[Tuple[Mapping[str, Any], ...], str]:
+    if isinstance(warnings, (str, bytes, bytearray)):
+        return (), "TypeError"
+    try:
+        iterator = iter(warnings)
+    except Exception as error:
+        return (), type(error).__name__
+
+    preserved = []
+    for index in range(_ROUTING_WARNING_LIMIT + 1):
+        try:
+            warning = next(iterator)
+        except StopIteration:
+            return tuple(preserved), ""
+        except Exception as error:
+            return tuple(preserved), type(error).__name__
+        if index >= _ROUTING_WARNING_LIMIT:
+            return tuple(preserved), "ValueError"
+        try:
+            frozen = RetrievalResult(
+                status="error", query=query, warnings=(warning,)
+            ).warnings[0]
+        except Exception as error:
+            return tuple(preserved), type(error).__name__
+        preserved.append(frozen)
+    return tuple(preserved), "ValueError"
+
+
+def _failed_attempt(
+    scope: Tuple[str, ...],
+    error_type: str,
+    preserved_warnings: Tuple[Mapping[str, Any], ...] = (),
+) -> RoutingAttempt:
+    warning = MappingProxyType(
+        {"stage": "soft_routing", "error_type": error_type}
+    )
+    return RoutingAttempt(
+        libraries=scope,
+        status="error",
+        warnings=preserved_warnings + (warning,),
+        error_type=error_type,
+    )
+
+
+def _consume_viable_candidates(candidates: Any, top_k: int) -> Tuple[RetrievalCandidate, ...]:
+    if isinstance(candidates, (str, bytes, bytearray)):
+        raise TypeError("RetrievalResult candidates must be an iterable of candidates")
+    try:
+        iterator = iter(candidates)
+    except TypeError as error:
+        raise TypeError(
+            "RetrievalResult candidates must be an iterable of candidates"
+        ) from error
+
+    viable = []
+    seen = set()
+    scan_limit = top_k + _ROUTING_CANDIDATE_SCAN_ALLOWANCE
+    for _ in range(scan_limit):
+        try:
+            candidate = next(iterator)
+        except StopIteration:
+            break
+        if not isinstance(candidate, RetrievalCandidate):
+            raise TypeError("retrieval results must contain RetrievalCandidate values")
+        if not isinstance(candidate.chunk_id, str) or not isinstance(candidate.text, str):
+            continue
+        chunk_id = candidate.chunk_id.strip()
+        if not chunk_id or not candidate.text.strip() or chunk_id in seen:
+            continue
+        seen.add(chunk_id)
+        viable.append(candidate)
+        if len(viable) >= top_k:
+            break
+    return tuple(viable)
 
 
 def _merge_viable(merged, seen, candidates, top_k):
