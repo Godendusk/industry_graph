@@ -1,4 +1,5 @@
 import math
+from types import MappingProxyType
 import unittest
 
 from retrieval_core.fusion import reciprocal_rank_fusion
@@ -15,6 +16,22 @@ def candidate(chunk_id, document_id=None, **overrides):
     }
     values.update(overrides)
     return RetrievalCandidate(**values)
+
+
+class AmbiguousArrayLike:
+    def __init__(self, values):
+        self.values = list(values)
+        self.shape = (len(self.values),)
+
+    def tolist(self):
+        return list(self.values)
+
+    def __eq__(self, other):
+        class AmbiguousTruth:
+            def __bool__(self):
+                raise ValueError("truth value is ambiguous")
+
+        return AmbiguousTruth()
 
 
 class ReciprocalRankFusionTests(unittest.TestCase):
@@ -138,6 +155,55 @@ class ReciprocalRankFusionTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     call()
 
+    def test_equal_array_like_nested_values_merge_without_ambiguous_truth(self):
+        dense = candidate(
+            "a",
+            dense_rank=1,
+            metadata={"nested": {"vector": AmbiguousArrayLike([1, 2])}},
+        )
+        lexical = candidate(
+            "a",
+            bm25_rank=1,
+            metadata={"nested": {"vector": AmbiguousArrayLike([1, 2])}},
+        )
+
+        result = reciprocal_rank_fusion(
+            [dense], [lexical], rrf_k=60, limit=1, per_document_limit=1
+        )
+
+        self.assertEqual(result[0].chunk_id, "a")
+
+    def test_conflicting_array_like_nested_values_are_rejected(self):
+        dense = candidate(
+            "a", dense_rank=1, metadata={"vector": AmbiguousArrayLike([1, 2])}
+        )
+        lexical = candidate(
+            "a", bm25_rank=1, metadata={"vector": AmbiguousArrayLike([1, 3])}
+        )
+
+        with self.assertRaisesRegex(ValueError, "conflicting metadata"):
+            reciprocal_rank_fusion(
+                [dense], [lexical], rrf_k=60, limit=1, per_document_limit=1
+            )
+
+    def test_duplicate_route_chunk_and_conflicting_identity_are_rejected(self):
+        duplicate = candidate("a", dense_rank=1)
+        with self.assertRaisesRegex(ValueError, "duplicate chunk_id"):
+            reciprocal_rank_fusion(
+                [duplicate, duplicate],
+                [],
+                rrf_k=60,
+                limit=1,
+                per_document_limit=1,
+            )
+
+        dense = candidate("a", "doc-1", dense_rank=1)
+        lexical = candidate("a", "doc-2", bm25_rank=1)
+        with self.assertRaisesRegex(ValueError, "conflicting identity"):
+            reciprocal_rank_fusion(
+                [dense], [lexical], rrf_k=60, limit=1, per_document_limit=1
+            )
+
     def test_fusion_does_not_mutate_input_candidates(self):
         dense = candidate(
             "a", dense_rank=1, dense_score=0.5, diagnostics={"route": "dense"}
@@ -151,6 +217,30 @@ class ReciprocalRankFusionTests(unittest.TestCase):
         self.assertIsNone(dense.rrf_rank)
         self.assertIsNone(dense.rrf_score)
         self.assertEqual(dense.diagnostics, {"route": "dense"})
+
+    def test_fusion_deeply_isolates_nested_output_values(self):
+        original = candidate(
+            "a",
+            dense_rank=1,
+            metadata={
+                "nested": MappingProxyType({"items": [1]}),
+                "vector": AmbiguousArrayLike([1, 2]),
+            },
+            diagnostics={"trace": {"steps": ["dense"]}},
+        )
+
+        result = reciprocal_rank_fusion(
+            [original], [], rrf_k=60, limit=1, per_document_limit=1
+        )[0]
+        result.metadata["nested"]["items"].append(2)
+        result.metadata["vector"].values[0] = 9
+        result.diagnostics["trace"]["steps"].append("fusion")
+
+        self.assertEqual(original.metadata["nested"]["items"], [1])
+        self.assertEqual(original.metadata["vector"].values, [1, 2])
+        self.assertEqual(original.diagnostics["trace"]["steps"], ["dense"])
+        with self.assertRaises(TypeError):
+            result.metadata["new"] = "value"
 
 
 class RerankerTests(unittest.TestCase):
@@ -231,6 +321,59 @@ class RerankerTests(unittest.TestCase):
                     all(row.diagnostics["reranker_fallback"] for row in result)
                 )
 
+    def test_overlong_scorer_generator_is_consumed_only_to_length_boundary(self):
+        pulls = []
+
+        def scores():
+            for value in range(10):
+                pulls.append(value)
+                yield float(value)
+
+        result = rerank_candidates(
+            "query",
+            self.make_fused()[:2],
+            scorer=lambda pairs: scores(),
+            final_limit=2,
+        )
+
+        self.assertEqual(len(pulls), 3)
+        self.assertEqual([row.chunk_id for row in result], ["a", "b"])
+        self.assertTrue(all(row.diagnostics["reranker_fallback"] for row in result))
+
+    def test_endless_scorer_iterator_returns_after_length_boundary(self):
+        class GuardedEndlessScores:
+            def __init__(self):
+                self.pulls = 0
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                self.pulls += 1
+                if self.pulls > 3:
+                    raise AssertionError("score iterator was consumed without a bound")
+                return 0.5
+
+        scores = GuardedEndlessScores()
+        result = rerank_candidates(
+            "query",
+            self.make_fused()[:2],
+            scorer=lambda pairs: scores,
+            final_limit=2,
+        )
+
+        self.assertEqual(scores.pulls, 3)
+        self.assertEqual([row.chunk_id for row in result], ["a", "b"])
+        self.assertTrue(all(row.diagnostics["reranker_fallback"] for row in result))
+
+    def test_scalar_scorer_output_falls_back(self):
+        result = rerank_candidates(
+            "query", self.make_fused()[:2], scorer=lambda pairs: 0.5, final_limit=2
+        )
+
+        self.assertEqual([row.chunk_id for row in result], ["a", "b"])
+        self.assertTrue(all(row.diagnostics["reranker_fallback"] for row in result))
+
     def test_empty_input_and_zero_final_limit_do_not_call_scorer(self):
         def unexpected(_pairs):
             raise AssertionError("scorer should not be called")
@@ -277,6 +420,50 @@ class RerankerTests(unittest.TestCase):
         self.assertIsNone(original.rerank_rank)
         self.assertIsNone(original.rerank_score)
         self.assertEqual(original.diagnostics, {"fusion": "ok"})
+
+    def test_reranking_deeply_isolates_nested_output_values(self):
+        original = candidate(
+            "a",
+            rrf_rank=1,
+            rrf_score=0.3,
+            metadata={
+                "nested": MappingProxyType({"items": [1]}),
+                "vector": AmbiguousArrayLike([1, 2]),
+            },
+            diagnostics={"trace": {"steps": ["fusion"]}},
+        )
+
+        result = rerank_candidates(
+            "query", [original], scorer=lambda pairs: [0.7], final_limit=1
+        )[0]
+        result.metadata["nested"]["items"].append(2)
+        result.metadata["vector"].values[0] = 9
+        result.diagnostics["trace"]["steps"].append("rerank")
+
+        self.assertEqual(original.metadata["nested"]["items"], [1])
+        self.assertEqual(original.metadata["vector"].values, [1, 2])
+        self.assertEqual(original.diagnostics["trace"]["steps"], ["fusion"])
+        with self.assertRaises(TypeError):
+            result.diagnostics["new"] = "value"
+
+    def test_reranker_fallback_deeply_isolates_nested_diagnostics(self):
+        original = candidate(
+            "a",
+            rrf_rank=1,
+            rrf_score=0.3,
+            diagnostics={"trace": {"steps": ["fusion"]}},
+        )
+
+        result = rerank_candidates(
+            "query",
+            [original],
+            scorer=lambda pairs: (_ for _ in ()).throw(RuntimeError("failure")),
+            final_limit=1,
+        )[0]
+        result.diagnostics["trace"]["steps"].append("fallback")
+
+        self.assertEqual(original.diagnostics["trace"]["steps"], ["fusion"])
+        self.assertTrue(result.diagnostics["reranker_fallback"])
 
 
 if __name__ == "__main__":

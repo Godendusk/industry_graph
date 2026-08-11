@@ -1,21 +1,25 @@
 """Bounded, failure-safe reranking for retrieval candidates."""
 
 from dataclasses import replace
+from itertools import islice
 import math
 from numbers import Real
 from typing import Callable, Iterable, List, Optional, Sequence
 
+from retrieval_core._copying import deep_copy_mapping
 from retrieval_core.schemas import RetrievalCandidate
 
 
 def _candidate_copy(
     candidate: RetrievalCandidate, **changes: object
 ) -> RetrievalCandidate:
-    values = {
-        "metadata": dict(candidate.metadata),
-        "diagnostics": dict(candidate.diagnostics),
-    }
-    values.update(changes)
+    values = dict(changes)
+    values["metadata"] = deep_copy_mapping(
+        values.get("metadata", candidate.metadata)
+    )
+    values["diagnostics"] = deep_copy_mapping(
+        values.get("diagnostics", candidate.diagnostics)
+    )
     return replace(candidate, **values)
 
 
@@ -44,7 +48,7 @@ def _fallback(
 
 def _validated_scores(values: Iterable[object], expected: int) -> List[float]:
     try:
-        raw_scores = list(values)
+        raw_scores = list(islice(values, expected + 1))
     except (TypeError, ValueError) as error:
         raise ValueError("reranker scores must be iterable") from error
     if len(raw_scores) != expected:

@@ -1,9 +1,12 @@
 """Deterministic reciprocal-rank fusion for retrieval candidates."""
 
+from collections.abc import Mapping as MappingABC
+from collections.abc import Sequence as SequenceABC
 from dataclasses import replace
 import math
 from typing import Iterable, List, Mapping, Sequence
 
+from retrieval_core._copying import deep_copy_mapping, deep_copy_value
 from retrieval_core.schemas import RetrievalCandidate
 
 
@@ -31,11 +34,13 @@ def _rrf_constant(value: object) -> float:
 def _candidate_copy(
     candidate: RetrievalCandidate, **changes: object
 ) -> RetrievalCandidate:
-    values = {
-        "metadata": dict(candidate.metadata),
-        "diagnostics": dict(candidate.diagnostics),
-    }
-    values.update(changes)
+    values = dict(changes)
+    values["metadata"] = deep_copy_mapping(
+        values.get("metadata", candidate.metadata)
+    )
+    values["diagnostics"] = deep_copy_mapping(
+        values.get("diagnostics", candidate.diagnostics)
+    )
     return replace(candidate, **values)
 
 
@@ -64,14 +69,56 @@ def _route_candidates(
 def _merged_mapping(
     left: Mapping[str, object], right: Mapping[str, object], name: str, chunk_id: str
 ) -> dict:
-    merged = dict(left)
+    merged = deep_copy_mapping(left)
     for key, value in right.items():
-        if key in merged and merged[key] != value:
+        if key in merged and not _values_equal(merged[key], value):
             raise ValueError(
                 f"conflicting {name} for chunk_id {chunk_id!r}: key {key!r}"
             )
-        merged[key] = value
+        merged[deep_copy_value(key)] = deep_copy_value(value)
     return merged
+
+
+def _values_equal(left: object, right: object) -> bool:
+    if left is right:
+        return True
+    if isinstance(left, MappingABC) or isinstance(right, MappingABC):
+        if not isinstance(left, MappingABC) or not isinstance(right, MappingABC):
+            return False
+        if set(left) != set(right):
+            return False
+        return all(_values_equal(left[key], right[key]) for key in left)
+
+    left_to_list = getattr(left, "tolist", None)
+    right_to_list = getattr(right, "tolist", None)
+    left_is_array = hasattr(left, "shape") and callable(left_to_list)
+    right_is_array = hasattr(right, "shape") and callable(right_to_list)
+    if left_is_array or right_is_array:
+        if not left_is_array or not right_is_array:
+            return False
+        try:
+            return _values_equal(left.shape, right.shape) and _values_equal(
+                left_to_list(), right_to_list()
+            )
+        except Exception:
+            return False
+
+    sequence_types = (str, bytes, bytearray)
+    left_is_sequence = isinstance(left, SequenceABC) and not isinstance(
+        left, sequence_types
+    )
+    right_is_sequence = isinstance(right, SequenceABC) and not isinstance(
+        right, sequence_types
+    )
+    if left_is_sequence or right_is_sequence:
+        if not left_is_sequence or not right_is_sequence or len(left) != len(right):
+            return False
+        return all(_values_equal(a, b) for a, b in zip(left, right))
+
+    try:
+        return bool(left == right)
+    except Exception:
+        return False
 
 
 def _merge_routes(
