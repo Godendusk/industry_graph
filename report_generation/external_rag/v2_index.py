@@ -8,6 +8,8 @@ validated embeddings and never receives generated placeholder vectors.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from contextlib import contextmanager
+import fcntl
 import hashlib
 import json
 import math
@@ -15,7 +17,7 @@ import os
 from pathlib import Path
 import stat
 import tempfile
-from threading import RLock
+from threading import RLock, local
 from typing import Any, Callable, Iterable, Mapping, Optional, Sequence, Tuple
 
 from retrieval_core.dense_store import DenseStore
@@ -32,9 +34,17 @@ DEFAULT_MAX_TOKENS = 8192
 MAX_TOKEN_HARD_CAP = 1_000_000
 MAX_EMBEDDING_DIMENSION = 65_536
 SUPPORTED_DIMENSION = 768
+MAX_EMBEDDING_SCALARS = 1_000_000
+MAX_EMBEDDING_BYTES = MAX_EMBEDDING_SCALARS * 8
 MAX_READY_BYTES = 1_000_000
+INDEX_HEALTH_KEY = "report_v2_index_health"
 
 _TRANSITION_LOCK = RLock()
+_LOCK_STATE = local()
+
+
+class UnsupportedSchemaVersion(ValueError):
+    """State exists, but this writer cannot safely interpret it."""
 
 
 @dataclass(frozen=True)
@@ -90,7 +100,8 @@ class V2IndexWriter:
         dictionary_version: Optional[str] = None,
         max_tokens: int = DEFAULT_MAX_TOKENS,
         max_chunks: int = DEFAULT_MAX_CHUNKS,
-        audit_only: Optional[bool] = None,
+        audit_only: bool = False,
+        fsync: Callable[[int], Any] = os.fsync,
     ) -> None:
         if ready_path is not None and index_root is not None:
             raise ValueError("provide ready_path or index_root, not both")
@@ -99,8 +110,10 @@ class V2IndexWriter:
                 raise ValueError(f"{name} must be a positive integer")
         if max_tokens > MAX_TOKEN_HARD_CAP:
             raise ValueError("max_tokens exceeds the hard safety limit")
-        if audit_only is not None and not isinstance(audit_only, bool):
-            raise ValueError("audit_only must be a boolean or None")
+        if type(audit_only) is not bool:
+            raise ValueError("audit_only must be a boolean")
+        if not callable(fsync):
+            raise ValueError("fsync must be callable")
         for name, value in (
             ("model_version", model_version),
             ("chunker_version", chunker_version),
@@ -121,10 +134,41 @@ class V2IndexWriter:
         self.dictionary_version = dictionary_version
         self.max_tokens = max_tokens
         self.max_chunks = max_chunks
-        # Non-production injected stores auto-select an audit path so the public
-        # mock contract can verify already-present IDs without fake vectors.
-        # DenseStore itself remains fail-closed even if audit_only=True.
-        self.audit_only = not isinstance(dense, DenseStore) if audit_only is None else audit_only
+        self.audit_only = audit_only
+        self._fsync = fsync
+
+    @contextmanager
+    def _lifecycle_lock(self) -> Iterable[None]:
+        """Serialize a complete state/store/READY transition across processes."""
+        with _TRANSITION_LOCK:
+            if self.ready_path is None:
+                yield
+                return
+            directory = self.ready_path.parent
+            directory.mkdir(parents=True, exist_ok=True)
+            lock_path = directory / ".report_v2.lifecycle.lock"
+            key = str(lock_path.resolve())
+            held = getattr(_LOCK_STATE, "held", {})
+            entry = held.get(key)
+            if entry is None:
+                descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
+                fcntl.flock(descriptor, fcntl.LOCK_EX)
+                held[key] = [descriptor, 1]
+                _LOCK_STATE.held = held
+            else:
+                entry[1] += 1
+            try:
+                yield
+            finally:
+                descriptor, count = held[key]
+                if count > 1:
+                    held[key][1] -= 1
+                else:
+                    del held[key]
+                    try:
+                        fcntl.flock(descriptor, fcntl.LOCK_UN)
+                    finally:
+                        os.close(descriptor)
 
     @staticmethod
     def _safe_message(stage: str, error: Optional[BaseException] = None) -> str:
@@ -192,7 +236,17 @@ class V2IndexWriter:
         return values
 
     @staticmethod
+    def _validate_embedding_plan(expected: int) -> None:
+        if type(expected) is not int or expected <= 0:
+            raise ValueError("embedding count is invalid")
+        if expected > MAX_EMBEDDING_SCALARS // SUPPORTED_DIMENSION:
+            raise ValueError("embedding scalar budget exceeded")
+        if expected * SUPPORTED_DIMENSION * 8 > MAX_EMBEDDING_BYTES:
+            raise ValueError("embedding byte budget exceeded")
+
+    @staticmethod
     def _vectors(values: Iterable[Sequence[float]], expected: int) -> list[list[float]]:
+        V2IndexWriter._validate_embedding_plan(expected)
         if isinstance(values, (str, bytes)):
             raise ValueError("embeddings must be an iterable")
         iterator = iter(values)
@@ -211,13 +265,13 @@ class V2IndexWriter:
                 raise ValueError("embedding must be numeric")
             raw = []
             iterator = iter(vector)
-            for _ in range(MAX_EMBEDDING_DIMENSION + 1):
+            for _ in range(SUPPORTED_DIMENSION + 1):
                 try:
                     raw.append(next(iterator))
                 except StopIteration:
                     break
-            if not raw or len(raw) > MAX_EMBEDDING_DIMENSION:
-                raise ValueError("embedding dimension is invalid")
+            if len(raw) != SUPPORTED_DIMENSION:
+                raise ValueError("embedding dimension must be exactly 768")
             if any(isinstance(item, bool) or not isinstance(item, (int, float)) for item in raw):
                 raise ValueError("embedding values must be numeric")
             converted = [float(item) for item in raw]
@@ -246,10 +300,14 @@ class V2IndexWriter:
         required = {"schema_version", "collection_version", "documents"}
         if set(parsed) != required:
             raise ValueError("invalid index metadata schema")
+        if type(parsed["schema_version"]) is not int:
+            raise ValueError("invalid index metadata version")
+        if parsed["schema_version"] != STATE_SCHEMA_VERSION:
+            raise UnsupportedSchemaVersion(
+                "unsupported_schema_version:rebuild_or_migrate"
+            )
         if (
-            type(parsed["schema_version"]) is not int
-            or parsed["schema_version"] != STATE_SCHEMA_VERSION
-            or type(parsed["collection_version"]) is not str
+            type(parsed["collection_version"]) is not str
             or parsed["collection_version"] != COLLECTION_VERSION
         ):
             raise ValueError("invalid index metadata version")
@@ -358,12 +416,22 @@ class V2IndexWriter:
             lambda state: state["documents"].pop(document_id, None)
         )
 
+    def _record_health_error(self, document_id: str, message: str) -> None:
+        """Persist only a safe diagnostic; never overwrite a success manifest."""
+        payload = json.dumps({document_id: message}, sort_keys=True, separators=(",", ":"))
+        self.lexical.set_index_metadata(INDEX_HEALTH_KEY, payload)
+
     def _invalidate_ready(self) -> None:
         if self.ready_path is not None:
             try:
                 self.ready_path.unlink()
             except FileNotFoundError:
                 pass
+
+    @staticmethod
+    def _id_digest(ids: Sequence[str]) -> str:
+        canonical = json.dumps(list(ids), ensure_ascii=False, separators=(",", ":"))
+        return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
     def _result(self, status: str, document_id: str, expected: Sequence[str], message: str) -> IndexWriteResult:
         try:
@@ -385,7 +453,7 @@ class V2IndexWriter:
         chunks: Iterable[ChunkRecord],
         embeddings: Optional[Iterable[Sequence[float]]] = None,
     ) -> IndexWriteResult:
-        with _TRANSITION_LOCK:
+        with self._lifecycle_lock():
             try:
                 rows = self._materialize_chunks(document_id, chunks)
             except Exception as error:
@@ -397,15 +465,15 @@ class V2IndexWriter:
                 if embeddings is not None:
                     vectors = self._vectors(embeddings, len(rows))
                 elif self.embed_documents is not None:
+                    self._validate_embedding_plan(len(rows))
                     vectors = self._vectors(
                         self.embed_documents(tuple(row.embedding_text for row in rows)), len(rows)
                     )
-                elif isinstance(self.dense, DenseStore) or not self.audit_only:
+                elif not self.audit_only:
                     raise ValueError("real embeddings are required")
             except Exception as error:
-                self._invalidate_ready()
                 try:
-                    self._save_document_state(document_id, "inconsistent", expected, max_token_count, "embedding_failed")
+                    self._record_health_error(document_id, "embedding_failed")
                 except Exception:
                     pass
                 return self._result("error", document_id, expected, self._safe_message("embedding failed", error))
@@ -414,12 +482,12 @@ class V2IndexWriter:
             # malformed metadata row cannot be merged safely without losing
             # other document states, so fail closed and require repair.
             try:
+                had_ready = self.validate_ready_marker()
                 self._load_state()
                 old_dense = set(
                     self._sorted_ids(self.dense.ids_for_document(document_id))
                 )
             except Exception as error:
-                self._invalidate_ready()
                 return self._result(
                     "error", document_id, expected,
                     self._safe_message("index metadata invalid", error),
@@ -483,16 +551,21 @@ class V2IndexWriter:
                 self._save_document_state(document_id, status, expected, max_token_count, message)
             except Exception as error:
                 status, message = "inconsistent", self._safe_message("state write failed", error)
+            if status == "success" and had_ready:
+                try:
+                    self.mark_ready()
+                except Exception as error:
+                    status, message = "inconsistent", self._safe_message("ready publish failed", error)
             return self._result(status, document_id, expected, message)
 
     def delete_document(self, document_id: str) -> IndexWriteResult:
-        with _TRANSITION_LOCK:
+        with self._lifecycle_lock():
             if type(document_id) is not str or not document_id.strip():
                 return IndexWriteResult("error", document_id if type(document_id) is str else "", message="invalid document_id")
             try:
+                had_ready = self.validate_ready_marker()
                 self._load_state()
             except Exception as error:
-                self._invalidate_ready()
                 return IndexWriteResult(
                     "error", document_id,
                     message=self._safe_message("index metadata invalid", error),
@@ -557,6 +630,14 @@ class V2IndexWriter:
                 self._remove_document_state(document_id)
             except Exception as error:
                 return self._result("inconsistent", document_id, (), self._safe_message("state write failed", error))
+            if had_ready:
+                try:
+                    self.mark_ready()
+                except Exception as error:
+                    return self._result(
+                        "inconsistent", document_id, (),
+                        self._safe_message("ready publish failed", error),
+                    )
             return self._result("success", document_id, (), "document deleted")
 
     @staticmethod
@@ -570,7 +651,7 @@ class V2IndexWriter:
         expected_chunker_version: Optional[str] = None,
         expected_dictionary_version: Optional[str] = None,
     ) -> ReadyCheckResult:
-        with _TRANSITION_LOCK:
+        with self._lifecycle_lock():
             failures = []
             facts: dict[str, Any] = {"collection_version": COLLECTION_VERSION}
             try:
@@ -581,6 +662,7 @@ class V2IndexWriter:
                 lexical_ids = self._sorted_ids(self.lexical.all_chunk_ids())
                 dense_count = self.dense.count()
                 lexical_count = self.lexical.count()
+                max_token_count = self.lexical.max_token_count()
                 if (
                     type(dense_count) is not int
                     or dense_count < 0
@@ -597,6 +679,12 @@ class V2IndexWriter:
                     failures.append("dimension_mismatch")
                 if not lexical_ids:
                     failures.append("empty_index")
+                if (
+                    type(max_token_count) is not int
+                    or max_token_count < 0
+                    or max_token_count > self.max_tokens
+                ):
+                    failures.append("token_limit_exceeded")
                 if dense_ids != lexical_ids or dense_count != len(dense_ids) or lexical_count != len(lexical_ids):
                     failures.append("global_ids_mismatch")
                 expected_versions = (
@@ -647,7 +735,9 @@ class V2IndexWriter:
                     failures.append("unrepresented_index_ids")
                 if not state["documents"]:
                     failures.append("missing_document_states")
-                facts["id_digest"] = hashlib.sha256("\n".join(lexical_ids).encode("utf-8")).hexdigest()
+                facts["id_digest"] = self._id_digest(lexical_ids)
+            except UnsupportedSchemaVersion:
+                failures.append("unsupported_schema_version:rebuild_or_migrate")
             except Exception as error:
                 failures.append(self._safe_message("validation_exception", error))
             unique = tuple(dict.fromkeys(failures))
@@ -661,7 +751,7 @@ class V2IndexWriter:
     def mark_ready(self, expected_dimension: int = 768, expected_model_version: Optional[str] = None,
                    expected_chunker_version: Optional[str] = None,
                    expected_dictionary_version: Optional[str] = None) -> Mapping[str, Any]:
-        with _TRANSITION_LOCK:
+        with self._lifecycle_lock():
             if self.ready_path is None:
                 raise ValueError("ready_path or index_root is required")
             check = self.check_ready(expected_dimension, expected_model_version, expected_chunker_version, expected_dictionary_version)
@@ -679,31 +769,64 @@ class V2IndexWriter:
                 "validation": {"global_ids_equal": True, "all_documents_success": True, "counts_equal": True},
             }
             self.ready_path.parent.mkdir(parents=True, exist_ok=True)
-            descriptor, temporary_name = tempfile.mkstemp(prefix=".READY.", suffix=".tmp", dir=self.ready_path.parent)
+            previous: Optional[bytes] = None
             try:
+                previous_stat = self.ready_path.lstat()
+                if stat.S_ISREG(previous_stat.st_mode):
+                    previous = self.ready_path.read_bytes()
+            except FileNotFoundError:
+                pass
+            temporary_name: Optional[str] = None
+            try:
+                descriptor, temporary_name = tempfile.mkstemp(
+                    prefix=".READY.", suffix=".tmp", dir=self.ready_path.parent
+                )
                 with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
                     json.dump(payload, handle, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
                     handle.write("\n")
                     handle.flush()
-                    os.fsync(handle.fileno())
+                    self._fsync(handle.fileno())
                 os.replace(temporary_name, self.ready_path)
+                temporary_name = None
+                directory_fd = os.open(self.ready_path.parent, os.O_RDONLY)
                 try:
-                    directory_fd = os.open(self.ready_path.parent, os.O_RDONLY)
-                    try:
-                        os.fsync(directory_fd)
-                    finally:
-                        os.close(directory_fd)
-                except OSError:
-                    pass
+                    self._fsync(directory_fd)
+                finally:
+                    os.close(directory_fd)
+            except BaseException:
+                # A failed directory sync means publication is not durable.  Put
+                # back a previous marker when available and never claim success.
+                restore_name: Optional[str] = None
+                try:
+                    if previous is None:
+                        self.ready_path.unlink(missing_ok=True)
+                    else:
+                        descriptor, restore_name = tempfile.mkstemp(
+                            prefix=".READY.", suffix=".tmp", dir=self.ready_path.parent
+                        )
+                        with os.fdopen(descriptor, "wb") as handle:
+                            handle.write(previous)
+                            handle.flush()
+                            self._fsync(handle.fileno())
+                        os.replace(restore_name, self.ready_path)
+                        restore_name = None
+                finally:
+                    if restore_name is not None:
+                        try:
+                            os.unlink(restore_name)
+                        except FileNotFoundError:
+                            pass
+                raise
             finally:
-                try:
-                    os.unlink(temporary_name)
-                except FileNotFoundError:
-                    pass
+                if temporary_name is not None:
+                    try:
+                        os.unlink(temporary_name)
+                    except FileNotFoundError:
+                        pass
             return payload
 
     def validate_ready_marker(self, expected_dimension: int = 768) -> bool:
-        with _TRANSITION_LOCK:
+        with self._lifecycle_lock():
             if self.ready_path is None:
                 return False
             try:

@@ -511,3 +511,16 @@ class LexicalStore:
         with self._connection() as connection:
             row = connection.execute("SELECT COUNT(*) AS count FROM chunks").fetchone()
         return int(row["count"])
+
+    def max_token_count(self) -> Optional[int]:
+        """Return the authoritative maximum chunk token count, if nonempty."""
+        with self._connection() as connection:
+            row = connection.execute(
+                "SELECT MAX(token_count) AS max_token_count FROM chunks"
+            ).fetchone()
+        value = None if row is None else row["max_token_count"]
+        if value is None:
+            return None
+        if type(value) is not int or value < 0:
+            raise ValueError("stored token_count values must be nonnegative integers")
+        return value

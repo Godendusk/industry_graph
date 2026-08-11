@@ -2,8 +2,12 @@ import importlib
 import json
 import math
 import multiprocessing
+import os
+import sqlite3
+import stat
 import tempfile
 import threading
+import time
 import unittest
 from dataclasses import FrozenInstanceError, replace
 from pathlib import Path
@@ -29,6 +33,10 @@ def chunk(chunk_id="c1", document_id="m1", index=0, token_count=3):
         content_hash="hash-" + chunk_id,
         metadata={"library": "policy", "material_id": document_id, "title": "T"},
     )
+
+
+def embedding_vector(first=1.0):
+    return [first] + [0.0] * (v2_index.SUPPORTED_DIMENSION - 1)
 
 
 class FakeLexical:
@@ -59,6 +67,14 @@ class FakeLexical:
 
     def count(self):
         return len(self.all_chunk_ids())
+
+    def max_token_count(self):
+        values = [
+            row.token_count
+            for rows in self.documents.values()
+            for row in rows.values()
+        ]
+        return max(values) if values else None
 
     def set_index_metadata(self, key, value):
         if value is None:
@@ -123,6 +139,7 @@ def _writer_process_update(path, document_id, barrier):
         model_version="model-1",
         chunker_version="chunker-1",
         dictionary_version="dict-1",
+        audit_only=True,
     )
     barrier.wait()
     result = subject.upsert_document(
@@ -132,6 +149,15 @@ def _writer_process_update(path, document_id, barrier):
         raise RuntimeError(result.message)
 
 
+def _writer_process_lock(directory, barrier, results):
+    subject = V2IndexWriter(FakeDense(), FakeLexical(), ready_path=Path(directory) / "READY")
+    barrier.wait()
+    with subject._lifecycle_lock():
+        started = time.monotonic()
+        time.sleep(0.15)
+        results.put((started, time.monotonic()))
+
+
 def writer(dense=None, lexical=None, directory=None, **kwargs):
     dense = dense or FakeDense()
     lexical = lexical or FakeLexical()
@@ -139,7 +165,7 @@ def writer(dense=None, lexical=None, directory=None, **kwargs):
         dense=dense,
         lexical=lexical,
         ready_path=None if directory is None else Path(directory) / "READY",
-        embed_documents=lambda texts: [[float(i), 1.0] for i, _ in enumerate(texts)],
+        embed_documents=lambda texts: [embedding_vector(float(i)) for i, _ in enumerate(texts)],
         model_version="model-1",
         chunker_version="chunker-1",
         dictionary_version="dict-1",
@@ -199,7 +225,7 @@ class V2IndexWriterTests(unittest.TestCase):
             dense.documents["m1"].difference_update(ids),
         )
         subject = V2IndexWriter(
-            dense, lexical, embed_documents=lambda texts: events.append(("embed", tuple(texts))) or [[1.0, 2.0]]
+            dense, lexical, embed_documents=lambda texts: events.append(("embed", tuple(texts))) or [embedding_vector()]
         )
 
         result = subject.upsert_document("m1", [chunk()])
@@ -222,7 +248,36 @@ class V2IndexWriterTests(unittest.TestCase):
                 self.assertEqual(lexical.calls, [])
                 self.assertEqual(dense.calls, [])
 
-    def test_embedding_failure_changes_no_store_and_records_safe_inconsistent_state(self):
+    def test_embedding_dimension_must_be_768_before_state_or_store_mutation(self):
+        dense, lexical = FakeDense(), FakeLexical()
+        subject = V2IndexWriter(dense, lexical)
+
+        result = subject.upsert_document("m1", [chunk()], [[1.0, 2.0]])
+
+        self.assertEqual(result.status, "error")
+        self.assertNotIn(v2_index.INDEX_METADATA_KEY, lexical.metadata)
+        self.assertEqual(lexical.calls, [])
+        self.assertEqual(dense.calls, [])
+
+    def test_embedding_scalar_plan_is_rejected_before_provider_call(self):
+        dense, lexical = FakeDense(), FakeLexical()
+        called = []
+        count = v2_index.MAX_EMBEDDING_SCALARS // 768 + 1
+        rows = [chunk(f"c{index}", index=index) for index in range(count)]
+        subject = V2IndexWriter(
+            dense,
+            lexical,
+            embed_documents=lambda texts: called.append(True) or [],
+            max_chunks=count,
+        )
+
+        result = subject.upsert_document("m1", rows)
+
+        self.assertEqual(result.status, "error")
+        self.assertEqual(called, [])
+        self.assertNotIn(v2_index.INDEX_METADATA_KEY, lexical.metadata)
+
+    def test_embedding_failure_changes_no_store_and_records_safe_health_error(self):
         dense, lexical = FakeDense(), FakeLexical()
         subject = V2IndexWriter(
             dense, lexical, embed_documents=lambda texts: (_ for _ in ()).throw(RuntimeError("api-key-secret"))
@@ -234,7 +289,8 @@ class V2IndexWriterTests(unittest.TestCase):
         self.assertNotIn("api-key-secret", result.message)
         self.assertEqual(lexical.calls, [])
         self.assertEqual(dense.calls, [])
-        self.assertEqual(json.loads(lexical.metadata[v2_index.INDEX_METADATA_KEY])["documents"]["m1"]["state"], "inconsistent")
+        self.assertNotIn(v2_index.INDEX_METADATA_KEY, lexical.metadata)
+        self.assertIn("m1", json.loads(lexical.metadata[v2_index.INDEX_HEALTH_KEY]))
 
     def test_rejects_invalid_duplicate_and_bounded_inputs_without_mutation(self):
         dense, lexical = FakeDense(), FakeLexical()
@@ -256,7 +312,7 @@ class V2IndexWriterTests(unittest.TestCase):
 
     def test_does_not_mutate_input_sequences_or_chunks(self):
         rows = [chunk()]
-        vectors = [[1.0, 2.0]]
+        vectors = [embedding_vector()]
         before_rows, before_vectors = list(rows), [list(v) for v in vectors]
         self.assertEqual(writer().upsert_document("m1", rows, vectors).status, "success")
         self.assertEqual(rows, before_rows)
@@ -307,7 +363,7 @@ class V2IndexWriterTests(unittest.TestCase):
         second = V2IndexWriter(
             dense,
             lexical,
-            embed_documents=lambda texts: [[1.0, 2.0] for _ in texts],
+            embed_documents=lambda texts: [embedding_vector() for _ in texts],
             model_version="model-2",
             chunker_version="chunker-1",
             dictionary_version="dict-1",
@@ -394,6 +450,23 @@ class V2IndexWriterTests(unittest.TestCase):
                 {"success"},
             )
 
+    def test_lifecycle_lock_serializes_ready_transitions_across_processes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            context = multiprocessing.get_context("fork")
+            barrier = context.Barrier(2)
+            results = context.Queue()
+            processes = [
+                context.Process(target=_writer_process_lock, args=(directory, barrier, results))
+                for _ in range(2)
+            ]
+            for process in processes:
+                process.start()
+            for process in processes:
+                process.join(10)
+                self.assertEqual(process.exitcode, 0)
+            intervals = sorted(results.get(timeout=1) for _ in processes)
+            self.assertLessEqual(intervals[0][1], intervals[1][0])
+
     def test_delete_success_and_partial_failure_are_explicit(self):
         dense, lexical = FakeDense(), FakeLexical()
         subject = writer(dense, lexical)
@@ -445,6 +518,33 @@ class V2IndexWriterTests(unittest.TestCase):
             dense.documents.pop("other")
             self.assertFalse(subject.can_mark_ready(768, "wrong", "chunker-1", "dict-1"))
 
+    def test_ready_audits_authoritative_lexical_token_counts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            lexical = LexicalStore(Path(directory) / "lexical.sqlite3")
+            dense = FakeDense()
+            subject = writer(dense, lexical, directory)
+            self.assertEqual(subject.upsert_document("m1", [chunk()]).status, "success")
+            self.assertEqual(lexical.max_token_count(), 3)
+            connection = sqlite3.connect(lexical.path)
+            try:
+                connection.execute(
+                    "UPDATE chunks SET token_count = ? WHERE chunk_id = ?",
+                    (subject.max_tokens + 1, "c1"),
+                )
+                connection.commit()
+            finally:
+                connection.close()
+            self.assertFalse(subject.can_mark_ready(768))
+
+    def test_ready_rejects_null_wrong_or_boolean_authoritative_token_aggregate(self):
+        dense, lexical = FakeDense(), FakeLexical()
+        subject = writer(dense, lexical)
+        self.assertEqual(subject.upsert_document("m1", [chunk()]).status, "success")
+        for value in (None, True, 3.0, -1):
+            with self.subTest(value=value):
+                lexical.max_token_count = lambda value=value: value
+                self.assertFalse(subject.can_mark_ready(768))
+
     def test_ready_requires_nonempty_index_and_exact_builtin_768_dimension(self):
         dense, lexical = FakeDense(), FakeLexical()
         subject = writer(dense, lexical)
@@ -475,7 +575,7 @@ class V2IndexWriterTests(unittest.TestCase):
 
     def test_missing_versions_malformed_metadata_and_malicious_store_iterable_fail_closed(self):
         dense, lexical = FakeDense(), FakeLexical()
-        no_versions = V2IndexWriter(dense, lexical, embed_documents=lambda texts: [[1.0, 2.0]])
+        no_versions = V2IndexWriter(dense, lexical, embed_documents=lambda texts: [embedding_vector()])
         self.assertEqual(no_versions.upsert_document("m1", [chunk()]).status, "success")
         self.assertFalse(no_versions.can_mark_ready(768))
         lexical.metadata[v2_index.INDEX_METADATA_KEY] = "{bad"
@@ -529,6 +629,35 @@ class V2IndexWriterTests(unittest.TestCase):
             ready_path.write_text("{}")
             self.assertFalse(subject.validate_ready_marker())
 
+    def test_directory_fsync_failure_restores_prior_valid_ready_and_cleans_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            dense, lexical = FakeDense(), FakeLexical()
+            subject = writer(dense, lexical, directory)
+            subject.upsert_document("m1", [chunk()])
+            subject.mark_ready()
+            ready_path = Path(directory) / "READY"
+            original = ready_path.read_bytes()
+
+            def fail_directory_fsync(descriptor):
+                if stat.S_ISDIR(os.fstat(descriptor).st_mode):
+                    raise OSError("directory fsync failed")
+                return os.fsync(descriptor)
+
+            failing = V2IndexWriter(
+                dense,
+                lexical,
+                ready_path=ready_path,
+                model_version="model-1",
+                chunker_version="chunker-1",
+                dictionary_version="dict-1",
+                fsync=fail_directory_fsync,
+            )
+            with self.assertRaisesRegex(OSError, "directory fsync"):
+                failing.mark_ready()
+            self.assertEqual(ready_path.read_bytes(), original)
+            self.assertTrue(subject.validate_ready_marker())
+            self.assertEqual(list(Path(directory).glob(".READY.*")), [])
+
     def test_ready_validator_rejects_symlink_and_tampered_scalar_types(self):
         with tempfile.TemporaryDirectory() as directory:
             dense, lexical = FakeDense(), FakeLexical()
@@ -580,17 +709,87 @@ class V2IndexWriterTests(unittest.TestCase):
         audit = V2IndexWriter(dense, lexical, audit_only=True)
         self.assertEqual(audit.upsert_document("m1", [chunk()]).status, "success")
 
-    def test_approved_injected_mock_example_auto_audits_existing_dense_ids(self):
+    def test_approved_injected_mock_example_requires_explicit_audit_mode(self):
         dense, lexical = FakeDense(), FakeLexical()
         dense.documents["m1"] = {"c1", "c2"}
         subject = V2IndexWriter(dense=dense, lexical=lexical)
 
-        result = subject.upsert_document(
+        rejected = subject.upsert_document(
+            "m1", [chunk("c1", index=0), chunk("c2", index=1)]
+        )
+        accepted = V2IndexWriter(
+            dense=dense, lexical=lexical, audit_only=True
+        ).upsert_document(
             "m1", [chunk("c1", index=0), chunk("c2", index=1)]
         )
 
-        self.assertEqual(result.status, "success")
+        self.assertEqual(rejected.status, "error")
+        self.assertEqual(accepted.status, "success")
         self.assertEqual(dense.calls, [])
+
+    def test_incremental_preflight_failure_preserves_valid_ready_and_success_state(self):
+        with tempfile.TemporaryDirectory() as directory:
+            dense, lexical = FakeDense(), FakeLexical()
+            subject = writer(dense, lexical, directory)
+            subject.upsert_document("m1", [chunk()])
+            subject.mark_ready()
+            ready_path = Path(directory) / "READY"
+            marker = ready_path.read_bytes()
+            state = lexical.metadata[v2_index.INDEX_METADATA_KEY]
+            failing = V2IndexWriter(
+                dense,
+                lexical,
+                ready_path=ready_path,
+                embed_documents=lambda texts: (_ for _ in ()).throw(RuntimeError("offline")),
+                model_version="model-1",
+                chunker_version="chunker-1",
+                dictionary_version="dict-1",
+            )
+
+            result = failing.upsert_document("m1", [chunk()])
+
+            self.assertEqual(result.status, "error")
+            self.assertEqual(ready_path.read_bytes(), marker)
+            self.assertEqual(lexical.metadata[v2_index.INDEX_METADATA_KEY], state)
+            self.assertTrue(subject.validate_ready_marker())
+            self.assertIn("m1", lexical.metadata[v2_index.INDEX_HEALTH_KEY])
+
+    def test_successful_incremental_upsert_and_delete_republish_existing_ready(self):
+        with tempfile.TemporaryDirectory() as directory:
+            dense, lexical = FakeDense(), FakeLexical()
+            subject = writer(dense, lexical, directory)
+            subject.upsert_document("d1", [chunk("c1", "d1")])
+            first = subject.mark_ready()
+            self.assertEqual(
+                subject.upsert_document("d2", [chunk("c2", "d2")]).status,
+                "success",
+            )
+            second = json.loads((Path(directory) / "READY").read_text())
+            self.assertNotEqual(first["id_digest"], second["id_digest"])
+            self.assertEqual(second["chunk_count"], 2)
+            self.assertTrue(subject.validate_ready_marker())
+            self.assertEqual(subject.delete_document("d2").status, "success")
+            third = json.loads((Path(directory) / "READY").read_text())
+            self.assertEqual(third["id_digest"], first["id_digest"])
+            self.assertTrue(subject.validate_ready_marker())
+
+    def test_id_digest_is_unambiguous_for_newline_containing_ids(self):
+        first = v2_index.V2IndexWriter._id_digest(("a\nb", "c"))
+        second = v2_index.V2IndexWriter._id_digest(("a", "b\nc"))
+        self.assertNotEqual(first, second)
+
+    def test_unknown_state_schema_has_recoverability_diagnostic(self):
+        dense, lexical = FakeDense(), FakeLexical()
+        lexical.metadata[v2_index.INDEX_METADATA_KEY] = json.dumps(
+            {
+                "schema_version": 999,
+                "collection_version": v2_index.COLLECTION_VERSION,
+                "documents": {},
+            }
+        )
+        check = writer(dense, lexical).check_ready()
+        self.assertFalse(check.ready)
+        self.assertIn("unsupported_schema_version:rebuild_or_migrate", check.failures)
 
     def test_invalid_chunk_identity_types_return_error_without_mutation(self):
         dense, lexical = FakeDense(), FakeLexical()
