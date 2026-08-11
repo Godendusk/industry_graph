@@ -64,12 +64,22 @@ class RetrievalResult:
     status: str
     query: str
     candidates: Tuple[RetrievalCandidate, ...] = field(default_factory=tuple)
-    warnings: Tuple[str, ...] = field(default_factory=tuple)
+    warnings: Tuple[Mapping[str, Any], ...] = field(default_factory=tuple)
     timings: Mapping[str, float] = field(default_factory=dict)
+    candidate_counts: Mapping[str, int] = field(default_factory=dict)
     retrieval_version: str = "hybrid_v2"
     message: str = ""
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "candidates", tuple(self.candidates))
-        object.__setattr__(self, "warnings", tuple(self.warnings))
+        object.__setattr__(
+            self,
+            "warnings",
+            tuple(MappingProxyType(dict(warning)) for warning in self.warnings),
+        )
         object.__setattr__(self, "timings", MappingProxyType(dict(self.timings)))
+        object.__setattr__(
+            self,
+            "candidate_counts",
+            MappingProxyType(dict(self.candidate_counts)),
+        )

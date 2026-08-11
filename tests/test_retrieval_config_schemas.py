@@ -162,6 +162,7 @@ class RetrievalResultTests(unittest.TestCase):
         self.assertEqual(first.candidates, ())
         self.assertEqual(first.warnings, ())
         self.assertEqual(first.timings, {})
+        self.assertEqual(first.candidate_counts, {})
         self.assertEqual(first.retrieval_version, "hybrid_v2")
         self.assertEqual(first.message, "")
         self.assertIsNot(first.timings, second.timings)
@@ -176,29 +177,40 @@ class RetrievalResultTests(unittest.TestCase):
             metadata={"source": "report.docx"},
         )
         candidates = [candidate]
-        warnings = ["stale index"]
+        warnings = [{"stage": "dense", "error_type": "RuntimeError"}]
         timings = {"retrieve": 0.2}
+        candidate_counts = {"dense": 1}
         result = RetrievalResult(
             status="ok",
             query="steel",
             candidates=candidates,
             warnings=warnings,
             timings=timings,
+            candidate_counts=candidate_counts,
         )
 
         candidates.append(candidate)
-        warnings.append("fallback used")
+        warnings[0]["stage"] = "changed"
         timings["rerank"] = 0.1
+        candidate_counts["final"] = 1
 
         self.assertEqual(result.candidates, (candidate,))
-        self.assertEqual(result.warnings, ("stale index",))
+        self.assertEqual(
+            result.warnings,
+            ({"stage": "dense", "error_type": "RuntimeError"},),
+        )
         self.assertEqual(result.timings, {"retrieve": 0.2})
+        self.assertEqual(result.candidate_counts, {"dense": 1})
         with self.assertRaises(AttributeError):
             result.candidates.append(candidate)
         with self.assertRaises(AttributeError):
-            result.warnings.append("fallback used")
+            result.warnings.append({"stage": "rerank"})
+        with self.assertRaises(TypeError):
+            result.warnings[0]["stage"] = "changed"
         with self.assertRaises(TypeError):
             result.timings["rerank"] = 0.1
+        with self.assertRaises(TypeError):
+            result.candidate_counts["final"] = 1
 
 
 if __name__ == "__main__":
