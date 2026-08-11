@@ -219,6 +219,11 @@ class DenseStore:
         for start in range(0, len(values), self.batch_size):
             collection.delete(ids=values[start : start + self.batch_size])
 
+    def delete_document(self, document_id: str) -> None:
+        if not isinstance(document_id, str) or not document_id.strip():
+            raise ValueError("document_id must be a nonempty string")
+        self._collection().delete(where={"document_id": document_id})
+
     def _paged_ids(self, where: Optional[Mapping[str, Any]] = None) -> Set[str]:
         collection = self._collection()
         result: Set[str] = set()

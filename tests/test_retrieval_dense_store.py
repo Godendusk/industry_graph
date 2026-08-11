@@ -256,6 +256,25 @@ class DenseStoreTests(unittest.TestCase):
         store.delete_ids(["missing", "c2", "c3"])
         self.assertEqual(collection.delete_calls, [{"ids": ["missing", "c2"]}, {"ids": ["c3"]}])
 
+    def test_delete_document_uses_an_exact_document_filter(self):
+        collection = FakeCollection()
+        store = DenseStore(collection=collection)
+
+        store.delete_document("d1")
+
+        self.assertEqual(collection.delete_calls, [{"where": {"document_id": "d1"}}])
+
+    def test_delete_document_rejects_blank_or_non_string_ids(self):
+        collection = FakeCollection()
+        store = DenseStore(collection=collection)
+
+        for document_id in ("", "   ", None, 1):
+            with self.subTest(document_id=document_id):
+                with self.assertRaisesRegex(ValueError, "document_id"):
+                    store.delete_document(document_id)
+
+        self.assertEqual(collection.delete_calls, [])
+
     def test_ids_queries_paginate_and_document_filter_is_exact(self):
         collection = FakeCollection()
         store = DenseStore(collection=collection, page_size=2)
