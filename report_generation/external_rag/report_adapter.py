@@ -404,10 +404,12 @@ def _make_token_counter(
         encode = getattr(tokenizer, "encode", None)
         if callable(encode):
             supplied = lambda text: _bounded_encoded_length(
-                encode(text), max_tokens + 1
+                encode(text), max_tokens + 1, "tokenizer.encode()"
             )
         elif callable(tokenizer):
-            supplied = lambda text: len(tokenizer(text))
+            supplied = lambda text: _bounded_encoded_length(
+                tokenizer(text), max_tokens + 1, "tokenizer()"
+            )
         else:
             raise TypeError("tokenizer must be callable or provide encode()")
     else:
@@ -422,14 +424,14 @@ def _make_token_counter(
     return count
 
 
-def _bounded_encoded_length(encoded: Any, limit: int) -> int:
+def _bounded_encoded_length(encoded: Any, limit: int, source: str) -> int:
     if isinstance(encoded, (str, bytes, bytearray, Mapping)):
-        raise TypeError("tokenizer.encode() must return a token sequence or iterable")
+        raise TypeError(f"{source} must return a token sequence or iterable")
     try:
         iterator = iter(encoded)
     except TypeError as error:
         raise TypeError(
-            "tokenizer.encode() must return a token sequence or iterable"
+            f"{source} must return a token sequence or iterable"
         ) from error
     count = 0
     for _ in islice(iterator, limit):
@@ -583,6 +585,11 @@ def _run_attempt(retrieve, query, libraries, top_k) -> RoutingAttempt:
         result = retrieve(query, scope, top_k)
         if not isinstance(result, RetrievalResult):
             raise TypeError("retrieve must return a RetrievalResult")
+        preserved_warnings, warning_error_type = _snapshot_attempt_warnings(
+            result.warnings, query
+        )
+        if warning_error_type:
+            return _failed_attempt(scope, warning_error_type, preserved_warnings)
         status = _snapshot_result_string(result.status, "status", allow_blank=False)
         result_query = _snapshot_result_string(
             result.query, "query", allow_blank=False
@@ -591,11 +598,6 @@ def _run_attempt(retrieve, query, libraries, top_k) -> RoutingAttempt:
         retrieval_version = _snapshot_result_string(
             result.retrieval_version, "retrieval_version", allow_blank=False
         )
-        preserved_warnings, warning_error_type = _snapshot_attempt_warnings(
-            result.warnings, query
-        )
-        if warning_error_type:
-            return _failed_attempt(scope, warning_error_type, preserved_warnings)
         candidates = _consume_viable_candidates(result.candidates, top_k)
         sanitized_result = RetrievalResult(
             status=status,
@@ -623,7 +625,7 @@ def _run_attempt(retrieve, query, libraries, top_k) -> RoutingAttempt:
 def _snapshot_result_string(value: Any, field_name: str, *, allow_blank: bool) -> str:
     if not isinstance(value, str):
         raise TypeError(f"RetrievalResult {field_name} must be a string")
-    normalized = str(value)
+    normalized = str.__str__(value)
     if not allow_blank and not normalized.strip():
         raise ValueError(f"RetrievalResult {field_name} must not be blank")
     return normalized

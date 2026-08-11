@@ -156,6 +156,52 @@ class ReportQueryTests(unittest.TestCase):
         self.assertEqual(len(focused.semantic_query), 100)
         self.assertTrue(all(item.pulls <= 101 for item in pull_counts))
 
+    def test_callable_tokenizer_requires_a_token_sequence(self):
+        invalid_outputs = (
+            {"input_ids": list(range(200))},
+            {"tokens": list(range(200))},
+            "tokens",
+            b"tokens",
+            200,
+            None,
+        )
+
+        for output in invalid_outputs:
+            with self.subTest(output_type=type(output).__name__):
+                with self.assertRaisesRegex(TypeError, "token sequence or iterable"):
+                    build_report_query(
+                        "x" * 200,
+                        max_tokens=100,
+                        tokenizer=lambda _text, output=output: output,
+                    )
+
+    def test_callable_tokenizer_infinite_output_reads_only_overflow_probe(self):
+        outputs = []
+
+        class GuardedInfiniteTokens:
+            def __init__(self):
+                self.pulls = 0
+                outputs.append(self)
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                if self.pulls >= 101:
+                    raise AssertionError("callable tokenizer read past budget probe")
+                self.pulls += 1
+                return self.pulls
+
+        with self.assertRaisesRegex(ValueError, "no usable retrieval intent"):
+            build_report_query(
+                "x" * 200,
+                max_tokens=100,
+                tokenizer=lambda _text: GuardedInfiniteTokens(),
+            )
+
+        self.assertTrue(outputs)
+        self.assertTrue(all(output.pulls == 101 for output in outputs))
+
     def test_unicode_budget_never_splits_combining_zwj_or_flag_graphemes(self):
         cases = [
             ("X e\u0301", 3, "e\u0301"),
@@ -592,7 +638,8 @@ class SoftRoutingTests(unittest.TestCase):
 
     def test_result_scalar_subclasses_are_copied_to_exact_strings(self):
         class MutableString(str):
-            pass
+            def __str__(self):
+                return self
 
         values = {
             "status": MutableString("success"),
@@ -621,8 +668,10 @@ class SoftRoutingTests(unittest.TestCase):
         self.assertIs(type(snapshot.query), str)
         self.assertIs(type(snapshot.message), str)
         self.assertIs(type(snapshot.retrieval_version), str)
-        values["message"].items.append("changed")
-        self.assertFalse(hasattr(snapshot.message, "items"))
+        for value in values.values():
+            value.items.append("changed")
+        for field_name in values:
+            self.assertFalse(hasattr(getattr(snapshot, field_name), "items"))
 
     def test_invalid_result_scalar_fails_preferred_and_falls_back(self):
         calls = []
@@ -655,6 +704,50 @@ class SoftRoutingTests(unittest.TestCase):
         self.assertEqual(routed.candidates, ())
         self.assertEqual(routed.attempts[0].status, "error")
         self.assertEqual(routed.attempts[0].error_type, "TypeError")
+
+    def test_invalid_scalars_preserve_bounded_warning_provenance_in_route_order(self):
+        for route_text, invalid_field in (
+            ("政策环境", "status"),
+            ("产业概况", "retrieval_version"),
+        ):
+            with self.subTest(route_text=route_text):
+                source_warnings = [
+                    {"stage": f"pipeline-{index}", "context": {"values": [index]}}
+                    for index in range(128)
+                ]
+                calls = 0
+
+                def retrieve(query, *_):
+                    nonlocal calls
+                    calls += 1
+                    if calls > 1:
+                        return result(query, [candidate("fallback")])
+                    overrides = {invalid_field: None}
+                    return forged_result(
+                        query,
+                        (candidate("partial"),),
+                        warnings=source_warnings,
+                        **overrides,
+                    )
+
+                routed = retrieve_with_soft_routing(
+                    retrieve, "监管要求", route_libraries(route_text), 1
+                )
+                failed = routed.attempts[0]
+
+                self.assertEqual(failed.error_type, "TypeError")
+                self.assertEqual(len(failed.warnings), 129)
+                self.assertEqual(failed.warnings[0]["stage"], "pipeline-0")
+                self.assertEqual(failed.warnings[-2]["stage"], "pipeline-127")
+                self.assertEqual(failed.warnings[-1]["stage"], "soft_routing")
+                self.assertEqual(failed.warnings[-1]["error_type"], "TypeError")
+                source_warnings[0]["stage"] = "mutated"
+                source_warnings[0]["context"]["values"].append("mutated")
+                self.assertEqual(failed.warnings[0]["stage"], "pipeline-0")
+                self.assertEqual(failed.warnings[0]["context"]["values"], (0,))
+                with self.assertRaises(TypeError):
+                    failed.warnings[0]["stage"] = "mutated"
+                self.assertEqual(calls, 2 if route_text == "政策环境" else 1)
 
     def test_successful_attempt_preserves_all_structured_pipeline_warnings(self):
         warnings = [{"stage": f"stage-{index}"} for index in range(70)]
