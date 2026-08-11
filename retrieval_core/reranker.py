@@ -2,6 +2,7 @@
 
 from dataclasses import replace
 import math
+from numbers import Real
 from typing import Callable, Iterable, List, Optional, Sequence
 
 from retrieval_core.schemas import RetrievalCandidate
@@ -53,7 +54,7 @@ def _validated_scores(values: Iterable[object], expected: int) -> List[float]:
 
     scores = []
     for value in raw_scores:
-        if isinstance(value, bool):
+        if isinstance(value, bool) or not isinstance(value, Real):
             raise ValueError("reranker scores must be finite numbers")
         try:
             score = float(value)

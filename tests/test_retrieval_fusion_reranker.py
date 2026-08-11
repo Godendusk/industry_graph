@@ -219,6 +219,18 @@ class RerankerTests(unittest.TestCase):
                     all(row.diagnostics["reranker_fallback"] for row in result)
                 )
 
+    def test_string_and_boolean_scores_each_fall_back(self):
+        scorers = [lambda pairs: ["0.9", 0.1], lambda pairs: [True, 0.1]]
+        for scorer in scorers:
+            with self.subTest(scorer=scorer):
+                result = rerank_candidates(
+                    "query", self.make_fused()[:2], scorer=scorer, final_limit=2
+                )
+                self.assertEqual([row.chunk_id for row in result], ["a", "b"])
+                self.assertTrue(
+                    all(row.diagnostics["reranker_fallback"] for row in result)
+                )
+
     def test_empty_input_and_zero_final_limit_do_not_call_scorer(self):
         def unexpected(_pairs):
             raise AssertionError("scorer should not be called")
