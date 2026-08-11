@@ -39,7 +39,14 @@ def result(query, rows=(), status="success", warnings=()):
     )
 
 
-def forged_result(query, candidates, status="success", warnings=()):
+def forged_result(
+    query,
+    candidates,
+    status="success",
+    warnings=(),
+    message="",
+    retrieval_version="hybrid_v2",
+):
     value = object.__new__(RetrievalResult)
     object.__setattr__(value, "status", status)
     object.__setattr__(value, "query", query)
@@ -47,8 +54,8 @@ def forged_result(query, candidates, status="success", warnings=()):
     object.__setattr__(value, "warnings", warnings)
     object.__setattr__(value, "timings", {})
     object.__setattr__(value, "candidate_counts", {})
-    object.__setattr__(value, "retrieval_version", "hybrid_v2")
-    object.__setattr__(value, "message", "")
+    object.__setattr__(value, "retrieval_version", retrieval_version)
+    object.__setattr__(value, "message", message)
     return value
 
 
@@ -83,6 +90,87 @@ class ReportQueryTests(unittest.TestCase):
         self.assertLessEqual(len(focused.semantic_query), 11)
         self.assertEqual(focused.semantic_query, "SSSSSS PPPP")
         self.assertNotIn("TTTT", focused.semantic_query)
+
+    def test_hf_style_tokenizer_prefers_encode_and_truncates_to_budget(self):
+        class HuggingFaceLikeTokenizer:
+            def __init__(self):
+                self.encode_calls = []
+                self.call_count = 0
+
+            def __call__(self, text):
+                self.call_count += 1
+                return {"input_ids": list(range(200)), "attention_mask": [1] * 200}
+
+            def encode(self, text):
+                self.encode_calls.append(text)
+                return list(range(len(text)))
+
+        tokenizer = HuggingFaceLikeTokenizer()
+        focused = build_report_query("x" * 200, max_tokens=100, tokenizer=tokenizer)
+
+        self.assertEqual(len(focused.semantic_query), 100)
+        self.assertIn("x" * 200, tokenizer.encode_calls)
+        self.assertEqual(tokenizer.call_count, 0)
+
+    def test_tokenizer_encode_rejects_mapping_or_non_iterable_outputs(self):
+        class WeirdTokenizer:
+            def __init__(self, output):
+                self.output = output
+
+            def encode(self, text):
+                return self.output
+
+        for output in ({"input_ids": [1, 2]}, None, "tokens"):
+            with self.subTest(output=output):
+                with self.assertRaises((TypeError, ValueError)):
+                    build_report_query("query", tokenizer=WeirdTokenizer(output))
+
+    def test_tokenizer_encode_generator_reads_at_most_budget_plus_one(self):
+        pull_counts = []
+
+        class GuardedIds:
+            def __init__(self, size):
+                self.size = size
+                self.pulls = 0
+                pull_counts.append(self)
+
+            def __iter__(self):
+                return self
+
+            def __next__(self):
+                if self.pulls >= min(self.size, 101):
+                    if self.size > 101:
+                        raise AssertionError("encode output read past budget probe")
+                    raise StopIteration
+                self.pulls += 1
+                return self.pulls
+
+        class GeneratorTokenizer:
+            def encode(self, text):
+                return GuardedIds(len(text))
+
+        focused = build_report_query(
+            "x" * 200, max_tokens=100, tokenizer=GeneratorTokenizer()
+        )
+
+        self.assertEqual(len(focused.semantic_query), 100)
+        self.assertTrue(all(item.pulls <= 101 for item in pull_counts))
+
+    def test_unicode_budget_never_splits_combining_zwj_or_flag_graphemes(self):
+        cases = [
+            ("X e\u0301", 3, "e\u0301"),
+            ("X का", 3, "का"),
+            ("X 👩\u200d💻", 3, "👩\u200d💻"),
+            ("X 🇨🇳", 3, "🇨🇳"),
+        ]
+        for raw, budget, grapheme in cases:
+            with self.subTest(raw=raw):
+                focused = build_report_query(raw, max_tokens=budget, token_counter=len)
+                self.assertTrue(
+                    grapheme in focused.semantic_query
+                    or all(part not in focused.semantic_query for part in grapheme)
+                )
+                self.assertEqual(focused.semantic_query, "X")
 
     def test_duplicate_labels_are_stable_and_unlabeled_input_is_supported(self):
         duplicate = build_report_query("当前二级标题：首值\n当前二级标题: 次值")
@@ -287,6 +375,35 @@ class LibraryRouteTests(unittest.TestCase):
             with self.assertRaises((TypeError, ValueError)):
                 route_libraries(invalid)
 
+    def test_report_query_routes_by_first_recognized_priority_field(self):
+        company_over_title = build_report_query(
+            "报告标题：政策研究报告\n当前二级标题：企业落地案例"
+        )
+        expert_parent = build_report_query(
+            "当前一级标题：专家趋势研判\n当前二级标题：产业概况"
+        )
+
+        self.assertEqual(route_libraries(company_over_title).preferred, {"company_case"})
+        self.assertEqual(
+            route_libraries(expert_parent).preferred,
+            {"expert_view", "research_report"},
+        )
+
+    def test_category_conflicts_within_one_field_use_policy_company_expert_order(self):
+        conflict = build_report_query("当前二级标题：企业案例政策趋势研究")
+
+        self.assertEqual(route_libraries(conflict).preferred, {"policy", "speech"})
+        self.assertEqual(
+            route_libraries("企业案例政策趋势研究").preferred,
+            {"policy", "speech"},
+        )
+        self.assertEqual(
+            route_libraries("企业案例专家趋势").preferred, {"company_case"}
+        )
+        self.assertEqual(
+            route_libraries("政策治理专家趋势").preferred, {"policy", "speech"}
+        )
+
 
 class SoftRoutingTests(unittest.TestCase):
     def test_does_not_fallback_when_preferred_has_enough_viable_unique_rows(self):
@@ -470,6 +587,72 @@ class SoftRoutingTests(unittest.TestCase):
 
         self.assertEqual(routed.candidates, ())
         self.assertEqual(len(routed.attempts), 1)
+        self.assertEqual(routed.attempts[0].status, "error")
+        self.assertEqual(routed.attempts[0].error_type, "TypeError")
+
+    def test_result_scalar_subclasses_are_copied_to_exact_strings(self):
+        class MutableString(str):
+            pass
+
+        values = {
+            "status": MutableString("success"),
+            "query": MutableString("产业概况"),
+            "message": MutableString("ok"),
+            "retrieval_version": MutableString("hybrid_v2"),
+        }
+        for value in values.values():
+            value.items = ["mutable"]
+
+        routed = retrieve_with_soft_routing(
+            lambda *_: forged_result(
+                values["query"],
+                (candidate("c1"),),
+                status=values["status"],
+                message=values["message"],
+                retrieval_version=values["retrieval_version"],
+            ),
+            "产业概况",
+            route_libraries("产业概况"),
+            1,
+        )
+
+        snapshot = routed.attempts[0].result
+        self.assertIs(type(snapshot.status), str)
+        self.assertIs(type(snapshot.query), str)
+        self.assertIs(type(snapshot.message), str)
+        self.assertIs(type(snapshot.retrieval_version), str)
+        values["message"].items.append("changed")
+        self.assertFalse(hasattr(snapshot.message, "items"))
+
+    def test_invalid_result_scalar_fails_preferred_and_falls_back(self):
+        calls = []
+
+        def retrieve(query, libraries, top_k):
+            calls.append(tuple(libraries))
+            if len(calls) == 1:
+                return forged_result(query, (candidate("partial"),), status=[])
+            return result(query, [candidate("fallback")])
+
+        routed = retrieve_with_soft_routing(
+            retrieve, "监管要求", route_libraries("政策环境"), 1
+        )
+
+        self.assertEqual(len(calls), 2)
+        self.assertEqual([row.chunk_id for row in routed.candidates], ["fallback"])
+        self.assertEqual(routed.attempts[0].status, "error")
+        self.assertEqual(routed.attempts[0].error_type, "TypeError")
+
+    def test_invalid_result_scalar_on_general_route_is_structured(self):
+        routed = retrieve_with_soft_routing(
+            lambda query, *_: forged_result(
+                query, (candidate("partial"),), retrieval_version=None
+            ),
+            "产业概况",
+            route_libraries("产业概况"),
+            1,
+        )
+
+        self.assertEqual(routed.candidates, ())
         self.assertEqual(routed.attempts[0].status, "error")
         self.assertEqual(routed.attempts[0].error_type, "TypeError")
 

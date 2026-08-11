@@ -14,6 +14,7 @@ from pathlib import PurePath
 import re
 from types import MappingProxyType
 from typing import Any, Optional, Tuple
+import unicodedata
 
 from retrieval_core import RetrievalCandidate, RetrievalResult
 
@@ -195,7 +196,7 @@ def build_report_query(
     else:
         priority_values = (unlabeled_text or _clean_space(raw_query),)
     priority_values = tuple(_strip_template_noise(value) for value in priority_values)
-    counter = _make_token_counter(token_counter, tokenizer)
+    counter = _make_token_counter(token_counter, tokenizer, max_tokens)
     semantic_query = _fit_priority_values(priority_values, max_tokens, counter)
     if not semantic_query:
         raise ValueError("raw_query contains no usable retrieval intent")
@@ -213,29 +214,28 @@ def build_report_query(
 def route_libraries(section_or_query: Any) -> LibraryRoute:
     """Return deterministic soft library preferences for a report section."""
     if isinstance(section_or_query, ReportQuery):
-        text = " ".join(
-            value
-            for value in (
-                section_or_query.current_subsection,
-                section_or_query.current_section,
-                section_or_query.semantic_query,
+        preferred = None
+        for text in (
+            section_or_query.current_subsection,
+            section_or_query.current_section,
+            section_or_query.report_title,
+            section_or_query.user_requirement,
+        ):
+            preferred = _preferred_libraries_for_text(text)
+            if preferred is not None:
+                break
+        if preferred is None:
+            preferred = _preferred_libraries_for_text(
+                section_or_query.semantic_query
             )
-            if value
-        )
     elif isinstance(section_or_query, str):
         text = section_or_query.strip()
+        if not text:
+            raise ValueError("section_or_query must not be blank")
+        preferred = _preferred_libraries_for_text(text)
     else:
         raise TypeError("section_or_query must be a non-blank string or ReportQuery")
-    if not text:
-        raise ValueError("section_or_query must not be blank")
-
-    if _contains_any(text, ("政策", "法规", "监管", "治理", "规制", "合规")):
-        preferred = frozenset(("policy", "speech"))
-    elif _contains_any(text, ("企业", "央企", "实践", "案例", "应用", "落地")):
-        preferred = frozenset(("company_case",))
-    elif _contains_any(text, ("专家", "观点", "研判", "研究", "趋势", "展望")):
-        preferred = frozenset(("expert_view", "research_report"))
-    else:
+    if preferred is None:
         preferred = frozenset(ALL_LIBRARIES)
     search_all = preferred == frozenset(ALL_LIBRARIES)
     return LibraryRoute(
@@ -383,14 +383,31 @@ def build_rag_context_text(evidence_blocks: Collection[Mapping[str, Any]]) -> st
 format_rag_context_text = build_rag_context_text
 
 
-def _make_token_counter(token_counter: Any, tokenizer: Any) -> Callable[[str], int]:
+def _preferred_libraries_for_text(text: Any) -> Optional[frozenset[str]]:
+    if not isinstance(text, str) or not text.strip():
+        return None
+    if _contains_any(text, ("政策", "法规", "监管", "治理", "规制", "合规")):
+        return frozenset(("policy", "speech"))
+    if _contains_any(text, ("企业", "央企", "实践", "案例", "应用", "落地")):
+        return frozenset(("company_case",))
+    if _contains_any(text, ("专家", "观点", "研判", "研究", "趋势", "展望")):
+        return frozenset(("expert_view", "research_report"))
+    return None
+
+
+def _make_token_counter(
+    token_counter: Any, tokenizer: Any, max_tokens: int
+) -> Callable[[str], int]:
     if token_counter is not None:
         supplied = token_counter
     elif tokenizer is not None:
-        if callable(tokenizer):
+        encode = getattr(tokenizer, "encode", None)
+        if callable(encode):
+            supplied = lambda text: _bounded_encoded_length(
+                encode(text), max_tokens + 1
+            )
+        elif callable(tokenizer):
             supplied = lambda text: len(tokenizer(text))
-        elif callable(getattr(tokenizer, "encode", None)):
-            supplied = lambda text: len(tokenizer.encode(text))
         else:
             raise TypeError("tokenizer must be callable or provide encode()")
     else:
@@ -402,6 +419,21 @@ def _make_token_counter(token_counter: Any, tokenizer: Any) -> Callable[[str], i
             raise ValueError("token counter must return a non-negative integer")
         return value
 
+    return count
+
+
+def _bounded_encoded_length(encoded: Any, limit: int) -> int:
+    if isinstance(encoded, (str, bytes, bytearray, Mapping)):
+        raise TypeError("tokenizer.encode() must return a token sequence or iterable")
+    try:
+        iterator = iter(encoded)
+    except TypeError as error:
+        raise TypeError(
+            "tokenizer.encode() must return a token sequence or iterable"
+        ) from error
+    count = 0
+    for _ in islice(iterator, limit):
+        count += 1
     return count
 
 
@@ -430,10 +462,53 @@ def _longest_fitting_prefix(
     best = ""
     for end in range(1, len(value) + 1):
         prefix = value[:end].rstrip()
-        if prefix and count(f"{current} {prefix}".strip()) <= budget:
+        prefix_end = len(prefix)
+        if (
+            prefix
+            and _is_safe_unicode_boundary(value, prefix_end)
+            and count(f"{current} {prefix}".strip()) <= budget
+        ):
             if len(prefix) > len(best):
                 best = prefix
     return best
+
+
+def _is_safe_unicode_boundary(value: str, end: int) -> bool:
+    if end <= 0 or end >= len(value):
+        return True
+    previous = value[end - 1]
+    following = value[end]
+    if previous == "\u200d" or following == "\u200d":
+        return False
+    if (
+        unicodedata.combining(following)
+        or unicodedata.category(following) in {"Mn", "Mc", "Me"}
+        or _is_variation_selector(following)
+        or _is_emoji_modifier(following)
+    ):
+        return False
+    if _is_regional_indicator(previous) and _is_regional_indicator(following):
+        preceding_indicators = 0
+        index = end - 1
+        while index >= 0 and _is_regional_indicator(value[index]):
+            preceding_indicators += 1
+            index -= 1
+        if preceding_indicators % 2 == 1:
+            return False
+    return True
+
+
+def _is_variation_selector(character: str) -> bool:
+    codepoint = ord(character)
+    return 0xFE00 <= codepoint <= 0xFE0F or 0xE0100 <= codepoint <= 0xE01EF
+
+
+def _is_emoji_modifier(character: str) -> bool:
+    return 0x1F3FB <= ord(character) <= 0x1F3FF
+
+
+def _is_regional_indicator(character: str) -> bool:
+    return 0x1F1E6 <= ord(character) <= 0x1F1FF
 
 
 def _bm25_terms(text: str, injected: Any) -> Tuple[str, ...]:
@@ -508,6 +583,14 @@ def _run_attempt(retrieve, query, libraries, top_k) -> RoutingAttempt:
         result = retrieve(query, scope, top_k)
         if not isinstance(result, RetrievalResult):
             raise TypeError("retrieve must return a RetrievalResult")
+        status = _snapshot_result_string(result.status, "status", allow_blank=False)
+        result_query = _snapshot_result_string(
+            result.query, "query", allow_blank=False
+        )
+        message = _snapshot_result_string(result.message, "message", allow_blank=True)
+        retrieval_version = _snapshot_result_string(
+            result.retrieval_version, "retrieval_version", allow_blank=False
+        )
         preserved_warnings, warning_error_type = _snapshot_attempt_warnings(
             result.warnings, query
         )
@@ -515,14 +598,14 @@ def _run_attempt(retrieve, query, libraries, top_k) -> RoutingAttempt:
             return _failed_attempt(scope, warning_error_type, preserved_warnings)
         candidates = _consume_viable_candidates(result.candidates, top_k)
         sanitized_result = RetrievalResult(
-            status=result.status,
-            query=result.query,
+            status=status,
+            query=result_query,
             candidates=candidates,
             warnings=preserved_warnings,
             timings=result.timings,
             candidate_counts=result.candidate_counts,
-            retrieval_version=result.retrieval_version,
-            message=result.message,
+            retrieval_version=retrieval_version,
+            message=message,
         )
     except Exception as error:
         return _failed_attempt(
@@ -535,6 +618,15 @@ def _run_attempt(retrieve, query, libraries, top_k) -> RoutingAttempt:
         warnings=sanitized_result.warnings,
         result=sanitized_result,
     )
+
+
+def _snapshot_result_string(value: Any, field_name: str, *, allow_blank: bool) -> str:
+    if not isinstance(value, str):
+        raise TypeError(f"RetrievalResult {field_name} must be a string")
+    normalized = str(value)
+    if not allow_blank and not normalized.strip():
+        raise ValueError(f"RetrievalResult {field_name} must not be blank")
+    return normalized
 
 
 def _snapshot_attempt_warnings(
