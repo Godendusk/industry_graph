@@ -340,7 +340,7 @@ class DenseStoreTests(unittest.TestCase):
         )
         self.assertEqual([item.chunk_id for item in results], ["c1", "c2"])
         self.assertEqual(results[0].metadata["section_path"], ("第一章", "进展"))
-        self.assertEqual(results[0].metadata["nested"], {"a": [1, True], "b": 2})
+        self.assertEqual(results[0].metadata["nested"], {"a": (1, True), "b": 2})
         self.assertIsNone(results[0].metadata["nullable"])
         self.assertEqual(results[1].document_id, "fallback-doc")
 

@@ -2,6 +2,7 @@
 
 from collections.abc import Iterable
 from dataclasses import replace
+from inspect import signature
 import math
 from time import monotonic
 from typing import Any, Callable, Optional, Sequence
@@ -66,9 +67,7 @@ class HybridRetrievalPipeline:
         lexical_search: Callable[
             [str, int, Optional[Sequence[str]]], Iterable[RetrievalCandidate]
         ],
-        rerank: Callable[
-            [str, Sequence[RetrievalCandidate], int], Iterable[RetrievalCandidate]
-        ] = _noop_rerank,
+        rerank: Callable[..., Iterable[RetrievalCandidate]] = _noop_rerank,
         business_adjust: Callable[
             [Sequence[RetrievalCandidate]], Iterable[RetrievalCandidate]
         ] = _noop_hook,
@@ -111,6 +110,7 @@ class HybridRetrievalPipeline:
         self._dense_search = dense_search
         self._lexical_search = lexical_search
         self._rerank = rerank
+        self._rerank_uses_keyword_limits = self._uses_keyword_rerank_limits(rerank)
         self._business_adjust = business_adjust
         self._neighbor_expand = neighbor_expand
         self._fusion = fusion
@@ -150,6 +150,26 @@ class HybridRetrievalPipeline:
             "error_type": type(error).__name__,
             "message": f"{stage} stage failed",
         }
+
+    @staticmethod
+    def _uses_keyword_rerank_limits(rerank: Callable[..., object]) -> bool:
+        try:
+            parameters = signature(rerank).parameters
+        except (TypeError, ValueError):
+            return False
+        return "final_limit" in parameters and "rerank_limit" in parameters
+
+    def _call_reranker(
+        self, query: str, candidates: Sequence[RetrievalCandidate]
+    ) -> Iterable[RetrievalCandidate]:
+        if self._rerank_uses_keyword_limits:
+            return self._rerank(
+                query,
+                candidates,
+                final_limit=self.rerank_limit,
+                rerank_limit=self.rerank_limit,
+            )
+        return self._rerank(query, candidates, self.rerank_limit)
 
     def _elapsed(self, started: float) -> float:
         return max(0.0, float(self._clock() - started))
@@ -242,8 +262,19 @@ class HybridRetrievalPipeline:
         started = self._clock()
         try:
             reranked_rows = _candidate_copies(
-                self._rerank(query, _candidate_copies(fused_rows), self.rerank_limit)
+                self._call_reranker(query, _candidate_copies(fused_rows))
             )[: self.rerank_limit]
+            if any(
+                row.diagnostics.get("reranker_fallback") is True
+                for row in reranked_rows
+            ):
+                warnings.append(
+                    {
+                        "stage": "rerank",
+                        "error_type": "RerankerFallback",
+                        "message": "rerank stage used fallback",
+                    }
+                )
         except Exception as error:
             warnings.append(self._warning("rerank", error))
             reranked_rows = _candidate_copies(fused_rows)

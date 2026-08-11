@@ -1,8 +1,10 @@
 """Shared records exchanged by report retrieval components."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from types import MappingProxyType
 from typing import Any, Mapping, Optional, Tuple
+
+from retrieval_core._copying import deep_freeze_mapping
 
 
 @dataclass(frozen=True)
@@ -26,7 +28,7 @@ class ChunkRecord:
         object.__setattr__(self, "metadata", MappingProxyType(dict(self.metadata)))
 
 
-@dataclass
+@dataclass(frozen=True)
 class RetrievalCandidate:
     chunk_id: str
     document_id: str
@@ -46,8 +48,10 @@ class RetrievalCandidate:
     diagnostics: Mapping[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        self.metadata = MappingProxyType(dict(self.metadata))
-        self.diagnostics = MappingProxyType(dict(self.diagnostics))
+        object.__setattr__(self, "metadata", deep_freeze_mapping(self.metadata))
+        object.__setattr__(
+            self, "diagnostics", deep_freeze_mapping(self.diagnostics)
+        )
 
     @classmethod
     def from_chunk(cls, chunk: ChunkRecord) -> "RetrievalCandidate":
@@ -71,11 +75,15 @@ class RetrievalResult:
     message: str = ""
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "candidates", tuple(self.candidates))
+        object.__setattr__(
+            self,
+            "candidates",
+            tuple(replace(candidate) for candidate in self.candidates),
+        )
         object.__setattr__(
             self,
             "warnings",
-            tuple(MappingProxyType(dict(warning)) for warning in self.warnings),
+            tuple(deep_freeze_mapping(warning) for warning in self.warnings),
         )
         object.__setattr__(self, "timings", MappingProxyType(dict(self.timings)))
         object.__setattr__(

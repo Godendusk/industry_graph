@@ -1,7 +1,9 @@
 import math
+from functools import partial
 import unittest
 
 from retrieval_core import HybridRetrievalPipeline, RetrievalCandidate
+from retrieval_core.reranker import rerank_candidates
 
 
 def candidate(chunk_id, document_id=None, **overrides):
@@ -128,9 +130,11 @@ class HybridRetrievalPipelineTests(unittest.TestCase):
     def test_rerank_exception_preserves_rrf_order_and_warns(self):
         dense = [candidate("b", dense_rank=1), candidate("a", dense_rank=2)]
         lexical = [candidate("a", bm25_rank=1), candidate("b", bm25_rank=2)]
+        calls = []
 
         def fail_rerank(query, rows, limit):
-            raise RuntimeError("model detail")
+            calls.append((query, len(rows), limit))
+            raise TypeError("internal model detail")
 
         result = self.make_pipeline(
             dense_search=lambda vector, limit, libraries: dense,
@@ -140,6 +144,7 @@ class HybridRetrievalPipelineTests(unittest.TestCase):
 
         self.assertEqual([row.chunk_id for row in result.candidates], ["a", "b"])
         self.assertEqual(result.warnings[0]["stage"], "rerank")
+        self.assertEqual(calls, [("steel", 2, 24)])
 
     def test_limits_counts_timings_hooks_and_final_ranks_are_structured(self):
         seen = {}
@@ -219,8 +224,8 @@ class HybridRetrievalPipelineTests(unittest.TestCase):
             ["business", "neighbor"],
         )
         self.assertEqual([row.chunk_id for row in result.candidates], ["a"])
-        self.assertEqual(source.metadata["nested"]["items"], [1])
-        self.assertEqual(result.candidates[0].metadata["nested"]["items"], [1])
+        self.assertEqual(source.metadata["nested"]["items"], (1,))
+        self.assertEqual(result.candidates[0].metadata["nested"]["items"], (1,))
 
     def test_inputs_and_lower_stage_candidates_are_not_mutated(self):
         libraries = ["reports"]
@@ -295,6 +300,52 @@ class HybridRetrievalPipelineTests(unittest.TestCase):
         ).retrieve("steel", None, 1)
 
         self.assertEqual(result.timings["embed"], 0.0)
+
+    def test_task5_reranker_partial_uses_keyword_limits_and_reorders(self):
+        scorer_calls = []
+
+        def score(pairs):
+            scorer_calls.append(list(pairs))
+            return [0.1, 0.9]
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: [
+                candidate("a", dense_rank=1),
+                candidate("b", dense_rank=2),
+            ],
+            rerank=partial(rerank_candidates, scorer=score),
+            rerank_limit=2,
+        ).retrieve("steel", None, 2)
+
+        self.assertEqual([row.chunk_id for row in result.candidates], ["b", "a"])
+        self.assertEqual(
+            scorer_calls,
+            [[("steel", "text-a"), ("steel", "text-b")]],
+        )
+        self.assertEqual(result.warnings, ())
+
+    def test_task5_internal_fallback_adds_one_structured_rerank_warning(self):
+        scorer_calls = []
+
+        def fail(pairs):
+            scorer_calls.append(list(pairs))
+            raise RuntimeError("model internals")
+
+        result = self.make_pipeline(
+            dense_search=lambda vector, limit, libraries: [
+                candidate("a", dense_rank=1),
+                candidate("b", dense_rank=2),
+            ],
+            rerank=partial(rerank_candidates, scorer=fail),
+            rerank_limit=2,
+        ).retrieve("steel", None, 2)
+
+        self.assertEqual([row.chunk_id for row in result.candidates], ["a", "b"])
+        self.assertEqual(len(scorer_calls), 1)
+        self.assertEqual([warning["stage"] for warning in result.warnings], ["rerank"])
+        self.assertTrue(
+            all(row.diagnostics["reranker_fallback"] for row in result.candidates)
+        )
 
 
 if __name__ == "__main__":

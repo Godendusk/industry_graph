@@ -236,7 +236,7 @@ class LexicalStoreTests(unittest.TestCase):
         self.assertEqual(
             dict(candidate.metadata),
             {
-                "__retrieval_core_tuple__": ["ordinary"],
+                "__retrieval_core_tuple__": ("ordinary",),
                 "chunk_index": 0,
                 "previous_chunk_id": None,
                 "next_chunk_id": None,

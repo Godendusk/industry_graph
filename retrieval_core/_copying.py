@@ -64,3 +64,29 @@ def deep_copy_mapping(mapping: Mapping) -> dict:
 
     copied = deep_copy_value(mapping)
     return dict(copied)
+
+
+def deep_freeze_value(value: Any) -> Any:
+    """Recursively isolate and freeze common JSON-like container values."""
+
+    if isinstance(value, Mapping):
+        return MappingProxyType(
+            {
+                deep_copy_value(key): deep_freeze_value(item)
+                for key, item in value.items()
+            }
+        )
+    if isinstance(value, (list, tuple)):
+        return tuple(deep_freeze_value(item) for item in value)
+    if isinstance(value, (set, frozenset)):
+        return frozenset(deep_freeze_value(item) for item in value)
+    return deep_copy_value(value)
+
+
+def deep_freeze_mapping(mapping: Mapping) -> Mapping:
+    """Return an isolated, recursively immutable mapping."""
+
+    frozen = deep_freeze_value(mapping)
+    if not isinstance(frozen, MappingProxyType):
+        raise TypeError("mapping must be a mapping")
+    return frozen

@@ -232,13 +232,15 @@ class ReciprocalRankFusionTests(unittest.TestCase):
         result = reciprocal_rank_fusion(
             [original], [], rrf_k=60, limit=1, per_document_limit=1
         )[0]
-        result.metadata["nested"]["items"].append(2)
+        with self.assertRaises(AttributeError):
+            result.metadata["nested"]["items"].append(2)
         result.metadata["vector"].values[0] = 9
-        result.diagnostics["trace"]["steps"].append("fusion")
+        with self.assertRaises(AttributeError):
+            result.diagnostics["trace"]["steps"].append("fusion")
 
-        self.assertEqual(original.metadata["nested"]["items"], [1])
+        self.assertEqual(original.metadata["nested"]["items"], (1,))
         self.assertEqual(original.metadata["vector"].values, [1, 2])
-        self.assertEqual(original.diagnostics["trace"]["steps"], ["dense"])
+        self.assertEqual(original.diagnostics["trace"]["steps"], ("dense",))
         with self.assertRaises(TypeError):
             result.metadata["new"] = "value"
 
@@ -436,13 +438,15 @@ class RerankerTests(unittest.TestCase):
         result = rerank_candidates(
             "query", [original], scorer=lambda pairs: [0.7], final_limit=1
         )[0]
-        result.metadata["nested"]["items"].append(2)
+        with self.assertRaises(AttributeError):
+            result.metadata["nested"]["items"].append(2)
         result.metadata["vector"].values[0] = 9
-        result.diagnostics["trace"]["steps"].append("rerank")
+        with self.assertRaises(AttributeError):
+            result.diagnostics["trace"]["steps"].append("rerank")
 
-        self.assertEqual(original.metadata["nested"]["items"], [1])
+        self.assertEqual(original.metadata["nested"]["items"], (1,))
         self.assertEqual(original.metadata["vector"].values, [1, 2])
-        self.assertEqual(original.diagnostics["trace"]["steps"], ["fusion"])
+        self.assertEqual(original.diagnostics["trace"]["steps"], ("fusion",))
         with self.assertRaises(TypeError):
             result.diagnostics["new"] = "value"
 
@@ -460,9 +464,10 @@ class RerankerTests(unittest.TestCase):
             scorer=lambda pairs: (_ for _ in ()).throw(RuntimeError("failure")),
             final_limit=1,
         )[0]
-        result.diagnostics["trace"]["steps"].append("fallback")
+        with self.assertRaises(AttributeError):
+            result.diagnostics["trace"]["steps"].append("fallback")
 
-        self.assertEqual(original.diagnostics["trace"]["steps"], ["fusion"])
+        self.assertEqual(original.diagnostics["trace"]["steps"], ("fusion",))
         self.assertTrue(result.diagnostics["reranker_fallback"])
 
 

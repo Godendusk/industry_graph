@@ -1,6 +1,7 @@
 import os
 import tempfile
 import unittest
+from dataclasses import FrozenInstanceError
 from pathlib import Path
 from unittest.mock import patch
 
@@ -10,6 +11,11 @@ from retrieval_core import (
     RetrievalConfig,
     RetrievalResult,
 )
+
+
+class MutableBox:
+    def __init__(self, values):
+        self.values = list(values)
 
 
 class RetrievalConfigTests(unittest.TestCase):
@@ -153,6 +159,33 @@ class RetrievalCandidateTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             candidate.diagnostics["latency_ms"] = 12.5
 
+    def test_fields_and_nested_values_are_immutable_and_isolated(self):
+        metadata = {"nested": {"items": [1]}, "labels": {"safe"}}
+        diagnostics = {"trace": ["dense"]}
+        candidate = RetrievalCandidate(
+            chunk_id="document-1:0",
+            document_id="document-1",
+            text="A useful passage.",
+            metadata=metadata,
+            diagnostics=diagnostics,
+        )
+
+        metadata["nested"]["items"].append(2)
+        metadata["labels"].add("changed")
+        diagnostics["trace"].append("changed")
+
+        self.assertEqual(candidate.metadata["nested"]["items"], (1,))
+        self.assertEqual(candidate.metadata["labels"], frozenset({"safe"}))
+        self.assertEqual(candidate.diagnostics["trace"], ("dense",))
+        with self.assertRaises(FrozenInstanceError):
+            candidate.final_rank = 1
+        with self.assertRaises(TypeError):
+            candidate.metadata["nested"]["new"] = "value"
+        with self.assertRaises(AttributeError):
+            candidate.metadata["nested"]["items"].append(2)
+        with self.assertRaises(AttributeError):
+            candidate.metadata["labels"].add("changed")
+
 
 class RetrievalResultTests(unittest.TestCase):
     def test_defaults_are_safe_and_independent(self):
@@ -211,6 +244,51 @@ class RetrievalResultTests(unittest.TestCase):
             result.timings["rerank"] = 0.1
         with self.assertRaises(TypeError):
             result.candidate_counts["final"] = 1
+
+    def test_warning_values_are_recursively_frozen_and_isolated(self):
+        warning = {
+            "stage": "dense",
+            "context": {
+                "attempts": [1, {"labels": {"safe"}}],
+                "pair": ([2],),
+            },
+        }
+
+        result = RetrievalResult(status="success", query="steel", warnings=[warning])
+        warning["context"]["attempts"].append(3)
+        warning["context"]["attempts"][1]["labels"].add("changed")
+        warning["context"]["pair"][0].append(4)
+
+        frozen_context = result.warnings[0]["context"]
+        self.assertEqual(
+            frozen_context,
+            {
+                "attempts": (1, {"labels": frozenset({"safe"})}),
+                "pair": ((2,),),
+            },
+        )
+        with self.assertRaises(TypeError):
+            frozen_context["new"] = "value"
+        with self.assertRaises(AttributeError):
+            frozen_context["attempts"].append(3)
+        with self.assertRaises(AttributeError):
+            frozen_context["attempts"][1]["labels"].add("changed")
+
+    def test_candidates_are_snapshotted_with_opaque_values_isolated(self):
+        candidate = RetrievalCandidate(
+            chunk_id="document-1:0",
+            document_id="document-1",
+            text="A useful passage.",
+            metadata={"opaque": MutableBox([1])},
+        )
+
+        result = RetrievalResult(
+            status="success", query="steel", candidates=[candidate]
+        )
+        candidate.metadata["opaque"].values.append(2)
+
+        self.assertIsNot(result.candidates[0], candidate)
+        self.assertEqual(result.candidates[0].metadata["opaque"].values, [1])
 
 
 if __name__ == "__main__":
