@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import time
 from datetime import date, datetime
 from pathlib import Path
@@ -22,6 +23,44 @@ from .vector_store import (
     delete_existing_material,
     upsert_paragraphs,
 )
+
+
+def _v2_enabled() -> bool:
+    """Keep v2 dual-write opt-in until the staged index is operationally ready."""
+    return os.environ.get("REPORT_RAG_V2_DUAL_WRITE", "0").strip() == "1"
+
+
+def _upsert_v2_material(library: str, material_id: str, title: str, metadata: Dict[str, Any], raw_content: str) -> List[str]:
+    """Write the same source material to v2; callers record, rather than hide, failures."""
+    from .v2_index import V2IndexWriter
+    from retrieval_core.chunker import build_report_chunks
+    from retrieval_core.config import RetrievalConfig
+    from retrieval_core.dense_store import DenseStore
+    from retrieval_core.lexical_store import LexicalStore
+    from retrieval_core.model_manager import ModelManager
+
+    config = RetrievalConfig.for_project(Path(__file__).resolve().parents[2])
+    from .text_utils import html_to_structured_blocks
+    blocks = html_to_structured_blocks(raw_content) or [
+        {"kind": "paragraph", "text": paragraph} for paragraph in split_plain_paragraphs(raw_content, min_len=1)
+    ]
+    if not blocks:
+        raise ValueError("material has no structured v2 blocks")
+    if not config.embedding_model_path.is_dir():
+        raise RuntimeError("local v2 embedding model is missing")
+    from transformers import AutoTokenizer
+    tokenizer = AutoTokenizer.from_pretrained(str(config.embedding_model_path), local_files_only=True)
+    manager = ModelManager(config.embedding_model_path, config.reranker_model_path)
+    chunks = build_report_chunks(blocks, library, material_id, title, metadata, tokenizer)
+    writer = V2IndexWriter(
+        DenseStore(config.index_root / "chroma"), LexicalStore(config.index_root / "lexical.sqlite3"),
+        ready_path=config.index_root / "READY", embed_documents=manager.embed_documents,
+        model_version=config.embedding_model_path.name, chunker_version="v2", dictionary_version="v1",
+    )
+    result = writer.upsert_document(chunks[0].document_id, chunks)
+    if result.status != "success":
+        raise RuntimeError(result.message)
+    return list(result.expected_ids)
 
 
 INDUSTRY = "ai"
@@ -394,6 +433,7 @@ def _ingest_record(
     if library == "research_report":
         raw_text = source_record.get("summary") or ""
         paragraphs = split_plain_paragraphs(raw_text)
+        raw_content = raw_text
     else:
         detail = client.query_by_id(material_id)
         title = normalized_title(detail.get("title") or title)
@@ -401,6 +441,7 @@ def _ingest_record(
         source_address = normalize_text(detail.get("sourceAddress") or source_address)
         raw_html = detail.get("contentWithTag") or detail.get("content") or detail.get("summary") or source_record.get("summary") or ""
         paragraphs = html_to_paragraphs(raw_html)
+        raw_content = raw_html
 
     if not paragraphs:
         raise ValueError("material has no usable paragraphs")
@@ -433,6 +474,16 @@ def _ingest_record(
         metadatas=metadatas,
     )
 
+    v2_status, v2_chunk_ids, v2_error = "disabled", [], None
+    if _v2_enabled():
+        try:
+            v2_chunk_ids = _upsert_v2_material(
+                library, material_id, title, metadatas[0], raw_content
+            )
+            v2_status = "success"
+        except Exception as exc:
+            v2_status, v2_error = "error", str(exc)
+
     now = _now_iso()
     return {
         "manifest_record": {
@@ -449,6 +500,11 @@ def _ingest_record(
             "error": None,
             "fetched_at": now,
             "vectorized_at": now,
+            "v2_status": v2_status,
+            "v2_chunk_ids": v2_chunk_ids,
+            "v2_error": v2_error,
+            "chunker_version": "v2" if v2_status == "success" else None,
+            "embedding_model": "bge-base-zh-v1.5" if v2_status == "success" else None,
         }
     }
 
