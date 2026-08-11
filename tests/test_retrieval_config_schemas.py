@@ -2,6 +2,8 @@ import os
 import tempfile
 import unittest
 from dataclasses import FrozenInstanceError
+from enum import Enum
+from numbers import Number
 from pathlib import Path
 from unittest.mock import patch
 
@@ -25,6 +27,47 @@ class ArrayLike:
 
     def tolist(self):
         return self.values
+
+
+class ScalarArrayLike:
+    shape = ()
+
+    def __init__(self, value):
+        self.value = value
+
+    def tolist(self):
+        return self.value
+
+
+class MutableInt(int):
+    def __new__(cls, value):
+        instance = super().__new__(cls, value)
+        instance.items = []
+        return instance
+
+
+class MutableStr(str):
+    def __new__(cls, value):
+        instance = super().__new__(cls, value)
+        instance.items = []
+        return instance
+
+
+class MutableFloat(float):
+    def __new__(cls, value):
+        instance = super().__new__(cls, value)
+        instance.items = []
+        return instance
+
+
+class MutableNumber(Number):
+    def __init__(self, value):
+        self.value = value
+        self.items = []
+
+
+class MutableValueEnum(Enum):
+    ROW = ["mutable"]
 
 
 class RetrievalConfigTests(unittest.TestCase):
@@ -351,6 +394,60 @@ class RetrievalResultTests(unittest.TestCase):
             with self.subTest(make_result=make_result):
                 with self.assertRaises(ValueError):
                     make_result()
+
+    def test_mutable_builtin_scalar_subclasses_normalize_to_exact_builtins(self):
+        integer = MutableInt(3)
+        text = MutableStr("steel")
+        decimal = MutableFloat(1.5)
+
+        candidate = RetrievalCandidate(
+            chunk_id="document-1:0",
+            document_id="document-1",
+            text="A useful passage.",
+            metadata={"integer": integer, "text": text, "decimal": decimal},
+        )
+        result = RetrievalResult(
+            status="success",
+            query="steel",
+            warnings=[{"stage": "probe", "value": integer}],
+            timings={"dense": decimal},
+            candidate_counts={"dense": integer},
+        )
+
+        self.assertIs(type(candidate.metadata["integer"]), int)
+        self.assertIs(type(candidate.metadata["text"]), str)
+        self.assertIs(type(candidate.metadata["decimal"]), float)
+        self.assertIs(type(result.warnings[0]["value"]), int)
+        self.assertIs(type(result.timings["dense"]), float)
+        self.assertIs(type(result.candidate_counts["dense"]), int)
+        self.assertIsNot(candidate.metadata["integer"], integer)
+        self.assertIsNot(candidate.metadata["text"], text)
+        self.assertIsNot(candidate.metadata["decimal"], decimal)
+
+    def test_opaque_number_and_mutable_enum_fail_closed(self):
+        invalid_values = [MutableNumber(3), MutableValueEnum.ROW]
+        for invalid in invalid_values:
+            with self.subTest(invalid=invalid):
+                with self.assertRaisesRegex(TypeError, "immutable"):
+                    RetrievalCandidate(
+                        chunk_id="document-1:0",
+                        document_id="document-1",
+                        text="A useful passage.",
+                        metadata={"invalid": invalid},
+                    )
+
+    def test_numpy_like_scalars_normalize_before_timing_and_count_validation(self):
+        result = RetrievalResult(
+            status="success",
+            query="steel",
+            timings={"dense": ScalarArrayLike(0.25)},
+            candidate_counts={"dense": ScalarArrayLike(2)},
+        )
+
+        self.assertIs(type(result.timings["dense"]), float)
+        self.assertEqual(result.timings["dense"], 0.25)
+        self.assertIs(type(result.candidate_counts["dense"]), int)
+        self.assertEqual(result.candidate_counts["dense"], 2)
 
 
 if __name__ == "__main__":

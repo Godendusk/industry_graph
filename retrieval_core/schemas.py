@@ -1,41 +1,53 @@
 """Shared records exchanged by report retrieval components."""
 
 from dataclasses import dataclass, field, replace
+from decimal import Decimal
 import math
-from numbers import Real
 from types import MappingProxyType
 from typing import Any, Mapping, Optional, Tuple
 
-from retrieval_core._copying import deep_freeze_mapping
+from retrieval_core._copying import deep_freeze_mapping, deep_freeze_value
 
 
 def _frozen_timings(values: Mapping[str, float]) -> Mapping[str, float]:
+    normalized = {}
     for stage, value in values.items():
-        if (
-            not isinstance(stage, str)
-            or not stage
-            or isinstance(value, bool)
-            or not isinstance(value, Real)
-            or not math.isfinite(value)
-            or value < 0
-        ):
+        if not isinstance(stage, str) or not stage:
             raise ValueError("timings must map stage names to finite non-negative numbers")
-    return deep_freeze_mapping(values)
+        try:
+            frozen_value = deep_freeze_value(value)
+            if type(frozen_value) not in (int, float, Decimal):
+                raise ValueError
+            number = float(frozen_value)
+        except (TypeError, ValueError, OverflowError) as error:
+            raise ValueError(
+                "timings must map stage names to finite non-negative numbers"
+            ) from error
+        if not math.isfinite(number) or number < 0:
+            raise ValueError("timings must map stage names to finite non-negative numbers")
+        normalized[str(stage)] = number
+    return deep_freeze_mapping(normalized)
 
 
 def _frozen_candidate_counts(values: Mapping[str, int]) -> Mapping[str, int]:
+    normalized = {}
     for stage, value in values.items():
-        if (
-            not isinstance(stage, str)
-            or not stage
-            or isinstance(value, bool)
-            or not isinstance(value, int)
-            or value < 0
-        ):
+        if not isinstance(stage, str) or not stage:
             raise ValueError(
                 "candidate_counts must map stage names to non-negative integers"
             )
-    return deep_freeze_mapping(values)
+        try:
+            frozen_value = deep_freeze_value(value)
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                "candidate_counts must map stage names to non-negative integers"
+            ) from error
+        if type(frozen_value) is not int or frozen_value < 0:
+            raise ValueError(
+                "candidate_counts must map stage names to non-negative integers"
+            )
+        normalized[str(stage)] = frozen_value
+    return deep_freeze_mapping(normalized)
 
 
 @dataclass(frozen=True)

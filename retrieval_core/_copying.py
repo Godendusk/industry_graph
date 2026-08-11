@@ -5,7 +5,6 @@ from copy import deepcopy
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from enum import Enum
-from numbers import Number
 from pathlib import PurePath
 from types import MappingProxyType
 from typing import Any
@@ -72,21 +71,6 @@ def deep_copy_mapping(mapping: Mapping) -> dict:
     return dict(copied)
 
 
-_IMMUTABLE_SCALARS = (
-    str,
-    bytes,
-    Number,
-    Decimal,
-    Enum,
-    date,
-    datetime,
-    time,
-    timedelta,
-    PurePath,
-    UUID,
-)
-
-
 def deep_freeze_value(
     value: Any,
     memo: dict[int, Any] | None = None,
@@ -94,8 +78,26 @@ def deep_freeze_value(
 ) -> Any:
     """Recursively isolate and freeze common JSON-like container values."""
 
-    if value is None or isinstance(value, _IMMUTABLE_SCALARS):
+    if value is None:
         return value
+    if isinstance(value, Enum):
+        raise TypeError("Enum values cannot be proven recursively immutable")
+    if isinstance(value, bool):
+        return bool(value)
+    if isinstance(value, int):
+        return int(value)
+    if isinstance(value, float):
+        return float(value)
+    if isinstance(value, complex):
+        return complex(value)
+    if isinstance(value, str):
+        return str(value)
+    if isinstance(value, bytes):
+        return bytes(value)
+    if type(value) in (Decimal, date, datetime, time, timedelta, UUID):
+        return value
+    if isinstance(value, PurePath):
+        return PurePath(str(value))
     if memo is None:
         memo = {}
     if active is None:

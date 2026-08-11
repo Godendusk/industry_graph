@@ -1,7 +1,8 @@
 import math
 from functools import partial
-from itertools import repeat
+from itertools import cycle, repeat
 import unittest
+from unittest.mock import MagicMock, Mock, create_autospec
 
 from retrieval_core import HybridRetrievalPipeline, RetrievalCandidate
 from retrieval_core.reranker import rerank_candidates
@@ -579,6 +580,47 @@ class HybridRetrievalPipelineTests(unittest.TestCase):
 
         self.assertEqual(result.status, "success")
         self.assertEqual(calls, [("steel", 1, 3)])
+
+    def test_stdlib_mock_wrappers_bind_effective_legacy_signature_and_call_once(self):
+        def legacy(query, rows, limit):
+            return list(reversed(rows[:limit]))
+
+        wrappers = [
+            Mock(wraps=legacy),
+            Mock(side_effect=legacy),
+            MagicMock(wraps=legacy),
+            create_autospec(legacy, side_effect=legacy),
+        ]
+        for wrapped in wrappers:
+            with self.subTest(wrapped=wrapped):
+                result = self.make_pipeline(
+                    dense_search=lambda vector, limit, libraries: [
+                        candidate("a", dense_rank=1),
+                        candidate("b", dense_rank=2),
+                    ],
+                    rerank=wrapped,
+                    rerank_limit=2,
+                ).retrieve("steel", None, 2)
+
+                self.assertEqual(
+                    [row.chunk_id for row in result.candidates], ["b", "a"]
+                )
+                self.assertEqual(result.warnings, ())
+                self.assertEqual(wrapped.call_count, 1)
+                self.assertEqual(wrapped.call_args.args[0], "steel")
+                self.assertEqual(len(wrapped.call_args.args[1]), 2)
+                self.assertEqual(wrapped.call_args.args[2], 2)
+                self.assertEqual(wrapped.call_args.kwargs, {})
+
+    def test_finite_clock_readings_with_overflowing_delta_degrade_to_zero(self):
+        clock_values = cycle((-1e308, 1e308))
+
+        result = self.make_pipeline(clock=lambda: next(clock_values)).retrieve(
+            "steel", None, 1
+        )
+
+        self.assertEqual(result.status, "success")
+        self.assertTrue(all(value == 0.0 for value in result.timings.values()))
 
 
 if __name__ == "__main__":

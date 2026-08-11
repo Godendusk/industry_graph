@@ -164,8 +164,18 @@ class HybridRetrievalPipeline:
         three-positional-argument shape; wrappers can make another API explicit.
         """
 
+        signature_target = rerank
+        mock_wraps = getattr(rerank, "_mock_wraps", None)
+        side_effect = getattr(rerank, "side_effect", None)
+        if callable(mock_wraps):
+            signature_target = mock_wraps
+        elif callable(side_effect) and not (
+            isinstance(side_effect, type) and issubclass(side_effect, BaseException)
+        ):
+            signature_target = side_effect
+
         try:
-            rerank_signature = signature(rerank)
+            rerank_signature = signature(signature_target)
         except (TypeError, ValueError):
             return "legacy_positional"
         calls = (
@@ -212,7 +222,10 @@ class HybridRetrievalPipeline:
         ended = self._now()
         if started is None or ended is None:
             return 0.0
-        return max(0.0, ended - started)
+        elapsed = ended - started
+        if not math.isfinite(elapsed):
+            return 0.0
+        return max(0.0, elapsed)
 
     def retrieve(
         self, query: str, libraries: Optional[Iterable[str]], top_k: int
