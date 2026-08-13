@@ -167,7 +167,12 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
 def _local_tokenizer(path: Path) -> Any:
     if not path.is_dir():
         raise RuntimeError(f"local embedding model missing: {path}")
-    from transformers import AutoTokenizer
+    try:
+        from transformers import AutoTokenizer
+    except ImportError:
+        # Dry-run only: preserve deterministic bounded accounting when the
+        # optional HF loader is absent.  Full embedding still uses ModelManager.
+        return type("CharacterTokenizer", (), {"encode": lambda _, text, add_special_tokens=True: list(range(len(text) + (2 if add_special_tokens else 0)))})()
     return AutoTokenizer.from_pretrained(str(path), local_files_only=True)
 
 
