@@ -582,6 +582,9 @@ def build_report_chunks(
             f"c:{index}:{digest[:8]}"
         )
         chunk_metadata = dict(metadata)
+        source_content_hash = chunk_metadata.pop("content_hash", None)
+        if source_content_hash is not None:
+            chunk_metadata["source_content_hash"] = source_content_hash
         chunk_metadata.update(
             {
                 "library": normalized_library,
@@ -590,6 +593,7 @@ def build_report_chunks(
                 "section_path": chunk_text.section_path,
                 "content_type": chunk_text.content_type,
                 "chunker_version": "v2",
+                "content_hash": digest,
             }
         )
         search_source = "\n".join(

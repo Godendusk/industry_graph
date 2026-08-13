@@ -67,6 +67,29 @@ class ReciprocalRankFusionTests(unittest.TestCase):
         self.assertEqual(fused.rrf_score, 1 / 62 + 1 / 63)
         self.assertEqual(fused.rrf_rank, 1)
 
+    def test_source_hash_and_chunk_hash_are_distinct_metadata_fields(self):
+        dense = candidate(
+            "shared",
+            "doc-1",
+            dense_rank=1,
+            metadata={"content_hash": "chunk-hash", "source_content_hash": "source-hash"},
+        )
+        lexical = candidate(
+            "shared",
+            "doc-1",
+            bm25_rank=1,
+            metadata={"content_hash": "chunk-hash", "source_content_hash": "source-hash"},
+        )
+
+        result = reciprocal_rank_fusion(
+            [dense], [lexical], rrf_k=60, limit=1, per_document_limit=1
+        )
+
+        self.assertEqual(
+            dict(result[0].metadata),
+            {"content_hash": "chunk-hash", "source_content_hash": "source-hash"},
+        )
+
     def test_document_cap_is_applied_before_global_limit_without_backfill(self):
         dense = [
             candidate("a", "doc-1", dense_rank=1),

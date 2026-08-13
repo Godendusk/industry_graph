@@ -247,6 +247,20 @@ class ChunkingConfigTests(unittest.TestCase):
 
 
 class ReportChunkingTests(unittest.TestCase):
+    def test_source_content_hash_is_separate_from_generated_chunk_hash(self):
+        chunks = make_chunks(
+            [{"kind": "paragraph", "text": "人工智能产业资料正文。" * 3}],
+            metadata={
+                "classification_name": "企业案例",
+                "source": "api",
+                "content_hash": "source-material-hash",
+            },
+        )
+
+        self.assertEqual(chunks[0].metadata["source_content_hash"], "source-material-hash")
+        self.assertEqual(chunks[0].content_hash, chunks[0].metadata["content_hash"])
+        self.assertNotEqual(chunks[0].content_hash, "source-material-hash")
+
     def test_rejects_lossy_embedding_prefix_when_context_exhausts_token_budget(self):
         with self.assertRaisesRegex(ValueError, "embedding prefix.*token budget"):
             build_report_chunks(
