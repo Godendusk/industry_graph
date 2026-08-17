@@ -107,21 +107,25 @@ def _generate_writing_task_for_subsection(
         subsection_title=subsection["title"],
     )
 
-    graph_retrieval = _retrieve_graph_for_subsection(
-        query=section_retrieval_query,
-        industry=industry,
-        outline_id=subsection["outline_id"],
-        warnings=warnings,
-        task_warnings=task_warnings,
-    )
-    external_rag_retrieval = _retrieve_external_rag_for_subsection(
-        query=section_retrieval_query,
-        industry=industry,
-        top_k=top_k,
-        outline_id=subsection["outline_id"],
-        warnings=warnings,
-        task_warnings=task_warnings,
-    )
+    if industry:
+        graph_retrieval = _retrieve_graph_for_subsection(
+            query=section_retrieval_query,
+            industry=industry,
+            outline_id=subsection["outline_id"],
+            warnings=warnings,
+            task_warnings=task_warnings,
+        )
+        external_rag_retrieval = _retrieve_external_rag_for_subsection(
+            query=section_retrieval_query,
+            industry=industry,
+            top_k=top_k,
+            outline_id=subsection["outline_id"],
+            warnings=warnings,
+            task_warnings=task_warnings,
+        )
+    else:
+        graph_retrieval = {"status": "skipped", "graph_evidence_blocks": []}
+        external_rag_retrieval = {"status": "skipped", "evidence_blocks": []}
 
     prompt_result = _generate_writing_system_prompt(
         user_prompt=user_prompt,

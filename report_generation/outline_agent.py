@@ -14,12 +14,13 @@ from llm_client import llm
 
 from .external_rag.retriever import retrieve_external_rag
 from .graph_retriever import retrieve_industry_graph
-from .intent_agent import parse_report_intent
-from .planner_agent import plan_report
+from .industry_config import INDUSTRY_CONFIG
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TEMPLATE_PATH = PROJECT_ROOT / "产业链报告模板.docx"
+BODY_SECTION_MIN = 3
+BODY_SECTION_MAX = 6
 BODY_SUBSECTION_MIN = 2
 BODY_SUBSECTION_MAX = 4
 
@@ -28,111 +29,54 @@ def generate_report_outline(
     title: str,
     user_requirement: str = "",
     industry: str = "",
+    industry_confirmed: bool = False,
 ) -> dict:
-    """按 Intent → Planner → Outline 流程生成报告大纲。"""
+    """Generate a report outline directly from the confirmed task card."""
     report_title = str(title or "").strip()
     normalized_requirement = str(user_requirement or "").strip()
+    resolved_industry = str(industry or "").strip()
     if not report_title:
         return _error_response("title cannot be empty", "", "")
+    if not normalized_requirement:
+        return _error_response("user_requirement cannot be empty", resolved_industry, "")
+    if not industry_confirmed:
+        return _error_response("confirmed task_card is required", resolved_industry, "")
+    if resolved_industry and resolved_industry not in INDUSTRY_CONFIG:
+        return _error_response(f"unsupported confirmed industry: {resolved_industry}", resolved_industry, "")
 
-    # Intent 必须忠实保留标题；页面当前行业只作上下文，不覆盖标题识别结果。
-    intent_result = parse_report_intent(report_title, normalized_requirement)
-    if intent_result.get("status") != "success":
-        return intent_result
-    intent = intent_result["intent"]
-    resolved_industry = intent_result.get("resolved_industry", "")
-    resolved_industry_name = intent_result.get("resolved_industry_name", "")
-
-    # Planner 只消费已经校验的 Intent，不直接重新理解标题。
-    planner_result = plan_report(intent, resolved_industry=resolved_industry)
-    if planner_result.get("status") != "success":
-        planner_result["intent"] = intent
-        return planner_result
-    planner = planner_result["planner"]
-
+    resolved_industry_name = _industry_name(resolved_industry)
     effective_prompt = normalized_requirement or report_title
-    warnings: List[dict] = []
-    warnings.extend(intent_result.get("warnings") or [])
-    warnings.extend(planner_result.get("warnings") or [])
+    direct_result = _generate_direct_outline(
+        report_title=report_title,
+        user_requirement=effective_prompt,
+        industry=resolved_industry,
+        industry_name=resolved_industry_name,
+    )
+    if direct_result.get("status") != "success":
+        return direct_result
+
+    warnings: List[dict] = direct_result.get("warnings") or []
     outline: List[dict] = []
 
-    # Planner 的章节直接成为一级章节，不再套用 Word 固定一级章节模板。
-    for index, section in enumerate(planner.get("chapters") or [], 1):
+    for index, section in enumerate(direct_result.get("chapters") or [], 1):
         level1_id = f"S{index}"
         level1_title = str(section.get("title") or "").strip()
-        research_question = str(section.get("research_question") or "").strip()
+        chapter_goal = str(section.get("chapter_goal") or "").strip()
         content_requirements = section.get("content_requirements") or []
-        evidence_requirements = section.get("evidence_requirements") or []
-        template_requirement = _format_planner_requirement(
-            research_question,
+        template_requirement = _format_direct_requirement(
+            chapter_goal,
             content_requirements,
-            evidence_requirements,
         )
         section_warnings: List[dict] = []
         section_retrieval_query = _build_section_retrieval_query(
             user_prompt=effective_prompt,
-            industry_name=intent.get("industry", ""),
+            industry_name=resolved_industry_name,
             report_title=report_title,
             level1_title=level1_title,
             template_requirement=template_requirement,
         )
-
-        # 产业图谱和外部 RAG 都是可选证据源，不可用时不能阻断大纲。
-        if (
-            planner.get("need_industry_graph")
-            and planner.get("industry_graph_available")
-            and resolved_industry
-        ):
-            graph_retrieval = _retrieve_graph_for_section(
-                query=section_retrieval_query,
-                industry=resolved_industry,
-                level1_id=level1_id,
-                warnings=warnings,
-                section_warnings=section_warnings,
-            )
-        else:
-            graph_retrieval = {"status": "skipped", "graph_evidence_blocks": []}
-
-        if resolved_industry:
-            external_rag_retrieval = _retrieve_external_rag_for_section(
-                query=section_retrieval_query,
-                industry=resolved_industry,
-                level1_id=level1_id,
-                warnings=warnings,
-                section_warnings=section_warnings,
-            )
-        else:
-            external_rag_retrieval = {"status": "skipped", "evidence_blocks": []}
-
-        # 二级标题必须严格围绕 Planner 为当前章定义的问题和证据要求。
-        subsection_result = _generate_section_subsections(
-            user_prompt=effective_prompt,
-            industry_name=intent.get("industry", ""),
-            report_title=report_title,
-            level1_title=level1_title,
-            template_requirement=template_requirement,
-            research_question=research_question,
-            content_requirements=content_requirements,
-            evidence_requirements=evidence_requirements,
-            graph_context_text=graph_retrieval.get("graph_context_text", ""),
-            rag_context_text=external_rag_retrieval.get("rag_context_text", ""),
-        )
-        raw_subsections = []
-        if subsection_result["status"] == "success":
-            raw_subsections = subsection_result["subsections"]
-        else:
-            warning = {
-                "level1_id": level1_id,
-                "stage": "subsection_generation",
-                "message": subsection_result.get("message", "failed to generate subsections"),
-            }
-            if subsection_result.get("raw_output"):
-                warning["raw_output"] = subsection_result["raw_output"]
-            warnings.append(warning)
-            section_warnings.append(warning)
-
         subsections = _normalize_subsections(
-            raw_subsections=raw_subsections,
+            raw_subsections=section.get("subsections") or [],
             level1_id=level1_id,
             warnings=warnings,
             section_warnings=section_warnings,
@@ -143,12 +87,11 @@ def generate_report_outline(
                 "level1_title": level1_title,
                 "section_type": "body",
                 "template_requirement": template_requirement,
-                "research_question": research_question,
+                "chapter_goal": chapter_goal,
                 "content_requirements": content_requirements,
-                "evidence_requirements": evidence_requirements,
                 "section_retrieval_query": section_retrieval_query,
-                "graph_retrieval": graph_retrieval,
-                "external_rag_retrieval": external_rag_retrieval,
+                "graph_retrieval": {"status": "skipped", "graph_evidence_blocks": []},
+                "external_rag_retrieval": {"status": "skipped", "evidence_blocks": []},
                 "subsections": subsections,
                 "warnings": section_warnings,
             }
@@ -157,18 +100,154 @@ def generate_report_outline(
     return {
         "status": "success",
         "industry": resolved_industry,
-        "industry_name": resolved_industry_name or intent.get("industry", ""),
+        "industry_name": resolved_industry_name,
         "resolved_industry": resolved_industry,
         "resolved_industry_name": resolved_industry_name,
         "user_requirement": normalized_requirement,
         "effective_user_prompt": effective_prompt,
         "report_title": report_title,
-        "intent": intent,
-        "planner": planner,
         "outline": outline,
         "flat_subsections": _build_flat_subsections(outline),
         "warnings": warnings,
     }
+
+
+def _generate_direct_outline(
+    report_title: str,
+    user_requirement: str,
+    industry: str,
+    industry_name: str,
+) -> dict:
+    system_prompt = f"""你是企业产业洞察报告大纲生成智能体。
+你只根据已经人工确认的任务卡生成报告大纲，不再重新理解任务、改写标题或改换产业方向。
+必须严格继承任务卡中的研究边界；用户明确排除、不得、不包含、不分析的方向，不得进入一级或二级标题。
+生成 {BODY_SECTION_MIN} 到 {BODY_SECTION_MAX} 个一级章节，每个一级章节生成 {BODY_SUBSECTION_MIN} 到 {BODY_SUBSECTION_MAX} 个二级标题。
+不要生成正文，不要输出 Markdown 或解释说明。
+只输出一个 JSON 对象。"""
+
+    user_prompt_text = f"""请根据以下已确认任务卡生成完整报告大纲。
+
+【最终报告标题】
+{report_title}
+
+【最终报告需求】
+{user_requirement}
+
+【最终产业方向】
+{industry_name or '不使用特定产业图谱'}（系统产业键：{industry or '无'}）
+
+【输出要求】
+1. 一级章节必须服务于最终报告标题和最终报告需求。
+2. 二级标题必须落在所属一级章节范围内，互不重复，且适合后续检索和正文写作。
+3. chapter_goal 说明该一级章节要回答的问题。
+4. content_requirements 给出该一级章节的内容边界。
+5. writing_focus 说明该二级小节后续正文重点。
+6. suggested_query 应适合后续统筹智能体或正文生成智能体再次检索。
+
+【输出格式】
+{{
+  "chapters": [
+    {{
+      "level1_title": "一级章节标题",
+      "chapter_goal": "本章要回答的问题",
+      "content_requirements": ["内容要求"],
+      "subsections": [
+        {{
+          "title": "二级标题",
+          "writing_focus": "写作重点",
+          "suggested_query": "后续检索 query"
+        }}
+      ]
+    }}
+  ]
+}}
+"""
+    try:
+        content = llm.query(
+            user_prompt=user_prompt_text,
+            system_prompt=system_prompt,
+            max_tokens=5000,
+            extra_log_info=f"report_generation.outline_agent direct_outline industry={industry or 'none'}",
+        )
+    except Exception as exc:
+        return _error_response(f"direct outline LLM call failed: {exc}", industry, industry_name)
+
+    if not content:
+        return _error_response("direct outline LLM returned empty output", industry, industry_name)
+
+    try:
+        data = _parse_json_object(content)
+    except ValueError as exc:
+        result = _error_response(f"direct outline JSON parse failed: {exc}", industry, industry_name)
+        result["raw_output"] = content
+        return result
+
+    try:
+        chapters, warnings = _normalize_direct_chapters(data.get("chapters"))
+    except ValueError as exc:
+        result = _error_response(str(exc), industry, industry_name)
+        result["raw_output"] = content
+        return result
+    return {"status": "success", "chapters": chapters, "warnings": warnings}
+
+
+def _normalize_direct_chapters(value: Any) -> tuple[List[dict], List[dict]]:
+    if not isinstance(value, list):
+        raise ValueError("direct outline JSON missing chapters array")
+
+    chapters: List[dict] = []
+    warnings: List[dict] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        title = str(item.get("level1_title") or item.get("title") or "").strip()
+        if not title:
+            continue
+        chapters.append(
+            {
+                "title": title,
+                "chapter_goal": str(item.get("chapter_goal") or "").strip(),
+                "content_requirements": _clean_string_list(item.get("content_requirements")),
+                "subsections": item.get("subsections") or [],
+            }
+        )
+
+    if len(chapters) > BODY_SECTION_MAX:
+        warnings.append({
+            "stage": "outline_validation",
+            "message": f"chapter count {len(chapters)} exceeds {BODY_SECTION_MAX}; truncated",
+        })
+        chapters = chapters[:BODY_SECTION_MAX]
+    if len(chapters) < BODY_SECTION_MIN:
+        raise ValueError(f"chapter count {len(chapters)} is less than {BODY_SECTION_MIN}")
+    return chapters, warnings
+
+
+def _clean_string_list(value: Any) -> List[str]:
+    if not isinstance(value, list):
+        return []
+    result: List[str] = []
+    for item in value:
+        text = str(item or "").strip()
+        if text and text not in result:
+            result.append(text)
+    return result
+
+
+def _format_direct_requirement(
+    chapter_goal: str,
+    content_requirements: List[str],
+) -> str:
+    parts = []
+    if chapter_goal:
+        parts.append(f"章节目标：{chapter_goal}")
+    if content_requirements:
+        parts.append("内容要求：" + "；".join(content_requirements))
+    return "\n".join(parts)
+
+
+def _industry_name(industry: str) -> str:
+    return str((INDUSTRY_CONFIG.get(industry) or {}).get("name") or "").strip()
 
 
 def _parse_template(path: Path) -> dict:
@@ -413,113 +492,6 @@ def _normalize_graph_evidence_blocks(evidence_blocks: List[dict]) -> List[dict]:
     return normalized
 
 
-def _generate_section_subsections(
-    user_prompt: str,
-    industry_name: str,
-    report_title: str,
-    level1_title: str,
-    template_requirement: str,
-    research_question: str,
-    content_requirements: List[str],
-    evidence_requirements: List[str],
-    graph_context_text: str,
-    rag_context_text: str,
-) -> dict:
-    system_prompt = f"""你是产业报告二级大纲生成智能体。
-你只负责为当前一级大纲生成二级标题，不要生成其他一级大纲。
-当前版本固定产业为“{industry_name}”，不要判断或改写产业名称。
-必须生成 {BODY_SUBSECTION_MIN} 到 {BODY_SUBSECTION_MAX} 个二级标题。
-不要生成正文，不要写段落。
-必须只输出 JSON 对象，不要输出 Markdown、代码块或解释说明。
-JSON 必须包含 subsections 数组。
-每个 subsections 项必须包含 title、writing_focus、suggested_query。"""
-
-    user_prompt_text = f"""请根据以下信息，为当前一级大纲生成二级标题。
-
-【用户原始需求】
-{user_prompt}
-
-【报告标题】
-{report_title}
-
-【固定产业名称】
-{industry_name}
-
-【当前一级大纲】
-{level1_title}
-
-【当前一级大纲要求】
-{template_requirement}
-
-【本章必须回答的研究问题】
-{research_question}
-
-【Planner 内容要求】
-{json.dumps(content_requirements, ensure_ascii=False)}
-
-【Planner 证据要求】
-{json.dumps(evidence_requirements, ensure_ascii=False)}
-
-【当前一级大纲的知识图谱检索结果】
-{graph_context_text or "未检索到可用知识图谱上下文。"}
-
-【当前一级大纲的外部资料库检索结果】
-{rag_context_text or "未检索到可用外部资料库上下文。"}
-
-【生成要求】
-1. 只生成当前一级大纲下的二级标题。
-2. 二级标题数量必须为 {BODY_SUBSECTION_MIN} 到 {BODY_SUBSECTION_MAX} 个。
-3. 二级标题之间应互不重复，覆盖当前一级大纲要求中的关键分析角度。
-4. 所生成的二级标题一定要与用户原始需求高度相关。
-5. writing_focus 说明该小节后续正文要重点写什么。
-6. suggested_query 应适合后续统筹智能体或正文生成智能体再次检索。
-7. 不要生成正文。
-8. 生成的二级标题之间需要有较大的独立性，不要生成高度相似的二级标题。
-9. 生成二级标题时必须以本章 research_question 为边界，不得加入 Planner 未要求或 Intent 禁止扩展的分析方向。
-
-【输出格式】
-{{
-  "subsections": [
-    {{
-      "title": "二级标题",
-      "writing_focus": "写作重点",
-      "suggested_query": "后续检索 query"
-    }}
-  ]
-}}
-"""
-    try:
-        content = llm.query(
-            user_prompt=user_prompt_text,
-            system_prompt=system_prompt,
-            max_tokens=5000,
-            extra_log_info=f"report_generation.outline_agent subsection level1={level1_title}",
-        )
-    except Exception as exc:
-        return {"status": "error", "message": f"subsection LLM call failed: {exc}"}
-
-    if not content:
-        return {"status": "error", "message": "subsection LLM returned empty output"}
-
-    try:
-        data = _parse_json_object(content)
-    except ValueError as exc:
-        return {
-            "status": "error",
-            "message": f"subsection JSON parse failed: {exc}",
-            "raw_output": content,
-        }
-
-    subsections = data.get("subsections")
-    if not isinstance(subsections, list):
-        return {
-            "status": "error",
-            "message": "subsection JSON missing subsections array",
-            "raw_output": content,
-        }
-    return {"status": "success", "subsections": subsections}
-
-
 def _normalize_subsections(
     raw_subsections: List[Any],
     level1_id: str,
@@ -567,20 +539,6 @@ def _normalize_subsections(
     for index, subsection in enumerate(subsections, 1):
         subsection["outline_id"] = f"{level1_id}.{index}"
     return subsections
-
-
-def _format_planner_requirement(
-    research_question: str,
-    content_requirements: List[str],
-    evidence_requirements: List[str],
-) -> str:
-    """将 Planner 章节约束适配为下游沿用的 template_requirement 文本。"""
-    parts = [f"研究问题：{research_question}"]
-    if content_requirements:
-        parts.append("内容要求：" + "；".join(content_requirements))
-    if evidence_requirements:
-        parts.append("证据要求：" + "；".join(evidence_requirements))
-    return "\n".join(parts)
 
 
 def _build_flat_subsections(outline: List[dict]) -> List[dict]:

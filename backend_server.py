@@ -19,6 +19,7 @@ from report_generation.coordinator_agent import generate_writing_tasks
 from report_generation.outline_agent import generate_report_outline
 from report_generation.rewrite_agent import recommend_rewrite_materials, rewrite_body_section
 from report_generation.summary_agent import generate_report_summary
+from report_generation.task_card_agent import generate_writing_task_card, generate_report_requirement
 from report_generation.word_export_agent import export_report_docx
 from risk_inference.risk import list_level2_nodes, run_risk_analysis
 from policy_deduction.Policy_deduction import list_policy_titles, run_policy_analysis
@@ -235,37 +236,118 @@ def rag_query():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# --- Report generation: outline agent ---
-@app.route("/api/report/outline", methods=["POST"])
+# --- Report generation: editable writing task~ card ---
+# 生成可以编辑的写作任务卡片，供前端展示和修改
+@app.route("/api/report/task-card", methods=["POST"])
 @token_required
-def report_outline():
+def report_task_card():
+    data = request.json or {}  
+    title = str(data.get("title") or "").strip() # 用户输入的标题(若无使用默认标题)
+    user_requirement = str(data.get("user_requirement") or "").strip() # 用户输入的需求
+    page_industry = str(data.get("page_industry") or data.get("industry") or "").strip() # 页面传入的产业参数
+    if not title:
+        return jsonify({"status": "error", "message": "title cannot be empty"}), 400
+    # 生成可编辑的写作任务卡，返回给前端
+    result = generate_writing_task_card(
+        title=title,
+        user_requirement=user_requirement,
+        page_industry=page_industry,
+    )
+    log_action(
+        "report_task_card",
+        result.get("status", "error"),
+        result.get("message", ""),
+        {"title": title, "page_industry": page_industry, "task_card": result.get("task_card")},
+    )
+    if result.get("status") != "success":
+        return jsonify(result), 400
+    return jsonify(result)
+
+
+@app.route("/api/report/task-card/rewrite-requirement", methods=["POST"])
+@token_required
+def report_task_card_rewrite_requirement():
     data = request.json or {}
     title = str(data.get("title") or "").strip()
     user_requirement = str(data.get("user_requirement") or "").strip()
     industry = str(data.get("industry") or "").strip()
-
+    industry_name = str(data.get("industry_name") or "").strip()
     if not title:
         return jsonify({"status": "error", "message": "title cannot be empty"}), 400
+    if not industry:
+        return jsonify({"status": "error", "message": "industry cannot be empty"}), 400
+
+    result = generate_report_requirement(
+        title=title,
+        user_requirement=user_requirement,
+        industry=industry,
+        industry_name=industry_name,
+    )
+    log_action(
+        "report_task_card_rewrite_requirement",
+        result.get("status", "error"),
+        result.get("message", ""),
+        {"title": title, "industry": industry, "industry_name": industry_name},
+    )
+    if result.get("status") != "success":
+        return jsonify(result), 400
+    return jsonify(result)
+
+
+# --- Report generation: outline agent ---
+# 生成报告大纲，供前端展示和修改
+@app.route("/api/report/outline", methods=["POST"])
+@token_required
+def report_outline():
+    # 获取前端POST传过来的json请求体，拿不到就是空字典
+    data = request.json or {}
+    task_card = data.get("task_card") if isinstance(data.get("task_card"), dict) else None
+    if task_card is None:
+        return jsonify({"status": "error", "message": "confirmed task_card is required"}), 400
+
+    title = str(task_card.get("selected_title") or "").strip()
+    user_requirement = str(task_card.get("report_requirement") or "").strip()
+    industry = str(task_card.get("selected_industry") or "").strip()
+
+    # 校验 title 是否为空，如果为空就返回错误响应(前端保证若用户不输入，使用默认标题)
+    if not title:
+        return jsonify({"status": "error", "message": "title cannot be empty"}), 400
+    if not user_requirement:
+        return jsonify({"status": "error", "message": "report_requirement cannot be empty"}), 400
+
+    # 调用核心业务函数，生成报告大纲
+    # 传入：报告标题、用户需求、所属行业
 
     result = generate_report_outline(
         title=title,
         user_requirement=user_requirement,
         industry=industry,
+        industry_confirmed=task_card is not None,
     )
-    # 记录两阶段中间结果，便于定位意图偏差或规划失败。
+
+    # 记录直接大纲生成上下文，便于定位任务卡和输出大纲是否一致。
     log_action(
-        "report_intent_planner",
+        "report_direct_outline",
         result.get("status", "error"),
         result.get("message", ""),
         {
             "title": title,
-            "intent": result.get("intent"),
-            "planner": result.get("planner"),
-            "resolved_industry": result.get("resolved_industry", ""),
+            "industry": industry,
+            "task_card": {
+                "selected_title": task_card.get("selected_title"),
+                "selected_industry": task_card.get("selected_industry"),
+                "selected_industry_name": task_card.get("selected_industry_name"),
+                "report_requirement": task_card.get("report_requirement"),
+            },
+            "outline": result.get("outline"),
         },
     )
+
+    # 判断业务返回状态，如果不是success，返回错误json，http码400
     if result.get("status") != "success":
         return jsonify(result), 400
+
+    # 成功，直接把业务结果返回给前端
     return jsonify(result)
 
 
@@ -276,7 +358,7 @@ def report_coordinator():
     data = request.json or {}
     user_prompt = str(data.get("user_prompt") or "").strip()
     report_title = str(data.get("report_title") or "").strip()
-    industry = str(data.get("industry") or "ai").strip() or "ai"
+    industry = str(data.get("industry", "ai") or "").strip()
     outline = data.get("outline")
     top_k = data.get("top_k", 10)
 
@@ -306,7 +388,7 @@ def report_body():
     data = request.json or {}
     user_prompt = str(data.get("user_prompt") or "").strip()
     report_title = str(data.get("report_title") or "").strip()
-    industry = str(data.get("industry") or "ai").strip() or "ai"
+    industry = str(data.get("industry", "ai") or "").strip()
     writing_tasks = data.get("writing_tasks")
     max_workers = data.get("max_workers", 3)
 
@@ -406,7 +488,7 @@ def report_history_delete():
 def report_summary():
     data = request.json or {}
     report_title = str(data.get("report_title") or "").strip()
-    industry = str(data.get("industry") or "ai").strip() or "ai"
+    industry = str(data.get("industry", "ai") or "").strip()
     outline = data.get("outline")
     body_sections = data.get("body_sections")
 
@@ -435,7 +517,7 @@ def report_export_word():
     data = request.json or {}
     report_title = str(data.get("report_title") or "").strip()
     abstract_text = str(data.get("abstract_text") or "").strip()
-    industry = str(data.get("industry") or "ai").strip() or "ai"
+    industry = str(data.get("industry", "ai") or "").strip()
     body_sections = data.get("body_sections")
 
     if not report_title:
@@ -487,7 +569,7 @@ def report_rewrite_materials():
     data = request.json or {}
     rewrite_prompt = str(data.get("rewrite_prompt") or "").strip()
     report_title = str(data.get("report_title") or "").strip()
-    industry = str(data.get("industry") or "ai").strip() or "ai"
+    industry = str(data.get("industry", "ai") or "").strip()
     body_section = data.get("body_section")
     top_k = data.get("top_k", 10)
 
@@ -517,7 +599,7 @@ def report_rewrite():
     data = request.json or {}
     rewrite_prompt = str(data.get("rewrite_prompt") or "").strip()
     report_title = str(data.get("report_title") or "").strip()
-    industry = str(data.get("industry") or "ai").strip() or "ai"
+    industry = str(data.get("industry", "ai") or "").strip()
     body_section = data.get("body_section")
     graph_retrieval = data.get("graph_retrieval") or {}
     selected_external_evidence_blocks = data.get("selected_external_evidence_blocks") or []

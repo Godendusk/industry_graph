@@ -75,3 +75,20 @@ def get_industry_config(industry: str) -> dict:
 
 def get_vector_db_path(industry: str) -> Path:
     return Path(get_industry_config(industry)["vector_db_path"])
+
+
+def resolve_supported_industry(industry_text: str) -> dict:
+    """Map a model-readable industry name to a supported industry key."""
+    normalized = str(industry_text or "").strip().lower().replace("产业", "").replace("行业", "")
+    if not normalized:
+        return {}
+    for key, config in INDUSTRY_CONFIG.items():
+        name = str(config.get("name") or "").strip()
+        candidates = {
+            key.lower(),
+            name.lower(),
+            name.lower().replace("产业", "").replace("行业", ""),
+        }
+        if normalized in candidates or any(candidate and candidate in normalized for candidate in candidates):
+            return {"key": key, "name": name}
+    return {}

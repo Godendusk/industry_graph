@@ -60,3 +60,14 @@
   - `report_generation/coordinator_agent.py`、`body_agent.py`、`summary_agent.py`、`word_export_agent.py`：增加无图谱、未配置行业场景的非阻断兼容。
   - `static/js/modules/industry_report.js`、`templates/components/industry_report.html`：更新输入契约、流程文案、行业自动切换及历史状态保存。
   - `tests/test_report_intent_planner.py`：新增标题保真、JSON 重试、Planner 约束、大纲适配和新 API 契约测试。
+
+
+## 2026-08-10
+
+- godendusk
+
+- 改动内容：
+  - 修改了前端页面，为outline_agent.py前面新增task_card_agent.py
+
+- 主要修改代码
+  - `report_generation/task_card_agent.py`：新增任务卡，在用户输入完原始标题后，llm自动分析标题，匹配相应的产业，自动是生成对应的报告需求，在用户编辑修改，确认后，数据才用于大纲的生成
