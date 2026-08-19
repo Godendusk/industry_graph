@@ -41,7 +41,7 @@
 
 代价：
 
-- 用户离开报告视图后需要通过侧栏或浏览器返回恢复报告视图；报告数据仍保留在当前页面内存中。
+- 用户离开报告视图后需要通过侧栏恢复报告视图；报告数据仍保留在当前页面内存中。
 
 ### 方案 B：保留新标签页并复制 `sessionStorage`（不采用）
 
@@ -76,7 +76,7 @@
 4. 调用现有 `setCurrentIndustryFromRoute(industry)`，保持产业选择 UI 与数据源一致。
 5. 设置 `window.pendingGraphSubView = 'graph'`。
 6. 设置 `window.pendingGraphFocusNodeId = normalizedNodeId`。
-7. 通过 `window.history.pushState()` 把地址栏更新为现有图谱 URL；该操作不刷新页面。
+7. 通过 `window.history.replaceState()` 把地址栏更新为现有图谱 URL；该操作不刷新页面，也不会写入一个无法被现有应用 `popstate` 逻辑恢复的历史记录。
 8. 调用 `switchView('graph')`。现有图谱逻辑加载数据、切换到力导向视图，并调用 `focusPendingGraphNodeFromUrl()` 聚焦节点。
 9. 返回 `false`，阻止 `<a>` 的默认导航。
 
@@ -89,7 +89,7 @@
   -> openIndustryReportGraph(nodeId)
   -> 同步产业选择
   -> 写入 pendingGraphSubView / pendingGraphFocusNodeId
-  -> history.pushState(无刷新)
+  -> history.replaceState(无刷新、不新增历史记录)
   -> switchView('graph')
   -> loadGraphDataForSunburst()
   -> switchToGraph()
@@ -103,7 +103,7 @@
 
 - 节点 ID 缺失：沿用现有行为，不展示链接。
 - 导航函数或 `switchView` 不可用：返回 `true`，浏览器按 `href` 在当前标签页打开图谱 URL。
-- `history.pushState` 不可用：仍执行同页视图切换；地址栏不更新，但核心功能不受影响。
+- `history.replaceState` 不可用：仍执行同页视图切换；地址栏不更新，但核心功能不受影响。
 - 图谱数据加载失败：沿用现有图谱错误日志和状态显示，本次不改鉴权与数据加载策略。
 
 ## 5. 测试设计
@@ -117,7 +117,7 @@
    - 返回 `false`；
    - 产业同步函数被调用；
    - pending 子视图和节点 ID 正确；
-   - `history.pushState` 收到正确 URL；
+   - `history.replaceState` 收到正确 URL；
    - `switchView('graph')` 被调用；
    - `sessionStorage` 中的 token 未被改写。
 5. 验证缺少 `switchView` 时返回 `true`，保留链接回退能力。
