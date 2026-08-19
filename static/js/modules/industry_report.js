@@ -394,9 +394,18 @@ async function industryReportApi(path, options = {}) {
     return data;
 }
 
+function hasIndustryReportContent() {
+    return Boolean(
+        industryReportWorkspace.historyId
+        || (industryReportWorkspace.outline || []).length
+        || (industryReportWorkspace.writingTasks || []).length
+        || (industryReportWorkspace.bodySections || []).length
+    );
+}
+
 function syncIndustryReportHeader() {
     const currentIndustry = getIndustryReportCurrentIndustry();
-    if (!industryReportWorkspace.historyId) {
+    if (!hasIndustryReportContent()) {
         industryReportWorkspace.industry = currentIndustry;
     }
     const industry = industryReportWorkspace.industry || currentIndustry;

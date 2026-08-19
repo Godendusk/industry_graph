@@ -130,6 +130,19 @@ test("saved report keeps its provenance when the global industry changes", () =>
     assert.equal(vm.runInContext("industryReportWorkspace.industry", context), "ai");
 });
 
+test("generated report keeps provenance while its history save is pending", () => {
+    const { context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.historyId = "";
+        industryReportWorkspace.industry = "ai";
+        industryReportWorkspace.outline = [{ level1_id: "S1" }];
+        window.currentIndustry = "sea";
+        syncIndustryReportHeader();
+    `, context);
+
+    assert.equal(vm.runInContext("industryReportWorkspace.industry", context), "ai");
+});
+
 test("opening a report graph node preserves session and switches the current view", () => {
     const { calls, context, sessionStorage, window } = loadReportScript();
     vm.runInContext("industryReportWorkspace.industry = 'sea'", context);

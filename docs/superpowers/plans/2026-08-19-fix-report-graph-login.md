@@ -343,7 +343,7 @@ Change `syncIndustryReportHeader()` to:
 ```javascript
 function syncIndustryReportHeader() {
     const currentIndustry = getIndustryReportCurrentIndustry();
-    if (!industryReportWorkspace.historyId) {
+    if (!hasIndustryReportContent()) {
         industryReportWorkspace.industry = currentIndustry;
     }
     const industry = industryReportWorkspace.industry || currentIndustry;
@@ -358,6 +358,21 @@ function syncIndustryReportHeader() {
     }
 }
 ```
+
+Define report ownership independently from persistence completion:
+
+```javascript
+function hasIndustryReportContent() {
+    return Boolean(
+        industryReportWorkspace.historyId
+        || (industryReportWorkspace.outline || []).length
+        || (industryReportWorkspace.writingTasks || []).length
+        || (industryReportWorkspace.bodySections || []).length
+    );
+}
+```
+
+Add a regression test where `historyId` is empty but `outline` is populated, proving an in-flight or failed silent history save cannot change report provenance.
 
 - [ ] **Step 5: Invoke the existing industry reset pipeline only for a real industry change**
 

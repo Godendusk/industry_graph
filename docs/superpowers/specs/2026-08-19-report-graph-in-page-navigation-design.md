@@ -105,7 +105,7 @@
 
 ### 4.4 历史报告产业归属
 
-`industryReportWorkspace.industry` 代表当前报告的产业归属。`syncIndustryReportHeader()` 只在工作区不是已保存/已加载报告（`historyId` 为空）时，才使用全局产业更新该字段；对于带 `historyId` 的报告，保留记录中的产业并据此渲染产业标签。这样切换全局产业不会篡改历史报告的来源信息，“打开图谱”也会使用报告真实产业。
+`industryReportWorkspace.industry` 代表当前报告的产业归属。`syncIndustryReportHeader()` 只在工作区完全空白时，才使用全局产业更新该字段；一旦存在历史 ID、大纲、写作任务或正文，就保留报告自身产业并据此渲染产业标签。这样既覆盖已保存/已加载报告，也覆盖异步历史保存尚未返回或保存失败的新生成报告，切换全局产业不会篡改其来源信息。
 
 ### 4.5 异常与回退
 
@@ -130,7 +130,7 @@
    - `switchView('graph')` 被调用；
    - `sessionStorage` 中的 token 未被改写。
 6. 验证报告产业不同于当前产业时调用 `loadIndustryData()`，相同时不触发无意义重置。
-7. 验证带 `historyId` 的报告在同步标题后仍保留记录产业。
+7. 验证带 `historyId` 的历史报告，以及已有大纲但异步保存尚未返回的新报告，在同步标题后都保留报告产业。
 8. 验证缺少 `switchView` 时返回 `true`，保留链接回退能力。
 9. 运行项目现有 Python 测试套件，确认报告后端和检索模块无回归。
 
