@@ -968,7 +968,7 @@ function renderIndustryReportEvidenceCard(item, fallbackTitle, type = "external"
         <div class="rounded-lg bg-gray-50 border border-gray-200 p-3">
             <div class="text-xs font-semibold text-gray-700 flex items-center justify-between gap-2">
                 <span class="min-w-0 truncate">${titleLabel}：${escapeIndustryReportHtml(title)}</span>
-                ${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" target="_blank" class="text-blue-600 hover:text-blue-700 font-medium">打开图谱</a>` : ""}
+                ${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" onclick="return openIndustryReportGraph('${escapeIndustryReportJs(nodeId)}')" class="text-blue-600 hover:text-blue-700 font-medium">打开图谱</a>` : ""}
             </div>
             <div class="mt-1 text-xs leading-5 text-gray-500">${textLabel}：${escapeIndustryReportHtml(truncateIndustryReportText(text, 260))}</div>
         </div>
@@ -987,6 +987,23 @@ function buildIndustryReportGraphLink(nodeId) {
         industry: industryReportWorkspace.industry || getIndustryReportCurrentIndustry(),
     });
     return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+}
+
+function openIndustryReportGraph(nodeId) {
+    const normalizedNodeId = String(nodeId ?? "").trim();
+    if (!normalizedNodeId || typeof switchView !== "function") return true;
+
+    const industry = industryReportWorkspace.industry || getIndustryReportCurrentIndustry();
+    if (typeof setCurrentIndustryFromRoute === "function") {
+        setCurrentIndustryFromRoute(industry);
+    }
+    window.pendingGraphSubView = "graph";
+    window.pendingGraphFocusNodeId = normalizedNodeId;
+    if (window.history && typeof window.history.replaceState === "function") {
+        window.history.replaceState({}, "", buildIndustryReportGraphLink(normalizedNodeId));
+    }
+    switchView("graph");
+    return false;
 }
 
 function openIndustryReportRewriteModal(outlineId) {
@@ -1076,7 +1093,7 @@ function renderIndustryReportMaterialRow(item, index, type, selectable) {
             <span class="min-w-0">
                 <span class="flex items-center justify-between gap-2 text-xs font-semibold text-gray-700">
                     <span class="min-w-0 truncate">${titleLabel}：${escapeIndustryReportHtml(title)}</span>
-                    ${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" target="_blank" class="text-blue-600 hover:text-blue-700">打开图谱</a>` : ""}
+                    ${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" onclick="return openIndustryReportGraph('${escapeIndustryReportJs(nodeId)}')" class="text-blue-600 hover:text-blue-700">打开图谱</a>` : ""}
                 </span>
                 <span class="block mt-1 text-xs leading-5 text-gray-500">${textLabel}：${escapeIndustryReportHtml(truncateIndustryReportText(text, 180))}</span>
             </span>
