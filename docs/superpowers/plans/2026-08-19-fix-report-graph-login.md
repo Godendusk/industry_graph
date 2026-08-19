@@ -44,6 +44,7 @@ const REPORT_SCRIPT = fs.readFileSync(REPORT_SCRIPT_PATH, "utf8");
 function loadReportScript({ withSwitchView = true, withHistory = true } = {}) {
     const calls = {
         industries: [],
+        loadedIndustries: [],
         replacedUrls: [],
         views: [],
     };
@@ -96,6 +97,7 @@ function loadReportScript({ withSwitchView = true, withHistory = true } = {}) {
             calls.industries.push(industry);
             window.currentIndustry = industry;
         };
+        context.loadIndustryData = industry => calls.loadedIndustries.push(industry);
         context.switchView = view => calls.views.push(view);
     }
     vm.createContext(context);
@@ -112,7 +114,8 @@ test("report evidence graph link uses in-page navigation instead of a new tab", 
     );
 
     assert.doesNotMatch(html, /target=["']_blank["']/);
-    assert.match(html, /onclick="return openIndustryReportGraph\('node-7'\)"/);
+    assert.match(html, /data-graph-node-id="node-7"/);
+    assert.match(html, /onclick="return openIndustryReportGraph\(this\.dataset\.graphNodeId\)"/);
     assert.match(
         html,
         /href="https:\/\/sasac-rc\.com\/indusgraph\/\?view=graph&amp;subview=graph&amp;node=node-7&amp;industry=ai"/,
@@ -129,7 +132,8 @@ test("rewrite material graph link also uses in-page navigation", () => {
     );
 
     assert.doesNotMatch(html, /target=["']_blank["']/);
-    assert.match(html, /onclick="return openIndustryReportGraph\('node-8'\)"/);
+    assert.match(html, /data-graph-node-id="node-8"/);
+    assert.match(html, /onclick="return openIndustryReportGraph\(this\.dataset\.graphNodeId\)"/);
 });
 
 test("opening a report graph node preserves session and switches the current view", () => {
@@ -205,8 +209,12 @@ function openIndustryReportGraph(nodeId) {
     if (!normalizedNodeId || typeof switchView !== "function") return true;
 
     const industry = industryReportWorkspace.industry || getIndustryReportCurrentIndustry();
+    const previousIndustry = getIndustryReportCurrentIndustry();
     if (typeof setCurrentIndustryFromRoute === "function") {
         setCurrentIndustryFromRoute(industry);
+    }
+    if (industry !== previousIndustry && typeof loadIndustryData === "function") {
+        loadIndustryData(industry);
     }
     window.pendingGraphSubView = "graph";
     window.pendingGraphFocusNodeId = normalizedNodeId;
@@ -223,7 +231,7 @@ function openIndustryReportGraph(nodeId) {
 Replace the graph-link expression in `renderIndustryReportEvidenceCard()` with:
 
 ```javascript
-${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" onclick="return openIndustryReportGraph('${escapeIndustryReportJs(nodeId)}')" class="text-blue-600 hover:text-blue-700 font-medium">打开图谱</a>` : ""}
+${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" data-graph-node-id="${escapeIndustryReportHtml(nodeId)}" onclick="return openIndustryReportGraph(this.dataset.graphNodeId)" class="text-blue-600 hover:text-blue-700 font-medium">打开图谱</a>` : ""}
 ```
 
 - [ ] **Step 3: Wire the rewrite-material link to the same navigator**
@@ -231,7 +239,7 @@ ${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" onclick="return 
 Replace the graph-link expression in `renderIndustryReportMaterialRow()` with:
 
 ```javascript
-${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" onclick="return openIndustryReportGraph('${escapeIndustryReportJs(nodeId)}')" class="text-blue-600 hover:text-blue-700">打开图谱</a>` : ""}
+${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" data-graph-node-id="${escapeIndustryReportHtml(nodeId)}" onclick="return openIndustryReportGraph(this.dataset.graphNodeId)" class="text-blue-600 hover:text-blue-700">打开图谱</a>` : ""}
 ```
 
 - [ ] **Step 4: Run the focused tests to verify GREEN**
@@ -242,7 +250,7 @@ Run:
 node --test tests/js/test_industry_report_navigation.test.js
 ```
 
-Expected: `5` tests pass, `0` fail. The output must contain no runtime errors or warnings.
+Expected: all focused tests pass with `0` failures. The output must contain no runtime errors or warnings.
 
 - [ ] **Step 5: Check syntax and diff hygiene**
 
@@ -262,7 +270,125 @@ git add static/js/modules/industry_report.js tests/js/test_industry_report_navig
 git commit -m "fix: keep report graph navigation in current session"
 ```
 
-### Task 3: Run regression verification and document evidence
+### Task 3: Harden security and cross-industry correctness after review
+
+**Files:**
+
+- Modify: `tests/js/test_industry_report_navigation.test.js`
+- Modify: `static/js/modules/industry_report.js:397-409`
+- Modify: `static/js/modules/industry_report.js:960-1015`
+
+- [ ] **Step 1: Add failing tests for attribute injection, report provenance, and cache reset**
+
+Add these tests:
+
+```javascript
+test("graph node id is HTML-escaped outside the fixed click handler", () => {
+    const { context } = loadReportScript();
+    const html = context.renderIndustryReportEvidenceCard(
+        { id: 'node-7" onmouseover="alert(1)', title: "不可信节点" },
+        "知识图谱 1",
+        "graph",
+    );
+
+    assert.match(html, /data-graph-node-id="node-7&quot; onmouseover=&quot;alert\(1\)"/);
+    assert.match(html, /onclick="return openIndustryReportGraph\(this\.dataset\.graphNodeId\)"/);
+    assert.doesNotMatch(html, /onclick="[^"]*alert\(1\)/);
+});
+
+test("saved report keeps its provenance when the global industry changes", () => {
+    const { context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.historyId = "saved-report";
+        industryReportWorkspace.industry = "ai";
+        window.currentIndustry = "sea";
+        syncIndustryReportHeader();
+    `, context);
+
+    assert.equal(vm.runInContext("industryReportWorkspace.industry", context), "ai");
+});
+
+test("cross-industry graph navigation invokes the existing cache reset pipeline", () => {
+    const { calls, context } = loadReportScript();
+    vm.runInContext("industryReportWorkspace.industry = 'sea'", context);
+
+    assert.equal(context.openIndustryReportGraph("node-42"), false);
+    assert.deepEqual(calls.loadedIndustries, ["sea"]);
+});
+```
+
+- [ ] **Step 2: Run the focused tests to verify the three new cases fail for the reviewed reasons**
+
+Run:
+
+```bash
+node --test tests/js/test_industry_report_navigation.test.js
+```
+
+Expected: the injection test exposes a dynamic value inside the executable attribute, the saved-report test gets `sea` instead of `ai`, and the cache-reset test records no `loadIndustryData` call.
+
+- [ ] **Step 3: Move dynamic node IDs into an HTML-escaped data attribute**
+
+Both links must use this fixed-handler shape:
+
+```javascript
+data-graph-node-id="${escapeIndustryReportHtml(nodeId)}"
+onclick="return openIndustryReportGraph(this.dataset.graphNodeId)"
+```
+
+- [ ] **Step 4: Preserve persisted report industry in header synchronization**
+
+Change `syncIndustryReportHeader()` to:
+
+```javascript
+function syncIndustryReportHeader() {
+    const currentIndustry = getIndustryReportCurrentIndustry();
+    if (!industryReportWorkspace.historyId) {
+        industryReportWorkspace.industry = currentIndustry;
+    }
+    const industry = industryReportWorkspace.industry || currentIndustry;
+    const pill = document.getElementById("report-industry-pill");
+    if (pill) {
+        const name = getIndustryReportIndustryName(industry);
+        pill.textContent = name;
+        const unsupported = industry !== "ai";
+        pill.className = unsupported
+            ? "text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100"
+            : "text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100";
+    }
+}
+```
+
+- [ ] **Step 5: Invoke the existing industry reset pipeline only for a real industry change**
+
+In `openIndustryReportGraph()`, capture the old industry before synchronizing the UI, then call:
+
+```javascript
+if (industry !== previousIndustry && typeof loadIndustryData === "function") {
+    loadIndustryData(industry);
+}
+```
+
+- [ ] **Step 6: Run focused tests and syntax checks to verify GREEN**
+
+Run:
+
+```bash
+node --test tests/js/test_industry_report_navigation.test.js
+node --check static/js/modules/industry_report.js
+git diff --check
+```
+
+Expected: all tests pass and both checks exit `0`.
+
+- [ ] **Step 7: Commit the review hardening**
+
+```bash
+git add docs/superpowers/specs/2026-08-19-report-graph-in-page-navigation-design.md docs/superpowers/plans/2026-08-19-fix-report-graph-login.md static/js/modules/industry_report.js tests/js/test_industry_report_navigation.test.js
+git commit -m "fix: harden report graph navigation"
+```
+
+### Task 4: Run regression verification and document evidence
 
 **Files:**
 
@@ -287,7 +413,7 @@ Run:
 node --test tests/js/test_industry_report_navigation.test.js
 ```
 
-Expected: `5` tests pass, `0` fail.
+Expected: all navigation tests pass with `0` failures.
 
 - [ ] **Step 3: Run the existing project regression suite in its required environment**
 

@@ -13,6 +13,7 @@ const REPORT_SCRIPT = fs.readFileSync(REPORT_SCRIPT_PATH, "utf8");
 function loadReportScript({ withSwitchView = true, withHistory = true } = {}) {
     const calls = {
         industries: [],
+        loadedIndustries: [],
         replacedUrls: [],
         views: [],
     };
@@ -65,6 +66,7 @@ function loadReportScript({ withSwitchView = true, withHistory = true } = {}) {
             calls.industries.push(industry);
             window.currentIndustry = industry;
         };
+        context.loadIndustryData = industry => calls.loadedIndustries.push(industry);
         context.switchView = view => calls.views.push(view);
     }
     vm.createContext(context);
@@ -81,7 +83,8 @@ test("report evidence graph link uses in-page navigation instead of a new tab", 
     );
 
     assert.doesNotMatch(html, /target=["']_blank["']/);
-    assert.match(html, /onclick="return openIndustryReportGraph\('node-7'\)"/);
+    assert.match(html, /data-graph-node-id="node-7"/);
+    assert.match(html, /onclick="return openIndustryReportGraph\(this\.dataset\.graphNodeId\)"/);
     assert.match(
         html,
         /href="https:\/\/sasac-rc\.com\/indusgraph\/\?view=graph&amp;subview=graph&amp;node=node-7&amp;industry=ai"/,
@@ -98,7 +101,33 @@ test("rewrite material graph link also uses in-page navigation", () => {
     );
 
     assert.doesNotMatch(html, /target=["']_blank["']/);
-    assert.match(html, /onclick="return openIndustryReportGraph\('node-8'\)"/);
+    assert.match(html, /data-graph-node-id="node-8"/);
+    assert.match(html, /onclick="return openIndustryReportGraph\(this\.dataset\.graphNodeId\)"/);
+});
+
+test("graph node id is HTML-escaped outside the fixed click handler", () => {
+    const { context } = loadReportScript();
+    const html = context.renderIndustryReportEvidenceCard(
+        { id: 'node-7" onmouseover="alert(1)', title: "不可信节点" },
+        "知识图谱 1",
+        "graph",
+    );
+
+    assert.match(html, /data-graph-node-id="node-7&quot; onmouseover=&quot;alert\(1\)"/);
+    assert.match(html, /onclick="return openIndustryReportGraph\(this\.dataset\.graphNodeId\)"/);
+    assert.doesNotMatch(html, /onclick="[^"]*alert\(1\)/);
+});
+
+test("saved report keeps its provenance when the global industry changes", () => {
+    const { context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.historyId = "saved-report";
+        industryReportWorkspace.industry = "ai";
+        window.currentIndustry = "sea";
+        syncIndustryReportHeader();
+    `, context);
+
+    assert.equal(vm.runInContext("industryReportWorkspace.industry", context), "ai");
 });
 
 test("opening a report graph node preserves session and switches the current view", () => {
@@ -116,6 +145,14 @@ test("opening a report graph node preserves session and switches the current vie
         "https://sasac-rc.com/indusgraph/?view=graph&subview=graph&node=node-42&industry=sea",
     ]);
     assert.equal(sessionStorage.getItem("token"), "authenticated-token");
+});
+
+test("cross-industry graph navigation invokes the existing cache reset pipeline", () => {
+    const { calls, context } = loadReportScript();
+    vm.runInContext("industryReportWorkspace.industry = 'sea'", context);
+
+    assert.equal(context.openIndustryReportGraph("node-42"), false);
+    assert.deepEqual(calls.loadedIndustries, ["sea"]);
 });
 
 test("missing app navigation falls back to the normal same-tab link", () => {

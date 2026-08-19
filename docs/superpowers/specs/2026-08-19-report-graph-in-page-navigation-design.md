@@ -21,10 +21,12 @@
 2. 局部重写资料区中的“打开图谱”采用相同行为。
 3. 导航设置 `pendingGraphSubView = 'graph'` 和目标节点 ID，再调用现有 `switchView('graph')`。
 4. 有效产业值通过现有 `setCurrentIndustryFromRoute()` 切换，图谱加载对应产业数据源。
-5. 地址栏更新为 `?view=graph&subview=graph&node=<id>&industry=<industry>`，不发生页面刷新。
-6. 原标签页的 `sessionStorage` 登录态保持不变。
-7. 直接访问上述 URL 时，现有 `handleInitialAppRoute()` 仍能正常进入并聚焦图谱。
-8. 没有节点 ID 时不渲染“打开图谱”入口。
+5. 当报告产业与当前产业不同时，调用现有 `loadIndustryData()` 清除旧产业图谱缓存后再进入图谱。
+6. 历史报告保存的产业归属不被当前全局产业覆盖。
+7. 地址栏更新为 `?view=graph&subview=graph&node=<id>&industry=<industry>`，不发生页面刷新。
+8. 原标签页的 `sessionStorage` 登录态保持不变。
+9. 直接访问上述 URL 时，现有 `handleInitialAppRoute()` 仍能正常进入并聚焦图谱。
+10. 没有节点 ID 时不渲染“打开图谱”入口。
 
 ## 3. 方案比较
 
@@ -63,8 +65,8 @@
 
 - `href` 使用现有 `buildIndustryReportGraphLink(nodeId)` 生成，作为可复制地址和 JavaScript 不可用时的回退。
 - 删除 `target="_blank"`。
-- 增加 `onclick="return openIndustryReportGraph(...)"`；返回 `false` 时阻止浏览器执行完整页面导航。
-- 节点 ID 在写入内联 JavaScript 前继续使用现有 `escapeIndustryReportJs()` 转义。
+- 节点 ID 写入 `data-graph-node-id`，并使用 `escapeIndustryReportHtml()` 做 HTML 属性上下文转义。
+- `onclick` 使用固定表达式 `return openIndustryReportGraph(this.dataset.graphNodeId)`，不把动态节点 ID 拼入可执行 JavaScript；返回 `false` 时阻止浏览器执行完整页面导航。
 
 ### 4.2 同页导航函数
 
@@ -73,12 +75,13 @@
 1. 将节点 ID 规范化为字符串；空值返回 `true`，允许默认链接行为。
 2. 读取报告工作区产业；为空时回退到当前产业。
 3. 若 `switchView` 不可用，返回 `true`，让浏览器使用 `href` 回退。
-4. 调用现有 `setCurrentIndustryFromRoute(industry)`，保持产业选择 UI 与数据源一致。
-5. 设置 `window.pendingGraphSubView = 'graph'`。
-6. 设置 `window.pendingGraphFocusNodeId = normalizedNodeId`。
-7. 通过 `window.history.replaceState()` 把地址栏更新为现有图谱 URL；该操作不刷新页面，也不会写入一个无法被现有应用 `popstate` 逻辑恢复的历史记录。
-8. 调用 `switchView('graph')`。现有图谱逻辑加载数据、切换到力导向视图，并调用 `focusPendingGraphNodeFromUrl()` 聚焦节点。
-9. 返回 `false`，阻止 `<a>` 的默认导航。
+4. 在切换前记录当前全局产业，调用现有 `setCurrentIndustryFromRoute(industry)` 保持产业选择 UI 与数据源一致。
+5. 若产业发生变化，调用现有 `loadIndustryData(industry)`，复用其图谱、旭日图和思维导图缓存重置逻辑。
+6. 设置 `window.pendingGraphSubView = 'graph'`。
+7. 设置 `window.pendingGraphFocusNodeId = normalizedNodeId`。
+8. 通过 `window.history.replaceState()` 把地址栏更新为现有图谱 URL；该操作不刷新页面，也不会写入一个无法被现有应用 `popstate` 逻辑恢复的历史记录。
+9. 调用 `switchView('graph')`。现有图谱逻辑重新加载目标产业数据、切换到力导向视图，并调用 `focusPendingGraphNodeFromUrl()` 聚焦节点。
+10. 返回 `false`，阻止 `<a>` 的默认导航。
 
 该函数不读取、复制、修改或序列化 token。
 
@@ -88,6 +91,7 @@
 报告资料卡点击
   -> openIndustryReportGraph(nodeId)
   -> 同步产业选择
+  -> 产业变化时 loadIndustryData() 清除旧图谱缓存
   -> 写入 pendingGraphSubView / pendingGraphFocusNodeId
   -> history.replaceState(无刷新、不新增历史记录)
   -> switchView('graph')
@@ -99,7 +103,11 @@
 
 整个链路保留在同一个 browsing context 中，因此原有 `sessionStorage` 登录态持续有效。
 
-### 4.4 异常与回退
+### 4.4 历史报告产业归属
+
+`industryReportWorkspace.industry` 代表当前报告的产业归属。`syncIndustryReportHeader()` 只在工作区不是已保存/已加载报告（`historyId` 为空）时，才使用全局产业更新该字段；对于带 `historyId` 的报告，保留记录中的产业并据此渲染产业标签。这样切换全局产业不会篡改历史报告的来源信息，“打开图谱”也会使用报告真实产业。
+
+### 4.5 异常与回退
 
 - 节点 ID 缺失：沿用现有行为，不展示链接。
 - 导航函数或 `switchView` 不可用：返回 `true`，浏览器按 `href` 在当前标签页打开图谱 URL。
@@ -113,15 +121,18 @@
 1. 加载真实 `industry_report.js`，用最小浏览器上下文替身执行脚本。
 2. 验证正文资料卡生成的链接不含 `_blank`，包含同页导航处理器和正确路由参数。
 3. 验证局部重写资料行同样不含 `_blank`。
-4. 调用真实 `openIndustryReportGraph()`，验证：
+4. 使用包含双引号和事件处理器文本的节点 ID，验证它只出现在 HTML 转义后的 `data-graph-node-id` 中，不进入 `onclick` 可执行上下文。
+5. 调用真实 `openIndustryReportGraph()`，验证：
    - 返回 `false`；
    - 产业同步函数被调用；
    - pending 子视图和节点 ID 正确；
    - `history.replaceState` 收到正确 URL；
    - `switchView('graph')` 被调用；
    - `sessionStorage` 中的 token 未被改写。
-5. 验证缺少 `switchView` 时返回 `true`，保留链接回退能力。
-6. 运行项目现有 Python 测试套件，确认报告后端和检索模块无回归。
+6. 验证报告产业不同于当前产业时调用 `loadIndustryData()`，相同时不触发无意义重置。
+7. 验证带 `historyId` 的报告在同步标题后仍保留记录产业。
+8. 验证缺少 `switchView` 时返回 `true`，保留链接回退能力。
+9. 运行项目现有 Python 测试套件，确认报告后端和检索模块无回归。
 
 ## 6. 改动范围
 
