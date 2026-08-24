@@ -6,8 +6,8 @@
 let chainColumnSettings = {
     l2: true,
     l2_ratio: true,
-    l3: true,
-    l3_ratio: true,
+    leaf: true,
+    leaf_ratio: true,
     representative: true
 };
 
@@ -25,7 +25,14 @@ async function fetchChainColumnSettings() {
         const json = await resp.json();
         if (json.status === 'success' && json.data) {
             if (json.data.chain_panorama_column) {
-                chainColumnSettings = json.data.chain_panorama_column;
+                const raw = json.data.chain_panorama_column;
+                chainColumnSettings = {
+                    l2: raw.l2 !== false,
+                    l2_ratio: raw.l2_ratio !== false,
+                    leaf: raw.leaf !== undefined ? raw.leaf : raw.l3 !== false,
+                    leaf_ratio: raw.leaf_ratio !== undefined ? raw.leaf_ratio : raw.l3_ratio !== false,
+                    representative: raw.representative !== false
+                };
             }
             if (json.data.chain_panorama_rep_picks) {
                 chainRepPicksCache = json.data.chain_panorama_rep_picks;
@@ -46,7 +53,13 @@ async function saveChainColumnSettings(settings) {
         const resp = await fetch(`${base}/api/settings`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ chain_panorama_column: settings })
+            body: JSON.stringify({ chain_panorama_column: {
+                l2: settings.l2 !== false,
+                l2_ratio: settings.l2_ratio !== false,
+                leaf: settings.leaf !== false,
+                leaf_ratio: settings.leaf_ratio !== false,
+                representative: settings.representative !== false
+            } })
         });
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
         chainColumnSettings = settings;
@@ -1426,7 +1439,7 @@ function openChainRepPickerModal(td) {
             resolveDisplayedRepNodes(segmentId, freshComps),
             freshComps.length,
             segmentId
-        ) + (chainColumnSettings.l3_ratio ? formatTypeRatioBar(countByType(freshComps)) : '');
+        ) + (chainColumnSettings.leaf_ratio ? formatTypeRatioBar(countByType(freshComps)) : '');
         requestAnimationFrame(() => hideSmallRatioTexts());
         closeChainRepPickerModal();
     });
@@ -1686,7 +1699,7 @@ function ensureChainRepDragDelegation() {
                 resolveDisplayedRepNodes(segmentId, segComps),
                 segComps.length,
                 segmentId
-            ) + (chainColumnSettings.l3_ratio ? formatTypeRatioBar(countByType(segComps)) : '');
+            ) + (chainColumnSettings.leaf_ratio ? formatTypeRatioBar(countByType(segComps)) : '');
             requestAnimationFrame(() => hideSmallRatioTexts());
         }
 
@@ -1696,14 +1709,14 @@ function ensureChainRepDragDelegation() {
 
 /** 单列：彩色横幅 + 下方表格区块（横幅与表头之间留白） */
 function buildChainColumnParts(structure, l1Id, columnIndex, columnSettings) {
-    const s = columnSettings || { l2: true, l2_ratio: true, l3: true, l3_ratio: true, representative: true };
-    // 代表企业列：只要 l3_ratio 或 representative 任一开启就显示
-    const showRepresentativeCol = s.representative || s.l3_ratio;
+    const s = columnSettings || { l2: true, l2_ratio: true, leaf: true, leaf_ratio: true, representative: true };
+    // 代表企业列：只要末级占比或代表企业任一开启就显示
+    const showRepresentativeCol = s.representative || s.leaf_ratio;
 
     const allCols = [
         { key: 'l2', title: '二级', width: 20, visible: s.l2 },
         { key: 'l2_ratio', title: '企业类型占比', width: 20, visible: s.l2_ratio },
-        { key: 'l3', title: '三级', width: 20, visible: s.l3 },
+        { key: 'leaf', title: '末级环节', width: 20, visible: s.leaf },
         { key: 'representative', title: '代表企业', width: 40, visible: showRepresentativeCol }
     ];
     const visibleCols = allCols.filter(function (c) { return c.visible; });
@@ -1765,7 +1778,7 @@ function buildChainColumnParts(structure, l1Id, columnIndex, columnSettings) {
         for (let r = 0; r < l2List.length; r++) {
             const l2 = l2List[r];
             const l2Name = (l2.properties && l2.properties.name) || `环节 ${l2.id}`;
-            const children = directSegmentChildren(l2.id, structure.links, structure.nodeById);
+            const terminalRows = buildTerminalRows(structure, l2.id);
             const companiesL2 = companiesForL2(
                 l2.id,
                 structure.parent,
@@ -1777,7 +1790,7 @@ function buildChainColumnParts(structure, l1Id, columnIndex, columnSettings) {
             const l2Index = r + 1;
             const l2No = `${sectionNum}.${l2Index}`;
 
-            if (children.length === 0) {
+            if (terminalRows.length === 0) {
                 const tr = document.createElement('tr');
                 tr.className = 'border-b border-gray-200 hover:bg-gray-50/80';
 
@@ -1798,7 +1811,7 @@ function buildChainColumnParts(structure, l1Id, columnIndex, columnSettings) {
                             tr.appendChild(tdChart);
                             break;
                         }
-                        case 'l3': {
+                        case 'leaf': {
                             const tdL3 = document.createElement('td');
                             tdL3.className = `border border-gray-300 px-1.5 py-2 align-middle text-center ${CHAIN_TABLE_TEXT} ${CHAIN_L3_REP_TEXT_CLASS} bg-white`;
                             tdL3.innerHTML = '<span class="text-gray-400">—</span>';
@@ -1815,7 +1828,7 @@ function buildChainColumnParts(structure, l1Id, columnIndex, columnSettings) {
                             if (s.representative) {
                                 repHtml += formatRepresentativeLine(picked, segComps.length, l2.id);
                             }
-                            if (s.l3_ratio) {
+                            if (s.leaf_ratio) {
                                 repHtml += formatTypeRatioBar(countByType(segComps));
                             }
                             tdRep.innerHTML = repHtml || '<span class="text-gray-400">—</span>';
@@ -1829,7 +1842,7 @@ function buildChainColumnParts(structure, l1Id, columnIndex, columnSettings) {
                     renderDonut(chartElRef, counts);
                 }
             } else {
-                const n = children.length;
+                const n = terminalRows.length;
                 let chartElRef = null;
                 const trRowCls = 'border-b border-gray-200 hover:bg-gray-50/80';
                 const tdL3Cls = `chain-l3-cell cursor-pointer border border-gray-300 px-1.5 py-2 align-middle text-center ${CHAIN_TABLE_TEXT} font-medium leading-tight bg-white`;
@@ -1861,30 +1874,31 @@ function buildChainColumnParts(structure, l1Id, columnIndex, columnSettings) {
                                 tr.appendChild(tdChart);
                                 break;
                             }
-                            case 'l3': {
-                                const child = children[si];
-                                const childName = (child.properties && child.properties.name) || String(child.id);
+                            case 'leaf': {
+                                const terminalRow = terminalRows[si];
+                                const childName = terminalRow.pathNames.join(' / ');
                                 const l3No = `${sectionNum}.${l2Index}.${si + 1}`;
                                 const colColor = chainPanoramaColumnColor(columnIndex);
                                 const tdL3 = document.createElement('td');
                                 tdL3.className = tdL3Cls;
-                                tdL3.setAttribute('data-segment-id', String(child.id));
+                                tdL3.setAttribute('data-segment-id', String(terminalRow.segmentId));
                                 tdL3.innerHTML = `<span class="whitespace-nowrap" style="color:${colColor}">${l3No}</span><br><span style="color:${colColor}">${escapeHtml(childName)}</span>`;
                                 tr.appendChild(tdL3);
                                 break;
                             }
                             case 'representative': {
-                                const child = children[si];
-                                const segComps = companiesForSegmentExact(child.id, structure.companyTargets, structure.nodeById);
-                                const picked = resolveDisplayedRepNodes(child.id, segComps);
+                                const terminalRow = terminalRows[si];
+                                const segmentId = terminalRow.segmentId;
+                                const segComps = terminalRow.companies;
+                                const picked = resolveDisplayedRepNodes(segmentId, segComps);
                                 const tdRep = document.createElement('td');
                                 tdRep.className = `${tdRepCls} chain-rep-cell`;
-                                tdRep.setAttribute('data-rep-segment-id', String(child.id));
+                                tdRep.setAttribute('data-rep-segment-id', String(segmentId));
                                 let repHtml = '';
                                 if (s.representative) {
-                                    repHtml += formatRepresentativeLine(picked, segComps.length, child.id);
+                                    repHtml += formatRepresentativeLine(picked, segComps.length, segmentId);
                                 }
-                                if (s.l3_ratio) {
+                                if (s.leaf_ratio) {
                                     repHtml += formatTypeRatioBar(countByType(segComps));
                                 }
                                 tdRep.innerHTML = repHtml || '<span class="text-gray-400">—</span>';
@@ -2012,6 +2026,7 @@ function analyzeGraph(nodes, links) {
     }
     const parent = buildParentMap(links);
     const companyTargets = buildCompanyTargets(links, nodeById);
+    const hierarchy = GraphHierarchy.create({ nodes, relationships: links });
 
     const l1Nodes = [];
     for (let i = 0; i < nodes.length; i++) {
@@ -2036,7 +2051,39 @@ function analyzeGraph(nodes, links) {
         list.sort((a, b) => a.id - b.id);
     });
 
-    return { nodeById, parent, companyTargets, links, l1Order, l2ByL1 };
+    return { nodeById, parent, companyTargets, links, l1Order, l2ByL1, hierarchy };
+}
+
+function buildChainStructure(nodes, links) {
+    return analyzeGraph(nodes, links);
+}
+
+function buildTerminalRows(structure, l2Id) {
+    const terminalIds = structure.hierarchy.terminalSegmentIds(l2Id);
+    const selfIsTerminal = structure.hierarchy
+        .terminalSegmentIds()
+        .some(id => String(id) === String(l2Id));
+    if (selfIsTerminal) terminalIds.unshift(l2Id);
+
+    return terminalIds.map(segmentId => {
+        const fullPathIds = structure.hierarchy.segmentPathIds(segmentId);
+        const l2Index = fullPathIds.findIndex(id => String(id) === String(l2Id));
+        const relativePathIds = l2Index >= 0 ? fullPathIds.slice(l2Index + 1) : fullPathIds;
+        const pathNames = relativePathIds
+            .map(id => structure.nodeById.get(id))
+            .filter(Boolean)
+            .map(node => (node.properties && node.properties.name) || String(node.id));
+        const companies = companiesForSegmentExact(segmentId, structure.companyTargets, structure.nodeById);
+        return {
+            segmentId,
+            node: structure.nodeById.get(segmentId),
+            level: getLevel(structure.nodeById.get(segmentId)),
+            pathIds: relativePathIds,
+            pathNames,
+            companies,
+            companyCount: companies.length,
+        };
+    });
 }
 
 /**
@@ -2045,8 +2092,7 @@ function analyzeGraph(nodes, links) {
  */
 function calcL1TypeStats(structure) {
     const { nodeById, companyTargets, l2ByL1, l1Order } = structure;
-    const result = { upstream: null, midstream: null, downstream: null };
-    const keys = ['upstream', 'midstream', 'downstream'];
+    const result = [];
 
     // companyTargets 的 key 是公司ID，value 是环节ID数组。
     // 先构建反向映射：环节ID → 公司ID集合，方便后续按环节查企业。
@@ -2059,23 +2105,14 @@ function calcL1TypeStats(structure) {
         }
     }
 
-    for (let i = 0; i < l1Order.length && i < 3; i++) {
+    for (let i = 0; i < l1Order.length; i++) {
         const l1Id = l1Order[i];
         const l2List = l2ByL1.get(l1Id) || [];
         const seen = new Set();
 
         for (let j = 0; j < l2List.length; j++) {
             const l2Id = l2List[j].id;
-            const segmentIds = [l2Id];
-            // 找该二级环节下挂的所有三级环节
-            for (const [nid, node] of nodeById) {
-                if (isSegmentNode(node) && getLevel(node) === 3) {
-                    const parentId = structure.parent[nid];
-                    if (parentId === l2Id || segmentUnderL2(nid, l2Id, structure.parent)) {
-                        segmentIds.push(nid);
-                    }
-                }
-            }
+            const segmentIds = [l2Id, ...structure.hierarchy.descendantSegmentIds(l2Id)];
             // 收集这些环节下的所有企业
             for (let k = 0; k < segmentIds.length; k++) {
                 const sid = segmentIds[k];
@@ -2095,7 +2132,12 @@ function calcL1TypeStats(structure) {
                 allCompanies.push(cnode);
             }
         }
-        result[keys[i]] = countByType(allCompanies);
+        const l1Node = nodeById.get(l1Id);
+        result.push({
+            id: l1Id,
+            name: (l1Node && l1Node.properties && l1Node.properties.name) || String(l1Id),
+            counts: countByType(allCompanies),
+        });
     }
     return result;
 }
@@ -2127,32 +2169,51 @@ function calcOverallTypeStats(structure) {
  * 返回 { upstream: {l2, l3}, midstream: {l2, l3}, downstream: {l2, l3}, total: {l2, l3} }
  */
 function calcNodeCountStats(structure) {
-    const { l2ByL1, l1Order, nodeById, parent } = structure;
-    const keys = ['upstream', 'midstream', 'downstream'];
-    const result = { upstream: { l2: 0, l3: 0 }, midstream: { l2: 0, l3: 0 }, downstream: { l2: 0, l3: 0 }, total: { l2: 0, l3: 0 } };
+    const { l2ByL1, l1Order, nodeById } = structure;
+    const result = { byL1: [], total: { l2: 0, terminal: 0, levels: {} } };
 
-    for (let i = 0; i < l1Order.length && i < 3; i++) {
+    for (let i = 0; i < l1Order.length; i++) {
         const l1Id = l1Order[i];
         const l2List = l2ByL1.get(l1Id) || [];
         const l2Count = l2List.length;
-        let l3Count = 0;
+        let terminalCount = 0;
+        const levels = {};
 
         for (let j = 0; j < l2List.length; j++) {
             const l2Id = l2List[j].id;
-            for (const [nid, node] of nodeById) {
-                if (isSegmentNode(node) && getLevel(node) === 3) {
-                    const p = parent[nid];
-                    if (p === l2Id) {
-                        l3Count++;
-                    }
-                }
-            }
+            const terminalIds = buildTerminalRows(structure, l2Id).map(row => row.segmentId);
+            terminalCount += terminalIds.length;
+            terminalIds.forEach(segmentId => {
+                const level = getLevel(nodeById.get(segmentId));
+                if (level !== null) levels[level] = (levels[level] || 0) + 1;
+            });
         }
-        result[keys[i]] = { l2: l2Count, l3: l3Count };
+        const l1Node = nodeById.get(l1Id);
+        const item = {
+            id: l1Id,
+            name: (l1Node && l1Node.properties && l1Node.properties.name) || String(l1Id),
+            l2: l2Count,
+            terminal: terminalCount,
+            levels,
+        };
+        result.byL1.push(item);
         result.total.l2 += l2Count;
-        result.total.l3 += l3Count;
+        result.total.terminal += terminalCount;
+        Object.keys(levels).forEach(level => {
+            result.total.levels[level] = (result.total.levels[level] || 0) + levels[level];
+        });
     }
     return result;
+}
+
+if (typeof module === 'object' && module.exports) {
+    module.exports = {
+        buildChainStructure,
+        analyzeGraph,
+        buildTerminalRows,
+        calcL1TypeStats,
+        calcNodeCountStats,
+    };
 }
 
 /**
@@ -2169,13 +2230,10 @@ function renderProgressStats(container, statsL1, statsOverall, nodeCounts) {
     const wrap = document.createElement('div');
     wrap.className = 'flex flex-col gap-4';
 
-    const l1Names = ['上游', '中游', '下游'];
-    const l1Keys = ['upstream', 'midstream', 'downstream'];
-    const l1Colors = [chainPanoramaColumnColor(0), chainPanoramaColumnColor(1), chainPanoramaColumnColor(2)];
-    const nodeColors = ['#B39DDB', '#80CBC4', '#FFCC80', '#9FA8DA'];
-    const nodeIcons = ['static/images/industry/上游.png', 'static/images/industry/中游.png', 'static/images/industry/下游.png', 'static/images/industry/合计.png'];
-    const nodeLabels = ['上游', '中游', '下游', '合计'];
-    const nodeTitleColors = [l1Colors[0], l1Colors[1], l1Colors[2], '#3F51B5'];
+    const l1Colors = statsL1.map((item, index) => chainPanoramaColumnColor(index));
+    const nodeColors = ['#B39DDB', '#80CBC4', '#FFCC80', '#9FA8DA', '#C5CAE9', '#9FA8DA'];
+    const nodeIcons = ['static/images/industry/上游.png', 'static/images/industry/中游.png', 'static/images/industry/下游.png', 'static/images/合计.png'];
+    const nodeTitleColors = l1Colors.concat(['#3F51B5']);
 
     const cardsRow = document.createElement('div');
     cardsRow.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4';
@@ -2191,14 +2249,14 @@ function renderProgressStats(container, statsL1, statsOverall, nodeCounts) {
         '</div></div>';
     const leftContent = document.createElement('div');
     leftContent.className = 'chain-stats-l1-content';
-    for (let i = 0; i < 3; i++) {
-        const counts = statsL1[l1Keys[i]];
-        if (!counts) continue;
+    for (let i = 0; i < statsL1.length; i++) {
+        const item = statsL1[i];
+        const counts = item.counts;
         const row = document.createElement('div');
         row.style.cssText = 'margin-bottom:14px;display:flex;align-items:center;gap:8px;';
         const label = document.createElement('span');
-        label.style.cssText = 'font-size:13px;color:' + l1Colors[i] + ';font-weight:600;width:36px;';
-        label.textContent = l1Names[i];
+        label.style.cssText = 'font-size:13px;color:' + l1Colors[i] + ';font-weight:600;min-width:36px;';
+        label.textContent = item.name;
         row.appendChild(label);
         const barContainer = document.createElement('div');
         barContainer.style.cssText = 'flex:1;overflow:hidden;display:flex;';
@@ -2280,14 +2338,17 @@ function renderProgressStats(container, statsL1, statsOverall, nodeCounts) {
     rightCard.innerHTML = '<h3 style="font-size:15px;font-weight:700;color:#1a1a2e;margin:0 0 16px 0;text-align:center;">节点数量统计</h3>';
     const nodeGrid = document.createElement('div');
     nodeGrid.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;height:100%;';
-    const nodeData = [nodeCounts.upstream, nodeCounts.midstream, nodeCounts.downstream, nodeCounts.total];
-    for (let i = 0; i < 4; i++) {
+    const nodeData = nodeCounts.byL1.concat([nodeCounts.total]);
+    nodeGrid.style.gridTemplateColumns = `repeat(${Math.max(1, nodeData.length)}, minmax(0, 1fr))`;
+    for (let i = 0; i < nodeData.length; i++) {
         const nd = nodeData[i];
         const col = document.createElement('div');
-        col.style.cssText = 'text-align:center;display:flex;flex-direction:column;align-items:center;' + (i < 3 ? 'border-right:1px solid #f0f0f0;' : '');
-        col.innerHTML = '<div style="width:40px;height:40px;border-radius:50%;background:' + nodeColors[i] + ';display:flex;align-items:center;justify-content:center;margin-bottom:8px;"><img src="' + nodeIcons[i] + '" style="width:20px;height:20px;object-fit:contain;" /></div>' +
-            '<span style="font-size:13px;font-weight:700;color:' + nodeTitleColors[i] + ';margin-bottom:12px;">' + nodeLabels[i] + '</span>' +
-            '<div style="margin-bottom:8px;"><div style="font-size:28px;font-weight:800;color:#1a1a2e;">' + nd.l3 + '</div><div style="font-size:11px;color:#999;">三级节点</div></div>' +
+        col.style.cssText = 'text-align:center;display:flex;flex-direction:column;align-items:center;' + (i < nodeData.length - 1 ? 'border-right:1px solid #f0f0f0;' : '');
+        const levelLabels = Object.keys(nd.levels || {}).sort((a, b) => Number(a) - Number(b)).map(level => `${level}级节点 ${nd.levels[level]}`).join('<br>');
+        col.innerHTML = '<div style="width:40px;height:40px;border-radius:50%;background:' + (nodeColors[i] || '#B0BEC5') + ';display:flex;align-items:center;justify-content:center;margin-bottom:8px;"><img src="' + (nodeIcons[i] || nodeIcons[3]) + '" style="width:20px;height:20px;object-fit:contain;" /></div>' +
+            '<span style="font-size:13px;font-weight:700;color:' + (nodeTitleColors[i] || '#607D8B') + ';margin-bottom:12px;">' + (nd.name || '合计') + '</span>' +
+            '<div style="margin-bottom:8px;"><div style="font-size:20px;font-weight:800;color:#1a1a2e;">' + nd.terminal + '</div><div style="font-size:11px;color:#999;">末级节点</div></div>' +
+            '<div style="font-size:11px;color:#999;line-height:1.6;">' + (levelLabels || '暂无末级节点') + '</div>' +
             '<div><div style="font-size:20px;font-weight:700;color:#666;">' + nd.l2 + '</div><div style="font-size:11px;color:#999;">二级节点</div></div>';
         nodeGrid.appendChild(col);
     }
@@ -2341,14 +2402,14 @@ function renderProgressStats(container, statsL1, statsOverall, nodeCounts) {
                     }
                 });
                 leftContent2.innerHTML = '';
-                for (var i2 = 0; i2 < 3; i2++) {
-                    var counts2 = statsL1[l1Keys[i2]];
-                    if (!counts2) continue;
+                for (var i2 = 0; i2 < statsL1.length; i2++) {
+                    var item2 = statsL1[i2];
+                    var counts2 = item2.counts;
                     var row2 = document.createElement('div');
                     row2.style.cssText = 'margin-bottom:14px;display:flex;align-items:center;gap:8px;';
                     var label2 = document.createElement('span');
-                    label2.style.cssText = 'font-size:13px;color:' + l1Colors[i2] + ';font-weight:600;width:36px;';
-                    label2.textContent = l1Names[i2];
+                    label2.style.cssText = 'font-size:13px;color:' + l1Colors[i2] + ';font-weight:600;min-width:36px;';
+                    label2.textContent = item2.name;
                     row2.appendChild(label2);
                     var barContainer2 = document.createElement('div');
                     barContainer2.style.cssText = 'flex:1;overflow:hidden;display:flex;';
@@ -2430,24 +2491,21 @@ function renderProgressStats(container, statsL1, statsOverall, nodeCounts) {
 /**
  * 渲染饼图模式的一级环节占比（环形图 + 图例纵向排列）。
  * @param {HTMLElement} container - 左列卡片内容容器
- * @param {object} statsL1 - { upstream, midstream, downstream }
+ * @param {Array} statsL1 - 每个一级环节一项
  */
 function renderPieL1Chart(container, statsL1) {
     container.innerHTML = '';
-    var l1NamesP = ['上游', '中游', '下游'];
-    var l1KeysP = ['upstream', 'midstream', 'downstream'];
-    var l1ColorsP = [chainPanoramaColumnColor(0), chainPanoramaColumnColor(1), chainPanoramaColumnColor(2)];
     var px = 70;
 
-    for (var i = 0; i < 3; i++) {
-        var counts = statsL1[l1KeysP[i]];
-        if (!counts) continue;
+    for (var i = 0; i < statsL1.length; i++) {
+        var item = statsL1[i];
+        var counts = item.counts;
         var row = document.createElement('div');
         row.style.cssText = 'display:flex;align-items:center;gap:10px;padding:6px 0;';
 
         var label = document.createElement('span');
-        label.style.cssText = 'font-size:13px;font-weight:700;color:' + l1ColorsP[i] + ';writing-mode:vertical-lr;letter-spacing:2px;min-width:20px;';
-        label.textContent = l1NamesP[i];
+        label.style.cssText = 'font-size:13px;font-weight:700;color:' + chainPanoramaColumnColor(i) + ';writing-mode:vertical-lr;letter-spacing:2px;min-width:20px;';
+        label.textContent = item.name;
         row.appendChild(label);
 
         var chartHost = document.createElement('div');
@@ -2471,7 +2529,7 @@ function renderPieL1Chart(container, statsL1) {
         row.appendChild(legend);
 
         container.appendChild(row);
-        if (i < 2) {
+        if (i < statsL1.length - 1) {
             var hr = document.createElement('hr');
             hr.style.cssText = 'border:none;border-top:1px solid #f0f0f0;margin:0;';
             container.appendChild(hr);
@@ -3094,8 +3152,8 @@ async function openChainColumnSettingsDialog() {
     const items = [
         { key: 'l2', label: '二级' },
         { key: 'l2_ratio', label: '二级占比（企业类型）' },
-        { key: 'l3', label: '三级' },
-        { key: 'l3_ratio', label: '三级占比（企业类型）' },
+        { key: 'leaf', label: '末级环节' },
+        { key: 'leaf_ratio', label: '末级占比（企业类型）' },
         { key: 'representative', label: '代表企业' }
     ];
 

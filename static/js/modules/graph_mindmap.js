@@ -279,6 +279,30 @@ function getColor(type) {
     return '#7B72B7'; // 紫  民营企业
 }
 
+function mindmapSegmentLevelColor(level) {
+    const colors = (typeof window !== 'undefined' && window.SEGMENT_LEVEL_COLORS) || {
+        0: '#364A67', 1: '#456DA1', 2: '#6D90BB', 3: '#8FAACE', 4: '#AEC4DF', 5: '#CBD9EA'
+    };
+    return colors[Number(level)] || '#CBD9EA';
+}
+
+function countMindmapSegmentLevels(nodes) {
+    const labels = ['', '一级环节', '二级环节', '三级环节', '四级环节', '五级环节'];
+    const counts = {};
+    (nodes || []).forEach(node => {
+        if (!node || !Array.isArray(node.labels) || !node.labels.includes('环节')) return;
+        const level = Number(node.properties && node.properties.level);
+        if (!Number.isFinite(level) || level < 1 || level > 5) return;
+        counts[level] = (counts[level] || 0) + 1;
+    });
+    return Object.keys(counts).map(Number).sort((a, b) => a - b).map(level => ({
+        level,
+        label: labels[level] || `${level}级环节`,
+        count: counts[level],
+        color: mindmapSegmentLevelColor(level)
+    }));
+}
+
 // 构建 Markdown 格式的思维导图数据
 function buildMarkdownMindmap(nodes, relationships, rootId) {
     const nodeMap = {};
@@ -518,10 +542,7 @@ function renderMindmapChart(isFullscreen) {
             // 环节/产业节点：按层级返回颜色
             var level = window.mindmapNodeLevels && window.mindmapNodeLevels[text];
             if (level !== undefined) {
-                if (level === 0) return '#364A67'; // 产业（根节点）
-                if (level === 1) return '#456DA1'; // 一级环节
-                if (level === 2) return '#6D90BB'; // 二级环节
-                return '#AEC4DF';                  // 三级环节
+                return mindmapSegmentLevelColor(level);
             }
             return '#9467bd';
         }
@@ -778,12 +799,11 @@ function createMindmapLegend() {
         legendContent.style.flexDirection = 'column';
         legendContent.style.gap = '0';
 
-        // 定义图例类型和颜色（与旭日图图例一致，参考量子科技配色）
+        // 定义图例类型和颜色（只展示当前数据中实际出现的层级）
+        const segmentLegendTypes = countMindmapSegmentLevels(typeof allGraphData !== 'undefined' ? allGraphData.nodes : [])
+            .map(item => ({ type: item.label, color: item.color }));
         const legendTypes = [
-            // { type: '产业', color: '#364A67' },
-            // { type: '一级环节', color: '#456DA1' },
-            // { type: '二级环节', color: '#6D90BB' },
-            // { type: '三级环节', color: '#AEC4DF' },
+            ...segmentLegendTypes,
             { type: '中央企业', color: '#AB4232' },
             { type: '其他国资', color: '#D2A450' },
             { type: '民营企业', color: '#7B72B7' },
@@ -1035,6 +1055,10 @@ window.toggleMindmapFullscreen = toggleMindmapFullscreen;
 window.exitMindmapFullscreen = exitMindmapFullscreen;
 window.captureMindmapScreenshot = captureMindmapScreenshot;
 window.focusOnMindmapNode = focusOnMindmapNode;
+
+if (typeof module === 'object' && module.exports) {
+    module.exports = { countMindmapSegmentLevels, mindmapSegmentLevelColor };
+}
 
 // 确保在 DOM 加载完成后初始化
 document.addEventListener('DOMContentLoaded', function() {
