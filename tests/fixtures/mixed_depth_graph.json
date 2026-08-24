@@ -1,0 +1,35 @@
+{
+  "nodes": [
+    {"id": 0, "labels": ["Root"], "properties": {"name": "测试产业", "level": 0}},
+    {"id": 1, "labels": ["环节"], "properties": {"name": "一级甲", "level": 1}},
+    {"id": 2, "labels": ["环节"], "properties": {"name": "一级乙", "level": 1}},
+    {"id": 3, "labels": ["环节"], "properties": {"name": "一级丙", "level": 1}},
+    {"id": 4, "labels": ["环节"], "properties": {"name": "一级丁", "level": 1}},
+    {"id": 10, "labels": ["环节"], "properties": {"name": "二级甲", "level": 2}},
+    {"id": 20, "labels": ["环节"], "properties": {"name": "三级叶子", "level": 3}},
+    {"id": 21, "labels": ["环节"], "properties": {"name": "三级分支", "level": 3}},
+    {"id": 22, "labels": ["环节"], "properties": {"name": "三级深分支", "level": 3}},
+    {"id": 30, "labels": ["环节"], "properties": {"name": "四级叶子", "level": 4}},
+    {"id": 31, "labels": ["环节"], "properties": {"name": "四级分支", "level": 4}},
+    {"id": 40, "labels": ["环节"], "properties": {"name": "五级叶子", "level": 5}},
+    {"id": 100, "labels": ["公司"], "properties": {"name": "甲公司", "category": "中央企业"}},
+    {"id": 101, "labels": ["公司"], "properties": {"name": "乙公司", "category": "民营企业"}},
+    {"id": 102, "labels": ["公司"], "properties": {"name": "丙公司", "category": "外资企业"}}
+  ],
+  "relationships": [
+    {"source": 1, "target": 0, "type": "从属于"},
+    {"source": 2, "target": 0, "type": "从属于"},
+    {"source": 3, "target": 0, "type": "从属于"},
+    {"source": 4, "target": 0, "type": "从属于"},
+    {"source": 10, "target": 1, "type": "从属于"},
+    {"source": 20, "target": 10, "type": "从属于"},
+    {"source": 21, "target": 10, "type": "从属于"},
+    {"source": 22, "target": 10, "type": "从属于"},
+    {"source": 30, "target": 21, "type": "从属于", "seed": true},
+    {"source": 31, "target": 22, "type": "从属于"},
+    {"source": 40, "target": 31, "type": "从属于"},
+    {"source": 100, "target": 20, "type": "参与环节"},
+    {"source": 101, "target": 30, "type": "参与环节"},
+    {"source": 102, "target": 40, "type": "参与环节"}
+  ]
+}
