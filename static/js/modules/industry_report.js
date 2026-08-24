@@ -988,7 +988,12 @@ function renderIndustryReportEvidenceCard(item, fallbackTitle, type = "external"
 }
 
 function getIndustryReportGraphNodeId(item) {
-    return item?.level3?.id ?? item?.node_id ?? item?.id ?? "";
+    return getIndustryReportGraphSegment(item)?.id ?? item?.node_id ?? item?.id ?? "";
+}
+
+function getIndustryReportGraphSegment(item) {
+    // Existing saved reports use level3; newly generated evidence uses segment.
+    return item?.segment || item?.level3 || null;
 }
 
 function buildIndustryReportGraphLink(nodeId) {
@@ -1581,12 +1586,13 @@ function getIndustryReportEditableText(el) {
 }
 
 function getIndustryReportEvidenceTitle(item, fallbackTitle) {
+    const segment = getIndustryReportGraphSegment(item);
     return item?.source_title
         || item?.article_title
         || item?.document_title
         || item?.doc_title
         || item?.title
-        || item?.level3?.name
+        || segment?.name
         || item?.chain_path
         || fallbackTitle
         || "未命名资料";
