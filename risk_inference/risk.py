@@ -11,6 +11,7 @@ import networkx as nx
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from graph_hierarchy import GraphHierarchy
 from llm_client import llm
 
 class SpecializedChainRiskEngine:
@@ -21,6 +22,7 @@ class SpecializedChainRiskEngine:
         self.l1_nodes = {}  # {node_id: name} (上/中/下)
         self.l2_map = {}  # {name: node_id} (分析入口)
         self.l2_to_l1 = {}  # {l2_id: l1_id}  (归属关系)
+        self.hierarchy = None
 
         self._load_graph()
         self._build_hierarchy_map()
@@ -31,6 +33,7 @@ class SpecializedChainRiskEngine:
         try:
             with open(self.json_path, 'r', encoding='utf-8') as f:
                 data = json.load(f)
+            self.hierarchy = GraphHierarchy.from_data(data)
 
             for node in data.get('nodes', []):
                 n_id = node['id']
@@ -79,15 +82,10 @@ class SpecializedChainRiskEngine:
     # ==========================================
     def analyze_internal_composition(self, l2_id):
         """
-        微观生态分析。
-        涵盖多条路径：
-        1. L2 -> Product <- Company (直连产品)
-        2. L2 -> L3 -> Product <- Company (细分环节产品)
-        3. L2 -> Company (直连公司，解决产品节点缺失问题)
-        4. L2 -> L3 -> Company (L3直连公司，解决产品节点缺失问题)
+        微观生态分析，沿二级环节的全部后代递归到末级环节。
         """
         stats = {
-            "l3_count": 0, "l3_details": [],
+            "terminal_segment_count": 0, "terminal_segment_details": [],
             "product_count": 0, "product_examples": [],
             "company_count": 0, "company_examples": set(),
             "risk_score": 0, "risk_reason": ""
@@ -97,10 +95,7 @@ class SpecializedChainRiskEngine:
         all_products = set()
         all_companies = set()
 
-        # 辅助函数：给定产品ID，查找其归属公司
-        # exclude_ids: 排除来源路径上的节点（如 L2 或 L3），防止回环
         def find_companies_for_product(prod_id, exclude_ids):
-            # Company -> Product (在无向图中查找 Product 的邻居)
             p_neighbors = self.G.neighbors(prod_id)
             for p_nb in p_neighbors:
                 if p_nb in exclude_ids: continue
@@ -111,59 +106,24 @@ class SpecializedChainRiskEngine:
                 if "公司" in c_labels or "Company" in c_labels or "企业" in c_labels:
                     all_companies.add(c_data.get('name'))
 
-        # 辅助函数：直接查找公司节点
-        def find_companies_directly(node_id, exclude_ids):
-            neighbors = self.G.neighbors(node_id)
-            for nb in neighbors:
-                if nb in exclude_ids: continue
-                
-                nb_data = self.G.nodes[nb]
-                nb_labels = nb_data.get('labels', [])
-                
-                if "公司" in nb_labels or "Company" in nb_labels or "企业" in nb_labels:
-                    all_companies.add(nb_data.get('name'))
+        terminal_ids = self.hierarchy.terminal_segment_ids(l2_id)
+        stats["terminal_segment_count"] = len(terminal_ids)
+        stats["terminal_segment_details"] = [
+            self.get_node_name(segment_id) for segment_id in terminal_ids
+        ]
 
-        # === 遍历 L2 的一级邻居 ===
-        neighbors = list(self.G.neighbors(l2_id))
-
-        for nb in neighbors:
-            nb_data = self.G.nodes[nb]
-            nb_labels = nb_data.get('labels', [])
-            nb_level = str(nb_data.get('level', ''))
-
-            # --- 路径 1: 发现 L3 子环节 ---
-            if nb_level == '3':
-                stats["l3_count"] += 1
-                stats["l3_details"].append(self.get_node_name(nb))
-
-                # 深入 L3 找产品
-                l3_neighbors = self.G.neighbors(nb)
-                has_product = False
-                for l3_nb in l3_neighbors:
-                    if l3_nb == l2_id: continue  # 排除回指
-
-                    l3_nb_data = self.G.nodes[l3_nb]
-                    if "产品" in l3_nb_data.get('labels', []) or "Product" in l3_nb_data.get('labels', []):
-                        has_product = True
-                        prod_name = self.get_node_name(l3_nb)
-                        all_products.add(prod_name)
-                        # 查找公司 (排除 L3)
-                        find_companies_for_product(l3_nb, exclude_ids={nb, l2_id})
-                
-                # 如果 L3 没有产品节点，直接查找 L3 连接的公司
-                if not has_product:
-                    find_companies_directly(nb, exclude_ids={l2_id})
-
-            # --- 路径 2: 发现 L2 直连产品 ---
-            elif "产品" in nb_labels or "Product" in nb_labels:
-                prod_name = self.get_node_name(nb)
-                all_products.add(prod_name)
-                # 查找公司 (排除 L2)
-                find_companies_for_product(nb, exclude_ids={l2_id})
-            
-            # --- 路径 3: 发现 L2 直连公司 ---
-            elif "公司" in nb_labels or "Company" in nb_labels or "企业" in nb_labels:
-                all_companies.add(nb_data.get('name'))
+        segment_ids = [l2_id] + self.hierarchy.descendant_segment_ids(l2_id)
+        for segment_id in segment_ids:
+            for neighbor_id in self.G.neighbors(segment_id):
+                if neighbor_id == l2_id:
+                    continue
+                neighbor_data = self.G.nodes[neighbor_id]
+                neighbor_labels = neighbor_data.get('labels', [])
+                if "产品" in neighbor_labels or "Product" in neighbor_labels:
+                    all_products.add(self.get_node_name(neighbor_id))
+                    find_companies_for_product(neighbor_id, exclude_ids={segment_id, l2_id})
+                elif "公司" in neighbor_labels or "Company" in neighbor_labels or "企业" in neighbor_labels:
+                    all_companies.add(neighbor_data.get('name'))
 
         # 汇总统计
         stats["product_count"] = len(all_products)
@@ -271,7 +231,7 @@ def generate_risk_report(data):
     - 所属层级：{external.get('source_tier', '未知')}
     - **风险原因**：{internal['risk_reason']}
     - **生态体量**：
-        - 包含细分环节(L3)数量：{internal['l3_count']} 个
+        - 包含末级环节数量：{internal['terminal_segment_count']} 个
         - 关联产品数量：{internal['product_count']} 个 (示例: {', '.join(internal['product_examples'])})
         - 关联企业数量：{internal['company_count']} 家 (示例: {', '.join(list(internal['company_examples']))})
 
@@ -348,8 +308,8 @@ class ResultManager:
 
         # --- 左图：微观生态 (保持不变) ---
         ax1 = axes[0]
-        items = ['关联企业', '关联产品', '细分环节(L3)']
-        counts = [internal['company_count'], internal['product_count'], internal['l3_count']]
+        items = ['关联企业', '关联产品', '末级环节']
+        counts = [internal['company_count'], internal['product_count'], internal['terminal_segment_count']]
 
         bars = ax1.barh(items, counts, color=['#66c2a5', '#fc8d62', '#8da0cb'], height=0.5)
         ax1.set_title("内部生态韧性指标", fontsize=14)
