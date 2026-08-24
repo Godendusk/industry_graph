@@ -8,13 +8,15 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+from graph_hierarchy import GraphHierarchy
+
 # --- 高性能模糊匹配库 ---
 try:
     from rapidfuzz import process as fuzz_process
     from rapidfuzz import fuzz
 except ImportError:
-    print("❌ 请先安装 rapidfuzz: pip install rapidfuzz")
-    exit()
+    fuzz_process = None
+    fuzz = None
 
 # --- 导入你的 LLM 客户端 ---
 from llm_client import LLMClient
@@ -64,6 +66,24 @@ LABEL_MAPPING = {
     "企业实体": "公司", "产品实体": "产品", "投资实体": "投资",
     "交易实体": "交易", "舆情实体": "舆情"
 }
+
+
+def build_terminal_segment_paths(graph_data):
+    """Return unambiguous full paths for every terminal segment."""
+    hierarchy = GraphHierarchy.from_data(graph_data)
+    records = []
+    for segment_id in hierarchy.terminal_segment_ids():
+        path_ids = hierarchy.segment_path_ids(segment_id)
+        path_nodes = [hierarchy.node_summary(node_id) for node_id in path_ids]
+        records.append(
+            {
+                "id": segment_id,
+                "level": path_nodes[-1]["level"],
+                "path": " > ".join(node["name"] for node in path_nodes if node["name"]),
+                "path_ids": path_ids,
+            }
+        )
+    return records
 
 # ==================================================
 # 2. Prompt 定义 (保持原文)
@@ -184,7 +204,7 @@ PROMPT_STEP3_REL = """
 **【核心约束】(必须遵守)：**
 
 1. **环节颗粒度匹配**：
-   - 如果实体涉及【产业链环节】，必须关联到字典中**最具体的细分环节**（Level 3）。
+    - 如果实体涉及【产业链环节】，必须关联到字典中的**末级环节**。末级环节可能位于 Level 2 到 Level 5。
    - ❌ 禁止关联到宏观环节（如“上游基础层”），除非无法找到更细分的。
 
 2. **关系原子性 (禁止合并)**：
@@ -194,7 +214,7 @@ PROMPT_STEP3_REL = """
 3. **证据确凿**：
    - 只有在文本中明确提到两个实体有交互（如供应、投资、从属）时才提取。
 
-【环节字典参考】(请优先匹配这里面的三级环节):
+【环节字典参考】(只能匹配这里面的末级环节完整路径):
 {segment_context}
 
 【已知实体列表】:
@@ -284,7 +304,7 @@ class UltimateExtractor:
         self.rel_max_id = 0
 
         # 环节字典
-        self.segment_map = {}
+        self.terminal_segment_paths = []
 
         # 预览模式候选结构（供前端勾选）
         self.candidate_nodes = []
@@ -331,57 +351,16 @@ class UltimateExtractor:
                         self.label_name_cache[lbl].append(name)
 
         # 3. 构建环节骨架：从现有图谱抽取 L1/L2/L3 和从属关系
-        self._build_segment_skeleton_from_graph()
+        self._build_terminal_segment_paths()
 
         # 4. 记录基线长度（用于预览 delta）
         self.base_nodes_len = len(self.graph.get("nodes", []))
         self.base_rels_len = len(self.graph.get("relationships", []))
 
-    def _build_segment_skeleton_from_graph(self):
-        print("🏗️ 从图谱抽取产业链骨架...")
-        nodes = self.graph.get("nodes", [])
-        links = self.graph.get("relationships", [])
-        id_to_level = {}
-        id_to_name = {}
-        for n in nodes:
-            if "环节" in n.get("labels", []):
-                props = n.get("properties", {}) or {}
-                lvl = str(props.get("level") or "").strip()
-                id_to_level[n.get("id")] = lvl
-                id_to_name[n.get("id")] = props.get("name") or props.get("AI产业环节")
-
-        l1_children = {}
-        l2_children = {}
-        for rel in links:
-            if rel.get("type") != RELATION_TYPES["REL_SUBSEG"]:
-                continue
-            child = rel.get("source")
-            parent = rel.get("target")
-            c_lvl = id_to_level.get(child)
-            p_lvl = id_to_level.get(parent)
-            if c_lvl == "2" and p_lvl == "1":
-                l1_children.setdefault(parent, set()).add(child)
-            if c_lvl == "3" and p_lvl == "2":
-                l2_children.setdefault(parent, set()).add(child)
-
-        segment_map = {}
-        for l1_id, l2_set in l1_children.items():
-            l1_name = id_to_name.get(l1_id)
-            if not l1_name:
-                continue
-            segment_map.setdefault(l1_name, {})
-            for l2_id in l2_set:
-                l2_name = id_to_name.get(l2_id)
-                if not l2_name:
-                    continue
-                l3_list = []
-                for l3_id in l2_children.get(l2_id, []):
-                    l3_name = id_to_name.get(l3_id)
-                    if l3_name:
-                        l3_list.append(l3_name)
-                segment_map[l1_name][l2_name] = l3_list
-        self.segment_map = segment_map
-        print(f"✅ 骨架抽取完成：L1 {len(segment_map)}")
+    def _build_terminal_segment_paths(self):
+        print("🏗️ 从图谱抽取末级环节完整路径...")
+        self.terminal_segment_paths = build_terminal_segment_paths(self.graph)
+        print(f"✅ 末级环节路径抽取完成：{len(self.terminal_segment_paths)} 条")
 
     def _ensure_temp_node(self, label, name, props=None):
         if not label or not name:
@@ -560,6 +539,8 @@ class UltimateExtractor:
                 continue
 
             candidates = snapshot.get(label, [])
+            if candidates and fuzz_process is None:
+                raise RuntimeError("导入去重需要 rapidfuzz，请先安装 rapidfuzz")
             match_res = fuzz_process.extractOne(name, candidates, scorer=fuzz.ratio) if candidates else None
 
             is_dup = False
@@ -615,7 +596,7 @@ class UltimateExtractor:
         # Step 4: 属性 + 关系
         full_map = {**existing_map, **temp_new_ids}
         nodes_ctx = [{"name": k, "id": v} for k, v in full_map.items()]
-        seg_ctx = json.dumps(self.segment_map, ensure_ascii=False)
+        seg_ctx = json.dumps(self.terminal_segment_paths, ensure_ascii=False)
         if len(seg_ctx) > 3000:
             seg_ctx = seg_ctx[:3000] + "...(truncated)"
 
