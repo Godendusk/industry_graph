@@ -12,7 +12,7 @@ from .client import EXTERNAL_LIBRARIES
 
 REPORT_GENERATION_DIR = Path(__file__).resolve().parents[1]
 PROJECT_ROOT = REPORT_GENERATION_DIR.parent
-VECTOR_DB_DIR = REPORT_GENERATION_DIR / "vector_db"
+VECTOR_DB_DIR = PROJECT_ROOT / "RAG" / "vector_db"  # 报告五库：report_*_ai
 MODEL_PATH = PROJECT_ROOT / "RAG" / "models"
 BATCH_SIZE = 128
 # 限制嵌入模型使用的 CPU 线程数，避免编码时 CPU 占用过高（默认 4 线程）

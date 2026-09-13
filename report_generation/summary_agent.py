@@ -15,6 +15,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TEMPLATE_PATH = PROJECT_ROOT / "产业链报告模板.docx"
 SUPPORTED_INDUSTRIES = {
     "ai": "人工智能",
+    "embodied": "具身智能",
 }
 DEFAULT_MAX_TOKENS = 5000
 

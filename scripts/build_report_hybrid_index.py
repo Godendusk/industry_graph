@@ -20,6 +20,16 @@ from report_generation.external_rag.client import EXTERNAL_LIBRARIES
 from report_generation.external_rag.text_utils import html_to_structured_blocks, normalize_text
 from retrieval_core.chunker import build_report_chunks
 
+MAX_METADATA_TITLE_CHARS = 120
+
+
+def _bounded_metadata_title(value: object, fallback: str) -> str:
+    """Keep malformed full-article titles out of the chunk embedding prefix."""
+    title = normalize_text(value) or fallback
+    if len(title) <= MAX_METADATA_TITLE_CHARS:
+        return title
+    return title[: MAX_METADATA_TITLE_CHARS - 1].rstrip() + "…"
+
 
 def _percentile(values: list[int], percentile: float) -> int:
     if not values:
@@ -49,7 +59,7 @@ def _legacy_materials(legacy_client: Any) -> list[tuple[str, str, str, dict[str,
     materials = []
     for (library, material_id), rows in sorted(grouped.items()):
         rows.sort(key=lambda row: row[0])
-        title = normalize_text(rows[0][2].get("title")) or material_id
+        title = _bounded_metadata_title(rows[0][2].get("title"), material_id)
         metadata = dict(rows[0][2])
         metadata.update({"library": library, "material_id": material_id, "title": title,
                          "classification_name": EXTERNAL_LIBRARIES[library]["classification_name"]})

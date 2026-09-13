@@ -5,6 +5,19 @@ from report_generation.external_rag.retriever import retrieve_external_rag
 
 
 class ReportRagModesTest(unittest.TestCase):
+    def test_default_dispatches_to_hybrid_v2(self):
+        with patch.dict("os.environ", {}, clear=True), patch(
+            "report_generation.external_rag.retriever._retrieve_hybrid",
+            return_value={"status": "success", "retrieval_version": "hybrid_v2", "evidence_blocks": []},
+        ) as hybrid, patch(
+            "report_generation.external_rag.retriever._retrieve_legacy"
+        ) as legacy:
+            result = retrieve_external_rag("查询", top_k=10)
+
+        self.assertEqual(result["retrieval_version"], "hybrid_v2")
+        hybrid.assert_called_once_with("查询", 10)
+        legacy.assert_not_called()
+
     def test_legacy_returns_existing_result(self):
         with patch("report_generation.external_rag.retriever._mode", return_value="legacy"), patch(
             "report_generation.external_rag.retriever._retrieve_legacy",

@@ -99,7 +99,7 @@ class RetrievalConfigTests(unittest.TestCase):
 
             resolved_root = project_root.resolve()
             self.assertEqual(config.project_root, resolved_root)
-            self.assertEqual(config.mode, "legacy")
+            self.assertEqual(config.mode, "hybrid_v2")
             self.assertEqual(config.index_root, resolved_root / "RAG/indexes/report_v2")
             self.assertEqual(
                 config.embedding_model_path,

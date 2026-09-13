@@ -18,12 +18,25 @@ _QUERY_EMBEDDING_LOCK = Lock()
 
 
 def _mode() -> str:
-    value = os.environ.get("REPORT_RETRIEVAL_MODE", "legacy").strip()
+    value = os.environ.get("REPORT_RETRIEVAL_MODE", "hybrid_v2").strip()
     return value if value in {"legacy", "compare", "hybrid_v2"} else "legacy"
 
 
-def retrieve_external_rag(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
+def retrieve_external_rag(
+    query: str, top_k: int = DEFAULT_TOP_K, industry: str = "ai"
+) -> dict:
     """Dispatch legacy, shadow-compare, or hybrid-v2 report retrieval."""
+    normalized_industry = str(industry or "ai").strip() or "ai"
+    normalized_query = str(query or "").strip()
+    normalized_top_k = _normalize_top_k(top_k)
+    if normalized_industry == "embodied":
+        return retrieve_embodied_news(normalized_query, normalized_top_k)
+    if normalized_industry != "ai":
+        return _error_response(
+            f"unsupported industry: {normalized_industry}",
+            normalized_query,
+            normalized_top_k,
+        )
     mode = _mode()
     if mode == "legacy":
         return _retrieve_legacy(query, top_k)
@@ -43,6 +56,61 @@ def retrieve_external_rag(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
         legacy["hybrid_error"] = hybrid.get("message", "hybrid retrieval failed")
         return legacy
     return hybrid
+
+
+def retrieve_embodied_news(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
+    """Retrieve embodied news chunks from the isolated Chroma collection."""
+    normalized_query = str(query or "").strip()
+    normalized_top_k = _normalize_top_k(top_k)
+    if not normalized_query:
+        return _error_response("query cannot be empty", normalized_query, normalized_top_k)
+    try:
+        from .embodied_store import query_embodied_news
+
+        results = query_embodied_news(normalized_query, normalized_top_k)
+    except Exception as exc:
+        return _error_response(
+            f"embodied RAG initialization failed: {exc}",
+            normalized_query,
+            normalized_top_k,
+        )
+
+    ids = _first_result_list(results.get("ids"))
+    documents = _first_result_list(results.get("documents"))
+    metadatas = _first_result_list(results.get("metadatas"))
+    distances = _first_result_list(results.get("distances"))
+    evidence_blocks = []
+    for index, vector_id in enumerate(ids):
+        text = _safe_text(_list_get(documents, index))
+        if not text:
+            continue
+        metadata = _list_get(metadatas, index)
+        metadata = metadata if isinstance(metadata, dict) else {}
+        evidence_blocks.append(
+            {
+                "citation_id": f"外部资料{len(evidence_blocks) + 1}",
+                "rank": len(evidence_blocks) + 1,
+                "library": "embodied_news",
+                "classification_type": "",
+                "classification_name": "具身智能专题资讯",
+                "material_id": _metadata_value(metadata, "source_id", ""),
+                "title": _metadata_value(metadata, "title", ""),
+                "publish_date": _metadata_value(metadata, "publish_date", ""),
+                "source_address": _metadata_value(metadata, "url", ""),
+                "paragraph_index": _coerce_int(metadata.get("chunk_index")),
+                "vector_id": _safe_text(vector_id),
+                "distance": _coerce_float(_list_get(distances, index)),
+                "text": text,
+            }
+        )
+    return {
+        "status": "success",
+        "query": normalized_query,
+        "top_k": normalized_top_k,
+        "rag_context_text": _build_rag_context_text(evidence_blocks),
+        "evidence_blocks": evidence_blocks,
+        "retrieval_version": "embodied_chroma",
+    }
 
 
 def _retrieve_hybrid(query: str, top_k: int = DEFAULT_TOP_K) -> dict:

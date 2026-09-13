@@ -16,6 +16,7 @@ from .graph_retriever import retrieve_ai_graph
 
 SUPPORTED_INDUSTRIES = {
     "ai": "人工智能",
+    "embodied": "具身智能",
 }
 DEFAULT_TOP_K = 10
 
@@ -64,6 +65,7 @@ def generate_writing_tasks(
                 user_prompt=normalized_prompt,
                 report_title=normalized_title,
                 top_k=normalized_top_k,
+                industry=normalized_industry,
             ): index
             for index, subsection in enumerate(final_subsections)
         }
@@ -103,6 +105,7 @@ def _generate_writing_task_for_subsection(
     user_prompt: str,
     report_title: str,
     top_k: int,
+    industry: str = "ai",
 ) -> tuple[dict, List[dict]]:
     task_warnings: List[dict] = []
     warnings: List[dict] = []
@@ -118,6 +121,7 @@ def _generate_writing_task_for_subsection(
         outline_id=subsection["outline_id"],
         warnings=warnings,
         task_warnings=task_warnings,
+        industry=industry,
     )
     external_rag_retrieval = _retrieve_external_rag_for_subsection(
         query=section_retrieval_query,
@@ -125,6 +129,7 @@ def _generate_writing_task_for_subsection(
         outline_id=subsection["outline_id"],
         warnings=warnings,
         task_warnings=task_warnings,
+        industry=industry,
     )
 
     prompt_result = _generate_writing_system_prompt(
@@ -271,9 +276,12 @@ def _retrieve_graph_for_subsection(
     outline_id: str,
     warnings: List[dict],
     task_warnings: List[dict],
+    industry: str = "ai",
 ) -> dict:
     try:
-        result = retrieve_ai_graph(query)
+        from .graph_retriever import retrieve_graph
+
+        result = retrieve_graph(query, industry=industry)
     except Exception as exc:
         warning = {
             "outline_id": outline_id,
@@ -307,9 +315,10 @@ def _retrieve_external_rag_for_subsection(
     outline_id: str,
     warnings: List[dict],
     task_warnings: List[dict],
+    industry: str = "ai",
 ) -> dict:
     try:
-        result = retrieve_external_rag(query, top_k=top_k)
+        result = retrieve_external_rag(query, top_k=top_k, industry=industry)
     except Exception as exc:
         warning = {
             "outline_id": outline_id,

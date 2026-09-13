@@ -8,7 +8,7 @@ import httpx
 import socket
 
 # --- 配置区域 (修改这里即可全局生效) ---
-DEFAULT_API_KEY = "sk-43b8c5600b6248ba902a4045d88531d6"  # 建议使用 os.getenv("DEEPSEEK_API_KEY") 获取
+DEFAULT_API_KEY = "sk-6874e578bf2f49e38f8dbbccc333f87d"  # 建议使用 os.getenv("DEEPSEEK_API_KEY") 获取
 DEFAULT_BASE_URL = "https://api.deepseek.com"
 # DEFAULT_API_KEY = "sk-b54b7d16afcf46499c2dac95b7a04d00"
 # DEFAULT_BASE_URL = "https://e.cnpc.com.cn/klzm-ai-proxy"

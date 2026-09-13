@@ -15,7 +15,7 @@ from pathlib import Path
 
 from retrieval_core.lexical_store import LexicalStore
 from retrieval_core.schemas import ChunkRecord
-from scripts.build_report_hybrid_index import build_from_legacy
+from scripts.build_report_hybrid_index import _legacy_materials, build_from_legacy
 
 
 v2_index = importlib.import_module("report_generation.external_rag.v2_index")
@@ -206,6 +206,29 @@ def writer(dense=None, lexical=None, directory=None, **kwargs):
 
 
 class V2IndexWriterTests(unittest.TestCase):
+    def test_legacy_materials_compacts_metadata_that_contains_full_article_title(self):
+        class LongTitleCollection:
+            def get(self, include):
+                return {
+                    "documents": ["正文内容。"],
+                    "metadatas": [{
+                        "material_id": "long-title",
+                        "paragraph_index": 0,
+                        "title": "错误的全文标题。" + "正文" * 200,
+                    }],
+                }
+
+        class LongTitleClient:
+            def get_collection(self, name):
+                return LongTitleCollection()
+
+        materials = _legacy_materials(LongTitleClient())
+
+        self.assertEqual(len(materials), 5)
+        for _library, _material_id, title, metadata, _blocks in materials:
+            self.assertLessEqual(len(title), 120)
+            self.assertEqual(metadata["title"], title)
+
     def test_legacy_dry_run_groups_sorts_and_reports_all_libraries_without_writes(self):
         writer = Mock()
         report = build_from_legacy(

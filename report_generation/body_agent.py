@@ -12,6 +12,7 @@ from llm_client import llm
 
 SUPPORTED_INDUSTRIES = {
     "ai": "人工智能",
+    "embodied": "具身智能",
 }
 DEFAULT_MAX_WORKERS = 3
 DEFAULT_MAX_TOKENS = 5000

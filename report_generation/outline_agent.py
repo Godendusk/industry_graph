@@ -20,6 +20,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TEMPLATE_PATH = PROJECT_ROOT / "产业链报告模板.docx"
 SUPPORTED_INDUSTRIES = {
     "ai": "人工智能",
+    "embodied": "具身智能",
 }
 BODY_SUBSECTION_MIN = 2
 BODY_SUBSECTION_MAX = 4
@@ -104,12 +105,14 @@ def generate_report_outline(
             level1_id=level1_id,
             warnings=warnings,
             section_warnings=section_warnings,
+            industry=normalized_industry,
         )
         external_rag_retrieval = _retrieve_external_rag_for_section(
             query=section_retrieval_query,
             level1_id=level1_id,
             warnings=warnings,
             section_warnings=section_warnings,
+            industry=normalized_industry,
         )
 
         subsection_result = _generate_section_subsections(
@@ -321,9 +324,12 @@ def _retrieve_graph_for_section(
     level1_id: str,
     warnings: List[dict],
     section_warnings: List[dict],
+    industry: str = "ai",
 ) -> dict:
     try:
-        result = retrieve_ai_graph(query)
+        from .graph_retriever import retrieve_graph
+
+        result = retrieve_graph(query, industry=industry)
     except Exception as exc:
         warning = {
             "level1_id": level1_id,
@@ -354,9 +360,10 @@ def _retrieve_external_rag_for_section(
     level1_id: str,
     warnings: List[dict],
     section_warnings: List[dict],
+    industry: str = "ai",
 ) -> dict:
     try:
-        result = retrieve_external_rag(query, top_k=10)
+        result = retrieve_external_rag(query, top_k=10, industry=industry)
     except Exception as exc:
         warning = {
             "level1_id": level1_id,

@@ -15,6 +15,7 @@ from .graph_retriever import retrieve_ai_graph
 
 SUPPORTED_INDUSTRIES = {
     "ai": "人工智能",
+    "embodied": "具身智能",
 }
 DEFAULT_TOP_K = 10
 DEFAULT_MAX_TOKENS = 5000
@@ -59,11 +60,14 @@ def recommend_rewrite_materials(
     )
 
     warnings: List[dict] = []
-    graph_retrieval = _retrieve_graph_for_rewrite(rewrite_retrieval_query, warnings)
+    graph_retrieval = _retrieve_graph_for_rewrite(
+        rewrite_retrieval_query, warnings, industry=normalized_industry
+    )
     external_rag_retrieval = _retrieve_external_rag_for_rewrite(
         query=rewrite_retrieval_query,
         top_k=normalized_top_k,
         warnings=warnings,
+        industry=normalized_industry,
     )
 
     graph_success = graph_retrieval.get("status") == "success"
@@ -200,9 +204,13 @@ def _build_rewrite_retrieval_query(
     )
 
 
-def _retrieve_graph_for_rewrite(query: str, warnings: List[dict]) -> dict:
+def _retrieve_graph_for_rewrite(
+    query: str, warnings: List[dict], industry: str = "ai"
+) -> dict:
     try:
-        result = retrieve_ai_graph(query)
+        from .graph_retriever import retrieve_graph
+
+        result = retrieve_graph(query, industry=industry)
     except Exception as exc:
         warning = {
             "stage": "graph_retrieval",
@@ -227,9 +235,11 @@ def _retrieve_graph_for_rewrite(query: str, warnings: List[dict]) -> dict:
     return normalized
 
 
-def _retrieve_external_rag_for_rewrite(query: str, top_k: int, warnings: List[dict]) -> dict:
+def _retrieve_external_rag_for_rewrite(
+    query: str, top_k: int, warnings: List[dict], industry: str = "ai"
+) -> dict:
     try:
-        result = retrieve_external_rag(query, top_k=top_k)
+        result = retrieve_external_rag(query, top_k=top_k, industry=industry)
     except Exception as exc:
         warning = {
             "stage": "external_rag_retrieval",

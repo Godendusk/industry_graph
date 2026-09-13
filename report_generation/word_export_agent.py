@@ -11,6 +11,7 @@ from typing import Any, List
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SUPPORTED_INDUSTRIES = {
     "ai": "人工智能",
+    "embodied": "具身智能",
 }
 DEFAULT_OUTPUT_DIR = "report_generation/outputs"
 

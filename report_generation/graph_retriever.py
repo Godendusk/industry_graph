@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""AI industry graph retrieval for report generation.
+"""Industry graph retrieval for report generation.
 
-This module is intentionally scoped to the AI graph only. It asks the LLM to
+This module asks the LLM to
 choose 1-3 real level-3 industry segments, then expands those segments through
 the existing graph relationships.
 """
@@ -17,39 +17,51 @@ from typing import Any, Dict, List, Optional, Tuple
 from llm_client import llm
 
 
-INDUSTRY = "ai"
 BASE_DIR = Path(__file__).resolve().parents[1]
-AI_GRAPH_PATH = BASE_DIR / "static" / "data" / "ai" / "graph_data.json"
+GRAPH_PATHS = {
+    "ai": BASE_DIR / "static" / "data" / "ai" / "graph_data.json",
+    "embodied": BASE_DIR / "static" / "data" / "embodied" / "graph_data.json",
+}
+AI_GRAPH_PATH = GRAPH_PATHS["ai"]
 
 REL_BELONGS_TO = "从属于"
 REL_PARTICIPATES_IN = "参与环节"
 
 
-def retrieve_ai_graph(query: str) -> dict:
-    """Retrieve AI graph context for a report-generation query.
-
-    The retrieval flow is:
-    1. Load the AI graph.
-    2. Send the complete L3 segment list to the LLM.
-    3. Validate that the LLM selected 1-3 real L3 nodes.
-    4. Expand each selected L3 upward to L2/L1 and downward to all entities.
-    """
+def retrieve_graph(query: str, industry: str = "ai") -> dict:
+    """Retrieve graph context for a report-generation query."""
     normalized_query = str(query or "").strip()
+    normalized_industry = str(industry or "ai").strip() or "ai"
     if not normalized_query:
-        return _error_response("query 不能为空", normalized_query)
+        return _error_response("query 不能为空", normalized_query, normalized_industry)
+    graph_path = GRAPH_PATHS.get(normalized_industry)
+    if graph_path is None:
+        return _error_response(
+            f"不支持的产业图谱: {normalized_industry}",
+            normalized_query,
+            normalized_industry,
+        )
 
     try:
-        graph = _AIGraph(AI_GRAPH_PATH)
+        graph = _AIGraph(graph_path)
     except Exception as exc:
-        return _error_response(f"加载 AI 知识图谱失败: {exc}", normalized_query)
+        return _error_response(
+            f"加载 {normalized_industry} 知识图谱失败: {exc}",
+            normalized_query,
+            normalized_industry,
+        )
 
-    llm_result = _select_level3_with_llm(normalized_query, graph)
+    llm_result = _select_level3_with_llm(normalized_query, graph, normalized_industry)
     if llm_result["status"] != "success":
-        return _error_response(llm_result["message"], normalized_query)
+        return _error_response(llm_result["message"], normalized_query, normalized_industry)
 
     selected_level3 = _validate_llm_level3_selection(llm_result["data"], graph)
     if not selected_level3:
-        return _error_response("LLM 未能从 L3 环节清单中返回有效结果", normalized_query)
+        return _error_response(
+            "LLM 未能从 L3 环节清单中返回有效结果",
+            normalized_query,
+            normalized_industry,
+        )
 
     matched_level3 = []
     evidence_blocks = []
@@ -82,12 +94,17 @@ def retrieve_ai_graph(query: str) -> dict:
 
     return {
         "status": "success",
-        "industry": INDUSTRY,
+        "industry": normalized_industry,
         "query": normalized_query,
         "graph_context_text": _build_graph_context_text(normalized_query, evidence_blocks),
         "matched_level3": matched_level3,
         "evidence_blocks": evidence_blocks,
     }
+
+
+def retrieve_ai_graph(query: str) -> dict:
+    """Backward-compatible AI graph retrieval wrapper."""
+    return retrieve_graph(query, industry="ai")
 
 
 class _AIGraph:
@@ -210,13 +227,14 @@ class _AIGraph:
         return rows
 
 
-def _select_level3_with_llm(query: str, graph: _AIGraph) -> dict:
+def _select_level3_with_llm(query: str, graph: _AIGraph, industry: str = "ai") -> dict:
+    industry_name = {"ai": "人工智能", "embodied": "具身智能"}.get(industry, industry)
     system_prompt = (
-        "你是人工智能产业知识图谱检索助手。"
+        f"你是{industry_name}产业知识图谱检索助手。"
         "你只能从用户提供的 L3 环节清单中选择相关环节。"
         "必须只输出 JSON 数组，不要输出解释、Markdown 或代码块。"
     )
-    user_prompt = f"""请根据用户查询，从下面的人工智能产业 L3 环节清单中选择最相关的 1 到 3 个。
+    user_prompt = f"""请根据用户查询，从下面的{industry_name}产业 L3 环节清单中选择最相关的 1 到 3 个。
 
 用户查询：
 {query}
@@ -388,10 +406,10 @@ def _build_graph_context_text(query: str, evidence_blocks: List[dict]) -> str:
     return "\n".join(lines).strip()
 
 
-def _error_response(message: str, query: str) -> dict:
+def _error_response(message: str, query: str, industry: str = "ai") -> dict:
     return {
         "status": "error",
-        "industry": INDUSTRY,
+        "industry": industry,
         "query": query,
         "message": message or "LLM 未能从 L3 环节清单中返回有效结果",
         "matched_level3": [],
