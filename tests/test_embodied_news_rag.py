@@ -281,6 +281,37 @@ class EmbodiedStoreTest(unittest.TestCase):
         self.assertEqual(encode_batch_sizes, [2, 1])
         self.assertEqual(len(store.collection.upsert_calls), 1)
 
+    def test_store_splits_a_batch_when_model_rejects_batch_input(self):
+        module = load_module(self, "report_generation.external_rag.embodied_store")
+        encode_batch_sizes = []
+
+        class FakeModel:
+            def encode(self, documents, **kwargs):
+                encode_batch_sizes.append(len(documents))
+                if len(documents) > 1:
+                    raise TypeError("batch input rejected")
+                return [[1.0] for _ in documents]
+
+        class FakeCollection:
+            def upsert(self, **kwargs):
+                self.kwargs = kwargs
+
+        store = module.EmbodiedNewsStore.__new__(module.EmbodiedNewsStore)
+        store.model_path = module.MODEL_PATH
+        store.embedding_batch_size = 4
+        store.collection = FakeCollection()
+
+        with patch.object(module, "_get_model", return_value=FakeModel()):
+            written = store.upsert([
+                {"id": "a:0", "document": "甲", "metadata": {"source_id": "a"}},
+                {"id": "b:0", "document": "乙", "metadata": {"source_id": "b"}},
+                {"id": "c:0", "document": "丙", "metadata": {"source_id": "c"}},
+                {"id": "d:0", "document": "丁", "metadata": {"source_id": "d"}},
+            ])
+
+        self.assertEqual(written, 4)
+        self.assertEqual(encode_batch_sizes, [4, 2, 1, 1, 2, 1, 1])
+
 
 class EmbodiedReportRoutingTest(unittest.TestCase):
     def test_graph_route_selects_embodied_graph_file(self):

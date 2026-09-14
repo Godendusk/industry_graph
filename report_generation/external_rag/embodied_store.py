@@ -44,6 +44,25 @@ def _get_model() -> Any:
     return _MODEL
 
 
+def _encode_with_fallback(model: Any, documents: List[str]) -> List[Any]:
+    """Encode a batch, splitting it when the tokenizer rejects a batch input."""
+    try:
+        return list(
+            model.encode(
+                documents,
+                normalize_embeddings=True,
+                show_progress_bar=False,
+            )
+        )
+    except Exception:
+        if len(documents) <= 1:
+            raise
+        midpoint = len(documents) // 2
+        return _encode_with_fallback(model, documents[:midpoint]) + _encode_with_fallback(
+            model, documents[midpoint:]
+        )
+
+
 class EmbodiedNewsStore:
     """Persistent Chroma collection using the 768-dimensional local BGE model."""
 
@@ -72,13 +91,9 @@ class EmbodiedNewsStore:
         metadatas = [dict(item["metadata"]) for item in records]
         embeddings: List[Any] = []
         for start in range(0, len(documents), self.embedding_batch_size):
-            embeddings.extend(
-                model.encode(
-                    documents[start : start + self.embedding_batch_size],
-                    normalize_embeddings=True,
-                    show_progress_bar=False,
-                )
-            )
+            embeddings.extend(_encode_with_fallback(
+                model, documents[start : start + self.embedding_batch_size]
+            ))
         self.collection.upsert(
             ids=ids,
             documents=documents,
