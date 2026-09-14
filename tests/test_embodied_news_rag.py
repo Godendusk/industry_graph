@@ -178,6 +178,19 @@ class EmbodiedIngestionTest(unittest.TestCase):
         self.assertNotIn("<p>", chunks[0]["document"])
         self.assertEqual(chunks[0]["metadata"]["subject_id"], "2043590589800853505")
 
+    def test_chunking_repairs_surrogate_pair_emojis_for_tokenizer(self):
+        module = load_module(self, "report_generation.external_rag.embodied_ingestion")
+        raw = "机器人\ud83e\udd16完成测试。"
+
+        chunks = module.build_chunks(
+            {"id": "emoji-source", "title": "标题", "content": raw},
+            subject_id="2043590589800853505",
+        )
+
+        document = chunks[0]["document"]
+        self.assertNotRegex(document, r"[\ud800-\udfff]")
+        self.assertIn("🤖", document)
+
 
 class EmbodiedRoutingTest(unittest.TestCase):
     def test_embodied_route_queries_only_embodied_collection(self):

@@ -23,8 +23,18 @@ DEFAULT_FULL_MANIFEST = VECTOR_DB_DIR / "embodied_full_manifest.json"
 MAX_RECORDED_ERRORS = 100
 
 
+def _repair_unicode_surrogates(text: str) -> str:
+    """Convert escaped UTF-16 surrogate pairs into Unicode code points."""
+    try:
+        return text.encode("utf-16", "surrogatepass").decode("utf-16", "replace")
+    except UnicodeError:
+        return text.encode("utf-8", "replace").decode("utf-8")
+
+
 def _clean_body(value: object) -> str:
-    text = html.unescape(str(value or ""))
+    text = _repair_unicode_surrogates(str(value or ""))
+    text = html.unescape(text)
+    text = _repair_unicode_surrogates(text)
     if "<" in text and ">" in text:
         try:
             from bs4 import BeautifulSoup
