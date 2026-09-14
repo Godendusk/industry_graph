@@ -215,6 +215,64 @@ def test_failed_batch_write_keeps_page_resumable_and_does_not_prune(tmp_path):
     assert saved["next_page"] == 2
 
 
+def test_skip_failed_page_records_page_and_continues(tmp_path):
+    from report_generation.external_rag.embodied_ingestion import ingest_all_news
+    from report_generation.external_rag.embodied_manifest import EmbodiedIngestionManifest
+
+    manifest_path = tmp_path / "run.json"
+    client = FakePagedClient({
+        1: page([record("a")], 1, 3, total=3),
+        2: page([record("bad")], 2, 3, total=3),
+        3: page([record("c")], 3, 3, total=3),
+    })
+    store = FailingBatchStore(fail_on_call=2)
+
+    result = ingest_all_news(
+        client=client,
+        store=store,
+        manifest_path=manifest_path,
+        page_size=1,
+        retry_count=0,
+        sleep_seconds=0,
+        skip_failed_pages=True,
+    )
+
+    assert result["status"] == "partial_success"
+    assert result["records_seen"] == 3
+    assert result["chunks_written"] == 2
+    assert result["skipped_pages"] == [2]
+    assert client.pages_requested == [1, 2, 3]
+    assert store.prune_calls == 0
+    saved = EmbodiedIngestionManifest(manifest_path).load()
+    assert saved["status"] == "completed_with_skips"
+    assert saved["skipped_pages"] == [2]
+    assert saved["next_page"] == 4
+
+
+def test_skip_failed_pages_does_not_skip_list_request_failures(tmp_path):
+    from report_generation.external_rag.embodied_ingestion import ingest_all_news
+
+    client = FakePagedClient(
+        {1: page([record("a")], 1, 2, total=2),
+         2: page([record("b")], 2, 2, total=2)},
+        failures={2: 1},
+    )
+
+    result = ingest_all_news(
+        client=client,
+        store=FakeFullStore(),
+        manifest_path=tmp_path / "run.json",
+        page_size=1,
+        retry_count=0,
+        sleep_seconds=0,
+        skip_failed_pages=True,
+    )
+
+    assert result["status"] == "failed"
+    assert result["skipped_pages"] == []
+    assert client.pages_requested == [1, 2]
+
+
 def test_incomplete_manifest_remains_resumable(tmp_path):
     from report_generation.external_rag.embodied_manifest import EmbodiedIngestionManifest
 

@@ -60,10 +60,35 @@ class EmbodiedIngestionManifest:
             "chunks_written": 0,
             "collection_count": 0,
             "stale_chunks_removed": 0,
+            "skipped_pages": [],
+            "skipped_page_errors": [],
             "source_ids": [],
             "errors": [],
             "error_count": 0,
         }
+        return self._write(state)
+
+    def mark_page_skipped(
+        self,
+        page_no: int,
+        records: int,
+        error: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        state = self.load()
+        if not state:
+            raise ValueError("cannot skip a page before starting a manifest")
+        skipped_pages = [int(value) for value in state.get("skipped_pages", [])]
+        if int(page_no) not in skipped_pages:
+            skipped_pages.append(int(page_no))
+        skipped_errors = list(state.get("skipped_page_errors", []))
+        skipped_errors.append(dict(error))
+        state["status"] = "running"
+        state["snapshot_complete"] = False
+        state["next_page"] = int(page_no) + 1
+        state["records_seen"] = int(state.get("records_seen", 0)) + int(records)
+        state["failed"] = int(state.get("failed", 0)) + 1
+        state["skipped_pages"] = sorted(set(skipped_pages))
+        state["skipped_page_errors"] = skipped_errors[:100]
         return self._write(state)
 
     def mark_page_complete(
@@ -125,7 +150,12 @@ class EmbodiedIngestionManifest:
         snapshot_complete: bool = True,
     ) -> Dict[str, Any]:
         state = self.load()
-        state["status"] = "completed" if snapshot_complete else "running"
+        if snapshot_complete:
+            state["status"] = "completed"
+        elif state.get("skipped_pages"):
+            state["status"] = "completed_with_skips"
+        else:
+            state["status"] = "running"
         state["snapshot_complete"] = bool(snapshot_complete)
         state["collection_count"] = int(collection_count)
         state["stale_chunks_removed"] = int(stale_chunks_removed)

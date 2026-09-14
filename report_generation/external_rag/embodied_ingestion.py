@@ -143,6 +143,8 @@ def _base_stats() -> Dict[str, Any]:
         "error_count": 0,
         "collection_count": 0,
         "stale_chunks_removed": 0,
+        "skipped_pages": [],
+        "skipped_page_errors": [],
     }
 
 
@@ -226,6 +228,8 @@ def _stats_from_state(state: Dict[str, Any]) -> Dict[str, Any]:
     ):
         stats[key] = int(state.get(key, 0))
     stats["errors"] = list(state.get("errors", []))[:MAX_RECORDED_ERRORS]
+    stats["skipped_pages"] = [int(value) for value in state.get("skipped_pages", [])]
+    stats["skipped_page_errors"] = list(state.get("skipped_page_errors", []))[:MAX_RECORDED_ERRORS]
     return stats
 
 
@@ -280,6 +284,7 @@ def ingest_all_news(
     retry_count: int = 3,
     sleep_seconds: float = 0.2,
     limit_records: int | None = None,
+    skip_failed_pages: bool = False,
 ) -> Dict[str, Any]:
     """Build a resumable full snapshot of the status=1 embodied feed."""
     if page_size <= 0:
@@ -388,6 +393,16 @@ def ingest_all_news(
                 _append_error(stats, {"stage": "upsert", "page": next_page, "id": source_id, "error": str(exc)})
 
         if page_failed:
+            error = {"stage": "page", "page": next_page, "error": "page processing failed"}
+            if skip_failed_pages:
+                stats["records_seen"] += len(records)
+                stats["skipped_pages"].append(next_page)
+                stats["skipped_pages"] = sorted(set(stats["skipped_pages"]))
+                stats["skipped_page_errors"].append(error)
+                manifest.mark_page_skipped(next_page, len(records), error)
+                pages_processed += 1
+                next_page += 1
+                continue
             manifest.fail({"stage": "page", "page": next_page, "error": "page processing failed"})
             stats["status"] = "failed"
             return stats
@@ -399,7 +414,18 @@ def ingest_all_news(
                 page_written = 0
         except Exception as exc:
             stats["failed"] += 1
-            _append_error(stats, {"stage": "upsert", "page": next_page, "error": str(exc)})
+            error = {"stage": "upsert", "page": next_page, "error": str(exc)}
+            _append_error(stats, error)
+            if skip_failed_pages:
+                stats["records_seen"] += len(records)
+                stats["skipped_pages"].append(next_page)
+                stats["skipped_pages"] = sorted(set(stats["skipped_pages"]))
+                stats["skipped_page_errors"].append(error)
+                manifest.mark_page_skipped(next_page, len(records), error)
+                manifest.save_runtime_stats(stats)
+                pages_processed += 1
+                next_page += 1
+                continue
             manifest.fail({"stage": "page", "page": next_page, "error": "page processing failed"})
             stats["status"] = "failed"
             return stats
@@ -428,7 +454,8 @@ def ingest_all_news(
         if sleep_seconds > 0:
             time.sleep(sleep_seconds)
 
-    snapshot_complete = not limited and stats["records_seen"] > 0
+    traversal_complete = not limited and stats["records_seen"] > 0
+    snapshot_complete = traversal_complete and not stats["skipped_pages"]
     stale_removed = 0
     if snapshot_complete and current_source_ids and hasattr(store, "prune_sources"):
         try:
@@ -456,6 +483,8 @@ def ingest_all_news(
     final_state["failed"] = stats["failed"]
     final_state["error_count"] = stats["error_count"]
     final_state["errors"] = stats["errors"][:MAX_RECORDED_ERRORS]
+    final_state["skipped_pages"] = stats["skipped_pages"]
+    final_state["skipped_page_errors"] = stats["skipped_page_errors"][:MAX_RECORDED_ERRORS]
     manifest._write(final_state)
     return stats
 
@@ -488,6 +517,7 @@ def main() -> int:
     parser.add_argument("--resume", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--retry-count", type=int, default=3)
     parser.add_argument("--sleep-seconds", type=float, default=0.2)
+    parser.add_argument("--skip-failed-pages", action="store_true")
     parser.add_argument("--validate-only", action="store_true")
     args = parser.parse_args()
     if args.validate_only:
@@ -502,6 +532,7 @@ def main() -> int:
             sleep_seconds=args.sleep_seconds,
             limit_records=args.limit_records,
             manifest_path=args.manifest,
+            skip_failed_pages=args.skip_failed_pages,
         )
     else:
         stats = ingest_latest_news(limit=args.limit, page_size=args.page_size)
