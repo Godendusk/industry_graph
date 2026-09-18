@@ -178,9 +178,22 @@ def _generate_direct_outline(
     try:
         data = _parse_json_object(content)
     except ValueError as exc:
-        result = _error_response(f"direct outline JSON parse failed: {exc}", industry, industry_name)
-        result["raw_output"] = content
-        return result
+        repaired_content = _regenerate_concise_outline_json(
+            report_title=report_title,
+            user_requirement=user_requirement,
+            industry=industry,
+            industry_name=industry_name,
+        )
+        try:
+            data = _parse_json_object(repaired_content)
+        except ValueError as repair_exc:
+            result = _error_response(
+                f"direct outline JSON parse failed: {exc}; retry failed: {repair_exc}",
+                industry,
+                industry_name,
+            )
+            result["raw_output"] = repaired_content or content
+            return result
 
     try:
         chapters, warnings = _normalize_direct_chapters(data.get("chapters"))
@@ -189,6 +202,50 @@ def _generate_direct_outline(
         result["raw_output"] = content
         return result
     return {"status": "success", "chapters": chapters, "warnings": warnings}
+
+
+def _regenerate_concise_outline_json(
+    report_title: str,
+    user_requirement: str,
+    industry: str,
+    industry_name: str,
+) -> str:
+    """Retry once with a bounded outline after a malformed model response."""
+    retry_system_prompt = (
+        "你是企业产业洞察报告大纲生成智能体。"
+        "只输出可被 json.loads 解析的 JSON 对象，不要 Markdown、解释或代码块。"
+    )
+    retry_user_prompt = f"""上一次大纲输出无法解析。请根据以下任务卡重新生成一个简洁、完整的 JSON 大纲。
+
+【最终报告标题】
+{report_title}
+
+【最终报告需求】
+{user_requirement}
+
+【最终产业方向】
+{industry_name or '不使用特定产业图谱'}（系统产业键：{industry or '无'}）
+
+严格要求：
+1. 只生成 3 至 4 个一级章节，每章恰好 2 个二级标题。
+2. 每个 chapter_goal、writing_focus、suggested_query 和 content_requirements 项目均不超过 30 个汉字。
+3. 输出必须是完整 JSON，字段只能使用 chapters、level1_title、chapter_goal、content_requirements、subsections、title、writing_focus、suggested_query。
+4. 不要输出正文、Markdown、注释或额外字段。
+
+输出结构：
+{{"chapters":[{{"level1_title":"...","chapter_goal":"...","content_requirements":["..."],"subsections":[{{"title":"...","writing_focus":"...","suggested_query":"..."}},{{"title":"...","writing_focus":"...","suggested_query":"..."}}]}}]}}"""
+    try:
+        return llm.query(
+            user_prompt=retry_user_prompt,
+            system_prompt=retry_system_prompt,
+            max_tokens=3000,
+            extra_log_info=(
+                "report_generation.outline_agent direct_outline_json_retry "
+                f"industry={industry or 'none'}"
+            ),
+        )
+    except Exception:
+        return ""
 
 
 def _normalize_direct_chapters(value: Any) -> tuple[List[dict], List[dict]]:
