@@ -39,6 +39,12 @@ const INDUSTRY_REPORT_FLOW_STEPS = [
     { key: "review", title: "预览导出", detail: "查看、重写、保存或导出" },
 ];
 
+const INDUSTRY_REPORT_SUPPORTED_INDUSTRIES = new Set(["ai", "embodied"]);
+
+function isIndustryReportSupported(industry) {
+    return INDUSTRY_REPORT_SUPPORTED_INDUSTRIES.has(industry);
+}
+
 function getIndustryReportCurrentIndustry() {
     return window.currentIndustry || "ai";
 }
@@ -413,7 +419,7 @@ function syncIndustryReportHeader() {
     if (pill) {
         const name = getIndustryReportIndustryName(industry);
         pill.textContent = name;
-        const unsupported = industry !== "ai";
+        const unsupported = !isIndustryReportSupported(industry);
         pill.className = unsupported
             ? "text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100"
             : "text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100";
@@ -465,8 +471,8 @@ async function generateIndustryReportOutline() {
         setIndustryReportStatus("请先输入报告需求", "error");
         return;
     }
-    if (industry !== "ai") {
-        setIndustryReportStatus("当前后端报告生成只支持人工智能产业，请切换到人工智能后再生成", "error");
+    if (!isIndustryReportSupported(industry)) {
+        setIndustryReportStatus(`当前后端报告生成暂不支持${getIndustryReportIndustryName(industry)}产业`, "error");
         return;
     }
 
@@ -658,8 +664,8 @@ async function prepareIndustryReportTasks() {
         setIndustryReportStatus("请先输入报告需求", "error");
         return null;
     }
-    if (industry !== "ai") {
-        setIndustryReportStatus("当前后端报告生成只支持人工智能产业", "error");
+    if (!isIndustryReportSupported(industry)) {
+        setIndustryReportStatus(`当前后端报告生成暂不支持${getIndustryReportIndustryName(industry)}产业`, "error");
         return null;
     }
     if (!countIndustryReportSubsections(industryReportWorkspace.outline)) {

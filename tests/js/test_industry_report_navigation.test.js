@@ -184,3 +184,86 @@ test("history API absence does not block the in-page graph switch", () => {
     assert.deepEqual(calls.views, ["graph"]);
     assert.deepEqual(calls.replacedUrls, []);
 });
+
+test("embodied report outline request reaches the backend with its industry", async () => {
+    const { context, window } = loadReportScript();
+    const requests = [];
+    const elements = {
+        "industry-report-prompt": { value: "分析具身智能产业发展" },
+        "industry-report-title": { value: "具身智能产业报告" },
+    };
+    window.currentIndustry = "embodied";
+    context.API_BASE = "";
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async (url, options) => {
+        requests.push({ url, options });
+        return {
+            ok: true,
+            async json() {
+                return {
+                    status: "success",
+                    report_title: "具身智能产业报告",
+                    outline: [],
+                };
+            },
+        };
+    };
+
+    await context.generateIndustryReportOutline();
+
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].url, "/api/report/outline");
+    assert.deepEqual(
+        JSON.parse(requests[0].options.body),
+        { user_prompt: "分析具身智能产业发展", industry: "embodied" },
+    );
+});
+
+test("embodied report coordinator request keeps the selected industry", async () => {
+    const { context, window } = loadReportScript();
+    const requests = [];
+    const elements = {
+        "industry-report-prompt": { value: "分析具身智能产业发展" },
+        "industry-report-title": { value: "具身智能产业报告" },
+    };
+    window.currentIndustry = "embodied";
+    context.API_BASE = "";
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async (url, options) => {
+        requests.push({ url, options });
+        return {
+            ok: true,
+            async json() {
+                return { status: "success", writing_tasks: [] };
+            },
+        };
+    };
+    vm.runInContext(`
+        readIndustryReportOutlineFromDom = () => [{
+            level1_id: "S1",
+            level1_title: "产业发展",
+            subsections: [{ outline_id: "S1.1", title: "技术进展" }],
+        }];
+    `, context);
+
+    await context.prepareIndustryReportTasks();
+
+    assert.equal(requests.length, 1);
+    assert.equal(requests[0].url, "/api/report/coordinator");
+    assert.equal(JSON.parse(requests[0].options.body).industry, "embodied");
+});
+
+test("embodied report header uses the supported-industry style", () => {
+    const { context, window } = loadReportScript();
+    const pill = { textContent: "", className: "" };
+    window.currentIndustry = "embodied";
+    context.document.getElementById = id => (
+        id === "report-industry-pill" ? pill : null
+    );
+
+    context.syncIndustryReportHeader();
+
+    assert.equal(pill.textContent, "具身智能");
+    assert.match(pill.className, /bg-blue-50/);
+    assert.doesNotMatch(pill.className, /bg-amber-50/);
+});
