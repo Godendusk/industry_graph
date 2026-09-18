@@ -9,8 +9,9 @@ from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, List, Optional
 
-from .client import EXTERNAL_LIBRARIES
-from .vector_store import get_chroma_client, get_embedding_model
+from .client import get_external_libraries
+from .vector_store import get_chroma_client, get_embedding_model, has_vector_store
+from ..industry_config import get_industry_config
 
 
 DEFAULT_TOP_K = 10
@@ -31,17 +32,17 @@ def retrieve_external_rag(
     normalized_top_k = _normalize_top_k(top_k)
     if normalized_industry == "embodied":
         return retrieve_embodied_news(normalized_query, normalized_top_k)
+    try:
+        get_industry_config(normalized_industry)
+    except ValueError as exc:
+        return _error_response(str(exc), normalized_query, normalized_top_k, normalized_industry)
     if normalized_industry != "ai":
-        return _error_response(
-            f"unsupported industry: {normalized_industry}",
-            normalized_query,
-            normalized_top_k,
-        )
+        return _retrieve_legacy(query, normalized_top_k, industry=normalized_industry)
     mode = _mode()
     if mode == "legacy":
-        return _retrieve_legacy(query, top_k)
+        return _retrieve_legacy(query, top_k, industry=normalized_industry)
     if mode == "compare":
-        legacy = _retrieve_legacy(query, top_k)
+        legacy = _retrieve_legacy(query, top_k, industry=normalized_industry)
         try:
             hybrid = _retrieve_hybrid(query, top_k)
         except Exception as error:
@@ -51,7 +52,7 @@ def retrieve_external_rag(
         return legacy
     hybrid = _retrieve_hybrid(query, top_k)
     if hybrid.get("status") == "error" and os.environ.get("REPORT_RETRIEVAL_ALLOW_LEGACY_FALLBACK", "1") != "0":
-        legacy = _retrieve_legacy(query, top_k)
+        legacy = _retrieve_legacy(query, top_k, industry=normalized_industry)
         legacy["retrieval_fallback"] = "legacy"
         legacy["hybrid_error"] = hybrid.get("message", "hybrid retrieval failed")
         return legacy
@@ -164,26 +165,48 @@ def _log_comparison(query: str, legacy: dict, hybrid: dict) -> None:
     return None
 
 
-def _retrieve_legacy(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
+def _retrieve_legacy(
+    query: str, top_k: int = DEFAULT_TOP_K, industry: str = "ai"
+) -> dict:
     """Retrieve the globally most relevant external material paragraphs."""
     normalized_query = str(query or "").strip()
+    normalized_industry = str(industry or "ai").strip() or "ai"
     normalized_top_k = _normalize_top_k(top_k)
     if not normalized_query:
-        return _error_response("query cannot be empty", normalized_query, normalized_top_k)
+        return _error_response("query cannot be empty", normalized_query, normalized_top_k, normalized_industry)
 
     try:
+        industry_config = get_industry_config(normalized_industry)
+        libraries = get_external_libraries(normalized_industry)
+    except ValueError as exc:
+        return _error_response(str(exc), normalized_query, normalized_top_k, normalized_industry)
+
+    if not has_vector_store(normalized_industry):
+        message = f"{industry_config['name']}产业 RAG 向量库暂无资料，本次主要参考知识图谱生成"
+        return {
+            "status": "success",
+            "industry": normalized_industry,
+            "query": normalized_query,
+            "top_k": normalized_top_k,
+            "rag_context_text": "",
+            "evidence_blocks": [],
+            "warnings": [{"code": "rag_store_empty", "message": message}],
+        }
+
+    try:
+        client = get_chroma_client(normalized_industry)
         query_embedding = _embed_query(normalized_query)
-        client = get_chroma_client()
     except Exception as exc:
         return _error_response(
             f"external RAG initialization failed: {exc}",
             normalized_query,
             normalized_top_k,
+            normalized_industry,
         )
 
     warnings: List[dict] = []
     candidates: List[dict] = []
-    for library, config in EXTERNAL_LIBRARIES.items():
+    for library, config in libraries.items():
         candidates.extend(
             _query_library(
                 client=client,
@@ -195,10 +218,11 @@ def _retrieve_legacy(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
             )
         )
 
-    top_candidates = _select_top_candidates(candidates, normalized_top_k)
+    top_candidates = _select_top_candidates(candidates, normalized_top_k, libraries)
     evidence_blocks = _build_evidence_blocks(top_candidates)
     return {
         "status": "success",
+        "industry": normalized_industry,
         "query": normalized_query,
         "top_k": normalized_top_k,
         "rag_context_text": _build_rag_context_text(evidence_blocks),
@@ -287,8 +311,8 @@ def _parse_query_results(results: Dict[str, Any], library: str, config: Dict[str
     return candidates
 
 
-def _select_top_candidates(candidates: List[dict], top_k: int) -> List[dict]:
-    library_order = {library: index for index, library in enumerate(EXTERNAL_LIBRARIES)}
+def _select_top_candidates(candidates: List[dict], top_k: int, libraries: Dict[str, dict]) -> List[dict]:
+    library_order = {library: index for index, library in enumerate(libraries)}
     selected = []
     seen = set()
     for candidate in sorted(
@@ -448,9 +472,10 @@ def _record_warning(warnings: List[dict], library: str, collection: str, message
     )
 
 
-def _error_response(message: str, query: str, top_k: int) -> dict:
+def _error_response(message: str, query: str, top_k: int, industry: str = "ai") -> dict:
     return {
         "status": "error",
+        "industry": industry,
         "query": query,
         "message": message,
         "top_k": top_k,

@@ -10,6 +10,8 @@ let industryReportWorkspace = {
     reportTitle: "人工智能产业报告",
     abstractText: "",
     industry: "ai",
+    pageIndustry: "ai",
+    taskCard: null,
     outline: [],
     writingTasks: [],
     bodySections: [],
@@ -18,6 +20,7 @@ let industryReportWorkspace = {
     rewriteMaterials: null,
     pendingRewrite: null,
     busy: false,
+    requirementRewriteSeq: 0,
 };
 
 let industryReportHistoryIndex = [];
@@ -33,7 +36,7 @@ const INDUSTRY_REPORT_STAGE_LABELS = {
 
 const INDUSTRY_REPORT_FLOW_STEPS = [
     { key: "requirement", title: "需求输入", detail: "填写主题、标题和参数" },
-    { key: "outline", title: "生成大纲", detail: "生成并编辑报告章节" },
+    { key: "outline", title: "任务卡与大纲", detail: "确认任务卡并生成章节" },
     { key: "coordinator", title: "统筹任务", detail: "检索资料并拆分写作任务" },
     { key: "body", title: "生成正文", detail: "按章节生成报告内容" },
     { key: "review", title: "预览导出", detail: "查看、重写、保存或导出" },
@@ -55,17 +58,58 @@ function getIndustryReportIndustryName(value) {
         embodied: "具身智能",
         low_altitude: "低空经济",
         sea: "海洋经济",
+        quantum: "量子科技",
+        biology: "生物制造",
+        brain: "脑机接口",
+        material: "新材料",
     };
     return map[value || getIndustryReportCurrentIndustry()] || "人工智能";
 }
 
+function getIndustryReportDefaultTitle(industry = getIndustryReportCurrentIndustry()) {
+    return `${getIndustryReportIndustryName(industry)}产业报告`;
+}
+
+function syncIndustryReportTitlePlaceholder(industry = getIndustryReportCurrentIndustry()) {
+    const titleInput = document.getElementById("industry-report-title");
+    if (!titleInput) return;
+    titleInput.placeholder = getIndustryReportDefaultTitle(industry);
+}
+
+function appendIndustryReportWarnings(items) {
+    const existing = industryReportWorkspace.warnings || [];
+    const combined = [...existing, ...(Array.isArray(items) ? items : [])];
+    const seen = new Set();
+    industryReportWorkspace.warnings = combined.filter(item => {
+        const key = JSON.stringify(item || {});
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+    });
+}
+
+function getIndustryReportRagWarning() {
+    return (industryReportWorkspace.warnings || []).find(item =>
+        item?.code === "rag_store_empty"
+        || String(item?.message || "").includes("RAG 向量库暂无资料")
+    );
+}
+
+function setIndustryReportCompletionStatus(successText) {
+    const ragWarning = getIndustryReportRagWarning();
+    setIndustryReportStatus(ragWarning?.message || successText, ragWarning ? "info" : "success");
+}
+
 function setIndustryReportBusy(isBusy, text = "") {
     industryReportWorkspace.busy = Boolean(isBusy);
-    ["report-outline-btn", "report-generate-btn"].forEach(id => {
+    ["report-outline-btn", "report-task-card-confirm-btn", "report-outline-confirm-btn", "report-generate-btn"].forEach(id => {
         const btn = document.getElementById(id);
-        if (btn) btn.disabled = Boolean(isBusy);
-        if (btn) btn.classList.toggle("opacity-60", Boolean(isBusy));
-        if (btn) btn.classList.toggle("cursor-not-allowed", Boolean(isBusy));
+        const shouldDisable = Boolean(isBusy)
+            || (id === "report-task-card-confirm-btn" && !industryReportWorkspace.taskCard)
+            || (id === "report-outline-confirm-btn" && !hasIndustryReportOutline());
+        if (btn) btn.disabled = shouldDisable;
+        if (btn) btn.classList.toggle("opacity-60", shouldDisable);
+        if (btn) btn.classList.toggle("cursor-not-allowed", shouldDisable);
     });
     if (text) setIndustryReportStatus(text, isBusy ? "loading" : "info");
 }
@@ -209,13 +253,6 @@ function renderIndustryReportFlowSteps(stage = "idle") {
     }).join("");
     box.innerHTML = `
         <div class="grid grid-cols-1 md:grid-cols-5 gap-2 items-end">${stepsHtml}</div>
-        <div class="mt-2 flex justify-end">
-            <button onclick="toggleIndustryReportFlowCollapsed()" class="bg-white hover:bg-gray-50 text-gray-600 px-3 py-1.5 rounded-lg text-xs border border-gray-200 flex items-center gap-2">
-                <i class="fas ${industryReportWorkspace.flowCollapsed ? "fa-chevron-down" : "fa-chevron-up"}"></i>
-                ${industryReportWorkspace.flowCollapsed ? "展开任务明细" : "收起任务明细"}
-            </button>
-        </div>
-        ${industryReportWorkspace.flowCollapsed ? "" : renderIndustryReportActiveStepPanel(activeStep, activeStyle)}
     `;
 }
 
@@ -411,22 +448,35 @@ function hasIndustryReportContent() {
 
 function syncIndustryReportHeader() {
     const currentIndustry = getIndustryReportCurrentIndustry();
-    if (!hasIndustryReportContent()) {
+    if (!hasIndustryReportContent() && !industryReportWorkspace.taskCard) {
         industryReportWorkspace.industry = currentIndustry;
     }
     const industry = industryReportWorkspace.industry || currentIndustry;
     const pill = document.getElementById("report-industry-pill");
     if (pill) {
-        const name = getIndustryReportIndustryName(industry);
+        const name = industryReportWorkspace.taskCard?.selected_industry_name
+            || getIndustryReportIndustryName(industry);
         pill.textContent = name;
-        const unsupported = !isIndustryReportSupported(industry);
-        pill.className = unsupported
-            ? "text-xs px-2 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-100"
-            : "text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100";
+        pill.className = "text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100";
     }
 }
 
+function applyIndustryReportResolvedIndustry(industry, industryName) {
+    if (!industry || industry === getIndustryReportCurrentIndustry()) return;
+    // 自动切换标题识别出的受支持行业，但不派发 industryChanged，避免清空刚生成的报告工作区。
+    window.currentIndustry = industry;
+    syncIndustryReportTitlePlaceholder(industry);
+    const input = document.getElementById("industry-search-input");
+    if (input) {
+        input.value = industryName || getIndustryReportIndustryName(industry);
+        input.setAttribute("readonly", "readonly");
+    }
+    if (typeof loadIndustryData === "function") loadIndustryData(industry);
+}
+
 function resetIndustryReportWorkspace() {
+    const industry = getIndustryReportCurrentIndustry();
+    const defaultTitle = getIndustryReportDefaultTitle(industry);
     industryReportWorkspace = {
         historyId: "",
         currentStage: "idle",
@@ -434,9 +484,11 @@ function resetIndustryReportWorkspace() {
         completedSteps: [],
         flowCollapsed: false,
         userPrompt: "",
-        reportTitle: "人工智能产业报告",
+        reportTitle: defaultTitle,
         abstractText: "",
-        industry: getIndustryReportCurrentIndustry(),
+        industry,
+        pageIndustry: industry,
+        taskCard: null,
         outline: [],
         writingTasks: [],
         bodySections: [],
@@ -445,10 +497,15 @@ function resetIndustryReportWorkspace() {
         rewriteMaterials: null,
         pendingRewrite: null,
         busy: false,
+        requirementRewriteSeq: 0,
     };
     const titleInput = document.getElementById("industry-report-title");
-    if (titleInput) titleInput.value = "人工智能产业报告";
+    if (titleInput) {
+        titleInput.value = "";
+        titleInput.placeholder = defaultTitle;
+    }
     renderIndustryReportOutline([]);
+    renderIndustryReportTaskCard(null);
     renderIndustryReportProgress([]);
     renderIndustryReportPreview();
     closeIndustryReportRewriteModal();
@@ -460,42 +517,305 @@ function resetIndustryReportWorkspace() {
 
 function getIndustryReportFormValues() {
     const prompt = (document.getElementById("industry-report-prompt")?.value || "").trim();
-    const title = (document.getElementById("industry-report-title")?.value || "").trim() || "产业报告";
     const industry = getIndustryReportCurrentIndustry();
+    const title = (document.getElementById("industry-report-title")?.value || "").trim()
+        || getIndustryReportDefaultTitle(industry);
     return { prompt, title, industry };
 }
 
-async function generateIndustryReportOutline() {
+async function submitIndustryReportRequirement() {
     const { prompt, title, industry } = getIndustryReportFormValues();
     if (!prompt) {
         setIndustryReportStatus("请先输入报告需求", "error");
         return;
     }
-    if (!isIndustryReportSupported(industry)) {
-        setIndustryReportStatus(`当前后端报告生成暂不支持${getIndustryReportIndustryName(industry)}产业`, "error");
+    if (!title) {
+        setIndustryReportStatus("请先输入报告标题", "error");
+        return;
+    }
+    setIndustryReportBusy(true, "正在理解题目与需求并生成写作任务卡...");
+    clearIndustryReportStepDone(["requirement", "outline", "coordinator", "body", "review"]);
+    setIndustryReportStage("idle", "正在生成写作任务卡");
+    try {
+        const data = await industryReportApi("/api/report/task-card", {
+            method: "POST",
+            body: JSON.stringify({ title, user_requirement: prompt, page_industry: industry }),
+        });
+        industryReportWorkspace.historyId = "";
+        industryReportWorkspace.userPrompt = prompt;
+        industryReportWorkspace.reportTitle = title;
+        industryReportWorkspace.pageIndustry = industry;
+        industryReportWorkspace.industry = data.task_card?.selected_industry || "";
+        industryReportWorkspace.taskCard = data.task_card || null;
+        industryReportWorkspace.outline = [];
+        industryReportWorkspace.writingTasks = [];
+        industryReportWorkspace.bodySections = [];
+        industryReportWorkspace.abstractText = "";
+        industryReportWorkspace.warnings = [];
+        appendIndustryReportWarnings(data.warnings);
+        renderIndustryReportTaskCard(industryReportWorkspace.taskCard);
+        renderIndustryReportOutline([]);
+        renderIndustryReportProgress([]);
+        renderIndustryReportPreview();
+        setIndustryReportStage("idle", "写作任务卡已生成，等待确认");
+        setIndustryReportStatus("请检查并编辑写作任务卡，然后生成大纲", "success");
+    } catch (err) {
+        setIndustryReportStage("error", "写作任务卡生成失败");
+        setIndustryReportStatus(`写作任务卡生成失败：${err.message}`, "error");
+    } finally {
+        setIndustryReportBusy(false);
+    }
+}
+
+function renderIndustryReportTaskCard(taskCard) {
+    const section = document.getElementById("industry-report-task-card-section");
+    if (!section) return;
+    section.classList.remove("hidden");
+
+    const empty = document.getElementById("industry-report-task-card-empty");
+    const content = document.getElementById("industry-report-task-card-content");
+    const actions = document.getElementById("industry-report-task-card-actions");
+    const originalTitle = document.getElementById("industry-report-original-title");
+    const selectedTitle = document.getElementById("industry-report-task-title");
+    const requirement = document.getElementById("industry-report-task-requirement");
+    const recognizedIndustry = document.getElementById("industry-report-recognized-industry");
+    const selectedIndustry = document.getElementById("industry-report-selected-industry");
+    const state = document.getElementById("industry-report-task-card-state");
+    const confirmBtn = document.getElementById("report-task-card-confirm-btn");
+    const suggestionBox = document.getElementById("industry-report-title-suggestions");
+    const suggestionOptions = document.getElementById("industry-report-title-suggestion-options");
+    const resultBox = document.getElementById("industry-report-match-result");
+
+    if (!taskCard) {
+        const industry = getIndustryReportCurrentIndustry();
+        if (empty) empty.classList.remove("hidden");
+        if (content) content.classList.add("hidden");
+        if (actions) actions.classList.add("hidden");
+        if (originalTitle) originalTitle.value = "";
+        if (selectedTitle) selectedTitle.value = "";
+        if (requirement) requirement.value = "";
+        if (recognizedIndustry) recognizedIndustry.textContent = "待生成";
+        if (selectedIndustry) {
+            selectedIndustry.innerHTML = `<option value="${escapeIndustryReportHtml(industry)}">${escapeIndustryReportHtml(getIndustryReportIndustryName(industry))}</option>`;
+            selectedIndustry.value = industry;
+        }
+        if (suggestionBox) suggestionBox.classList.add("hidden");
+        if (suggestionOptions) suggestionOptions.innerHTML = "";
+        if (resultBox) resultBox.innerHTML = '<div>提交题目与需求后，系统会生成可编辑的写作任务卡、参考标题和产业匹配结果。</div>';
+        if (state) state.textContent = "待生成";
+        if (confirmBtn) {
+            confirmBtn.disabled = true;
+            confirmBtn.classList.add("opacity-60", "cursor-not-allowed");
+    }
         return;
     }
 
-    setIndustryReportBusy(true, "正在生成大纲...");
+    if (empty) empty.classList.add("hidden");
+    if (content) content.classList.remove("hidden");
+    if (actions) actions.classList.remove("hidden");
+    if (state) state.textContent = "等待确认";
+    if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.classList.remove("opacity-60", "cursor-not-allowed");
+    }
+
+    if (originalTitle) originalTitle.value = taskCard.original_title || "";
+    if (selectedTitle) selectedTitle.value = taskCard.selected_title || taskCard.original_title || "";
+    if (requirement) requirement.value = taskCard.report_requirement || "";
+    if (recognizedIndustry) recognizedIndustry.textContent = taskCard.recognized_industry || "未识别";
+
+    const suggestions = Array.isArray(taskCard.suggested_titles) ? taskCard.suggested_titles : [];
+    if (suggestionOptions) {
+        const titleOptions = suggestions
+            .map(title => String(title || "").trim())
+            .filter((title, index, array) => title && array.indexOf(title) === index);
+        if (suggestionBox) suggestionBox.classList.toggle("hidden", !titleOptions.length);
+        suggestionOptions.innerHTML = titleOptions.map((title, index) => {
+            const checked = title === (selectedTitle?.value || "") ? " checked" : "";
+            return `
+                <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                    <input type="radio" name="industry-report-title-suggestion" value="${escapeIndustryReportHtml(title)}"
+                           onchange="selectIndustryReportSuggestedTitle(this.value)" class="mt-1 text-blue-600"${checked}>
+                    <span class="leading-5">${escapeIndustryReportHtml(title)}</span>
+                </label>
+            `;
+        }).join("");
+    }
+
+    if (selectedIndustry) {
+        const matches = Array.isArray(taskCard.industry_matches) ? taskCard.industry_matches : [];
+        selectedIndustry.innerHTML = [
+            '<option value="">不使用产业图谱</option>',
+            ...matches.map(item => `<option value="${escapeIndustryReportHtml(item.key || "")}">${escapeIndustryReportHtml(item.name || item.key || "未知产业")}${item.graph_available ? "（图谱可用）" : "（无可用图谱）"}</option>`),
+        ].join("");
+        selectedIndustry.value = taskCard.selected_industry || "";
+    }
+    updateIndustryReportTaskCardMatch();
+}
+
+function selectIndustryReportSuggestedTitle(title) {
+    const input = document.getElementById("industry-report-task-title");
+    if (input) input.value = title || "";
+}
+
+async function handleIndustryReportSelectedIndustryChange() {
+    updateIndustryReportTaskCardMatch();
+    const taskCard = industryReportWorkspace.taskCard;
+    if (!taskCard) return;
+    const rewriteSeq = (industryReportWorkspace.requirementRewriteSeq || 0) + 1;
+    industryReportWorkspace.requirementRewriteSeq = rewriteSeq;
+    const selectedIndustry = document.getElementById("industry-report-selected-industry")?.value || "";
+    const requirementInput = document.getElementById("industry-report-task-requirement");
+    const confirmBtn = document.getElementById("report-task-card-confirm-btn");
+    if (!selectedIndustry) {
+        if (requirementInput) {
+            requirementInput.disabled = false;
+            requirementInput.value = taskCard.report_requirement || requirementInput.value;
+        }
+        if (confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.classList.remove("opacity-60", "cursor-not-allowed");
+        }
+        return;
+    }
+
+    const match = (taskCard.industry_matches || []).find(item => item.key === selectedIndustry);
+    if (!match) return;
+
+    const title = (document.getElementById("industry-report-task-title")?.value || taskCard.selected_title || taskCard.original_title || "").trim();
+    const userRequirement = taskCard.original_requirement || "";
+
+    if (requirementInput) {
+        requirementInput.disabled = true;
+        requirementInput.value = "正在重新生成报告需求...";
+    }
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add("opacity-60", "cursor-not-allowed");
+    }
+    setIndustryReportStatus("正在根据用户原始需求、切换后的产业方向和标题重新生成报告需求...", "loading");
+
+    try {
+        const data = await industryReportApi("/api/report/task-card/rewrite-requirement", {
+            method: "POST",
+            body: JSON.stringify({
+                title,
+                user_requirement: userRequirement,
+                industry: selectedIndustry,
+                industry_name: match.name || "",
+            }),
+        });
+        if (industryReportWorkspace.requirementRewriteSeq !== rewriteSeq) return;
+        const rewrittenRequirement = data.report_requirement || "";
+        industryReportWorkspace.taskCard = {
+            ...industryReportWorkspace.taskCard,
+            selected_title: title,
+            report_requirement: rewrittenRequirement,
+            selected_industry: selectedIndustry,
+            selected_industry_name: match.name || "",
+            selection_source: "user",
+            graph_match: {
+                status: match.graph_available ? "matched" : "unavailable",
+                industry: selectedIndustry,
+                industry_name: match.name || "",
+                graph_available: Boolean(match.graph_available),
+            },
+        };
+        industryReportWorkspace.userPrompt = rewrittenRequirement;
+        industryReportWorkspace.industry = selectedIndustry;
+        if (requirementInput) requirementInput.value = rewrittenRequirement;
+        setIndustryReportStatus("报告需求已根据新的最终产业方向更新", "success");
+    } catch (err) {
+        if (industryReportWorkspace.requirementRewriteSeq !== rewriteSeq) return;
+        if (requirementInput) requirementInput.value = taskCard.report_requirement || "";
+        setIndustryReportStatus(`报告需求重写失败：${err.message}`, "error");
+    } finally {
+        if (industryReportWorkspace.requirementRewriteSeq === rewriteSeq && requirementInput) {
+            requirementInput.disabled = false;
+        }
+        if (industryReportWorkspace.requirementRewriteSeq === rewriteSeq && confirmBtn) {
+            confirmBtn.disabled = false;
+            confirmBtn.classList.remove("opacity-60", "cursor-not-allowed");
+        }
+    }
+}
+
+function updateIndustryReportTaskCardMatch() {
+    const taskCard = industryReportWorkspace.taskCard;
+    const resultBox = document.getElementById("industry-report-match-result");
+    if (!taskCard || !resultBox) return;
+    const selectedKey = document.getElementById("industry-report-selected-industry")?.value || "";
+    const match = (taskCard.industry_matches || []).find(item => item.key === selectedKey);
+    const conflict = taskCard.industry_conflict
+        ? `<div class="mb-2 text-amber-700">当前页面产业与模型识别结果不同，请确认最终产业方向。</div>`
+        : "";
+    if (!match) {
+        resultBox.innerHTML = `${conflict}<div>未选择产业图谱。系统将基于已有资料和大模型能力继续生成，后续不会使用特定产业图谱作为证据源。</div>`;
+        return;
+    }
+    const graphText = match.graph_available
+        ? "已匹配可用产业图谱，后续生成将调用该图谱。"
+        : "该产业暂无可用图谱，将自动使用已有资料和大模型能力继续生成。";
+    const reasonText = String(match.reason || "").trim() || "系统支持";
+    const reason = `<div class="mt-1"><span class="font-semibold text-gray-700">依据：</span>${escapeIndustryReportHtml(reasonText)}</div>`;
+    resultBox.innerHTML = `${conflict}<div><span class="font-semibold text-gray-700">当前选择产业：</span>${escapeIndustryReportHtml(match.name || match.key)}</div>${reason}<div class="mt-1"><span class="font-semibold text-gray-700">图谱匹配：</span>${graphText}</div><div class="mt-1 text-xs text-gray-500">最终产业方向会决定后续知识图谱、外部资料库和正文生成的产业上下文。</div>`;
+}
+
+function readIndustryReportTaskCardFromDom() {
+    const taskCard = industryReportWorkspace.taskCard;
+    if (!taskCard) return null;
+    const selectedIndustry = document.getElementById("industry-report-selected-industry")?.value || "";
+    const match = (taskCard.industry_matches || []).find(item => item.key === selectedIndustry);
+    return {
+        ...taskCard,
+        selected_title: (document.getElementById("industry-report-task-title")?.value || "").trim(),
+        report_requirement: (document.getElementById("industry-report-task-requirement")?.value || "").trim(),
+        selected_industry: selectedIndustry,
+        selected_industry_name: match?.name || "",
+        selection_source: "user",
+        graph_match: {
+            status: match?.graph_available ? "matched" : "unavailable",
+            industry: selectedIndustry,
+            industry_name: match?.name || "",
+            graph_available: Boolean(match?.graph_available),
+        },
+    };
+}
+
+async function generateIndustryReportOutline() {
+    const taskCard = readIndustryReportTaskCardFromDom();
+    const title = taskCard?.selected_title || "";
+    if (!title) {
+        setIndustryReportStatus("请填写任务卡中的最终报告标题", "error");
+        return;
+    }
+    if (!taskCard?.report_requirement) {
+        setIndustryReportStatus("请填写任务卡中的报告需求", "error");
+        return;
+    }
+    setIndustryReportBusy(true, "正在根据确认任务卡生成大纲...");
     clearIndustryReportStepDone(["outline", "coordinator", "body", "review"]);
     markIndustryReportStepDone("requirement");
     setIndustryReportStage("outline", "正在生成推荐大纲");
     try {
         const data = await industryReportApi("/api/report/outline", {
             method: "POST",
-            body: JSON.stringify({ user_prompt: prompt, industry }),
+            body: JSON.stringify({ task_card: taskCard }),
         });
-        industryReportWorkspace.userPrompt = prompt;
+        industryReportWorkspace.taskCard = taskCard;
+        industryReportWorkspace.userPrompt = taskCard.report_requirement;
         industryReportWorkspace.historyId = "";
-        industryReportWorkspace.reportTitle = data.report_title || title;
-        industryReportWorkspace.industry = industry;
+        industryReportWorkspace.reportTitle = title;
+        industryReportWorkspace.industry = taskCard.selected_industry || "";
         industryReportWorkspace.outline = normalizeIndustryReportOutline(data.outline || []);
-        industryReportWorkspace.warnings = data.warnings || [];
+        industryReportWorkspace.warnings = [];
+        appendIndustryReportWarnings(data.warnings);
         industryReportWorkspace.writingTasks = [];
         industryReportWorkspace.bodySections = [];
         industryReportWorkspace.abstractText = "";
         const titleInput = document.getElementById("industry-report-title");
-        if (titleInput) titleInput.value = industryReportWorkspace.reportTitle;
+        if (titleInput) titleInput.value = title;
+        syncIndustryReportHeader();
         renderIndustryReportOutline(industryReportWorkspace.outline);
         renderIndustryReportProgress([
             { key: "outline", title: "推荐大纲", status: "done", detail: `${countIndustryReportSubsections(industryReportWorkspace.outline)} 个二级标题` },
@@ -506,7 +826,7 @@ async function generateIndustryReportOutline() {
         markIndustryReportStepDone("requirement");
         markIndustryReportStepDone("outline");
         setIndustryReportStage("outline", "推荐大纲已生成，可编辑后确认");
-        setIndustryReportStatus("推荐大纲已生成，可继续编辑", "success");
+        setIndustryReportCompletionStatus("推荐大纲已生成，可继续编辑");
     } catch (err) {
         setIndustryReportStage("error", "大纲生成失败");
         setIndustryReportStatus(`大纲生成失败：${err.message}`, "error");
@@ -545,11 +865,25 @@ function countIndustryReportSubsections(outline) {
     return (outline || []).reduce((sum, section) => sum + ((section.subsections || []).length), 0);
 }
 
+function hasIndustryReportOutline(outline = industryReportWorkspace.outline) {
+    return Array.isArray(outline) && outline.length > 0;
+}
+
+function syncIndustryReportOutlineConfirmButton(outline = industryReportWorkspace.outline) {
+    const btn = document.getElementById("report-outline-confirm-btn");
+    if (!btn) return;
+    const disabled = industryReportWorkspace.busy || !hasIndustryReportOutline(outline);
+    btn.disabled = disabled;
+    btn.classList.toggle("opacity-60", disabled);
+    btn.classList.toggle("cursor-not-allowed", disabled);
+}
+
 function renderIndustryReportOutline(outline) {
     const box = document.getElementById("industry-report-outline");
     if (!box) return;
     if (!outline || !outline.length) {
         box.innerHTML = '<div class="text-gray-400 text-sm">生成推荐大纲后可编辑</div>';
+        syncIndustryReportOutlineConfirmButton([]);
         renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || "idle");
         return;
     }
@@ -582,6 +916,7 @@ function renderIndustryReportOutline(outline) {
             </div>
         </div>
     `).join("");
+    syncIndustryReportOutlineConfirmButton(outline);
     renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || "idle");
 }
 
@@ -658,14 +993,13 @@ function removeIndustryReportSubsection(sectionIndex, subIndex) {
 }
 
 async function prepareIndustryReportTasks() {
-    const { prompt, title, industry } = getIndustryReportFormValues();
+    const formValues = getIndustryReportFormValues();
+    const title = industryReportWorkspace.taskCard?.selected_title || industryReportWorkspace.reportTitle || formValues.title;
+    const effectivePrompt = industryReportWorkspace.taskCard?.report_requirement || industryReportWorkspace.userPrompt || title;
+    const reportIndustry = industryReportWorkspace.taskCard ? industryReportWorkspace.industry : formValues.industry;
     industryReportWorkspace.outline = readIndustryReportOutlineFromDom();
-    if (!prompt) {
-        setIndustryReportStatus("请先输入报告需求", "error");
-        return null;
-    }
-    if (!isIndustryReportSupported(industry)) {
-        setIndustryReportStatus(`当前后端报告生成暂不支持${getIndustryReportIndustryName(industry)}产业`, "error");
+    if (!title) {
+        setIndustryReportStatus("请先输入报告标题", "error");
         return null;
     }
     if (!countIndustryReportSubsections(industryReportWorkspace.outline)) {
@@ -679,18 +1013,18 @@ async function prepareIndustryReportTasks() {
         const data = await industryReportApi("/api/report/coordinator", {
             method: "POST",
             body: JSON.stringify({
-                user_prompt: prompt,
+                user_prompt: effectivePrompt,
                 report_title: title,
-                industry,
+                industry: reportIndustry,
                 outline: industryReportWorkspace.outline,
                 top_k: getIndustryReportNumber("industry-report-top-k", 10),
             }),
         });
-        industryReportWorkspace.userPrompt = prompt;
+        industryReportWorkspace.userPrompt = effectivePrompt;
         industryReportWorkspace.reportTitle = title;
-        industryReportWorkspace.industry = industry;
+        industryReportWorkspace.industry = reportIndustry;
         industryReportWorkspace.writingTasks = data.writing_tasks || [];
-        industryReportWorkspace.warnings = data.warnings || [];
+        appendIndustryReportWarnings(data.warnings);
         renderIndustryReportProgress([
             { key: "outline", title: "推荐大纲", status: "done", detail: `${countIndustryReportSubsections(industryReportWorkspace.outline)} 个二级标题` },
             { key: "coordinator", title: "写作任务", status: "done", detail: `${industryReportWorkspace.writingTasks.length} 个任务` },
@@ -700,7 +1034,7 @@ async function prepareIndustryReportTasks() {
         markIndustryReportStepDone("outline");
         markIndustryReportStepDone("coordinator");
         setIndustryReportStage("coordinator", "写作任务已生成");
-        setIndustryReportStatus("大纲已确认，写作任务已生成", "success");
+        setIndustryReportCompletionStatus("大纲已确认，写作任务已生成");
         return data;
     } catch (err) {
         setIndustryReportStage("error", "写作任务生成失败");
@@ -716,7 +1050,10 @@ async function startIndustryReportGeneration() {
         const prepared = await prepareIndustryReportTasks();
         if (!prepared) return;
     }
-    const { prompt, title, industry } = getIndustryReportFormValues();
+    const formValues = getIndustryReportFormValues();
+    const title = industryReportWorkspace.taskCard?.selected_title || industryReportWorkspace.reportTitle || formValues.title;
+    const effectivePrompt = industryReportWorkspace.taskCard?.report_requirement || industryReportWorkspace.userPrompt || title;
+    const reportIndustry = industryReportWorkspace.taskCard ? industryReportWorkspace.industry : formValues.industry;
     setIndustryReportBusy(true, "正在生成正文，这一步可能需要较长时间...");
     clearIndustryReportStepDone(["body", "review"]);
     setIndustryReportStage("body", "正在生成正文");
@@ -725,15 +1062,15 @@ async function startIndustryReportGeneration() {
         const data = await industryReportApi("/api/report/body", {
             method: "POST",
             body: JSON.stringify({
-                user_prompt: prompt,
+                user_prompt: effectivePrompt,
                 report_title: title,
-                industry,
+                industry: reportIndustry,
                 writing_tasks: industryReportWorkspace.writingTasks,
                 max_workers: getIndustryReportNumber("industry-report-workers", 3),
             }),
         });
         industryReportWorkspace.bodySections = normalizeIndustryReportBodySections(data.body_sections || []);
-        industryReportWorkspace.warnings = data.warnings || [];
+        appendIndustryReportWarnings(data.warnings);
         try {
             setIndustryReportStatus("正文已生成，正在生成摘要...", "loading");
             industryReportWorkspace.abstractText = await generateIndustryReportSummaryForWord(title, industryReportWorkspace.bodySections);
@@ -748,7 +1085,7 @@ async function startIndustryReportGeneration() {
         markIndustryReportStepDone("coordinator");
         markIndustryReportStepDone("body");
         setIndustryReportStage("done", "报告正文已生成");
-        setIndustryReportStatus("报告正文已生成", "success");
+        setIndustryReportCompletionStatus("报告正文已生成");
     } catch (err) {
         renderIndustryReportProgress(buildIndustryReportTaskProgress("failed"));
         setIndustryReportStage("error", "正文生成失败");
@@ -1002,7 +1339,7 @@ function buildIndustryReportGraphLink(nodeId) {
         view: "graph",
         subview: "graph",
         node: String(nodeId),
-        industry: industryReportWorkspace.industry || getIndustryReportCurrentIndustry(),
+        industry: industryReportWorkspace.industry ?? getIndustryReportCurrentIndustry(),
     });
     return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
 }
@@ -1070,7 +1407,7 @@ async function recommendIndustryReportMaterials() {
             body: JSON.stringify({
                 rewrite_prompt: rewritePrompt,
                 report_title: industryReportWorkspace.reportTitle,
-                industry: industryReportWorkspace.industry || "ai",
+                industry: industryReportWorkspace.industry ?? "ai",
                 body_section: section,
                 top_k: getIndustryReportNumber("industry-report-top-k", 10),
             }),
@@ -1151,7 +1488,7 @@ async function rewriteIndustryReportSection() {
             body: JSON.stringify({
                 rewrite_prompt: rewritePrompt,
                 report_title: industryReportWorkspace.reportTitle,
-                industry: industryReportWorkspace.industry || "ai",
+                industry: industryReportWorkspace.industry ?? "ai",
                 body_section: section,
                 graph_retrieval: industryReportWorkspace.rewriteMaterials.graph_retrieval || {},
                 selected_external_evidence_blocks: selected,
@@ -1219,15 +1556,17 @@ function acceptIndustryReportRewrite() {
 
 function buildIndustryReportHistoryRecord() {
     syncIndustryReportBodySectionsFromDom();
-    const title = (document.getElementById("industry-report-title")?.value || industryReportWorkspace.reportTitle || "产业报告").trim();
-    const prompt = (document.getElementById("industry-report-prompt")?.value || industryReportWorkspace.userPrompt || "").trim();
+    const title = (industryReportWorkspace.taskCard?.selected_title || document.getElementById("industry-report-title")?.value || industryReportWorkspace.reportTitle || "产业报告").trim();
+    const prompt = (industryReportWorkspace.taskCard?.report_requirement || industryReportWorkspace.userPrompt || document.getElementById("industry-report-prompt")?.value || "").trim();
     const now = new Date().toISOString();
     return {
         id: industryReportWorkspace.historyId || `local_report_${Date.now()}`,
         title,
         prompt,
         abstractText: industryReportWorkspace.abstractText || "",
-        industry: industryReportWorkspace.industry || getIndustryReportCurrentIndustry(),
+        industry: industryReportWorkspace.industry ?? getIndustryReportCurrentIndustry(),
+        pageIndustry: industryReportWorkspace.pageIndustry || getIndustryReportCurrentIndustry(),
+        taskCard: industryReportWorkspace.taskCard || null,
         outline: industryReportWorkspace.outline || [],
         writingTasks: industryReportWorkspace.writingTasks || [],
         bodySections: industryReportWorkspace.bodySections || [],
@@ -1239,7 +1578,7 @@ function buildIndustryReportHistoryRecord() {
 
 async function saveIndustryReportHistory(options = {}) {
     const record = buildIndustryReportHistoryRecord();
-    if (!record.bodySections.length && !record.outline.length) {
+    if (!record.bodySections.length && !record.outline.length && !record.taskCard) {
         if (!options.silent) setIndustryReportStatus("暂无可保存的报告内容", "error");
         return;
     }
@@ -1309,6 +1648,8 @@ async function loadSelectedIndustryReportHistory() {
         reportTitle: record.title || "产业报告",
         abstractText: record.abstractText || "",
         industry: record.industry || "ai",
+        pageIndustry: record.pageIndustry || record.taskCard?.page_industry || record.industry || "ai",
+        taskCard: record.taskCard || null,
         outline: record.outline || [],
         writingTasks: record.writingTasks || [],
         bodySections: record.bodySections || [],
@@ -1317,11 +1658,13 @@ async function loadSelectedIndustryReportHistory() {
         rewriteMaterials: null,
         pendingRewrite: null,
         busy: false,
+        requirementRewriteSeq: 0,
     };
     const titleInput = document.getElementById("industry-report-title");
     const promptInput = document.getElementById("industry-report-prompt");
     if (titleInput) titleInput.value = industryReportWorkspace.reportTitle;
     if (promptInput) promptInput.value = industryReportWorkspace.userPrompt;
+    renderIndustryReportTaskCard(industryReportWorkspace.taskCard);
     renderIndustryReportOutline(industryReportWorkspace.outline);
     renderIndustryReportProgress(industryReportWorkspace.bodySections.length
         ? buildIndustryReportTaskProgress("generated", industryReportWorkspace.bodySections)
@@ -1342,7 +1685,7 @@ function getIndustryReportStageFromRecord(record) {
 
 function getIndustryReportCompletedStepsFromRecord(record) {
     const steps = [];
-    if (record.prompt || record.outline?.length || record.writingTasks?.length || record.bodySections?.length) {
+    if (record.taskCard || record.prompt || record.outline?.length || record.writingTasks?.length || record.bodySections?.length) {
         steps.push("requirement");
     }
     if (record.outline?.length || record.writingTasks?.length || record.bodySections?.length) {
@@ -1431,7 +1774,7 @@ async function exportIndustryReportWord() {
             body: JSON.stringify({
                 report_title: title,
                 abstract_text: abstractText,
-                industry: industryReportWorkspace.industry || getIndustryReportCurrentIndustry(),
+                industry: industryReportWorkspace.industry ?? getIndustryReportCurrentIndustry(),
                 body_sections: bodySections,
             }),
         });
@@ -1456,7 +1799,7 @@ async function generateIndustryReportSummaryForWord(title, bodySections) {
         method: "POST",
         body: JSON.stringify({
             report_title: title,
-            industry: industryReportWorkspace.industry || getIndustryReportCurrentIndustry(),
+            industry: industryReportWorkspace.industry ?? getIndustryReportCurrentIndustry(),
             outline: industryReportWorkspace.outline || [],
             body_sections: bodySections,
         }),
@@ -1647,12 +1990,15 @@ function escapeIndustryReportJs(value) {
 }
 
 document.addEventListener("industryChanged", () => {
-    syncIndustryReportHeader();
+    resetIndustryReportWorkspace();
 });
 
 window.addEventListener("load", () => {
+    syncIndustryReportTitlePlaceholder();
     syncIndustryReportHeader();
     void refreshIndustryReportHistorySelect();
+    renderIndustryReportTaskCard(industryReportWorkspace.taskCard);
+    renderIndustryReportOutline(industryReportWorkspace.outline);
     renderIndustryReportFlowSteps("idle");
     renderIndustryReportPreview();
 });

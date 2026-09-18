@@ -8,12 +8,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, List
 
 from llm_client import llm
+from .industry_config import SUPPORTED_INDUSTRIES
 
 
-SUPPORTED_INDUSTRIES = {
-    "ai": "人工智能",
-    "embodied": "具身智能",
-}
 DEFAULT_MAX_WORKERS = 3
 DEFAULT_MAX_TOKENS = 5000
 
@@ -99,20 +96,14 @@ def generate_report_bodies(
     """Generate body text for all writing tasks, preserving input order."""
     normalized_prompt = _safe_text(user_prompt)
     normalized_title = _safe_text(report_title)
-    normalized_industry = _safe_text(industry) or "ai"
+    normalized_industry = _safe_text(industry)
 
     if not normalized_prompt:
         return _error_response("user_prompt cannot be empty", normalized_industry, "")
     if not normalized_title:
         return _error_response("report_title cannot be empty", normalized_industry, "")
 
-    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry)
-    if not industry_name:
-        return _error_response(
-            f"unsupported industry: {normalized_industry}",
-            normalized_industry,
-            "",
-        )
+    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry, "未配置行业")
 
     if not isinstance(writing_tasks, list) or not writing_tasks:
         return _error_response(

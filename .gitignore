@@ -53,8 +53,19 @@ static/policy_outputs/*
 RAG/output.md
 RAG/output.html
 
+# Local RAG models, databases, and retrieval indexes (distributed separately)
+RAG/vector_db/
+RAG/vector_db_ai/
+RAG/vector_db_embodied/
+RAG/vector_db_QA/
+RAG/indexes/
+RAG/model_store/
+
 # Generated report-generation external RAG vector store/state
-report_generation/vector_db/
+report_generation/vector_db/*
+!report_generation/vector_db/*/
+report_generation/vector_db/*/*
+!report_generation/vector_db/*/.gitkeep
 
 # Report-generation test outputs
 outline_agent_test_result.json

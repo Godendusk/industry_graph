@@ -185,7 +185,7 @@ test("history API absence does not block the in-page graph switch", () => {
     assert.deepEqual(calls.replacedUrls, []);
 });
 
-test("embodied report outline request reaches the backend with its industry", async () => {
+test("embodied report task-card request reaches the backend with its page industry", async () => {
     const { context, window } = loadReportScript();
     const requests = [];
     const elements = {
@@ -209,13 +209,17 @@ test("embodied report outline request reaches the backend with its industry", as
         };
     };
 
-    await context.generateIndustryReportOutline();
+    await context.submitIndustryReportRequirement();
 
     assert.equal(requests.length, 1);
-    assert.equal(requests[0].url, "/api/report/outline");
+    assert.equal(requests[0].url, "/api/report/task-card");
     assert.deepEqual(
         JSON.parse(requests[0].options.body),
-        { user_prompt: "分析具身智能产业发展", industry: "embodied" },
+        {
+            title: "具身智能产业报告",
+            user_requirement: "分析具身智能产业发展",
+            page_industry: "embodied",
+        },
     );
 });
 

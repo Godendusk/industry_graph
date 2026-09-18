@@ -11,13 +11,10 @@ from typing import Any, Dict, List, Optional
 from llm_client import llm
 
 from .external_rag.retriever import retrieve_external_rag
-from .graph_retriever import retrieve_ai_graph
+from .graph_retriever import retrieve_industry_graph
+from .industry_config import SUPPORTED_INDUSTRIES
 
 
-SUPPORTED_INDUSTRIES = {
-    "ai": "人工智能",
-    "embodied": "具身智能",
-}
 DEFAULT_TOP_K = 10
 
 
@@ -31,7 +28,7 @@ def generate_writing_tasks(
     """Generate per-subsection writing system prompts after outline confirmation."""
     normalized_prompt = str(user_prompt or "").strip()
     normalized_title = str(report_title or "").strip()
-    normalized_industry = str(industry or "ai").strip() or "ai"
+    normalized_industry = str(industry or "").strip()
     normalized_top_k = _normalize_top_k(top_k)
 
     if not normalized_prompt:
@@ -39,13 +36,7 @@ def generate_writing_tasks(
     if not normalized_title:
         return _error_response("report_title cannot be empty", normalized_industry, "")
 
-    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry)
-    if not industry_name:
-        return _error_response(
-            f"unsupported industry: {normalized_industry}",
-            normalized_industry,
-            "",
-        )
+    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry, "未配置行业")
 
     final_subsections = _flatten_body_subsections(outline)
     if not final_subsections:
@@ -64,8 +55,8 @@ def generate_writing_tasks(
                 subsection=subsection,
                 user_prompt=normalized_prompt,
                 report_title=normalized_title,
-                top_k=normalized_top_k,
                 industry=normalized_industry,
+                top_k=normalized_top_k,
             ): index
             for index, subsection in enumerate(final_subsections)
         }
@@ -116,21 +107,25 @@ def _generate_writing_task_for_subsection(
         subsection_title=subsection["title"],
     )
 
-    graph_retrieval = _retrieve_graph_for_subsection(
-        query=section_retrieval_query,
-        outline_id=subsection["outline_id"],
-        warnings=warnings,
-        task_warnings=task_warnings,
-        industry=industry,
-    )
-    external_rag_retrieval = _retrieve_external_rag_for_subsection(
-        query=section_retrieval_query,
-        top_k=top_k,
-        outline_id=subsection["outline_id"],
-        warnings=warnings,
-        task_warnings=task_warnings,
-        industry=industry,
-    )
+    if industry:
+        graph_retrieval = _retrieve_graph_for_subsection(
+            query=section_retrieval_query,
+            industry=industry,
+            outline_id=subsection["outline_id"],
+            warnings=warnings,
+            task_warnings=task_warnings,
+        )
+        external_rag_retrieval = _retrieve_external_rag_for_subsection(
+            query=section_retrieval_query,
+            industry=industry,
+            top_k=top_k,
+            outline_id=subsection["outline_id"],
+            warnings=warnings,
+            task_warnings=task_warnings,
+        )
+    else:
+        graph_retrieval = {"status": "skipped", "graph_evidence_blocks": []}
+        external_rag_retrieval = {"status": "skipped", "evidence_blocks": []}
 
     prompt_result = _generate_writing_system_prompt(
         user_prompt=user_prompt,
@@ -278,10 +273,10 @@ def _retrieve_graph_for_subsection(
     task_warnings: List[dict],
     industry: str = "ai",
 ) -> dict:
+    if industry not in SUPPORTED_INDUSTRIES:
+        return {"status": "skipped", "graph_evidence_blocks": [], "evidence_blocks": []}
     try:
-        from .graph_retriever import retrieve_graph
-
-        result = retrieve_graph(query, industry=industry)
+        result = retrieve_industry_graph(query, industry=industry)
     except Exception as exc:
         warning = {
             "outline_id": outline_id,
@@ -317,8 +312,10 @@ def _retrieve_external_rag_for_subsection(
     task_warnings: List[dict],
     industry: str = "ai",
 ) -> dict:
+    if industry not in SUPPORTED_INDUSTRIES:
+        return {"status": "skipped", "evidence_blocks": [], "warnings": []}
     try:
-        result = retrieve_external_rag(query, top_k=top_k, industry=industry)
+        result = retrieve_external_rag(query, industry=industry, top_k=top_k)
     except Exception as exc:
         warning = {
             "outline_id": outline_id,
@@ -348,7 +345,7 @@ def _retrieve_external_rag_for_subsection(
         warning = {
             "outline_id": outline_id,
             "stage": "external_rag_retrieval",
-            "message": item,
+            "message": item.get("message", str(item)) if isinstance(item, dict) else item,
         }
         warnings.append(warning)
         task_warnings.append(warning)

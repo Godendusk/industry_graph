@@ -10,7 +10,7 @@ from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from .client import EXTERNAL_LIBRARIES, ExternalMaterialClient
+from .client import ExternalMaterialClient, get_external_libraries
 from .text_utils import (
     content_hash,
     html_to_paragraphs,
@@ -19,10 +19,10 @@ from .text_utils import (
     split_plain_paragraphs,
 )
 from .vector_store import (
-    VECTOR_DB_DIR,
     delete_existing_material,
     upsert_paragraphs,
 )
+from ..industry_config import get_industry_config, get_vector_db_path
 
 
 def _v2_enabled() -> bool:
@@ -90,6 +90,7 @@ def initial_ingest_external_library(
     library: str,
     access_token: str,
     page_size: int = DEFAULT_PAGE_SIZE,
+    industry: str = "ai",
 ) -> Dict[str, Any]:
     return _ingest_library(
         library=library,
@@ -97,6 +98,7 @@ def initial_ingest_external_library(
         page_size=page_size,
         mode="initial",
         max_pages=None,
+        industry=industry,
     )
 
 
@@ -105,9 +107,10 @@ def update_external_library(
     access_token: str,
     today: Optional[date] = None,
     page_size: int = DEFAULT_PAGE_SIZE,
+    industry: str = "ai",
 ) -> Dict[str, Any]:
     _ = today
-    latest_state = _load_latest_publish_date(library)
+    latest_state = _load_latest_publish_date(library, industry)
     if not latest_state.get("latest_publish_date"):
         return _ingest_library(
             library=library,
@@ -115,6 +118,7 @@ def update_external_library(
             page_size=page_size,
             mode="initial_fallback",
             max_pages=None,
+            industry=industry,
         )
     return _ingest_library(
         library=library,
@@ -122,17 +126,20 @@ def update_external_library(
         page_size=page_size,
         mode="update",
         max_pages=None,
+        industry=industry,
     )
 
 
 def initial_ingest_all_external_libraries(
     access_token: str,
     page_size: int = DEFAULT_PAGE_SIZE,
+    industry: str = "ai",
 ) -> Dict[str, Any]:
     return _run_all_libraries(
         access_token=access_token,
         page_size=page_size,
         runner=initial_ingest_external_library,
+        industry=industry,
     )
 
 
@@ -140,12 +147,14 @@ def update_all_external_libraries(
     access_token: str,
     today: Optional[date] = None,
     page_size: int = DEFAULT_PAGE_SIZE,
+    industry: str = "ai",
 ) -> Dict[str, Any]:
-    total_libs = len(EXTERNAL_LIBRARIES)
+    libraries = get_external_libraries(industry)
+    total_libs = len(libraries)
     logger.info("=" * 60)
     logger.info("开始增量更新所有外部资料库（共 %d 个库）", total_libs)
     results: Dict[str, Any] = {}
-    for idx, library in enumerate(EXTERNAL_LIBRARIES, 1):
+    for idx, library in enumerate(libraries, 1):
         logger.info("-" * 40)
         logger.info("[%d/%d] 开始更新资料库: %s", idx, total_libs, library)
         try:
@@ -154,12 +163,13 @@ def update_all_external_libraries(
                 access_token=access_token,
                 today=today,
                 page_size=page_size,
+                industry=industry,
             )
         except Exception as exc:
             logger.exception("[%d/%d] 资料库 %s 更新异常: %s", idx, total_libs, library, exc)
-            results[library] = _library_error_result(library, "update", exc)
+            results[library] = _library_error_result(library, "update", exc, industry)
     logger.info("=" * 60)
-    summary = _summarize_all_results("update_all", results)
+    summary = _summarize_all_results("update_all", results, industry)
     _log_summary("增量更新", summary)
     return summary
 
@@ -169,6 +179,7 @@ def debug_ingest_external_library(
     access_token: str,
     page_size: int = 2,
     max_pages: int = 1,
+    industry: str = "ai",
 ) -> Dict[str, Any]:
     return _ingest_library(
         library=library,
@@ -176,15 +187,17 @@ def debug_ingest_external_library(
         page_size=page_size,
         mode="debug",
         max_pages=max_pages,
+        industry=industry,
     )
 
 
-def _run_all_libraries(access_token: str, page_size: int, runner) -> Dict[str, Any]:
-    total_libs = len(EXTERNAL_LIBRARIES)
+def _run_all_libraries(access_token: str, page_size: int, runner, industry: str) -> Dict[str, Any]:
+    libraries = get_external_libraries(industry)
+    total_libs = len(libraries)
     logger.info("=" * 60)
     logger.info("开始全量摄入所有外部资料库（共 %d 个库）", total_libs)
     results: Dict[str, Any] = {}
-    for idx, library in enumerate(EXTERNAL_LIBRARIES, 1):
+    for idx, library in enumerate(libraries, 1):
         logger.info("-" * 40)
         logger.info("[%d/%d] 开始处理资料库: %s", idx, total_libs, library)
         try:
@@ -192,17 +205,18 @@ def _run_all_libraries(access_token: str, page_size: int, runner) -> Dict[str, A
                 library=library,
                 access_token=access_token,
                 page_size=page_size,
+                industry=industry,
             )
         except Exception as exc:
             logger.exception("[%d/%d] 资料库 %s 摄入异常: %s", idx, total_libs, library, exc)
-            results[library] = _library_error_result(library, "initial", exc)
+            results[library] = _library_error_result(library, "initial", exc, industry)
     logger.info("=" * 60)
-    summary = _summarize_all_results("initial_all", results)
+    summary = _summarize_all_results("initial_all", results, industry)
     _log_summary("全量摄入", summary)
     return summary
 
 
-def _summarize_all_results(mode: str, results: Dict[str, Any]) -> Dict[str, Any]:
+def _summarize_all_results(mode: str, results: Dict[str, Any], industry: str) -> Dict[str, Any]:
     failed_libraries = [
         library
         for library, result in results.items()
@@ -210,7 +224,7 @@ def _summarize_all_results(mode: str, results: Dict[str, Any]) -> Dict[str, Any]
     ]
     return {
         "status": "success" if not failed_libraries else "partial_success",
-        "industry": INDUSTRY,
+        "industry": industry,
         "mode": mode,
         "libraries": results,
         "failed_libraries": failed_libraries,
@@ -223,14 +237,16 @@ def _ingest_library(
     page_size: int,
     mode: str,
     max_pages: Optional[int],
+    industry: str,
 ) -> Dict[str, Any]:
-    config = _validate_library(library)
+    get_industry_config(industry)
+    config = _validate_library(library, industry)
     _validate_page_size(page_size)
 
-    manifest = _load_manifest(library)
-    latest_state = _load_latest_publish_date(library)
+    manifest = _load_manifest(library, industry)
+    latest_state = _load_latest_publish_date(library, industry)
     latest_publish_date = latest_state.get("latest_publish_date") if mode == "update" else None
-    client = ExternalMaterialClient(access_token)
+    client = ExternalMaterialClient(access_token, industry=industry)
 
     logger.info(
         "资料库 [%s] 开始摄入 | 模式=%s | 分类=%s | 每页=%d | 已有manifest记录=%d | 增量基准日期=%s",
@@ -240,7 +256,7 @@ def _ingest_library(
 
     stats: Dict[str, Any] = {
         "status": "success",
-        "industry": INDUSTRY,
+        "industry": industry,
         "library": library,
         "classification_type": config["classification_type"],
         "classification_name": config["classification_name"],
@@ -334,6 +350,7 @@ def _ingest_library(
                     client=client,
                     source_record=record,
                     existing_record=existing_record,
+                    industry=industry,
                 )
                 _upsert_manifest_record(manifest, ingest_result["manifest_record"])
                 if existing_record and _is_success_record(existing_record):
@@ -362,8 +379,8 @@ def _ingest_library(
                     ),
                 )
 
-        _save_manifest(library, manifest)
-        _save_latest_publish_date(library, _compute_latest_publish_date(manifest))
+        _save_manifest(library, manifest, industry)
+        _save_latest_publish_date(library, _compute_latest_publish_date(manifest), industry)
 
         logger.info(
             "资料库 [%s] 第 %d 页处理完成 | 累计: 已处理=%d, 新增=%d, 更新=%d, 跳过=%d, 失败=%d",
@@ -385,8 +402,8 @@ def _ingest_library(
         time.sleep(0.5)
 
     latest = _compute_latest_publish_date(manifest)
-    _save_manifest(library, manifest)
-    _save_latest_publish_date(library, latest)
+    _save_manifest(library, manifest, industry)
+    _save_latest_publish_date(library, latest, industry)
     stats["latest_publish_date"] = latest
     if stats["status"] == "success" and stats["failed"]:
         stats["status"] = "partial_success"
@@ -398,11 +415,11 @@ def _ingest_library(
     return stats
 
 
-def _library_error_result(library: str, mode: str, exc: Exception) -> Dict[str, Any]:
-    config = EXTERNAL_LIBRARIES.get(library, {})
+def _library_error_result(library: str, mode: str, exc: Exception, industry: str) -> Dict[str, Any]:
+    config = get_external_libraries(industry).get(library, {})
     return {
         "status": "error",
-        "industry": INDUSTRY,
+        "industry": industry,
         "library": library,
         "classification_type": config.get("classification_type"),
         "classification_name": config.get("classification_name"),
@@ -424,6 +441,7 @@ def _ingest_record(
     client: ExternalMaterialClient,
     source_record: Dict[str, Any],
     existing_record: Optional[Dict[str, Any]],
+    industry: str,
 ) -> Dict[str, Any]:
     material_id = str(source_record.get("id") or "").strip()
     title = normalized_title(source_record.get("title"))
@@ -450,7 +468,7 @@ def _ingest_record(
     old_chunk_count = _safe_int((existing_record or {}).get("chunk_count"))
     old_content_hash = (existing_record or {}).get("content_hash")
     if old_chunk_count and old_content_hash != c_hash:
-        delete_existing_material(library, material_id, old_chunk_count)
+        delete_existing_material(library, material_id, old_chunk_count, industry=industry)
         logger.info("资料库 [%s] 材料内容变更，已删除旧向量: id=%s, 旧段落数=%d", library, material_id, old_chunk_count)
 
     metadatas = [
@@ -472,6 +490,7 @@ def _ingest_record(
         material_id=material_id,
         paragraphs=paragraphs,
         metadatas=metadatas,
+        industry=industry,
     )
 
     v2_status, v2_chunk_ids, v2_error = "disabled", [], None
@@ -533,16 +552,16 @@ def _build_error_manifest_record(
     }
 
 
-def _manifest_path(library: str) -> Path:
-    return VECTOR_DB_DIR / f"{library}_manifest.json"
+def _manifest_path(library: str, industry: str) -> Path:
+    return get_vector_db_path(industry) / f"{library}_manifest.json"
 
 
-def _latest_path(library: str) -> Path:
-    return VECTOR_DB_DIR / f"{library}_latest_publish_date.json"
+def _latest_path(library: str, industry: str) -> Path:
+    return get_vector_db_path(industry) / f"{library}_latest_publish_date.json"
 
 
-def _load_manifest(library: str) -> List[Dict[str, Any]]:
-    path = _manifest_path(library)
+def _load_manifest(library: str, industry: str) -> List[Dict[str, Any]]:
+    path = _manifest_path(library, industry)
     if not path.exists():
         return []
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -552,9 +571,10 @@ def _load_manifest(library: str) -> List[Dict[str, Any]]:
     return materials if isinstance(materials, list) else []
 
 
-def _save_manifest(library: str, manifest: List[Dict[str, Any]]) -> None:
-    VECTOR_DB_DIR.mkdir(parents=True, exist_ok=True)
-    config = EXTERNAL_LIBRARIES[library]
+def _save_manifest(library: str, manifest: List[Dict[str, Any]], industry: str) -> None:
+    vector_db_path = get_vector_db_path(industry)
+    vector_db_path.mkdir(parents=True, exist_ok=True)
+    config = get_external_libraries(industry)[library]
     manifest.sort(
         key=lambda item: (
             item.get("publish_date") or "",
@@ -564,37 +584,37 @@ def _save_manifest(library: str, manifest: List[Dict[str, Any]]) -> None:
         reverse=True,
     )
     payload = {
-        "industry": INDUSTRY,
+        "industry": industry,
         "library": library,
         "classification_type": config["classification_type"],
         "classification_name": config["classification_name"],
         "updated_at": _now_iso(),
         "materials": manifest,
     }
-    _manifest_path(library).write_text(
+    _manifest_path(library, industry).write_text(
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
 
 
-def _load_latest_publish_date(library: str) -> Dict[str, Any]:
-    path = _latest_path(library)
+def _load_latest_publish_date(library: str, industry: str) -> Dict[str, Any]:
+    path = _latest_path(library, industry)
     if not path.exists():
         return {}
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _save_latest_publish_date(library: str, latest_publish_date: str) -> None:
-    VECTOR_DB_DIR.mkdir(parents=True, exist_ok=True)
-    config = EXTERNAL_LIBRARIES[library]
+def _save_latest_publish_date(library: str, latest_publish_date: str, industry: str) -> None:
+    get_vector_db_path(industry).mkdir(parents=True, exist_ok=True)
+    config = get_external_libraries(industry)[library]
     payload = {
-        "industry": INDUSTRY,
+        "industry": industry,
         "library": library,
         "classification_type": config["classification_type"],
         "latest_publish_date": latest_publish_date,
         "updated_at": _now_iso(),
     }
-    _latest_path(library).write_text(
+    _latest_path(library, industry).write_text(
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
@@ -674,13 +694,14 @@ def _now_iso() -> str:
     return datetime.now().isoformat(timespec="seconds")
 
 
-def _validate_library(library: str) -> Dict[str, str]:
-    if library not in EXTERNAL_LIBRARIES:
+def _validate_library(library: str, industry: str) -> Dict[str, str]:
+    libraries = get_external_libraries(industry)
+    if library not in libraries:
         raise ValueError(
             f"Unknown external library: {library}. "
-            f"Allowed values: {', '.join(EXTERNAL_LIBRARIES)}"
+            f"Allowed values: {', '.join(libraries)}"
         )
-    return EXTERNAL_LIBRARIES[library]
+    return libraries[library]
 
 
 def _validate_page_size(page_size: int) -> None:

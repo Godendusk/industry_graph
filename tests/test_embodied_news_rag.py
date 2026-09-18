@@ -316,28 +316,23 @@ class EmbodiedStoreTest(unittest.TestCase):
 class EmbodiedReportRoutingTest(unittest.TestCase):
     def test_graph_route_selects_embodied_graph_file(self):
         module = load_module(self, "report_generation.graph_retriever")
+        config_module = load_module(self, "report_generation.industry_config")
         fake_graph = object()
-        with patch.object(module, "_AIGraph", return_value=fake_graph) as graph_loader, patch.object(
+        with patch.object(module, "_IndustryGraph", return_value=fake_graph) as graph_loader, patch.object(
             module,
             "_select_level3_with_llm",
             return_value={"status": "error", "message": "test stop"},
         ):
             result = module.retrieve_graph("查询", industry="embodied")
 
-        graph_loader.assert_called_once_with(module.GRAPH_PATHS["embodied"])
+        graph_loader.assert_called_once_with(
+            config_module.get_industry_config("embodied")["graph_path"]
+        )
         self.assertEqual(result["industry"], "embodied")
 
-    def test_all_report_agents_accept_embodied_industry(self):
-        for module_name in (
-            "report_generation.outline_agent",
-            "report_generation.coordinator_agent",
-            "report_generation.body_agent",
-            "report_generation.summary_agent",
-            "report_generation.rewrite_agent",
-            "report_generation.word_export_agent",
-        ):
-            module = load_module(self, module_name)
-            self.assertEqual(module.SUPPORTED_INDUSTRIES["embodied"], "具身智能")
+    def test_shared_industry_configuration_includes_embodied(self):
+        config_module = load_module(self, "report_generation.industry_config")
+        self.assertEqual(config_module.SUPPORTED_INDUSTRIES["embodied"], "具身智能")
 
     def test_outline_external_retrieval_passes_industry(self):
         module = load_module(self, "report_generation.outline_agent")

@@ -22,7 +22,7 @@ from llm_client import llm
 # ============ 路径与配置 ============
 BASE_DIR = Path(__file__).resolve().parent
 KNOWLEDGE_DIR = BASE_DIR / "raw_docx_files"      # 知识库目录（仅含 doc/docx）
-DB_DIR = BASE_DIR / "vector_db1"                 # 通用问答库：knowledge_base
+DB_DIR = BASE_DIR / "vector_db_QA"               # 通用问答库：knowledge_base
 PROGRESS_FILE = BASE_DIR / "progress.json"       # 已处理文件记录
 GRAPH_FILE = BASE_DIR.parent / "static" / "data" / "ai" / "graph_data.json"
 MODEL_PATH = BASE_DIR / "models"                 # 本地向量模型路径
@@ -396,4 +396,3 @@ if __name__ == "__main__":
         print("  python build_vector_db.py --build --industry ai")
         print("  python build_vector_db.py --query 智算中心发展现状如何")
         print("  python build_vector_db.py --query 具身智能发展现状 --industry embodied")
-

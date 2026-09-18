@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Industry graph retrieval for report generation.
 
-This module asks the LLM to
+This module loads the selected industry's graph and asks the LLM to
 choose 1-3 real level-3 industry segments, then expands those segments through
 the existing graph relationships.
 """
@@ -15,43 +15,44 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from llm_client import llm
-
-
-BASE_DIR = Path(__file__).resolve().parents[1]
-GRAPH_PATHS = {
-    "ai": BASE_DIR / "static" / "data" / "ai" / "graph_data.json",
-    "embodied": BASE_DIR / "static" / "data" / "embodied" / "graph_data.json",
-}
-AI_GRAPH_PATH = GRAPH_PATHS["ai"]
+from .industry_config import get_industry_config
 
 REL_BELONGS_TO = "从属于"
 REL_PARTICIPATES_IN = "参与环节"
 
 
-def retrieve_graph(query: str, industry: str = "ai") -> dict:
-    """Retrieve graph context for a report-generation query."""
+def retrieve_industry_graph(query: str, industry: str = "ai") -> dict:
+    """Retrieve selected-industry graph context for a report query.
+
+    The retrieval flow is:
+    1. Load the AI graph.
+    2. Send the complete L3 segment list to the LLM.
+    3. Validate that the LLM selected 1-3 real L3 nodes.
+    4. Expand each selected L3 upward to L2/L1 and downward to all entities.
+    """
     normalized_query = str(query or "").strip()
-    normalized_industry = str(industry or "ai").strip() or "ai"
+    normalized_industry = str(industry or "").strip()
     if not normalized_query:
         return _error_response("query 不能为空", normalized_query, normalized_industry)
-    graph_path = GRAPH_PATHS.get(normalized_industry)
-    if graph_path is None:
-        return _error_response(
-            f"不支持的产业图谱: {normalized_industry}",
-            normalized_query,
-            normalized_industry,
-        )
 
     try:
-        graph = _AIGraph(graph_path)
+        config = get_industry_config(normalized_industry)
+    except ValueError as exc:
+        return _error_response(str(exc), normalized_query, normalized_industry)
+
+    industry_name = config["name"]
+    graph_path = Path(config["graph_path"])
+
+    try:
+        graph = _IndustryGraph(graph_path)
     except Exception as exc:
         return _error_response(
-            f"加载 {normalized_industry} 知识图谱失败: {exc}",
+            f"加载{industry_name}知识图谱失败: {exc}",
             normalized_query,
             normalized_industry,
         )
 
-    llm_result = _select_level3_with_llm(normalized_query, graph, normalized_industry)
+    llm_result = _select_level3_with_llm(normalized_query, graph, industry_name)
     if llm_result["status"] != "success":
         return _error_response(llm_result["message"], normalized_query, normalized_industry)
 
@@ -95,6 +96,7 @@ def retrieve_graph(query: str, industry: str = "ai") -> dict:
     return {
         "status": "success",
         "industry": normalized_industry,
+        "industry_name": industry_name,
         "query": normalized_query,
         "graph_context_text": _build_graph_context_text(normalized_query, evidence_blocks),
         "matched_level3": matched_level3,
@@ -102,12 +104,17 @@ def retrieve_graph(query: str, industry: str = "ai") -> dict:
     }
 
 
+def retrieve_graph(query: str, industry: str = "ai") -> dict:
+    """Backward-compatible graph retrieval entry point."""
+    return retrieve_industry_graph(query, industry=industry)
+
+
 def retrieve_ai_graph(query: str) -> dict:
-    """Backward-compatible AI graph retrieval wrapper."""
-    return retrieve_graph(query, industry="ai")
+    """Backward-compatible AI-only retrieval entry point."""
+    return retrieve_industry_graph(query, industry="ai")
 
 
-class _AIGraph:
+class _IndustryGraph:
     def __init__(self, graph_path: Path):
         self.graph_path = graph_path
         self.nodes_by_id: Dict[Any, dict] = {}
@@ -227,8 +234,7 @@ class _AIGraph:
         return rows
 
 
-def _select_level3_with_llm(query: str, graph: _AIGraph, industry: str = "ai") -> dict:
-    industry_name = {"ai": "人工智能", "embodied": "具身智能"}.get(industry, industry)
+def _select_level3_with_llm(query: str, graph: _IndustryGraph, industry_name: str) -> dict:
     system_prompt = (
         f"你是{industry_name}产业知识图谱检索助手。"
         "你只能从用户提供的 L3 环节清单中选择相关环节。"
@@ -278,7 +284,7 @@ L3 环节清单：
     return {"status": "success", "message": "", "data": data}
 
 
-def _validate_llm_level3_selection(items: List[dict], graph: _AIGraph) -> List[dict]:
+def _validate_llm_level3_selection(items: List[dict], graph: _IndustryGraph) -> List[dict]:
     selected = []
     seen_ids = set()
     for item in items:

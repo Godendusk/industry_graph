@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 import requests
+from ..industry_config import get_industry_config
 
 
 AI_COLUMN_ID = "2008715487928750081"
@@ -43,6 +44,19 @@ EXTERNAL_LIBRARIES: Dict[str, Dict[str, str]] = {
 }
 
 
+def get_external_libraries(industry: str) -> Dict[str, Dict[str, str]]:
+    """Return collection configuration isolated to one industry database."""
+    get_industry_config(industry)
+    if industry == "ai":
+        return {key: dict(value) for key, value in EXTERNAL_LIBRARIES.items()}
+    libraries: Dict[str, Dict[str, str]] = {}
+    for key, value in EXTERNAL_LIBRARIES.items():
+        config = dict(value)
+        config["collection"] = f"report_{key}_{industry}"
+        libraries[key] = config
+    return libraries
+
+
 class ExternalRagClientError(RuntimeError):
     """Raised when the external material API cannot return usable data."""
 
@@ -50,11 +64,16 @@ class ExternalRagClientError(RuntimeError):
 class ExternalMaterialClient:
     """Small wrapper around the list/detail APIs used by external RAG ingestion."""
 
-    def __init__(self, access_token: str, timeout: int = 30):
+    def __init__(self, access_token: str, timeout: int = 30, industry: str = "ai"):
         if not access_token or not access_token.strip():
             raise ValueError("access_token is required")
         self.access_token = access_token.strip()
         self.timeout = timeout
+        self.industry = str(industry or "").strip()
+        config = get_industry_config(self.industry)
+        self.column_id = config.get("external_column_id")
+        if not self.column_id:
+            raise ValueError(f"external RAG column id is not configured for industry: {self.industry}")
 
     def _headers(self) -> Dict[str, str]:
         return {
@@ -91,7 +110,7 @@ class ExternalMaterialClient:
         page_size: int,
     ) -> Dict[str, Any]:
         body = {
-            "columnId": AI_COLUMN_ID,
+            "columnId": self.column_id,
             "ynChannel": 1,
             "classificationType": str(classification_type),
             "order": "desc",

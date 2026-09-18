@@ -43,10 +43,10 @@ class RagStorageSeparationTest(unittest.TestCase):
             sys.modules["llm_client"] = cls.original_llm_client
 
     def test_default_directories_are_separate_and_match_existing_data(self):
-        self.assertEqual(self.qa_rag.DB_DIR, PROJECT_ROOT / "RAG" / "vector_db1")
+        self.assertEqual(self.qa_rag.DB_DIR, PROJECT_ROOT / "RAG" / "vector_db_QA")
         self.assertEqual(
             self.report_rag.VECTOR_DB_DIR,
-            PROJECT_ROOT / "RAG" / "vector_db",
+            PROJECT_ROOT / "RAG" / "vector_db_ai",
         )
         self.assertNotEqual(self.qa_rag.DB_DIR, self.report_rag.VECTOR_DB_DIR)
 

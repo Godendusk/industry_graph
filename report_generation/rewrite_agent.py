@@ -10,13 +10,10 @@ from typing import Any, List
 from llm_client import llm
 
 from .external_rag.retriever import retrieve_external_rag
-from .graph_retriever import retrieve_ai_graph
+from .graph_retriever import retrieve_industry_graph
+from .industry_config import SUPPORTED_INDUSTRIES
 
 
-SUPPORTED_INDUSTRIES = {
-    "ai": "人工智能",
-    "embodied": "具身智能",
-}
 DEFAULT_TOP_K = 10
 DEFAULT_MAX_TOKENS = 5000
 
@@ -65,9 +62,9 @@ def recommend_rewrite_materials(
     )
     external_rag_retrieval = _retrieve_external_rag_for_rewrite(
         query=rewrite_retrieval_query,
+        industry=normalized_industry,
         top_k=normalized_top_k,
         warnings=warnings,
-        industry=normalized_industry,
     )
 
     graph_success = graph_retrieval.get("status") == "success"
@@ -208,9 +205,7 @@ def _retrieve_graph_for_rewrite(
     query: str, warnings: List[dict], industry: str = "ai"
 ) -> dict:
     try:
-        from .graph_retriever import retrieve_graph
-
-        result = retrieve_graph(query, industry=industry)
+        result = retrieve_industry_graph(query, industry=industry)
     except Exception as exc:
         warning = {
             "stage": "graph_retrieval",
@@ -266,7 +261,7 @@ def _retrieve_external_rag_for_rewrite(
         warnings.append(
             {
                 "stage": "external_rag_retrieval",
-                "message": item,
+                "message": item.get("message", str(item)) if isinstance(item, dict) else item,
             }
         )
     return normalized
