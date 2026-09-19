@@ -2,8 +2,10 @@ import importlib
 import os
 import tempfile
 import unittest
+from concurrent.futures import ThreadPoolExecutor
+from threading import Lock, local
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 
 def fake_response(payload, status_code=200):
@@ -18,6 +20,27 @@ def load_module(test_case, name):
         return importlib.import_module(name)
     except ModuleNotFoundError as exc:
         test_case.fail(f"feature module is missing: {exc}")
+
+
+class TrackingLock:
+    """A Lock probe that exposes the current thread's acquisition depth."""
+
+    def __init__(self):
+        self._lock = Lock()
+        self._state = local()
+
+    @property
+    def depth(self):
+        return getattr(self._state, "depth", 0)
+
+    def __enter__(self):
+        self._lock.acquire()
+        self._state.depth = self.depth + 1
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self._state.depth -= 1
+        self._lock.release()
 
 
 class EmbodiedNewsClientTest(unittest.TestCase):
@@ -311,6 +334,95 @@ class EmbodiedStoreTest(unittest.TestCase):
 
         self.assertEqual(written, 4)
         self.assertEqual(encode_batch_sizes, [4, 2, 1, 1, 2, 1, 1])
+
+    def test_direct_store_query_serializes_model_encoding(self):
+        module = load_module(self, "report_generation.external_rag.embodied_store")
+        inference_lock = TrackingLock()
+
+        class FakeModel:
+            def encode(self, documents, **kwargs):
+                if inference_lock.depth != 1:
+                    raise AssertionError("query model.encode must hold inference lock once")
+                return [[1.0] for _ in documents]
+
+        class FakeCollection:
+            def count(self):
+                return 1
+
+            def query(self, **kwargs):
+                return {"ids": [["news:0"]]}
+
+        store = module.EmbodiedNewsStore.__new__(module.EmbodiedNewsStore)
+        store.model_path = module.MODEL_PATH
+        store.collection = FakeCollection()
+
+        with patch.object(module, "_MODEL_INFERENCE_LOCK", inference_lock), patch.object(
+            module, "_get_model", return_value=FakeModel()
+        ):
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                futures = [executor.submit(store.query, "问题") for _ in range(5)]
+                results = [future.result(timeout=1) for future in futures]
+
+        self.assertEqual(results, [{"ids": [["news:0"]]}] * 5)
+
+    def test_direct_store_upsert_serializes_model_encoding(self):
+        module = load_module(self, "report_generation.external_rag.embodied_store")
+        inference_lock = TrackingLock()
+
+        class FakeModel:
+            def encode(self, documents, **kwargs):
+                if inference_lock.depth != 1:
+                    raise AssertionError("upsert model.encode must hold inference lock once")
+                return [[1.0] for _ in documents]
+
+        class FakeCollection:
+            def upsert(self, **kwargs):
+                pass
+
+        store = module.EmbodiedNewsStore.__new__(module.EmbodiedNewsStore)
+        store.model_path = module.MODEL_PATH
+        store.embedding_batch_size = 1
+        store.collection = FakeCollection()
+
+        with patch.object(module, "_MODEL_INFERENCE_LOCK", inference_lock), patch.object(
+            module, "_get_model", return_value=FakeModel()
+        ):
+            with ThreadPoolExecutor(max_workers=5) as executor:
+                futures = [
+                    executor.submit(
+                        store.upsert,
+                        [{"id": f"news:{index}", "document": "内容", "metadata": {}}],
+                    )
+                    for index in range(5)
+                ]
+                results = [future.result(timeout=1) for future in futures]
+
+        self.assertEqual(results, [1] * 5)
+
+    def test_query_embodied_news_reuses_default_store(self):
+        module = load_module(self, "report_generation.external_rag.embodied_store")
+        factory = MagicMock()
+        first_store = MagicMock()
+        first_store.query.side_effect = [
+            {"ids": [["news:0"]]},
+            {"ids": [["news:1"]]},
+        ]
+        factory.return_value = first_store
+        previous_default_store = getattr(module, "_DEFAULT_STORE", None)
+        module._DEFAULT_STORE = None
+        try:
+            with patch.object(module, "EmbodiedNewsStore", factory):
+                first = module.query_embodied_news("问题一")
+                second = module.query_embodied_news("问题二", top_k=3)
+        finally:
+            module._DEFAULT_STORE = previous_default_store
+
+        self.assertEqual(first, {"ids": [["news:0"]]})
+        self.assertEqual(second, {"ids": [["news:1"]]})
+        factory.assert_called_once_with()
+        self.assertEqual(first_store.query.call_count, 2)
+        first_store.query.assert_any_call("问题一", top_k=10)
+        first_store.query.assert_any_call("问题二", top_k=3)
 
 
 class EmbodiedReportRoutingTest(unittest.TestCase):

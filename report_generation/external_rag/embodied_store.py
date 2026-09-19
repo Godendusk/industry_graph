@@ -16,6 +16,10 @@ BATCH_SIZE = 64
 
 _MODEL: Any = None
 _MODEL_LOCK = Lock()
+_MODEL_INFERENCE_LOCK = Lock()
+_DEFAULT_STORE: Any = None
+_DEFAULT_STORE_LOCK = Lock()
+_DEFAULT_STORE_QUERY_LOCK = Lock()
 
 
 def _device() -> str:
@@ -46,6 +50,12 @@ def _get_model() -> Any:
 
 def _encode_with_fallback(model: Any, documents: List[str]) -> List[Any]:
     """Encode a batch, splitting it when the tokenizer rejects a batch input."""
+    with _MODEL_INFERENCE_LOCK:
+        return _encode_with_fallback_unlocked(model, documents)
+
+
+def _encode_with_fallback_unlocked(model: Any, documents: List[str]) -> List[Any]:
+    """Encode a batch while the caller holds the model inference lock."""
     try:
         return list(
             model.encode(
@@ -58,8 +68,9 @@ def _encode_with_fallback(model: Any, documents: List[str]) -> List[Any]:
         if len(documents) <= 1:
             raise
         midpoint = len(documents) // 2
-        return _encode_with_fallback(model, documents[:midpoint]) + _encode_with_fallback(
-            model, documents[midpoint:]
+        return (
+            _encode_with_fallback_unlocked(model, documents[:midpoint])
+            + _encode_with_fallback_unlocked(model, documents[midpoint:])
         )
 
 
@@ -109,9 +120,7 @@ class EmbodiedNewsStore:
 
     def query(self, query: str, top_k: int = 5) -> Dict[str, Any]:
         model = _get_model() if self.model_path == MODEL_PATH else self._load_custom_model()
-        vector = model.encode(
-            [str(query)], normalize_embeddings=True, show_progress_bar=False
-        )
+        vector = _encode_with_fallback(model, [str(query)])
         count = self.collection.count()
         if not count:
             return {"ids": [[]], "documents": [[]], "metadatas": [[]], "distances": [[]]}
@@ -139,5 +148,15 @@ class EmbodiedNewsStore:
         return len(stale_ids)
 
 
+def _get_default_store() -> EmbodiedNewsStore:
+    global _DEFAULT_STORE
+    if _DEFAULT_STORE is None:
+        with _DEFAULT_STORE_LOCK:
+            if _DEFAULT_STORE is None:
+                _DEFAULT_STORE = EmbodiedNewsStore()
+    return _DEFAULT_STORE
+
+
 def query_embodied_news(query: str, top_k: int = 10) -> Dict[str, Any]:
-    return EmbodiedNewsStore().query(query, top_k=top_k)
+    with _DEFAULT_STORE_QUERY_LOCK:
+        return _get_default_store().query(query, top_k=top_k)
