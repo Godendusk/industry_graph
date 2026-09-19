@@ -55,14 +55,44 @@ conda activate <environment.yml 里的 name>
 - 备份目录：`backups/`
 - 日志文件：`logs/app.log`
 
-### 3.2 大模型服务配置（`llm_client.py`）
+### 3.2 大模型服务配置（本地 `.env`）
 
-系统内所有大模型调用统一通过 `llm_client.py` 发起。部署时需按实际大模型服务配置以下信息：
+系统内所有大模型调用统一通过 `llm_client.py` 发起。不要把密钥写入代码或提交到 Git。先复制示例文件并填入新生成（已轮换）的密钥：
 
-- `DEFAULT_API_KEY`
-- `DEFAULT_BASE_URL`
-- `DEFAULT_MODEL`
-- `DEFAULT_TEMPERATURE`、`DEFAULT_MAX_TOKENS`
+```bash
+# macOS / Linux
+cp .env.example .env
+```
+
+```powershell
+# Windows PowerShell
+Copy-Item .env.example .env
+```
+
+在 `.env` 中配置：
+
+```dotenv
+LLM_API_KEY=你的新密钥
+LLM_BASE_URL=https://api.deepseek.com
+LLM_MODEL=deepseek-v4-flash
+# LLM_PROXY_URL=http://代理地址:端口
+```
+
+修改 `.env` 后重启 Flask 后端。也可以不创建 `.env`，在启动前设置环境变量：
+
+```powershell
+# Windows PowerShell
+$env:LLM_API_KEY = "你的新密钥"
+python backend_server.py
+```
+
+```bash
+# macOS / Linux
+export LLM_API_KEY='你的新密钥'
+python backend_server.py
+```
+
+`LLM_BASE_URL` 默认值为 `https://api.deepseek.com`，`LLM_MODEL` 默认值为 `deepseek-v4-flash`，`LLM_PROXY_URL` 可选。TLS 证书验证默认开启；除非部署环境另有明确要求，不要关闭它。
 
 ### 3.3 前端依赖与 `API_BASE`（`templates/base.html`）
 

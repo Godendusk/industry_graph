@@ -1,6 +1,9 @@
+import os
 import unittest
 from dataclasses import FrozenInstanceError
+from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from llm_client import LLMClient
 
@@ -78,6 +81,22 @@ class LLMClientQueryResultTest(unittest.TestCase):
         self.assertIsNot(first_extra_body, second_extra_body)
         self.assertEqual(second_extra_body, {"thinking": {"type": "enabled"}})
 
+    def test_doubao_model_omits_reasoning_effort(self):
+        response = SimpleNamespace(
+            choices=[SimpleNamespace(
+                message=SimpleNamespace(content="正常正文"),
+                finish_reason="stop",
+            )],
+            usage=None,
+        )
+        client = self._client_with_response(response)
+        client.model = "doubao-seed-test"
+
+        client.query_result("测试请求")
+
+        request = client.client.chat.completions.calls[0]
+        self.assertNotIn("reasoning_effort", request)
+
     def test_query_preserves_legacy_nonempty_string_contract(self):
         response = SimpleNamespace(
             choices=[SimpleNamespace(
@@ -124,6 +143,67 @@ class LLMClientQueryResultTest(unittest.TestCase):
         client._log_info = lambda *_args, **_kwargs: None
 
         self.assertIsNone(client.query("测试请求"))
+
+
+class LLMEnvironmentConfigurationTest(unittest.TestCase):
+    def test_env_example_keeps_api_key_blank_and_contains_no_secret_literal(self):
+        example = (Path(__file__).resolve().parents[1] / ".env.example").read_text(encoding="utf-8")
+        values = dict(
+            line.split("=", 1)
+            for line in example.splitlines()
+            if line and not line.startswith("#")
+        )
+
+        self.assertEqual(values["LLM_API_KEY"], "")
+        self.assertNotRegex(example, r"sk-[A-Za-z0-9]{8,}")
+        self.assertNotRegex(example, r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+
+    def test_client_reads_environment_and_verifies_tls_by_default(self):
+        values = {
+            "LLM_API_KEY": "test-key",
+            "LLM_BASE_URL": "https://example.invalid/v1",
+            "LLM_MODEL": "test-model",
+        }
+        with patch.dict(os.environ, values, clear=True), \
+             patch("llm_client.httpx.Client") as http_client, \
+             patch("llm_client.OpenAI"):
+            client = LLMClient()
+
+        self.assertEqual(client.model, "test-model")
+        self.assertEqual(client.base_url, "https://example.invalid/v1")
+        self.assertTrue(http_client.call_args.kwargs["verify"])
+
+    def test_proxy_configuration_does_not_log_proxy_url(self):
+        proxy_url = "http://proxy.example.invalid:8080"
+        values = {
+            "LLM_API_KEY": "test-key",
+            "LLM_PROXY_URL": proxy_url,
+        }
+        with patch.dict(os.environ, values, clear=True), \
+             patch("llm_client.httpx.Client"), \
+             patch("llm_client.OpenAI"), \
+             patch("builtins.print") as printer, \
+             patch.object(LLMClient, "_log_info") as log_info:
+            LLMClient()
+
+        emitted = "\n".join(
+            str(call.args)
+            for mock in (printer, log_info)
+            for call in mock.call_args_list
+        )
+        self.assertIn("代理已配置", emitted)
+        self.assertNotIn(proxy_url, emitted)
+
+    def test_missing_key_returns_configuration_error_before_request(self):
+        with patch.dict(os.environ, {}, clear=True), \
+             patch("llm_client.DEFAULT_API_KEY", ""), \
+             patch("llm_client.httpx.Client") as http_client, \
+             patch("llm_client.OpenAI") as openai:
+            result = LLMClient().query_result("需求")
+
+        self.assertEqual(result.error_message, "LLM_API_KEY is not configured")
+        http_client.assert_not_called()
+        openai.assert_not_called()
 
 
 if __name__ == "__main__":

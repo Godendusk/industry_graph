@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from openai import OpenAI
 from openai import APIConnectionError, RateLimitError, APIStatusError
 import json
@@ -8,23 +9,17 @@ import httpx
 import socket
 from dataclasses import dataclass
 from typing import Optional
+from dotenv import load_dotenv
 
-# --- 配置区域 (修改这里即可全局生效) ---
-DEFAULT_API_KEY = "sk-6874e578bf2f49e38f8dbbccc333f87d"  # 建议使用 os.getenv("DEEPSEEK_API_KEY") 获取
-DEFAULT_BASE_URL = "https://api.deepseek.com"
-# DEFAULT_API_KEY = "sk-b54b7d16afcf46499c2dac95b7a04d00"
-# DEFAULT_BASE_URL = "https://e.cnpc.com.cn/klzm-ai-proxy"
-DEFAULT_MODEL = "deepseek-v4-flash"
+load_dotenv(Path(__file__).with_name(".env"))
+
+# --- 默认配置（可由本地 .env 或环境变量覆盖） ---
+DEFAULT_API_KEY = os.getenv("LLM_API_KEY", "").strip()
+DEFAULT_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.deepseek.com").strip() or "https://api.deepseek.com"
+DEFAULT_MODEL = os.getenv("LLM_MODEL", "deepseek-v4-flash").strip() or "deepseek-v4-flash"
 DEFAULT_TEMPERATURE = 0
 DEFAULT_MAX_TOKENS = 5000
-
-# DEFAULT_PROXY_URL = 'http://10.22.98.21:8080'
-DEFAULT_PROXY_URL = None
-
-# --- 豆包模型配置 ---
-DOUBAO_API_KEY = "3966fdf0-8f7d-4e83-8366-eea4a41db3a7"
-DOUBAO_BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
-DOUBAO_MODEL = "doubao-seed-2-0-pro-260215"
+DEFAULT_PROXY_URL = os.getenv("LLM_PROXY_URL", "").strip() or None
 
 
 @dataclass(frozen=True)
@@ -40,6 +35,16 @@ class LLMClient:
     def __init__(self, api_key=None, base_url=None, model=None, proxy_url=None, verify_ssl=True):
         self._log_info("[初始化] LLMClient 开始创建")
 
+        self.api_key = (api_key if api_key is not None else os.getenv("LLM_API_KEY", DEFAULT_API_KEY) or "").strip()
+        self.base_url = (base_url if base_url is not None else os.getenv("LLM_BASE_URL", DEFAULT_BASE_URL) or DEFAULT_BASE_URL).strip()
+        self.model = (model if model is not None else os.getenv("LLM_MODEL", DEFAULT_MODEL) or DEFAULT_MODEL).strip()
+        self.proxy_url = proxy_url if proxy_url is not None else (os.getenv("LLM_PROXY_URL", DEFAULT_PROXY_URL or "").strip() or None)
+        self.client = None
+
+        if not self.api_key:
+            self._log_info("[初始化] 未配置 LLM_API_KEY；将在调用时返回配置错误")
+            return
+
         # 配置 HTTP 客户端
         http_client = None
 
@@ -49,11 +54,11 @@ class LLMClient:
         }
 
         # 配置代理（如果提供了代理URL）
-        if proxy_url:
+        if self.proxy_url:
             # httpx 0.28.1 使用 'proxy' 参数（单数）
-            http_client_kwargs["proxy"] = proxy_url
-            print(f"[配置] 使用代理: {proxy_url}")
-            self._log_info(f"[配置] 使用代理: {proxy_url}")
+            http_client_kwargs["proxy"] = self.proxy_url
+            print("[配置] 代理已配置")
+            self._log_info("[配置] 代理已配置")
 
         # 配置 SSL 验证
         if not verify_ssl:
@@ -67,15 +72,13 @@ class LLMClient:
         http_client = httpx.Client(**http_client_kwargs)
 
         self.client = OpenAI(
-            api_key=api_key or DEFAULT_API_KEY,
-            base_url=base_url or DEFAULT_BASE_URL,
+            api_key=self.api_key,
+            base_url=self.base_url,
             http_client=http_client,
             timeout=300
         )
-        self.model = model or DEFAULT_MODEL
-        self.proxy_url = proxy_url
 
-        self._log_info(f"[初始化] LLMClient 创建完成，模型: {self.model}，Base URL: {base_url or DEFAULT_BASE_URL}")
+        self._log_info(f"[初始化] LLMClient 创建完成，模型: {self.model}，Base URL: {self.base_url}")
 
     def query_result(self, user_prompt: str, system_prompt: str = None,
                      save_path: str = None,
@@ -98,14 +101,17 @@ class LLMClient:
         start_time = time.time()
         error_msg = None
 
+        if hasattr(self, "api_key") and not self.api_key:
+            error_msg = "LLM_API_KEY is not configured"
+            self._log_info(f"[错误] {error_msg}")
+            return LLMQueryResult(error_message=error_msg)
+
         if extra_body is None:
             extra_body = {"thinking": {"type": "enabled"}}
 
-        # 豆包模型不支持 reasoning_effort 参数，但支持深度思考（thinking: enabled）
-        is_doubao = "doubao" in self.model.lower()
-        if is_doubao:
+        # Doubao's compatible endpoint does not accept reasoning_effort.
+        if "doubao" in self.model.lower():
             reasoning_effort = None
-            extra_body = {"thinking": {"type": "enabled"}}
 
         try:
             print(f"[启动] 正在调用模型: {self.model} ...")
@@ -246,17 +252,5 @@ class LLMClient:
         except Exception as e:
             print(f"[警告] 无法写入日志文件: {e}")
 
-# --- 单例模式 (可选) ---
-# 实例化一个默认客户端，方便外部直接导入使用
-# from llm_client import llm
-llm = LLMClient(verify_ssl=False, proxy_url=DEFAULT_PROXY_URL)
-
-# 豆包模型客户端单例
-# from llm_client import doubao_llm
-# llm = LLMClient(
-#     api_key=DOUBAO_API_KEY,
-#     base_url=DOUBAO_BASE_URL,
-#     model=DOUBAO_MODEL,
-#     verify_ssl=False,
-#     proxy_url=DEFAULT_PROXY_URL
-# )
+# 默认客户端在缺少本地密钥时保持可导入；首次调用会返回明确配置错误。
+llm = LLMClient()
