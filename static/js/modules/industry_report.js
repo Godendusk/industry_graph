@@ -24,6 +24,14 @@ let industryReportWorkspace = {
 };
 
 let industryReportHistoryIndex = [];
+let industryReportRequirementRewriteSeq = 0;
+
+function nextIndustryReportRequirementRewriteSeq() {
+    const workspaceSeq = Number(industryReportWorkspace?.requirementRewriteSeq) || 0;
+    industryReportRequirementRewriteSeq = Math.max(industryReportRequirementRewriteSeq, workspaceSeq) + 1;
+    industryReportWorkspace.requirementRewriteSeq = industryReportRequirementRewriteSeq;
+    return industryReportRequirementRewriteSeq;
+}
 
 const INDUSTRY_REPORT_STAGE_LABELS = {
     idle: "未开始",
@@ -483,6 +491,7 @@ function applyIndustryReportResolvedIndustry(industry, industryName) {
 function resetIndustryReportWorkspace() {
     const industry = getIndustryReportCurrentIndustry();
     const defaultTitle = getIndustryReportDefaultTitle(industry);
+    const requirementRewriteSeq = nextIndustryReportRequirementRewriteSeq();
     industryReportWorkspace = {
         historyId: "",
         currentStage: "idle",
@@ -503,7 +512,7 @@ function resetIndustryReportWorkspace() {
         rewriteMaterials: null,
         pendingRewrite: null,
         busy: false,
-        requirementRewriteSeq: 0,
+        requirementRewriteSeq,
     };
     const titleInput = document.getElementById("industry-report-title");
     if (titleInput) {
@@ -539,7 +548,7 @@ async function submitIndustryReportRequirement() {
         setIndustryReportStatus("请先输入报告标题", "error");
         return;
     }
-    industryReportWorkspace.requirementRewriteSeq = (industryReportWorkspace.requirementRewriteSeq || 0) + 1;
+    const taskCardSeq = nextIndustryReportRequirementRewriteSeq();
     setIndustryReportBusy(true, "正在理解题目与需求并生成写作任务卡...");
     clearIndustryReportStepDone(["requirement", "outline", "coordinator", "body", "review"]);
     setIndustryReportStage("idle", "正在生成写作任务卡");
@@ -548,6 +557,7 @@ async function submitIndustryReportRequirement() {
             method: "POST",
             body: JSON.stringify({ title, user_requirement: prompt, page_industry: industry }),
         });
+        if (industryReportWorkspace.requirementRewriteSeq !== taskCardSeq) return;
         industryReportWorkspace.historyId = "";
         industryReportWorkspace.userPrompt = prompt;
         industryReportWorkspace.reportTitle = title;
@@ -571,10 +581,13 @@ async function submitIndustryReportRequirement() {
             fallback ? "info" : "success",
         );
     } catch (err) {
+        if (industryReportWorkspace.requirementRewriteSeq !== taskCardSeq) return;
         setIndustryReportStage("error", "写作任务卡生成失败");
         setIndustryReportStatus(`写作任务卡生成失败：${err.message}`, "error");
     } finally {
-        setIndustryReportBusy(false);
+        if (industryReportWorkspace.requirementRewriteSeq === taskCardSeq) {
+            setIndustryReportBusy(false);
+        }
     }
 }
 
@@ -676,8 +689,7 @@ async function handleIndustryReportSelectedIndustryChange() {
     updateIndustryReportTaskCardMatch();
     const taskCard = industryReportWorkspace.taskCard;
     if (!taskCard) return;
-    const rewriteSeq = (industryReportWorkspace.requirementRewriteSeq || 0) + 1;
-    industryReportWorkspace.requirementRewriteSeq = rewriteSeq;
+    const rewriteSeq = nextIndustryReportRequirementRewriteSeq();
     const selectedIndustry = document.getElementById("industry-report-selected-industry")?.value || "";
     const requirementInput = document.getElementById("industry-report-task-requirement");
     const confirmBtn = document.getElementById("report-task-card-confirm-btn");
@@ -1657,6 +1669,7 @@ async function loadSelectedIndustryReportHistory() {
         return;
     }
     if (!record) return;
+    const requirementRewriteSeq = nextIndustryReportRequirementRewriteSeq();
     industryReportWorkspace = {
         historyId: record.id,
         currentStage: getIndustryReportStageFromRecord(record),
@@ -1677,7 +1690,7 @@ async function loadSelectedIndustryReportHistory() {
         rewriteMaterials: null,
         pendingRewrite: null,
         busy: false,
-        requirementRewriteSeq: 0,
+        requirementRewriteSeq,
     };
     const titleInput = document.getElementById("industry-report-title");
     const promptInput = document.getElementById("industry-report-prompt");

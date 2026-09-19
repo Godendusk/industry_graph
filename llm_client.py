@@ -112,6 +112,7 @@ class LLMClient:
         # Doubao's compatible endpoint does not accept reasoning_effort.
         if "doubao" in self.model.lower():
             reasoning_effort = None
+            extra_body = {"thinking": {"type": "enabled"}}
 
         try:
             print(f"[启动] 正在调用模型: {self.model} ...")

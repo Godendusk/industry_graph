@@ -28,7 +28,7 @@
 - Modify: `llm_client.py:1-207`
 - Create: `tests/test_llm_client_configuration.py`
 
-- [ ] **Step 1: Write the failing metadata tests**
+- [x] **Step 1: Write the failing metadata tests**
 
 ```python
 def test_query_result_exposes_empty_content_and_length_reason(self):
@@ -44,13 +44,13 @@ def test_query_keeps_the_existing_string_contract(self):
     self.assertEqual(_client_with_fake_completion("正文", "stop").query("需求"), "正文")
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `PYTHONPATH=. conda run -n kunlun python -m unittest tests.test_llm_client_configuration.LLMQueryResultTest -v`
 
 Expected: FAIL because `query_result()` is absent. It proves task-card code cannot currently distinguish an empty visible response from a completion stopped at its output limit.
 
-- [ ] **Step 3: Implement the additive response type**
+- [x] **Step 3: Implement the additive response type**
 
 ```python
 @dataclass(frozen=True)
@@ -72,13 +72,13 @@ def query(self, user_prompt: str, system_prompt: str | None = None, **kwargs) ->
 
 Keep provider-specific handling in the shared path. API/configuration failure fills `error_message`, rather than looking like a normal empty result.
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `PYTHONPATH=. conda run -n kunlun python -m unittest tests.test_llm_client_configuration.LLMQueryResultTest -v`
 
 Expected: PASS; requirement generation can now classify the failure from the 14:19 log.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Run: `git add llm_client.py tests/test_llm_client_configuration.py && git commit -m "feat: expose LLM completion metadata"`
 
@@ -89,7 +89,7 @@ Run: `git add llm_client.py tests/test_llm_client_configuration.py && git commit
 - Modify: `report_generation/task_card_agent.py:15-122,310-337`
 - Create: `tests/test_task_card_agent.py`
 
-- [ ] **Step 1: Write failing empty/truncated-output tests**
+- [x] **Step 1: Write failing empty/truncated-output tests**
 
 ```python
 def test_retries_empty_visible_requirement_once(self):
@@ -111,13 +111,13 @@ def test_retries_length_limited_incomplete_requirement_once(self):
     self.assertEqual(result["report_requirement"][-1], "。")
 ```
 
-- [ ] **Step 2: Run the classification tests to verify they fail**
+- [x] **Step 2: Run the classification tests to verify they fail**
 
 Run: `PYTHONPATH=. conda run -n kunlun python -m unittest tests.test_task_card_agent.ReportRequirementTest -v`
 
 Expected: FAIL. The current function makes one call, uses 1800 tokens, and accepts any nonempty partial text; the observed text ended at `关键`.
 
-- [ ] **Step 3: Write the failing valid-card preservation test**
+- [x] **Step 3: Write the failing valid-card preservation test**
 
 ```python
 def test_keeps_valid_card_after_two_requirement_failures(self):
@@ -132,13 +132,13 @@ def test_keeps_valid_card_after_two_requirement_failures(self):
     self.assertEqual(query.call_count, 3)
 ```
 
-- [ ] **Step 4: Run the preservation test to verify it fails**
+- [x] **Step 4: Run the preservation test to verify it fails**
 
 Run: `PYTHONPATH=. conda run -n kunlun python -m unittest tests.test_task_card_agent.TaskCardTest.test_keeps_valid_card_after_two_requirement_failures -v`
 
 Expected: FAIL. The current nested retry regenerates the JSON task card and then returns an error, losing valid industry/title selections.
 
-- [ ] **Step 5: Implement bounded requirement validation, retry, and fallback**
+- [x] **Step 5: Implement bounded requirement validation, retry, and fallback**
 
 ```python
 REPORT_REQUIREMENT_MAX_ATTEMPTS = 2
@@ -165,7 +165,7 @@ def _fallback_report_requirement(title: str, user_requirement: str, industry_nam
 
 Change the prompt to one 180–360 Chinese-character paragraph, final `。`, maximum four dimensions. Preserve priority `用户原始需求 > 产业方向 > 原始标题`. Retry `llm.query_result()` once with a concise correction instruction; second failure returns fallback with `source="fallback"` and warning code `report_requirement_fallback`. Do not accept known truncated output.
 
-- [ ] **Step 6: Separate JSON retry from requirement retry**
+- [x] **Step 6: Separate JSON retry from requirement retry**
 
 ```python
 # Complete current two-attempt JSON parse/normalization before requirement generation.
@@ -176,7 +176,7 @@ return {"status": "success", "task_card": task_card, "warnings": requirement_res
 
 Malformed JSON still receives one JSON retry. Once JSON is valid, requirement failure no longer regenerates or discards it.
 
-- [ ] **Step 7: Run task-card tests and commit**
+- [x] **Step 7: Run task-card tests and commit**
 
 Run: `PYTHONPATH=. conda run -n kunlun python -m unittest tests.test_task_card_agent -v`
 
@@ -192,7 +192,7 @@ Run: `git add report_generation/task_card_agent.py tests/test_task_card_agent.py
 - Modify: `static/js/modules/industry_report.js:536-565,699-731`
 - Modify: `tests/js/test_industry_report_navigation.test.js`
 
-- [ ] **Step 1: Write failing UI tests**
+- [x] **Step 1: Write failing UI tests**
 
 ```javascript
 test("task-card fallback remains editable and tells the user to confirm it", async () => {
@@ -216,13 +216,13 @@ Both mocks use this complete warning payload:
 { stage: "report_requirement", code: "report_requirement_fallback", reason: "empty_visible_content", message: "模型未返回完整报告需求，已生成可编辑基础需求，请确认后继续。" }
 ```
 
-- [ ] **Step 2: Run UI tests to verify they fail**
+- [x] **Step 2: Run UI tests to verify they fail**
 
 Run: `node --test tests/js/test_industry_report_navigation.test.js`
 
 Expected: FAIL because task-card success has a generic message and industry rewrite ignores `data.warnings`.
 
-- [ ] **Step 3: Propagate warnings and record non-sensitive metadata**
+- [x] **Step 3: Propagate warnings and record non-sensitive metadata**
 
 ```javascript
 const fallback = (data.warnings || []).find(item => item?.code === "report_requirement_fallback");
@@ -235,7 +235,7 @@ setIndustryReportStatus(
 
 Apply to initial task-card creation and industry-change rewrite; keep card fields enabled. Backend action logs read `task_card.report_requirement_source` for initial creation and `result.source` for rewrite, plus warning codes; never raw model text.
 
-- [ ] **Step 4: Run UI tests and commit**
+- [x] **Step 4: Run UI tests and commit**
 
 Run: `node --test tests/js/test_industry_report_navigation.test.js`
 
@@ -257,7 +257,7 @@ Run: `git add backend_server.py static/js/modules/industry_report.js tests/js/te
 
 The key owner revokes/regenerates the currently exposed DeepSeek and Doubao keys in provider consoles. Removing literals does not erase Git history, copied logs, or screenshots. Do not commit a new key, `.env`, terminal output containing one, or key-bearing test data.
 
-- [ ] **Step 2: Write failing environment/TLS tests**
+- [x] **Step 2: Write failing environment/TLS tests**
 
 ```python
 def test_client_reads_environment_and_verifies_tls_by_default(self):
@@ -273,13 +273,13 @@ def test_missing_key_returns_configuration_error_before_request(self):
     self.assertEqual(result.error_message, "LLM_API_KEY is not configured")
 ```
 
-- [ ] **Step 3: Run configuration tests to verify they fail**
+- [x] **Step 3: Run configuration tests to verify they fail**
 
 Run: `PYTHONPATH=. conda run -n kunlun python -m unittest tests.test_llm_client_configuration.LLMEnvironmentConfigurationTest -v`
 
 Expected: FAIL because the current module embeds credentials and the singleton uses `verify_ssl=False`.
 
-- [ ] **Step 4: Implement environment-only configuration**
+- [x] **Step 4: Implement environment-only configuration**
 
 ```python
 from dotenv import load_dotenv
@@ -300,7 +300,7 @@ LLM_MODEL=deepseek-v4-flash
 # LLM_PROXY_URL=
 ```
 
-- [ ] **Step 5: Update deployment guide, verify, and commit**
+- [x] **Step 5: Update deployment guide, verify, and commit**
 
 Update `DEPLOYMENT.md`: copy `.env.example` to `.env`, paste a newly rotated key, restart Flask, document PowerShell and macOS/Linux environment-variable alternatives, and state TLS verification is on by default.
 
@@ -316,7 +316,7 @@ Run: `git add llm_client.py environment.yml .env.example DEPLOYMENT.md tests/tes
 
 - No new production files.
 
-- [ ] **Step 1: Run the focused regression suite**
+- [x] **Step 1: Run the focused regression suite**
 
 Run: `PYTHONPATH=. conda run -n kunlun python -m unittest tests.test_task_card_agent tests.test_llm_client_configuration tests.test_direct_outline_json_recovery tests.test_report_rag_modes tests.test_embodied_news_rag tests.test_coordinator_stability -v && node --test tests/js/test_industry_report_navigation.test.js`
 

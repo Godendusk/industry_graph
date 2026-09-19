@@ -487,3 +487,264 @@ test("a stale industry rewrite cannot overwrite a newly submitted task card", as
     assert.equal(elements["industry-report-task-requirement"].disabled, false);
     assert.equal(elements["report-task-card-confirm-btn"].disabled, false);
 });
+
+test("a reset cannot reuse a rewrite sequence held by a pending industry rewrite", async () => {
+    const { context } = loadReportScript();
+    const classList = createClassList();
+    const elements = {
+        "industry-report-prompt": { value: "新的用户需求" },
+        "industry-report-title": { value: "新任务卡标题", placeholder: "" },
+        "industry-report-task-card-section": { classList },
+        "industry-report-selected-industry": { value: "embodied" },
+        "industry-report-task-title": { value: "旧任务卡标题" },
+        "industry-report-task-requirement": { value: "旧需求", disabled: false },
+        "report-task-card-confirm-btn": { disabled: false, classList },
+    };
+    let resolveRewrite;
+    const rewriteResponse = new Promise(resolve => {
+        resolveRewrite = resolve;
+    });
+    let resolveTaskCard;
+    const taskCardResponse = new Promise(resolve => {
+        resolveTaskCard = resolve;
+    });
+    context.API_BASE = "";
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async url => {
+        if (url === "/api/report/task-card/rewrite-requirement") return rewriteResponse;
+        if (url === "/api/report/task-card") return taskCardResponse;
+        return {
+            ok: true,
+            async json() {
+                return { status: "success", items: [] };
+            },
+        };
+    };
+    vm.runInContext(`
+        industryReportWorkspace.taskCard = {
+            original_title: "旧任务卡标题",
+            selected_title: "旧任务卡标题",
+            original_requirement: "旧需求",
+            report_requirement: "旧需求",
+            industry_matches: [{ key: "embodied", name: "具身智能", graph_available: true }],
+        };
+    `, context);
+
+    const staleRewrite = context.handleIndustryReportSelectedIndustryChange();
+    await Promise.resolve();
+    context.resetIndustryReportWorkspace();
+    const newSubmission = context.submitIndustryReportRequirement();
+    await Promise.resolve();
+
+    assert.equal(elements["industry-report-task-requirement"].disabled, true);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, true);
+
+    resolveRewrite({
+        ok: true,
+        async json() {
+            return {
+                status: "success",
+                report_requirement: "旧产业切换请求的需求。",
+                warnings: [],
+            };
+        },
+    });
+    await staleRewrite;
+
+    assert.equal(vm.runInContext("industryReportWorkspace.taskCard", context), null);
+    assert.equal(elements["industry-report-task-requirement"].value, "");
+    assert.equal(elements["industry-report-task-requirement"].disabled, true);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, true);
+
+    resolveTaskCard({
+        ok: true,
+        async json() {
+            return {
+                status: "success",
+                task_card: {
+                    original_title: "新任务卡标题",
+                    selected_title: "新任务卡标题",
+                    report_requirement: "新任务卡需求。",
+                    selected_industry: "ai",
+                },
+                warnings: [],
+            };
+        },
+    });
+    await newSubmission;
+
+    assert.equal(
+        vm.runInContext("industryReportWorkspace.taskCard.report_requirement", context),
+        "新任务卡需求。",
+    );
+    assert.equal(elements["industry-report-task-requirement"].disabled, false);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, false);
+});
+
+test("a stale task-card success cannot overwrite or unlock a reset workspace", async () => {
+    const { calls, context } = loadReportScript();
+    const classList = createClassList();
+    const elements = {
+        "industry-report-prompt": { value: "任务卡 A 的需求" },
+        "industry-report-title": { value: "任务卡 A 的标题", placeholder: "" },
+        "industry-report-task-card-section": { classList },
+        "industry-report-task-requirement": { value: "", disabled: false },
+        "report-task-card-confirm-btn": { disabled: false, classList },
+        "report-outline-btn": { disabled: false, classList },
+    };
+    let resolveFirstTaskCard;
+    const firstTaskCardResponse = new Promise(resolve => {
+        resolveFirstTaskCard = resolve;
+    });
+    let resolveSecondTaskCard;
+    const secondTaskCardResponse = new Promise(resolve => {
+        resolveSecondTaskCard = resolve;
+    });
+    let taskCardRequestCount = 0;
+    context.API_BASE = "";
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async url => {
+        if (url === "/api/report/task-card") {
+            taskCardRequestCount += 1;
+            return taskCardRequestCount === 1 ? firstTaskCardResponse : secondTaskCardResponse;
+        }
+        return {
+            ok: true,
+            async json() {
+                return { status: "success", items: [] };
+            },
+        };
+    };
+
+    const firstSubmission = context.submitIndustryReportRequirement();
+    await Promise.resolve();
+    context.resetIndustryReportWorkspace();
+    elements["industry-report-prompt"].value = "任务卡 B 的需求";
+    elements["industry-report-title"].value = "任务卡 B 的标题";
+    const secondSubmission = context.submitIndustryReportRequirement();
+    await Promise.resolve();
+    const statusCountBeforeFirstResponse = calls.statuses.length;
+
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, true);
+    assert.equal(elements["report-outline-btn"].disabled, true);
+
+    resolveFirstTaskCard({
+        ok: true,
+        async json() {
+            return {
+                status: "success",
+                task_card: {
+                    selected_title: "任务卡 A 的标题",
+                    report_requirement: "任务卡 A 的需求。",
+                    selected_industry: "ai",
+                },
+                warnings: [],
+            };
+        },
+    });
+    await firstSubmission;
+
+    assert.equal(vm.runInContext("industryReportWorkspace.taskCard", context), null);
+    assert.equal(calls.statuses.length, statusCountBeforeFirstResponse);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, true);
+    assert.equal(elements["report-outline-btn"].disabled, true);
+
+    resolveSecondTaskCard({
+        ok: true,
+        async json() {
+            return {
+                status: "success",
+                task_card: {
+                    selected_title: "任务卡 B 的标题",
+                    report_requirement: "任务卡 B 的需求。",
+                    selected_industry: "ai",
+                },
+                warnings: [],
+            };
+        },
+    });
+    await secondSubmission;
+
+    assert.equal(
+        vm.runInContext("industryReportWorkspace.taskCard.report_requirement", context),
+        "任务卡 B 的需求。",
+    );
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, false);
+    assert.equal(elements["report-outline-btn"].disabled, false);
+});
+
+test("a stale task-card failure cannot update or unlock a newer submission", async () => {
+    const { calls, context } = loadReportScript();
+    const classList = createClassList();
+    const elements = {
+        "industry-report-prompt": { value: "任务卡 A 的需求" },
+        "industry-report-title": { value: "任务卡 A 的标题", placeholder: "" },
+        "industry-report-task-card-section": { classList },
+        "industry-report-task-requirement": { value: "", disabled: false },
+        "report-task-card-confirm-btn": { disabled: false, classList },
+        "report-outline-btn": { disabled: false, classList },
+    };
+    let rejectFirstTaskCard;
+    const firstTaskCardResponse = new Promise((_resolve, reject) => {
+        rejectFirstTaskCard = reject;
+    });
+    let resolveSecondTaskCard;
+    const secondTaskCardResponse = new Promise(resolve => {
+        resolveSecondTaskCard = resolve;
+    });
+    let taskCardRequestCount = 0;
+    context.API_BASE = "";
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async url => {
+        if (url === "/api/report/task-card") {
+            taskCardRequestCount += 1;
+            return taskCardRequestCount === 1 ? firstTaskCardResponse : secondTaskCardResponse;
+        }
+        return {
+            ok: true,
+            async json() {
+                return { status: "success", items: [] };
+            },
+        };
+    };
+
+    const firstSubmission = context.submitIndustryReportRequirement();
+    await Promise.resolve();
+    context.resetIndustryReportWorkspace();
+    elements["industry-report-prompt"].value = "任务卡 B 的需求";
+    elements["industry-report-title"].value = "任务卡 B 的标题";
+    const secondSubmission = context.submitIndustryReportRequirement();
+    await Promise.resolve();
+    const statusCountBeforeFirstFailure = calls.statuses.length;
+
+    rejectFirstTaskCard(new Error("任务卡 A 已失败"));
+    await firstSubmission;
+
+    assert.equal(vm.runInContext("industryReportWorkspace.taskCard", context), null);
+    assert.equal(calls.statuses.length, statusCountBeforeFirstFailure);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, true);
+    assert.equal(elements["report-outline-btn"].disabled, true);
+
+    resolveSecondTaskCard({
+        ok: true,
+        async json() {
+            return {
+                status: "success",
+                task_card: {
+                    selected_title: "任务卡 B 的标题",
+                    report_requirement: "任务卡 B 的需求。",
+                    selected_industry: "ai",
+                },
+                warnings: [],
+            };
+        },
+    });
+    await secondSubmission;
+
+    assert.equal(
+        vm.runInContext("industryReportWorkspace.taskCard.report_requirement", context),
+        "任务卡 B 的需求。",
+    );
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, false);
+    assert.equal(elements["report-outline-btn"].disabled, false);
+});

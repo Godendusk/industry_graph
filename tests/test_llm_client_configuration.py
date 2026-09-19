@@ -81,7 +81,7 @@ class LLMClientQueryResultTest(unittest.TestCase):
         self.assertIsNot(first_extra_body, second_extra_body)
         self.assertEqual(second_extra_body, {"thinking": {"type": "enabled"}})
 
-    def test_doubao_model_omits_reasoning_effort(self):
+    def test_doubao_model_forces_thinking_and_omits_reasoning_effort(self):
         response = SimpleNamespace(
             choices=[SimpleNamespace(
                 message=SimpleNamespace(content="正常正文"),
@@ -92,9 +92,10 @@ class LLMClientQueryResultTest(unittest.TestCase):
         client = self._client_with_response(response)
         client.model = "doubao-seed-test"
 
-        client.query_result("测试请求")
+        client.query_result("测试请求", extra_body={"thinking": {"type": "disabled"}})
 
         request = client.client.chat.completions.calls[0]
+        self.assertEqual(request["extra_body"], {"thinking": {"type": "enabled"}})
         self.assertNotIn("reasoning_effort", request)
 
     def test_query_preserves_legacy_nonempty_string_contract(self):
