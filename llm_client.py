@@ -6,6 +6,8 @@ import time
 from datetime import datetime
 import httpx
 import socket
+from dataclasses import dataclass
+from typing import Optional
 
 # --- 配置区域 (修改这里即可全局生效) ---
 DEFAULT_API_KEY = "sk-6874e578bf2f49e38f8dbbccc333f87d"  # 建议使用 os.getenv("DEEPSEEK_API_KEY") 获取
@@ -24,6 +26,14 @@ DOUBAO_API_KEY = "3966fdf0-8f7d-4e83-8366-eea4a41db3a7"
 DOUBAO_BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
 DOUBAO_MODEL = "doubao-seed-2-0-pro-260215"
 
+
+@dataclass(frozen=True)
+class LLMQueryResult:
+    content: str = ""
+    finish_reason: str = ""
+    prompt_tokens: Optional[int] = None
+    completion_tokens: Optional[int] = None
+    error_message: str = ""
 
 
 class LLMClient:
@@ -67,13 +77,13 @@ class LLMClient:
 
         self._log_info(f"[初始化] LLMClient 创建完成，模型: {self.model}，Base URL: {base_url or DEFAULT_BASE_URL}")
 
-    def query(self, user_prompt: str, system_prompt: str = None,
-              save_path: str = None,
-              temperature: float = DEFAULT_TEMPERATURE,
-              max_tokens: int = DEFAULT_MAX_TOKENS,
-              reasoning_effort="high",
-              extra_body={"thinking": {"type": "enabled"}},
-              extra_log_info: str = None) -> str:
+    def query_result(self, user_prompt: str, system_prompt: str = None,
+                     save_path: str = None,
+                     temperature: float = DEFAULT_TEMPERATURE,
+                     max_tokens: int = DEFAULT_MAX_TOKENS,
+                     reasoning_effort="high",
+                     extra_body=None,
+                     extra_log_info: str = None) -> LLMQueryResult:
         """
         通用的 LLM 调用函数
 
@@ -83,10 +93,13 @@ class LLMClient:
         :param temperature: 温度参数
         :param max_tokens: 最大 token 数
         :param extra_log_info: (可选) 用户需要记录的额外日志信息
-        :return: 模型返回的文本内容 (如果出错返回 None)
+        :return: 模型返回的正文、结束原因、token 用量及错误信息
         """
         start_time = time.time()
         error_msg = None
+
+        if extra_body is None:
+            extra_body = {"thinking": {"type": "enabled"}}
 
         # 豆包模型不支持 reasoning_effort 参数，但支持深度思考（thinking: enabled）
         is_doubao = "doubao" in self.model.lower()
@@ -116,23 +129,35 @@ class LLMClient:
 
             response = self.client.chat.completions.create(**create_kwargs)
 
-            content = response.choices[0].message.content
+            choice = response.choices[0]
+            content = choice.message.content or ""
+            finish_reason = getattr(choice, "finish_reason", "") or ""
             # 记录 token 用量
             usage = getattr(response, "usage", None)
-            usage_info = ""
-            if usage:
-                usage_info = f"，prompt_tokens={usage.prompt_tokens}，completion_tokens={usage.completion_tokens}，total_tokens={usage.total_tokens}"
+            prompt_tokens = getattr(usage, "prompt_tokens", None) if usage else None
+            completion_tokens = getattr(usage, "completion_tokens", None) if usage else None
+            total_tokens = getattr(usage, "total_tokens", None) if usage else None
+            usage_info = (
+                f"，finish_reason={finish_reason or 'unknown'}"
+                f"，prompt_tokens={prompt_tokens}，completion_tokens={completion_tokens}"
+                f"，total_tokens={total_tokens}，visible_chars={len(content)}"
+            )
 
             end_time = time.time()
             duration_ms = (end_time - start_time) * 1000
 
             print(f"[成功] 模型调用成功，耗时 {duration_ms:.2f} ms")
             self._log_info(f"[成功] 模型调用成功，耗时 {duration_ms:.2f} ms{usage_info}")
-            # 如果指定了保存路径，则写入文件
-            if save_path:
+            # 如果指定了保存路径，则写入非空内容
+            if save_path and content:
                 self._save_to_file(content, save_path)
 
-            return content
+            return LLMQueryResult(
+                content=content,
+                finish_reason=finish_reason,
+                prompt_tokens=prompt_tokens,
+                completion_tokens=completion_tokens,
+            )
 
         except APIConnectionError as e:
             error_msg = f"连接服务器失败: {str(e)}"
@@ -156,7 +181,27 @@ class LLMClient:
             duration_ms = (end_time - start_time) * 1000
             self._log_info(f"[结束] 模型: {self.model}，耗时: {duration_ms:.2f} ms，结果: {'失败' if error_msg else '成功'}，额外信息: {extra_log_info or '无'}")
 
-        return None
+        return LLMQueryResult(error_message=error_msg or "未知错误")
+
+    def query(self, user_prompt: str, system_prompt: str = None,
+              save_path: str = None,
+              temperature: float = DEFAULT_TEMPERATURE,
+              max_tokens: int = DEFAULT_MAX_TOKENS,
+              reasoning_effort="high",
+              extra_body=None,
+              extra_log_info: str = None) -> Optional[str]:
+        """兼容既有调用：仅在模型返回非空正文时返回字符串。"""
+        result = self.query_result(
+            user_prompt=user_prompt,
+            system_prompt=system_prompt,
+            save_path=save_path,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            reasoning_effort=reasoning_effort,
+            extra_body=extra_body,
+            extra_log_info=extra_log_info,
+        )
+        return result.content or None
 
     def _save_to_file(self, content: str, filepath: str):
         """内部辅助函数：保存文件"""
