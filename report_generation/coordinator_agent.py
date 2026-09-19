@@ -16,6 +16,7 @@ from .industry_config import SUPPORTED_INDUSTRIES
 
 
 DEFAULT_TOP_K = 10
+DEFAULT_MAX_COORDINATOR_WORKERS = 3
 
 
 def generate_writing_tasks(
@@ -48,7 +49,8 @@ def generate_writing_tasks(
 
     writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
     warning_groups: List[List[dict]] = [[] for _ in final_subsections]
-    with ThreadPoolExecutor(max_workers=len(final_subsections)) as executor:
+    worker_count = min(DEFAULT_MAX_COORDINATOR_WORKERS, len(final_subsections))
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
         future_to_index = {
             executor.submit(
                 _generate_writing_task_for_subsection,
