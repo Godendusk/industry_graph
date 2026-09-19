@@ -12,6 +12,14 @@ from .industry_config import INDUSTRY_CONFIG, resolve_supported_industry
 from .structured_output import clean_text, clean_text_list, parse_json_object
 
 
+TASK_CARD_MAX_ATTEMPTS = 2
+REPORT_REQUIREMENT_MAX_ATTEMPTS = 2
+REPORT_REQUIREMENT_MAX_TOKENS = 900
+REPORT_REQUIREMENT_MIN_CHARS = 180
+REPORT_REQUIREMENT_MAX_CHARS = 360
+REPORT_REQUIREMENT_FALLBACK_MESSAGE = "模型未返回完整报告需求，已生成可编辑基础需求，请确认后继续。"
+
+
 def generate_writing_task_card(
     title: str,
     user_requirement: str = "",
@@ -26,15 +34,21 @@ def generate_writing_task_card(
     normalized_page_industry = clean_text(page_industry)
     if not original_title:
         return _error("title cannot be empty")
+    page_industry_match = resolve_supported_industry(normalized_page_industry)
+    if normalized_page_industry and normalized_page_industry not in INDUSTRY_CONFIG:
+        if not page_industry_match.get("key"):
+            return _error(f"unsupported industry: {normalized_page_industry}")
+        normalized_page_industry = page_industry_match["key"]
 
     # task card 是“大纲生成”前的人工确认层：先让模型整理，再允许前端编辑确认。
     validation_error = ""
     raw_output = ""
     # 结构化输出偶尔会缺字段或 JSON 格式不完整，失败后带上校验错误重试一次。
-    for attempt in range(2):
+    task_card = None
+    for attempt in range(TASK_CARD_MAX_ATTEMPTS):
         try:
             # 调用大模型生成任务卡 JSON 输出
-            raw_output = llm.query(
+            query_result = llm.query_result(
                 user_prompt=_build_user_prompt(
                     original_title,
                     requirement,
@@ -44,7 +58,10 @@ def generate_writing_task_card(
                 system_prompt=_build_system_prompt(),
                 max_tokens=3000,
                 extra_log_info=f"report_generation.task_card_agent attempt={attempt + 1}",
-            ) or ""
+            )
+            raw_output = clean_text(query_result.content)
+            if query_result.error_message:
+                raise ValueError("task card model request failed")
             # 解析 JSON 输出并做字段校验
             data = parse_json_object(raw_output)
             # 规范化任务卡数据结构
@@ -54,24 +71,28 @@ def generate_writing_task_card(
                 original_requirement=requirement,
                 page_industry=normalized_page_industry,
             )
-            # report_requirement 单独生成，避免任务卡 JSON 过长导致结构化字段不稳定。
-            requirement_result = generate_report_requirement(
-                title=original_title,
-                user_requirement=requirement,
-                industry=task_card.get("selected_industry", ""),
-                industry_name=task_card.get("selected_industry_name", ""),
-            )
-            if requirement_result.get("status") != "success":
-                raise ValueError(requirement_result.get("message", "report_requirement generation failed"))
-            task_card["report_requirement"] = requirement_result["report_requirement"]
-            return {"status": "success", "task_card": task_card, "warnings": []}
+            break
         except Exception as exc:
             validation_error = str(exc)
 
-    return _error(
-        f"task card structured output failed after retry: {validation_error}",
-        raw_output=raw_output,
+    if task_card is None:
+        return _error(
+            f"task card structured output failed after retry: {validation_error}",
+            raw_output=raw_output,
+        )
+
+    # 任务卡 JSON 已有效时，需求生成必须独立重试，不能因需求正文失败而重新生成或丢弃任务卡。
+    requirement_result = generate_report_requirement(
+        title=original_title,
+        user_requirement=requirement,
+        industry=task_card.get("selected_industry", ""),
+        industry_name=task_card.get("selected_industry_name", ""),
     )
+    if requirement_result.get("status") != "success":
+        return requirement_result
+    task_card["report_requirement"] = requirement_result["report_requirement"]
+    task_card["report_requirement_source"] = requirement_result["source"]
+    return {"status": "success", "task_card": task_card, "warnings": requirement_result["warnings"]}
 
 
 def generate_report_requirement(
@@ -96,30 +117,80 @@ def generate_report_requirement(
     if normalized_industry not in INDUSTRY_CONFIG:
         return _error(f"unsupported industry: {normalized_industry}")
 
-    # 这里输出的是后续 outline 规划可直接消费的一段自然语言需求，不再要求 JSON。
-    raw_output = llm.query(
-        user_prompt=_build_report_requirement_prompt(
-            title=normalized_title,
-            user_requirement=normalized_requirement,
-            industry=normalized_industry,
-            industry_name=normalized_industry_name,
-        ),
-        system_prompt=_build_report_requirement_system_prompt(),
-        max_tokens=1800,
-        extra_log_info="report_generation.task_card_agent generate_report_requirement",
-    ) or ""
-    # 大模型输出可能带首尾空白或空内容，统一清洗后再判断是否可用。
-    report_requirement = clean_text(raw_output)
-    if not report_requirement:
-        return _error("report_requirement is empty", raw_output=raw_output)
-    # 返回行业信息便于调用方记录本次需求生成所依据的产业上下文。
+    failure_reason = ""
+    for attempt in range(REPORT_REQUIREMENT_MAX_ATTEMPTS):
+        result = llm.query_result(
+            user_prompt=_build_report_requirement_prompt(
+                title=normalized_title,
+                user_requirement=normalized_requirement,
+                industry=normalized_industry,
+                industry_name=normalized_industry_name,
+                retry=attempt > 0,
+            ),
+            system_prompt=_build_report_requirement_system_prompt(),
+            max_tokens=REPORT_REQUIREMENT_MAX_TOKENS,
+            reasoning_effort=None,
+            extra_body={"thinking": {"type": "disabled"}},
+            extra_log_info=(
+                "report_generation.task_card_agent generate_report_requirement "
+                f"attempt={attempt + 1}"
+            ),
+        )
+        report_requirement = clean_text(result.content)
+        failure_reason = _requirement_failure_reason(result, report_requirement)
+        if not failure_reason:
+            return {
+                "status": "success",
+                "report_requirement": report_requirement,
+                "industry": normalized_industry,
+                "industry_name": normalized_industry_name,
+                "source": "model" if attempt == 0 else "model_retry",
+                "warnings": [],
+            }
+
+    # 两次模型尝试都未提供可用正文时，仍保留用户可编辑的确定性本地需求。
     return {
         "status": "success",
-        "report_requirement": report_requirement,
+        "report_requirement": _fallback_report_requirement(
+            normalized_title,
+            normalized_requirement,
+            normalized_industry_name,
+        ),
         "industry": normalized_industry,
         "industry_name": normalized_industry_name,
-        "warnings": [],
+        "source": "fallback",
+        "warnings": [{
+            "stage": "report_requirement",
+            "code": "report_requirement_fallback",
+            "reason": failure_reason,
+            "message": REPORT_REQUIREMENT_FALLBACK_MESSAGE,
+        }],
     }
+
+
+def _requirement_failure_reason(result: Any, text: str) -> str:
+    """Classify model output without treating a completed request as usable by default."""
+    if clean_text(getattr(result, "error_message", "")):
+        return "llm_request_failed"
+    if clean_text(getattr(result, "finish_reason", "")).lower() == "length":
+        return "truncated"
+    if not text:
+        return "empty_visible_content"
+    if len(text) > REPORT_REQUIREMENT_MAX_CHARS:
+        return "truncated"
+    if len(text) < REPORT_REQUIREMENT_MIN_CHARS or text[-1] != "。":
+        return "incomplete"
+    return ""
+
+
+def _fallback_report_requirement(title: str, user_requirement: str, industry_name: str) -> str:
+    """Create an editable local requirement while preserving the user's stated priority."""
+    primary_requirement = user_requirement or f"围绕《{title}》开展研究"
+    return (
+        f"围绕{industry_name}产业，{primary_requirement}。"
+        "请明确研究对象、时间范围、核心分析维度和数据口径，"
+        "不纳入用户未要求的延伸议题，并形成可直接用于后续大纲规划的报告需求。"
+    )
 
 
 def _normalize_task_card(
@@ -310,8 +381,9 @@ def _build_user_prompt(
 def _build_report_requirement_system_prompt() -> str:
     # system prompt 负责限定角色、优先级和输出形态，防止模型额外输出标题或解释。
     return f"""你是企业产业洞察报告的写作任务生成助手。你只负责生成 report_requirement。
+只输出恰好一段 180 至 360 个中文字符的正文，最后一个字符必须是“。”。
 报告需求必须忠实保留用户明确的研究对象、范围、重点、篇幅和禁止扩展项，可补足表达但不得擅自增加任务。
-report_requirement 要写成一段完整、明确、可直接用于后续大纲规划的写作需求，包含研究对象、核心问题、重点分析维度、边界排除和输出口径。
+report_requirement 要写成一段完整、明确、可直接用于后续大纲规划的写作需求，包含研究对象、核心问题、最多四个重点分析维度、边界排除和输出口径。
 如果用户提出“排除、不得、不包含、不分析”等边界，必须明确写入 report_requirement，且不得把被排除方向作为产业组成部分、案例或趋势展开。
 如果用户没有给出额外需求，则依据原始标题自动推导合理的研究任务，生成完整 report_requirement，禁止直接填写“无补充需求”作为任务书内容。
 报告需求要符合企业产业洞察报告风格：严谨、克制、问题导向或趋势研判导向，避免学生论文式、模板化和夸张营销表述。
@@ -327,14 +399,18 @@ def _build_report_requirement_prompt(
     user_requirement: str,
     industry: str,
     industry_name: str,
+    retry: bool = False,
 ) -> str:
     # user prompt 只传递本次任务的变量信息，具体写作规则由 system prompt 统一约束。
+    retry_instruction = ""
+    if retry:
+        retry_instruction = "\n上次正文为空或不完整。请直接输出一段完整正文，务必以“。”结束。"
     return f"""请根据以下信息生成报告需求。
 用户原始需求：{user_requirement or '无补充需求'}
 产业方向：{industry_name}（系统产业键：{industry}）
 用户原始标题：{title}
 
-请严格按“用户原始需求 > 产业方向 > 用户原始标题”的优先级生成。"""
+请严格按“用户原始需求 > 产业方向 > 用户原始标题”的优先级生成。{retry_instruction}"""
 
 
 

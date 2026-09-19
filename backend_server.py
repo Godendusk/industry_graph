@@ -257,7 +257,23 @@ def report_task_card():
         "report_task_card",
         result.get("status", "error"),
         result.get("message", ""),
-        {"title": title, "page_industry": page_industry, "task_card": result.get("task_card")},
+        {
+            "title": title,
+            "page_industry": page_industry,
+            "selected_industry": (
+                result.get("task_card", {}).get("selected_industry", "")
+                if isinstance(result.get("task_card"), dict) else ""
+            ),
+            "requirement_source": (
+                result.get("task_card", {}).get("report_requirement_source", "")
+                if isinstance(result.get("task_card"), dict) else ""
+            ),
+            "warning_codes": [
+                str(item.get("code") or "")
+                for item in result.get("warnings", [])
+                if isinstance(item, dict) and item.get("code")
+            ],
+        },
     )
     if result.get("status") != "success":
         return jsonify(result), 400
@@ -287,7 +303,17 @@ def report_task_card_rewrite_requirement():
         "report_task_card_rewrite_requirement",
         result.get("status", "error"),
         result.get("message", ""),
-        {"title": title, "industry": industry, "industry_name": industry_name},
+        {
+            "title": title,
+            "industry": industry,
+            "industry_name": industry_name,
+            "requirement_source": result.get("source", ""),
+            "warning_codes": [
+                str(item.get("code") or "")
+                for item in result.get("warnings", [])
+                if isinstance(item, dict) and item.get("code")
+            ],
+        },
     )
     if result.get("status") != "success":
         return jsonify(result), 400

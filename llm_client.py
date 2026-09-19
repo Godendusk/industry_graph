@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from openai import OpenAI
 from openai import APIConnectionError, RateLimitError, APIStatusError
 import json
@@ -6,29 +7,43 @@ import time
 from datetime import datetime
 import httpx
 import socket
+from dataclasses import dataclass
+from typing import Optional
+from dotenv import load_dotenv
 
-# --- 配置区域 (修改这里即可全局生效) ---
-DEFAULT_API_KEY = "sk-6874e578bf2f49e38f8dbbccc333f87d"  # 建议使用 os.getenv("DEEPSEEK_API_KEY") 获取
-DEFAULT_BASE_URL = "https://api.deepseek.com"
-# DEFAULT_API_KEY = "sk-b54b7d16afcf46499c2dac95b7a04d00"
-# DEFAULT_BASE_URL = "https://e.cnpc.com.cn/klzm-ai-proxy"
-DEFAULT_MODEL = "deepseek-v4-flash"
+load_dotenv(Path(__file__).with_name(".env"))
+
+# --- 默认配置（可由本地 .env 或环境变量覆盖） ---
+DEFAULT_API_KEY = os.getenv("LLM_API_KEY", "").strip()
+DEFAULT_BASE_URL = os.getenv("LLM_BASE_URL", "https://api.deepseek.com").strip() or "https://api.deepseek.com"
+DEFAULT_MODEL = os.getenv("LLM_MODEL", "deepseek-v4-flash").strip() or "deepseek-v4-flash"
 DEFAULT_TEMPERATURE = 0
 DEFAULT_MAX_TOKENS = 5000
+DEFAULT_PROXY_URL = os.getenv("LLM_PROXY_URL", "").strip() or None
 
-# DEFAULT_PROXY_URL = 'http://10.22.98.21:8080'
-DEFAULT_PROXY_URL = None
 
-# --- 豆包模型配置 ---
-DOUBAO_API_KEY = "3966fdf0-8f7d-4e83-8366-eea4a41db3a7"
-DOUBAO_BASE_URL = "https://ark.cn-beijing.volces.com/api/v3"
-DOUBAO_MODEL = "doubao-seed-2-0-pro-260215"
-
+@dataclass(frozen=True)
+class LLMQueryResult:
+    content: str = ""
+    finish_reason: str = ""
+    prompt_tokens: Optional[int] = None
+    completion_tokens: Optional[int] = None
+    error_message: str = ""
 
 
 class LLMClient:
     def __init__(self, api_key=None, base_url=None, model=None, proxy_url=None, verify_ssl=True):
         self._log_info("[初始化] LLMClient 开始创建")
+
+        self.api_key = (api_key if api_key is not None else os.getenv("LLM_API_KEY", DEFAULT_API_KEY) or "").strip()
+        self.base_url = (base_url if base_url is not None else os.getenv("LLM_BASE_URL", DEFAULT_BASE_URL) or DEFAULT_BASE_URL).strip()
+        self.model = (model if model is not None else os.getenv("LLM_MODEL", DEFAULT_MODEL) or DEFAULT_MODEL).strip()
+        self.proxy_url = proxy_url if proxy_url is not None else (os.getenv("LLM_PROXY_URL", DEFAULT_PROXY_URL or "").strip() or None)
+        self.client = None
+
+        if not self.api_key:
+            self._log_info("[初始化] 未配置 LLM_API_KEY；将在调用时返回配置错误")
+            return
 
         # 配置 HTTP 客户端
         http_client = None
@@ -39,11 +54,11 @@ class LLMClient:
         }
 
         # 配置代理（如果提供了代理URL）
-        if proxy_url:
+        if self.proxy_url:
             # httpx 0.28.1 使用 'proxy' 参数（单数）
-            http_client_kwargs["proxy"] = proxy_url
-            print(f"[配置] 使用代理: {proxy_url}")
-            self._log_info(f"[配置] 使用代理: {proxy_url}")
+            http_client_kwargs["proxy"] = self.proxy_url
+            print("[配置] 代理已配置")
+            self._log_info("[配置] 代理已配置")
 
         # 配置 SSL 验证
         if not verify_ssl:
@@ -57,23 +72,21 @@ class LLMClient:
         http_client = httpx.Client(**http_client_kwargs)
 
         self.client = OpenAI(
-            api_key=api_key or DEFAULT_API_KEY,
-            base_url=base_url or DEFAULT_BASE_URL,
+            api_key=self.api_key,
+            base_url=self.base_url,
             http_client=http_client,
             timeout=300
         )
-        self.model = model or DEFAULT_MODEL
-        self.proxy_url = proxy_url
 
-        self._log_info(f"[初始化] LLMClient 创建完成，模型: {self.model}，Base URL: {base_url or DEFAULT_BASE_URL}")
+        self._log_info(f"[初始化] LLMClient 创建完成，模型: {self.model}，Base URL: {self.base_url}")
 
-    def query(self, user_prompt: str, system_prompt: str = None,
-              save_path: str = None,
-              temperature: float = DEFAULT_TEMPERATURE,
-              max_tokens: int = DEFAULT_MAX_TOKENS,
-              reasoning_effort="high",
-              extra_body={"thinking": {"type": "enabled"}},
-              extra_log_info: str = None) -> str:
+    def query_result(self, user_prompt: str, system_prompt: str = None,
+                     save_path: str = None,
+                     temperature: float = DEFAULT_TEMPERATURE,
+                     max_tokens: int = DEFAULT_MAX_TOKENS,
+                     reasoning_effort="high",
+                     extra_body=None,
+                     extra_log_info: str = None) -> LLMQueryResult:
         """
         通用的 LLM 调用函数
 
@@ -83,14 +96,21 @@ class LLMClient:
         :param temperature: 温度参数
         :param max_tokens: 最大 token 数
         :param extra_log_info: (可选) 用户需要记录的额外日志信息
-        :return: 模型返回的文本内容 (如果出错返回 None)
+        :return: 模型返回的正文、结束原因、token 用量及错误信息
         """
         start_time = time.time()
         error_msg = None
 
-        # 豆包模型不支持 reasoning_effort 参数，但支持深度思考（thinking: enabled）
-        is_doubao = "doubao" in self.model.lower()
-        if is_doubao:
+        if hasattr(self, "api_key") and not self.api_key:
+            error_msg = "LLM_API_KEY is not configured"
+            self._log_info(f"[错误] {error_msg}")
+            return LLMQueryResult(error_message=error_msg)
+
+        if extra_body is None:
+            extra_body = {"thinking": {"type": "enabled"}}
+
+        # Doubao's compatible endpoint does not accept reasoning_effort.
+        if "doubao" in self.model.lower():
             reasoning_effort = None
             extra_body = {"thinking": {"type": "enabled"}}
 
@@ -116,23 +136,35 @@ class LLMClient:
 
             response = self.client.chat.completions.create(**create_kwargs)
 
-            content = response.choices[0].message.content
+            choice = response.choices[0]
+            content = choice.message.content or ""
+            finish_reason = getattr(choice, "finish_reason", "") or ""
             # 记录 token 用量
             usage = getattr(response, "usage", None)
-            usage_info = ""
-            if usage:
-                usage_info = f"，prompt_tokens={usage.prompt_tokens}，completion_tokens={usage.completion_tokens}，total_tokens={usage.total_tokens}"
+            prompt_tokens = getattr(usage, "prompt_tokens", None) if usage else None
+            completion_tokens = getattr(usage, "completion_tokens", None) if usage else None
+            total_tokens = getattr(usage, "total_tokens", None) if usage else None
+            usage_info = (
+                f"，finish_reason={finish_reason or 'unknown'}"
+                f"，prompt_tokens={prompt_tokens}，completion_tokens={completion_tokens}"
+                f"，total_tokens={total_tokens}，visible_chars={len(content)}"
+            )
 
             end_time = time.time()
             duration_ms = (end_time - start_time) * 1000
 
             print(f"[成功] 模型调用成功，耗时 {duration_ms:.2f} ms")
             self._log_info(f"[成功] 模型调用成功，耗时 {duration_ms:.2f} ms{usage_info}")
-            # 如果指定了保存路径，则写入文件
-            if save_path:
+            # 如果指定了保存路径，则写入非空内容
+            if save_path and content:
                 self._save_to_file(content, save_path)
 
-            return content
+            return LLMQueryResult(
+                content=content,
+                finish_reason=finish_reason,
+                prompt_tokens=prompt_tokens,
+                completion_tokens=completion_tokens,
+            )
 
         except APIConnectionError as e:
             error_msg = f"连接服务器失败: {str(e)}"
@@ -156,7 +188,27 @@ class LLMClient:
             duration_ms = (end_time - start_time) * 1000
             self._log_info(f"[结束] 模型: {self.model}，耗时: {duration_ms:.2f} ms，结果: {'失败' if error_msg else '成功'}，额外信息: {extra_log_info or '无'}")
 
-        return None
+        return LLMQueryResult(error_message=error_msg or "未知错误")
+
+    def query(self, user_prompt: str, system_prompt: str = None,
+              save_path: str = None,
+              temperature: float = DEFAULT_TEMPERATURE,
+              max_tokens: int = DEFAULT_MAX_TOKENS,
+              reasoning_effort="high",
+              extra_body=None,
+              extra_log_info: str = None) -> Optional[str]:
+        """兼容既有调用：仅在模型返回非空正文时返回字符串。"""
+        result = self.query_result(
+            user_prompt=user_prompt,
+            system_prompt=system_prompt,
+            save_path=save_path,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            reasoning_effort=reasoning_effort,
+            extra_body=extra_body,
+            extra_log_info=extra_log_info,
+        )
+        return result.content or None
 
     def _save_to_file(self, content: str, filepath: str):
         """内部辅助函数：保存文件"""
@@ -201,17 +253,5 @@ class LLMClient:
         except Exception as e:
             print(f"[警告] 无法写入日志文件: {e}")
 
-# --- 单例模式 (可选) ---
-# 实例化一个默认客户端，方便外部直接导入使用
-# from llm_client import llm
-llm = LLMClient(verify_ssl=False, proxy_url=DEFAULT_PROXY_URL)
-
-# 豆包模型客户端单例
-# from llm_client import doubao_llm
-# llm = LLMClient(
-#     api_key=DOUBAO_API_KEY,
-#     base_url=DOUBAO_BASE_URL,
-#     model=DOUBAO_MODEL,
-#     verify_ssl=False,
-#     proxy_url=DEFAULT_PROXY_URL
-# )
+# 默认客户端在缺少本地密钥时保持可导入；首次调用会返回明确配置错误。
+llm = LLMClient()
