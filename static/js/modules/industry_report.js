@@ -95,6 +95,12 @@ function getIndustryReportRagWarning() {
     );
 }
 
+function getIndustryReportRequirementFallbackWarning(items) {
+    return (Array.isArray(items) ? items : []).find(item =>
+        item?.code === "report_requirement_fallback"
+    );
+}
+
 function setIndustryReportCompletionStatus(successText) {
     const ragWarning = getIndustryReportRagWarning();
     setIndustryReportStatus(ragWarning?.message || successText, ragWarning ? "info" : "success");
@@ -533,6 +539,7 @@ async function submitIndustryReportRequirement() {
         setIndustryReportStatus("请先输入报告标题", "error");
         return;
     }
+    industryReportWorkspace.requirementRewriteSeq = (industryReportWorkspace.requirementRewriteSeq || 0) + 1;
     setIndustryReportBusy(true, "正在理解题目与需求并生成写作任务卡...");
     clearIndustryReportStepDone(["requirement", "outline", "coordinator", "body", "review"]);
     setIndustryReportStage("idle", "正在生成写作任务卡");
@@ -558,7 +565,11 @@ async function submitIndustryReportRequirement() {
         renderIndustryReportProgress([]);
         renderIndustryReportPreview();
         setIndustryReportStage("idle", "写作任务卡已生成，等待确认");
-        setIndustryReportStatus("请检查并编辑写作任务卡，然后生成大纲", "success");
+        const fallback = getIndustryReportRequirementFallbackWarning(data.warnings);
+        setIndustryReportStatus(
+            fallback?.message || "请检查并编辑写作任务卡，然后生成大纲",
+            fallback ? "info" : "success",
+        );
     } catch (err) {
         setIndustryReportStage("error", "写作任务卡生成失败");
         setIndustryReportStatus(`写作任务卡生成失败：${err.message}`, "error");
@@ -621,7 +632,10 @@ function renderIndustryReportTaskCard(taskCard) {
 
     if (originalTitle) originalTitle.value = taskCard.original_title || "";
     if (selectedTitle) selectedTitle.value = taskCard.selected_title || taskCard.original_title || "";
-    if (requirement) requirement.value = taskCard.report_requirement || "";
+    if (requirement) {
+        requirement.disabled = false;
+        requirement.value = taskCard.report_requirement || "";
+    }
     if (recognizedIndustry) recognizedIndustry.textContent = taskCard.recognized_industry || "未识别";
 
     const suggestions = Array.isArray(taskCard.suggested_titles) ? taskCard.suggested_titles : [];
@@ -724,7 +738,12 @@ async function handleIndustryReportSelectedIndustryChange() {
         industryReportWorkspace.userPrompt = rewrittenRequirement;
         industryReportWorkspace.industry = selectedIndustry;
         if (requirementInput) requirementInput.value = rewrittenRequirement;
-        setIndustryReportStatus("报告需求已根据新的最终产业方向更新", "success");
+        appendIndustryReportWarnings(data.warnings);
+        const fallback = getIndustryReportRequirementFallbackWarning(data.warnings);
+        setIndustryReportStatus(
+            fallback?.message || "报告需求已根据新的最终产业方向更新",
+            fallback ? "info" : "success",
+        );
     } catch (err) {
         if (industryReportWorkspace.requirementRewriteSeq !== rewriteSeq) return;
         if (requirementInput) requirementInput.value = taskCard.report_requirement || "";

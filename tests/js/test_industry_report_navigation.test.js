@@ -10,11 +10,33 @@ const REPORT_SCRIPT_PATH = path.resolve(
 );
 const REPORT_SCRIPT = fs.readFileSync(REPORT_SCRIPT_PATH, "utf8");
 
+function createClassList() {
+    const names = new Set();
+    return {
+        add(...items) {
+            items.forEach(item => names.add(item));
+        },
+        remove(...items) {
+            items.forEach(item => names.delete(item));
+        },
+        toggle(item, force) {
+            const enabled = force === undefined ? !names.has(item) : Boolean(force);
+            if (enabled) names.add(item);
+            else names.delete(item);
+            return enabled;
+        },
+        contains(item) {
+            return names.has(item);
+        },
+    };
+}
+
 function loadReportScript({ withSwitchView = true, withHistory = true } = {}) {
     const calls = {
         industries: [],
         loadedIndustries: [],
         replacedUrls: [],
+        statuses: [],
         views: [],
     };
     const storage = new Map([["token", "authenticated-token"]]);
@@ -71,6 +93,9 @@ function loadReportScript({ withSwitchView = true, withHistory = true } = {}) {
     }
     vm.createContext(context);
     vm.runInContext(REPORT_SCRIPT, context, { filename: REPORT_SCRIPT_PATH });
+    context.setIndustryReportStatus = (message, type = "info") => {
+        calls.statuses.push({ message, type });
+    };
     return { calls, context, sessionStorage, window };
 }
 
@@ -270,4 +295,195 @@ test("embodied report header uses the supported-industry style", () => {
     assert.equal(pill.textContent, "具身智能");
     assert.match(pill.className, /bg-blue-50/);
     assert.doesNotMatch(pill.className, /bg-amber-50/);
+});
+
+test("task-card fallback remains editable and tells the user to confirm it", async () => {
+    const { calls, context } = loadReportScript();
+    const warning = {
+        stage: "report_requirement",
+        code: "report_requirement_fallback",
+        reason: "empty_visible_content",
+        message: "模型未返回完整报告需求，已生成可编辑基础需求，请确认后继续。",
+    };
+    const classList = createClassList();
+    const elements = {
+        "industry-report-prompt": { value: "关注具身智能企业的上市表现" },
+        "industry-report-title": { value: "具身智能投资状况" },
+        "industry-report-task-card-section": { classList },
+        "industry-report-task-requirement": { value: "", disabled: true },
+        "report-task-card-confirm-btn": { disabled: true, classList },
+    };
+    context.API_BASE = "";
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async () => ({
+        ok: true,
+        async json() {
+            return {
+                status: "success",
+                task_card: {
+                    original_title: "具身智能投资状况",
+                    selected_title: "具身智能投资状况",
+                    report_requirement: "围绕具身智能产业，关注具身智能企业的上市表现。",
+                    selected_industry: "embodied",
+                },
+                warnings: [warning],
+            };
+        },
+    });
+
+    await context.submitIndustryReportRequirement();
+
+    assert.deepEqual(calls.statuses.at(-1), {
+        message: warning.message,
+        type: "info",
+    });
+    assert.equal(
+        elements["industry-report-task-requirement"].value,
+        "围绕具身智能产业，关注具身智能企业的上市表现。",
+    );
+    assert.equal(elements["industry-report-task-requirement"].disabled, false);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, false);
+});
+
+test("industry-change fallback warning is visible", async () => {
+    const { calls, context } = loadReportScript();
+    const warning = {
+        stage: "report_requirement",
+        code: "report_requirement_fallback",
+        reason: "empty_visible_content",
+        message: "模型未返回完整报告需求，已生成可编辑基础需求，请确认后继续。",
+    };
+    const classList = createClassList();
+    const elements = {
+        "industry-report-selected-industry": { value: "embodied" },
+        "industry-report-task-title": { value: "具身智能投资状况" },
+        "industry-report-task-requirement": { value: "原始需求", disabled: false },
+        "report-task-card-confirm-btn": { disabled: false, classList },
+    };
+    context.API_BASE = "";
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async () => ({
+        ok: true,
+        async json() {
+            return {
+                status: "success",
+                report_requirement: "围绕具身智能产业，关注具身智能企业的上市表现。",
+                source: "fallback",
+                warnings: [warning],
+            };
+        },
+    });
+    vm.runInContext(`
+        industryReportWorkspace.taskCard = {
+            original_title: "具身智能投资状况",
+            selected_title: "具身智能投资状况",
+            original_requirement: "关注具身智能企业的上市表现",
+            report_requirement: "原始需求",
+            industry_matches: [{ key: "embodied", name: "具身智能", graph_available: true }],
+        };
+    `, context);
+
+    await context.handleIndustryReportSelectedIndustryChange();
+
+    assert.deepEqual(calls.statuses.at(-1), {
+        message: warning.message,
+        type: "info",
+    });
+    assert.equal(elements["industry-report-task-requirement"].disabled, false);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, false);
+});
+
+test("a stale industry rewrite cannot overwrite a newly submitted task card", async () => {
+    const { context } = loadReportScript();
+    const classList = createClassList();
+    const elements = {
+        "industry-report-prompt": { value: "新的用户需求" },
+        "industry-report-title": { value: "新任务卡标题" },
+        "industry-report-task-card-section": { classList },
+        "industry-report-selected-industry": { value: "embodied" },
+        "industry-report-task-title": { value: "旧任务卡标题" },
+        "industry-report-task-requirement": { value: "旧需求", disabled: false },
+        "report-task-card-confirm-btn": { disabled: false, classList },
+    };
+    let resolveRewrite;
+    const rewriteResponse = new Promise(resolve => {
+        resolveRewrite = resolve;
+    });
+    let resolveTaskCard;
+    const taskCardResponse = new Promise(resolve => {
+        resolveTaskCard = resolve;
+    });
+    context.API_BASE = "";
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async url => {
+        if (url === "/api/report/task-card/rewrite-requirement") return rewriteResponse;
+        return taskCardResponse;
+    };
+    vm.runInContext(`
+        industryReportWorkspace.requirementRewriteSeq = 7;
+        industryReportWorkspace.taskCard = {
+            original_title: "旧任务卡标题",
+            selected_title: "旧任务卡标题",
+            original_requirement: "旧需求",
+            report_requirement: "旧需求",
+            industry_matches: [{ key: "embodied", name: "具身智能", graph_available: true }],
+        };
+    `, context);
+
+    const staleRewrite = context.handleIndustryReportSelectedIndustryChange();
+    await Promise.resolve();
+    const newSubmission = context.submitIndustryReportRequirement();
+    await Promise.resolve();
+    assert.equal(elements["industry-report-task-requirement"].disabled, true);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, true);
+    resolveRewrite({
+        ok: true,
+        async json() {
+            return {
+                status: "success",
+                report_requirement: "旧产业切换请求的需求。",
+                warnings: [],
+            };
+        },
+    });
+    await staleRewrite;
+
+    assert.equal(
+        vm.runInContext("industryReportWorkspace.taskCard.report_requirement", context),
+        "旧需求",
+    );
+    assert.equal(
+        elements["industry-report-task-requirement"].value,
+        "正在重新生成报告需求...",
+    );
+    assert.equal(elements["industry-report-task-requirement"].disabled, true);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, true);
+
+    resolveTaskCard({
+        ok: true,
+        async json() {
+            return {
+                status: "success",
+                task_card: {
+                    original_title: "新任务卡标题",
+                    selected_title: "新任务卡标题",
+                    report_requirement: "新任务卡需求。",
+                    selected_industry: "ai",
+                },
+                warnings: [],
+            };
+        },
+    });
+    await newSubmission;
+
+    assert.equal(
+        vm.runInContext("industryReportWorkspace.taskCard.selected_title", context),
+        "新任务卡标题",
+    );
+    assert.equal(
+        vm.runInContext("industryReportWorkspace.taskCard.report_requirement", context),
+        "新任务卡需求。",
+    );
+    assert.equal(elements["industry-report-task-requirement"].disabled, false);
+    assert.equal(elements["report-task-card-confirm-btn"].disabled, false);
 });
