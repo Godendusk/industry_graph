@@ -11,6 +11,7 @@ from .industry_config import SUPPORTED_INDUSTRIES
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT_DIR = "report_generation/outputs"
+EMPTY_BODY_PLACEHOLDER = "可在这里手动修改内容"
 
 
 def export_report_docx(
@@ -37,6 +38,16 @@ def export_report_docx(
     if not body_sections:
         return _error_response(
             "body_sections must contain at least one item",
+            normalized_industry,
+            industry_name,
+        )
+    if any(
+        isinstance(section, dict)
+        and _is_empty_body_text(section.get("body_text"))
+        for section in body_sections
+    ):
+        return _error_response(
+            "body_sections contains empty body_text; complete every section before export",
             normalized_industry,
             industry_name,
         )
@@ -478,6 +489,10 @@ def _clean_report_text(value: Any, stage: str, outline_id: str = "") -> tuple[st
         warnings.append(_warning(stage, "removed trailing reference/source section", outline_id))
 
     return _strip_invalid_xml_chars(text).strip(), warnings
+
+
+def _is_empty_body_text(value: Any) -> bool:
+    return not _safe_text(value) or _safe_text(value).strip() == EMPTY_BODY_PLACEHOLDER
 
 
 def _split_paragraphs(text: str) -> List[str]:

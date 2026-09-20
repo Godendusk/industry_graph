@@ -7,12 +7,13 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, List
 
-from llm_client import llm
+from llm_client import LLMQueryResult, llm
 from .industry_config import SUPPORTED_INDUSTRIES
 
 
 DEFAULT_MAX_WORKERS = 3
 DEFAULT_MAX_TOKENS = 5000
+RETRY_MAX_TOKENS = 3000
 
 
 def generate_body_section(
@@ -47,28 +48,13 @@ def generate_body_section(
         previous_body_sections=previous_body_sections,
     )
 
-    try:
-        content = llm.query(
-            user_prompt=body_user_prompt,
-            system_prompt=writing_system_prompt,
-            max_tokens=DEFAULT_MAX_TOKENS,
-            extra_log_info=f"report_generation.body_agent outline={subsection_title}",
-        )
-    except Exception as exc:
-        return _section_error_response(
-            writing_task,
-            f"body LLM call failed: {exc}",
-        )
-
-    if not content:
-        return _section_error_response(writing_task, "body LLM returned empty output")
-
-    body_text, cleanup_warnings = _clean_body_text(content)
+    body_text, cleanup_warnings, failure_message = _generate_body_text_with_retry(
+        body_user_prompt=body_user_prompt,
+        writing_system_prompt=writing_system_prompt,
+        subsection_title=subsection_title,
+    )
     if not body_text:
-        return _section_error_response(
-            writing_task,
-            "body LLM returned empty output after cleanup",
-        )
+        return _section_error_response(writing_task, failure_message)
 
     section_warnings = _copy_list(writing_task.get("warnings"))
     section_warnings.extend(cleanup_warnings)
@@ -84,6 +70,60 @@ def generate_body_section(
         }
     )
     return result
+
+
+def _generate_body_text_with_retry(
+    body_user_prompt: str,
+    writing_system_prompt: str,
+    subsection_title: str,
+) -> tuple[str, List[dict], str]:
+    """Generate one body section without accepting hidden/truncated output."""
+    cleanup_warnings: List[dict] = []
+    last_failure = "body LLM returned empty output"
+    for attempt in range(2):
+        request_kwargs = {
+            "user_prompt": body_user_prompt,
+            "system_prompt": writing_system_prompt,
+            "max_tokens": DEFAULT_MAX_TOKENS if attempt == 0 else RETRY_MAX_TOKENS,
+            "extra_log_info": f"report_generation.body_agent outline={subsection_title} attempt={attempt + 1}",
+        }
+        if attempt:
+            request_kwargs.update(
+                {
+                    "reasoning_effort": None,
+                    "extra_body": {"thinking": {"type": "disabled"}},
+                    "user_prompt": (
+                        f"{body_user_prompt}\n\n"
+                        "【重试要求】上一次输出为空或达到长度上限。请直接给出当前小节的完整正文，"
+                        "只写本小节内容，最多3段，优先写清楚可核验的公司筛选标准和公司名单，"
+                        "不要输出思考过程、标题或参考文献。"
+                    ),
+                }
+            )
+        try:
+            result = llm.query_result(**request_kwargs)
+        except Exception as exc:
+            last_failure = f"body LLM call failed: {exc}"
+            continue
+
+        if not isinstance(result, LLMQueryResult):
+            last_failure = "body LLM returned an invalid response object"
+            continue
+        if result.error_message:
+            last_failure = f"body LLM call failed: {result.error_message}"
+            continue
+
+        content = _safe_text(result.content)
+        body_text, warnings = _clean_body_text(content)
+        cleanup_warnings.extend(warnings)
+        if result.finish_reason == "length":
+            last_failure = "正文模型重试后仍被截断"
+            continue
+        if body_text:
+            return body_text, cleanup_warnings, ""
+        last_failure = "body LLM returned empty output after cleanup"
+
+    return "", cleanup_warnings, last_failure
 
 
 def generate_report_bodies(

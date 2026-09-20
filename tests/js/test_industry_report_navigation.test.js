@@ -116,6 +116,40 @@ test("report evidence graph link uses in-page navigation instead of a new tab", 
     );
 });
 
+test("empty body placeholder is not treated as editable report text", () => {
+    const { context } = loadReportScript();
+    const html = context.renderIndustryReportParagraphs("");
+
+    assert.match(html, /data-industry-report-placeholder="true"/);
+    const placeholder = {
+        innerText: "可在这里手动修改内容",
+        querySelector(selector) {
+            return selector === "[data-industry-report-placeholder='true']"
+                ? {}
+                : null;
+        },
+    };
+    assert.equal(context.getIndustryReportEditableText(placeholder), "");
+});
+
+test("body generation with an empty section is not considered complete", () => {
+    const { context } = loadReportScript();
+
+    assert.equal(
+        context.hasIncompleteIndustryReportBodySections([
+            { outline_id: "S1.1", body_text: "完整正文。" },
+            { outline_id: "S3.1", body_text: "" },
+        ]),
+        true,
+    );
+    assert.equal(
+        context.hasIncompleteIndustryReportBodySections([
+            { outline_id: "S1.1", body_text: "完整正文。" },
+        ]),
+        false,
+    );
+});
+
 test("rewrite material graph link also uses in-page navigation", () => {
     const { context } = loadReportScript();
     const html = context.renderIndustryReportMaterialRow(

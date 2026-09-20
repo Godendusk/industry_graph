@@ -1111,6 +1111,12 @@ async function startIndustryReportGeneration() {
         renderIndustryReportProgress(buildIndustryReportTaskProgress("generated", industryReportWorkspace.bodySections));
         renderIndustryReportPreview();
         void saveIndustryReportHistory({ silent: true });
+        if (hasIncompleteIndustryReportBodySections(industryReportWorkspace.bodySections)) {
+            setIndustryReportStage("body", "正文部分生成完成，但仍有空小节");
+            setIndustryReportStatus("部分正文已生成，请补齐空小节后再导出 Word", "error");
+            setIndustryReportCompletionStatus("正文部分完成，请补齐空小节");
+            return;
+        }
         markIndustryReportStepDone("requirement");
         markIndustryReportStepDone("outline");
         markIndustryReportStepDone("coordinator");
@@ -1135,6 +1141,11 @@ function normalizeIndustryReportBodySections(sections) {
         graph_evidence_blocks: section.graph_evidence_blocks || [],
         external_evidence_blocks: section.external_evidence_blocks || [],
     }));
+}
+
+function hasIncompleteIndustryReportBodySections(sections) {
+    return !Array.isArray(sections) || !sections.length
+        || sections.some(section => !String(section?.body_text || "").trim());
 }
 
 function buildIndustryReportTaskProgress(status, sections = []) {
@@ -1936,19 +1947,20 @@ function getIndustryReportNumber(id, fallback) {
 }
 
 function normalizeIndustryReportParagraphText(value) {
-    return String(value || "")
+    const normalized = String(value || "")
         .replace(/\r\n/g, "\n")
         .replace(/\u00a0/g, " ")
         .split(/\n+/)
         .map(line => line.trim())
         .filter(Boolean)
         .join("\n");
+    return normalized === "可在这里手动修改内容" ? "" : normalized;
 }
 
 function renderIndustryReportParagraphs(value) {
     const paragraphs = normalizeIndustryReportParagraphText(value).split("\n").filter(Boolean);
     if (!paragraphs.length) {
-        return '<p class="indent-8 min-h-[1.75rem] m-0 text-gray-400">可在这里手动修改内容</p>';
+        return '<p data-industry-report-placeholder="true" class="indent-8 min-h-[1.75rem] m-0 text-gray-400">可在这里手动修改内容</p>';
     }
     return paragraphs
         .map(paragraph => `<p class="indent-8 m-0">${escapeIndustryReportHtml(paragraph)}</p>`)
@@ -1956,6 +1968,7 @@ function renderIndustryReportParagraphs(value) {
 }
 
 function getIndustryReportEditableText(el) {
+    if (el?.querySelector?.("[data-industry-report-placeholder='true']")) return "";
     return String(el?.innerText || "")
         .replace(/\n{3,}/g, "\n")
         .trim();
