@@ -11,6 +11,8 @@ from typing import Any, Dict, List, Optional
 from llm_client import llm
 
 from .external_rag.retriever import retrieve_external_rag
+from .external_rag.report_adapter import build_rag_context_text
+from .citations import register_evidence_blocks
 from .graph_retriever import retrieve_industry_graph
 from .industry_config import SUPPORTED_INDUSTRIES
 
@@ -82,6 +84,17 @@ def generate_writing_tasks(
     for task_warnings in warning_groups:
         warnings.extend(task_warnings)
 
+    references: List[dict] = []
+    for task in writing_tasks:
+        retrieval = task.get("external_rag_retrieval") if isinstance(task, dict) else None
+        if not isinstance(retrieval, dict):
+            continue
+        mapped_blocks, references = register_evidence_blocks(
+            retrieval.get("evidence_blocks") or [], references
+        )
+        retrieval["evidence_blocks"] = mapped_blocks
+        retrieval["rag_context_text"] = build_rag_context_text(mapped_blocks)
+
     return {
         "status": "success",
         "industry": normalized_industry,
@@ -89,6 +102,7 @@ def generate_writing_tasks(
         "user_prompt": normalized_prompt,
         "report_title": normalized_title,
         "writing_tasks": writing_tasks,
+        "references": references,
         "warnings": warnings,
     }
 
@@ -368,7 +382,7 @@ def _generate_writing_system_prompt(
 必须只输出 JSON 对象，不要输出 Markdown、代码块或解释说明。
 JSON 只能包含 writing_system_prompt 字段。
 writing_system_prompt 必须是带有具体材料要点的任务书，而不是泛化写作要求。
-writing_system_prompt 必须要求正文生成智能体不标注 [知识图谱1]、[外部资料1] 等引用编号。"""
+writing_system_prompt 必须要求正文生成智能体使用外部资料上下文中真实存在的 [C数字] 引用编号，不得把知识图谱编号当作文章来源。"""
 
     user_prompt_text = f"""请根据以下信息，为当前二级标题生成正文生成智能体使用的 system prompt。
 
@@ -400,9 +414,10 @@ writing_system_prompt 必须要求正文生成智能体不标注 [知识图谱1]
 7. “写作结构”必须给出当前小节正文的建议展开层次，例如先写什么、再写什么、最后如何收束或过渡，要求规定正文不多于 1000 字，段落不超过 3 段。
 8. 不要只写“结合上下文”“吸收材料”“形成专业正文”等泛化表述；必须把检索上下文中的具体名称、环节、企业、政策、案例、趋势或数据要点转写进 writing_system_prompt。
 9. 正文生成智能体只写当前二级标题对应正文，不写其他章节。
-10. 正文不得标注 [知识图谱1]、[外部资料1] 等引用编号。
-11. 正文不得输出引用列表、参考文献或资料来源说明。
-12. 正文不得生成摘要、标题页、目录、Word 导出说明或其他无关内容。
+10. 不得把 [知识图谱1] 等知识图谱编号当作文章来源。
+11. 正文使用外部资料中的数字、政策、领导讲话、专家观点或企业案例时，必须在对应句末使用上下文中真实存在的 [C数字]。
+12. 不得编造 [C数字]、资料标题或网址；正文不输出独立参考文献列表，参考资料由系统生成。
+13. 正文不得生成摘要、标题页、目录、Word 导出说明或其他无关内容。
 
 【输出格式】
 {{"writing_system_prompt": "正文生成智能体 system prompt"}}
@@ -455,16 +470,18 @@ def _fallback_writing_system_prompt(
 当前一级标题：{parent_level1_title}
 当前二级标题：{subsection_title}
 请结合传入的知识图谱上下文和外部资料库上下文，形成自然、连贯、专业的报告正文。
-不得标注 [知识图谱1]、[外部资料1] 等引用编号。
-不得输出引用列表、参考文献或资料来源说明。
+不得把 [知识图谱1] 等知识图谱编号当作文章来源。
+使用外部资料中的数字、政策、领导讲话、专家观点或企业案例时，必须使用上下文中真实存在的 [C数字]。
+不得编造 [C数字]、资料标题或网址；正文不输出独立参考文献列表，参考资料由系统生成。
 不得生成摘要、标题页、目录、Word 导出说明或其他无关内容。""")
 
 
 def _ensure_writing_prompt_constraints(prompt: str) -> str:
     text = _safe_text(prompt)
     hard_rules = [
-        "不得标注 [知识图谱1]、[外部资料1] 等引用编号。",
-        "不得输出引用列表、参考文献或资料来源说明。",
+        "不得把 [知识图谱1] 等知识图谱编号当作文章来源。",
+        "使用外部资料中的数字、政策、领导讲话、专家观点或企业案例时，必须使用上下文中真实存在的 [C数字]。",
+        "不得编造 [C数字]、资料标题或网址；正文不输出独立参考文献列表，参考资料由系统生成。",
         "不得生成摘要、标题页、目录、Word 导出说明或其他无关内容。",
     ]
     missing_rules = [rule for rule in hard_rules if rule not in text]

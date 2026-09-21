@@ -15,6 +15,7 @@ let industryReportWorkspace = {
     outline: [],
     writingTasks: [],
     bodySections: [],
+    references: [],
     warnings: [],
     activeSectionId: "",
     rewriteMaterials: null,
@@ -109,8 +110,33 @@ function getIndustryReportRequirementFallbackWarning(items) {
     );
 }
 
+function getIndustryReportCitationValidationWarning(items) {
+    return (Array.isArray(items) ? items : []).find(item =>
+        item?.stage === "citation_validation"
+        && Array.isArray(item?.invalid_citation_ids)
+        && item.invalid_citation_ids.length
+    );
+}
+
+function showIndustryReportCitationValidationWarning(items) {
+    const warning = getIndustryReportCitationValidationWarning(items);
+    if (!warning) return;
+    setIndustryReportStatus(
+        `已移除 ${warning.invalid_citation_ids.length} 个不在本节资料中的引用编号：${warning.invalid_citation_ids.join("、")}`,
+        "info",
+    );
+}
+
 function setIndustryReportCompletionStatus(successText) {
     const ragWarning = getIndustryReportRagWarning();
+    const citationWarning = getIndustryReportCitationValidationWarning(industryReportWorkspace.warnings);
+    if (citationWarning) {
+        setIndustryReportStatus(
+            `已移除 ${citationWarning.invalid_citation_ids.length} 个不在本节资料中的引用编号：${citationWarning.invalid_citation_ids.join("、")}`,
+            "info",
+        );
+        return;
+    }
     setIndustryReportStatus(ragWarning?.message || successText, ragWarning ? "info" : "success");
 }
 
@@ -507,6 +533,7 @@ function resetIndustryReportWorkspace() {
         outline: [],
         writingTasks: [],
         bodySections: [],
+        references: [],
         warnings: [],
         activeSectionId: "",
         rewriteMaterials: null,
@@ -567,6 +594,7 @@ async function submitIndustryReportRequirement() {
         industryReportWorkspace.outline = [];
         industryReportWorkspace.writingTasks = [];
         industryReportWorkspace.bodySections = [];
+        industryReportWorkspace.references = [];
         industryReportWorkspace.abstractText = "";
         industryReportWorkspace.warnings = [];
         appendIndustryReportWarnings(data.warnings);
@@ -1055,6 +1083,7 @@ async function prepareIndustryReportTasks() {
         industryReportWorkspace.reportTitle = title;
         industryReportWorkspace.industry = reportIndustry;
         industryReportWorkspace.writingTasks = data.writing_tasks || [];
+        industryReportWorkspace.references = Array.isArray(data.references) ? data.references : [];
         appendIndustryReportWarnings(data.warnings);
         renderIndustryReportProgress([
             { key: "outline", title: "推荐大纲", status: "done", detail: `${countIndustryReportSubsections(industryReportWorkspace.outline)} 个二级标题` },
@@ -1097,10 +1126,15 @@ async function startIndustryReportGeneration() {
                 report_title: title,
                 industry: reportIndustry,
                 writing_tasks: industryReportWorkspace.writingTasks,
+                references: industryReportWorkspace.references || [],
                 max_workers: getIndustryReportNumber("industry-report-workers", 3),
             }),
         });
         industryReportWorkspace.bodySections = normalizeIndustryReportBodySections(data.body_sections || []);
+        industryReportWorkspace.references = mergeIndustryReportReferences(
+            industryReportWorkspace.references,
+            Array.isArray(data.references) ? data.references : [],
+        );
         appendIndustryReportWarnings(data.warnings);
         try {
             setIndustryReportStatus("正文已生成，正在生成摘要...", "loading");
@@ -1140,6 +1174,7 @@ function normalizeIndustryReportBodySections(sections) {
         body_text: normalizeIndustryReportParagraphText(section.body_text || section.text || ""),
         graph_evidence_blocks: section.graph_evidence_blocks || [],
         external_evidence_blocks: section.external_evidence_blocks || [],
+        citation_ids: Array.isArray(section.citation_ids) ? section.citation_ids : [],
     }));
 }
 
@@ -1233,6 +1268,7 @@ function renderIndustryReportPreview() {
                 </div>
             </article>
         `).join("")}
+        ${renderIndustryReportReferences()}
     `;
 }
 
@@ -1309,7 +1345,7 @@ function renderIndustryReportBodySection(section, groupNumber, sectionNumber) {
             <div oninput="updateIndustryReportBodyText('${escapeIndustryReportJs(section.outline_id)}', getIndustryReportEditableText(this))"
                  contenteditable="true"
                  class="industry-report-body-editor mt-2 w-full min-h-[140px] leading-7 text-gray-800 bg-white border border-transparent hover:border-gray-200 focus:border-blue-300 focus:ring-2 focus:ring-blue-100 rounded-lg px-4 py-3 outline-none"
-                 data-placeholder="可在这里手动修改正文内容">${renderIndustryReportParagraphs(bodyText)}</div>
+                 data-placeholder="可在这里手动修改正文内容">${renderIndustryReportParagraphs(bodyText, getIndustryReportSectionReferences(section))}</div>
             <div class="industry-report-section-count mt-1 text-right text-xs text-gray-400">${countIndustryReportWords(bodyText)} 字</div>
             <div class="mt-3 flex flex-wrap gap-2 text-xs">
                 <span class="rounded-full bg-blue-50 text-blue-700 border border-blue-100 px-2 py-1">知识图谱资料 ${graphCount}</span>
@@ -1324,7 +1360,14 @@ function updateIndustryReportBodyText(outlineId, value) {
     const normalized = normalizeIndustryReportParagraphText(value);
     industryReportWorkspace.bodySections = industryReportWorkspace.bodySections.map(section => {
         if (section.outline_id !== outlineId) return section;
-        return { ...section, body_text: normalized };
+        return {
+            ...section,
+            body_text: normalized,
+            citation_ids: extractIndustryReportCitationIds(
+                normalized,
+                getIndustryReportSectionReferences(section),
+            ),
+        };
     });
     const sectionEl = Array.from(document.querySelectorAll("[data-report-body-section]"))
         .find(el => el.getAttribute("data-report-body-section") === outlineId);
@@ -1343,15 +1386,51 @@ function renderIndustryReportEvidenceDetails(section) {
     const graphBlocks = section.graph_evidence_blocks || [];
     const externalBlocks = section.external_evidence_blocks || [];
     if (!graphBlocks.length && !externalBlocks.length) return "";
+    const usedIds = new Set(section.citation_ids || []);
+    const usedExternal = externalBlocks.filter(item => usedIds.has(item?.citation_id));
+    const candidateExternal = externalBlocks.filter(item => !usedIds.has(item?.citation_id));
     return `
         <details class="mt-3 rounded-lg border border-gray-200 bg-white">
             <summary class="cursor-pointer px-3 py-2 text-xs font-semibold text-gray-600">查看本节资料依据</summary>
             <div class="p-3 space-y-3">
                 ${graphBlocks.map((item, index) => renderIndustryReportEvidenceCard(item, `知识图谱 ${index + 1}`, "graph")).join("")}
-                ${externalBlocks.map((item, index) => renderIndustryReportEvidenceCard(item, `外部资料 ${index + 1}`, "external")).join("")}
+                ${usedExternal.length ? `<div class="text-xs font-semibold text-emerald-700">本节已引用资料</div>${usedExternal.map((item, index) => renderIndustryReportEvidenceCard(item, `外部资料 ${index + 1}`, "external")).join("")}` : ""}
+                ${candidateExternal.length ? `<div class="text-xs font-semibold text-gray-600">其他检索候选</div>${candidateExternal.map((item, index) => renderIndustryReportEvidenceCard(item, `外部资料 ${index + 1}`, "external")).join("")}` : ""}
             </div>
         </details>
     `;
+}
+
+function renderIndustryReportReferences() {
+    const usedIds = new Set((industryReportWorkspace.bodySections || [])
+        .flatMap(section => Array.isArray(section.citation_ids) ? section.citation_ids : []));
+    const references = (industryReportWorkspace.references || [])
+        .filter(item => usedIds.has(item?.citation_id));
+    if (!references.length) return "";
+    return `
+        <section class="border-t border-gray-200 pt-5 mt-6" id="industry-report-references">
+            <h2 class="text-lg font-bold text-gray-900 mb-3">参考资料</h2>
+            <div class="space-y-3">
+                ${references.map(item => {
+                    const citationId = String(item.citation_id || "");
+                    const address = String(item.source_address || "").trim();
+                    const date = item.publish_date ? `，发布日期：${escapeIndustryReportHtml(item.publish_date)}` : "";
+                    const retrieved = item.retrieved_at ? `，检索时间：${escapeIndustryReportHtml(item.retrieved_at)}` : "";
+                    const link = address ? `，<a class="text-blue-600 hover:underline" href="${escapeIndustryReportHtml(address)}" target="_blank" rel="noopener">打开原文</a>` : "";
+                    return `<div id="report-reference-${escapeIndustryReportHtml(citationId)}" class="text-sm leading-6 text-gray-700"><span class="font-semibold">[${escapeIndustryReportHtml(citationId)}] ${escapeIndustryReportHtml(item.title || "未命名资料")}</span>${date}${retrieved}${link}<div class="text-xs text-gray-500 mt-1">${escapeIndustryReportHtml(item.evidence_excerpt || "")}</div></div>`;
+                }).join("")}
+            </div>
+        </section>
+    `;
+}
+
+function getIndustryReportSectionReferences(section) {
+    const evidenceBlocks = Array.isArray(section?.external_evidence_blocks)
+        ? section.external_evidence_blocks
+        : [];
+    if (evidenceBlocks.length) return evidenceBlocks;
+    const knownIds = new Set(Array.isArray(section?.citation_ids) ? section.citation_ids : []);
+    return (industryReportWorkspace.references || []).filter(item => knownIds.has(item?.citation_id));
 }
 
 function renderIndustryReportEvidenceCard(item, fallbackTitle, type = "external") {
@@ -1359,13 +1438,21 @@ function renderIndustryReportEvidenceCard(item, fallbackTitle, type = "external"
     const text = getIndustryReportEvidenceText(item);
     const nodeId = type === "graph" ? getIndustryReportGraphNodeId(item) : "";
     const graphLink = nodeId ? buildIndustryReportGraphLink(nodeId) : "";
+    const citationId = type === "external" ? String(item?.citation_id || "") : "";
+    const sourceAddress = type === "external" ? String(item?.source_address || "").trim() : "";
+    const sourceLink = sourceAddress
+        ? `<a href="${escapeIndustryReportHtml(sourceAddress)}" target="_blank" rel="noopener" class="text-blue-600 hover:underline">打开原文</a>`
+        : "";
+    const publishDate = type === "external" && item?.publish_date
+        ? ` · 发布日期：${escapeIndustryReportHtml(item.publish_date)}`
+        : "";
     const titleLabel = type === "graph" ? "图谱位置" : "文章标题";
     const textLabel = type === "graph" ? "具体形式" : "段落内容";
     return `
         <div class="rounded-lg bg-gray-50 border border-gray-200 p-3">
             <div class="text-xs font-semibold text-gray-700 flex items-center justify-between gap-2">
-                <span class="min-w-0 truncate">${titleLabel}：${escapeIndustryReportHtml(title)}</span>
-                ${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" data-graph-node-id="${escapeIndustryReportHtml(nodeId)}" onclick="return openIndustryReportGraph(this.dataset.graphNodeId)" class="text-blue-600 hover:text-blue-700 font-medium">打开图谱</a>` : ""}
+                <span class="min-w-0 truncate">${citationId ? `[${escapeIndustryReportHtml(citationId)}] ` : ""}${titleLabel}：${escapeIndustryReportHtml(title)}${publishDate}</span>
+                ${graphLink ? `<a href="${escapeIndustryReportHtml(graphLink)}" data-graph-node-id="${escapeIndustryReportHtml(nodeId)}" onclick="return openIndustryReportGraph(this.dataset.graphNodeId)" class="text-blue-600 hover:text-blue-700 font-medium">打开图谱</a>` : sourceLink}
             </div>
             <div class="mt-1 text-xs leading-5 text-gray-500">${textLabel}：${escapeIndustryReportHtml(truncateIndustryReportText(text, 260))}</div>
         </div>
@@ -1534,8 +1621,11 @@ async function rewriteIndustryReportSection() {
                 body_section: section,
                 graph_retrieval: industryReportWorkspace.rewriteMaterials.graph_retrieval || {},
                 selected_external_evidence_blocks: selected,
+                references: industryReportWorkspace.references || [],
             }),
         });
+        appendIndustryReportWarnings(data.warnings);
+        showIndustryReportCitationValidationWarning(data.warnings);
         industryReportWorkspace.pendingRewrite = data;
         renderIndustryReportRewritePreview(section, data);
     } catch (err) {
@@ -1573,6 +1663,11 @@ function renderIndustryReportRewritePreview(original, rewritten) {
 function updateIndustryReportPendingRewriteText(value) {
     if (industryReportWorkspace.pendingRewrite) {
         industryReportWorkspace.pendingRewrite.body_text = value;
+        industryReportWorkspace.pendingRewrite.citation_ids = extractIndustryReportCitationIds(
+            value,
+            industryReportWorkspace.pendingRewrite.selected_external_evidence_blocks
+                || industryReportWorkspace.references,
+        );
     }
     const countEl = document.getElementById("industry-report-rewrite-word-count");
     if (countEl) countEl.textContent = `${countIndustryReportWords(value)} 字`;
@@ -1588,12 +1683,25 @@ function acceptIndustryReportRewrite() {
             body_text: rewritten.body_text || section.body_text,
             graph_evidence_blocks: rewritten.graph_evidence_blocks || section.graph_evidence_blocks || [],
             external_evidence_blocks: rewritten.selected_external_evidence_blocks || section.external_evidence_blocks || [],
+            citation_ids: Array.isArray(rewritten.citation_ids)
+                ? rewritten.citation_ids
+                : extractIndustryReportCitationIds(
+                    rewritten.body_text || section.body_text,
+                    rewritten.selected_external_evidence_blocks || getIndustryReportSectionReferences(section),
+                ),
         };
     });
+    if (Array.isArray(rewritten.references)) {
+        industryReportWorkspace.references = mergeIndustryReportReferences(
+            industryReportWorkspace.references,
+            rewritten.references,
+        );
+    }
     renderIndustryReportPreview();
     void saveIndustryReportHistory({ silent: true });
     closeIndustryReportRewriteModal();
     setIndustryReportStatus("已采用重写内容", "success");
+    showIndustryReportCitationValidationWarning(industryReportWorkspace.warnings);
 }
 
 function buildIndustryReportHistoryRecord() {
@@ -1612,6 +1720,7 @@ function buildIndustryReportHistoryRecord() {
         outline: industryReportWorkspace.outline || [],
         writingTasks: industryReportWorkspace.writingTasks || [],
         bodySections: industryReportWorkspace.bodySections || [],
+        references: industryReportWorkspace.references || [],
         warnings: industryReportWorkspace.warnings || [],
         createdAt: industryReportWorkspace.historyId ? undefined : now,
         updatedAt: now,
@@ -1696,6 +1805,7 @@ async function loadSelectedIndustryReportHistory() {
         outline: record.outline || [],
         writingTasks: record.writingTasks || [],
         bodySections: record.bodySections || [],
+        references: Array.isArray(record.references) ? record.references : [],
         warnings: record.warnings || [],
         activeSectionId: "",
         rewriteMaterials: null,
@@ -1819,6 +1929,7 @@ async function exportIndustryReportWord() {
                 abstract_text: abstractText,
                 industry: industryReportWorkspace.industry ?? getIndustryReportCurrentIndustry(),
                 body_sections: bodySections,
+                references: industryReportWorkspace.references || [],
             }),
         });
         if (!data.docx_path) {
@@ -1938,6 +2049,20 @@ function buildIndustryReportMarkdown() {
             lines.push(section.body_text || "", "");
         });
     });
+    const usedIds = new Set((industryReportWorkspace.bodySections || [])
+        .flatMap(section => Array.isArray(section.citation_ids) ? section.citation_ids : []));
+    const usedReferences = (industryReportWorkspace.references || [])
+        .filter(item => usedIds.has(item?.citation_id));
+    if (usedReferences.length) {
+        lines.push("## 参考资料", "");
+        usedReferences.forEach(item => {
+            const published = item.publish_date ? `，发布于 ${item.publish_date}` : "";
+            const retrieved = item.retrieved_at ? `，检索于 ${item.retrieved_at}` : "";
+            const address = item.source_address ? `，${item.source_address}` : "";
+            lines.push(`[${item.citation_id}] ${item.title || "未命名资料"}${published}${retrieved}${address}`);
+        });
+        lines.push("");
+    }
     return lines.join("\n");
 }
 
@@ -1957,14 +2082,52 @@ function normalizeIndustryReportParagraphText(value) {
     return normalized === "可在这里手动修改内容" ? "" : normalized;
 }
 
-function renderIndustryReportParagraphs(value) {
+function renderIndustryReportParagraphs(value, references = []) {
     const paragraphs = normalizeIndustryReportParagraphText(value).split("\n").filter(Boolean);
     if (!paragraphs.length) {
         return '<p data-industry-report-placeholder="true" class="indent-8 min-h-[1.75rem] m-0 text-gray-400">可在这里手动修改内容</p>';
     }
     return paragraphs
-        .map(paragraph => `<p class="indent-8 m-0">${escapeIndustryReportHtml(paragraph)}</p>`)
+        .map(paragraph => `<p class="indent-8 m-0">${renderIndustryReportCitationMarkers(escapeIndustryReportHtml(paragraph), references)}</p>`)
         .join("");
+}
+
+function renderIndustryReportCitationMarkers(escapedText, references = []) {
+    const allowed = new Set((references || []).map(item => item?.citation_id));
+    return String(escapedText || "").replace(/\[(C[1-9]\d*)\]/g, (marker, citationId) => {
+        if (!allowed.has(citationId)) return marker;
+        return `<a href="#report-reference-${escapeIndustryReportHtml(citationId)}" contenteditable="false" class="text-blue-600 font-semibold hover:underline">${marker}</a>`;
+    });
+}
+
+function extractIndustryReportCitationIds(text, references = []) {
+    const allowed = new Set((references || []).map(item => item?.citation_id));
+    const ids = [];
+    for (const match of String(text || "").matchAll(/\[(C[1-9]\d*)\]/g)) {
+        const citationId = match[1];
+        if (allowed.has(citationId) && !ids.includes(citationId)) ids.push(citationId);
+    }
+    return ids;
+}
+
+function mergeIndustryReportReferences(existing = [], incoming = []) {
+    const merged = [];
+    const byId = new Map();
+    [...(Array.isArray(existing) ? existing : []), ...(Array.isArray(incoming) ? incoming : [])]
+        .forEach(item => {
+            const citationId = String(item?.citation_id || "").trim();
+            if (!citationId) return;
+            if (!byId.has(citationId)) {
+                const copy = { ...item, citation_id: citationId };
+                byId.set(citationId, copy);
+                merged.push(copy);
+            } else {
+                byId.set(citationId, { ...byId.get(citationId), ...item, citation_id: citationId });
+                const index = merged.findIndex(row => row.citation_id === citationId);
+                if (index >= 0) merged[index] = byId.get(citationId);
+            }
+        });
+    return merged;
 }
 
 function getIndustryReportEditableText(el) {

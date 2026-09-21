@@ -8,6 +8,7 @@ import re
 from typing import Any, List
 
 from llm_client import llm
+from .citations import register_evidence_blocks, validate_body_citations
 
 from .external_rag.retriever import retrieve_external_rag
 from .graph_retriever import retrieve_industry_graph
@@ -102,6 +103,7 @@ def rewrite_body_section(
     graph_retrieval: dict,
     selected_external_evidence_blocks: list,
     industry: str = "ai",
+    references: list = None,
 ) -> dict:
     """Rewrite one body section using selected materials."""
     normalized_prompt = _safe_text(rewrite_prompt)
@@ -130,6 +132,12 @@ def rewrite_body_section(
         graph_retrieval = {}
     if not isinstance(selected_external_evidence_blocks, list):
         return _rewrite_error_response(body_section, "selected_external_evidence_blocks must be an array")
+    if references is not None and not isinstance(references, list):
+        return _rewrite_error_response(body_section, "references must be an array")
+
+    mapped_blocks, updated_references = register_evidence_blocks(
+        selected_external_evidence_blocks, references or []
+    )
 
     section = _base_section_payload(body_section)
     original_body_text = _safe_text(body_section.get("body_text"))
@@ -143,12 +151,15 @@ def rewrite_body_section(
         report_title=normalized_title,
         body_section=body_section,
         graph_retrieval=graph_retrieval,
-        selected_external_evidence_blocks=selected_external_evidence_blocks,
+        selected_external_evidence_blocks=mapped_blocks,
     )
     system_prompt = """你是产业报告正文重写智能体。
 你的任务是根据用户重写要求、原正文和用户选择的材料，重写当前二级标题下的正文。
 只输出改写后的正文段落，不要输出当前二级标题、章节标题、摘要、目录、Word 导出说明、参考文献或资料来源说明。
-不得在正文中标注 [知识图谱1]、[外部资料1] 等引用编号。
+不得把 [知识图谱1] 等知识图谱编号当作文章来源。
+凡使用外部资料中的数字、政策、领导讲话、专家观点或企业案例，必须在对应句末保留该资料的 [C数字] 引用编号。
+只能使用用户选择的外部资料上下文中真实出现的 [C数字]，不得编造编号、标题或网址。
+正文不输出独立参考文献列表，参考资料列表由系统生成。
 必须保持正式产业研究报告文风，逻辑清晰、表述准确，不要编造材料中没有的信息。"""
 
     try:
@@ -167,6 +178,8 @@ def rewrite_body_section(
     body_text, cleanup_warnings = _clean_rewrite_text(content, section["title"])
     if not body_text:
         return _rewrite_error_response(body_section, "rewrite LLM returned empty output after cleanup")
+    body_text, citation_ids, citation_warnings = validate_body_citations(body_text, mapped_blocks)
+    cleanup_warnings.extend(citation_warnings)
 
     result = _base_section_payload(body_section)
     result.update(
@@ -177,7 +190,9 @@ def rewrite_body_section(
             "original_body_text": original_body_text,
             "body_text": body_text,
             "graph_evidence_blocks": _copy_list(graph_retrieval.get("evidence_blocks")),
-            "selected_external_evidence_blocks": _copy_list(selected_external_evidence_blocks),
+            "selected_external_evidence_blocks": mapped_blocks,
+            "citation_ids": citation_ids,
+            "references": updated_references,
             "warnings": cleanup_warnings,
         }
     )
@@ -305,9 +320,10 @@ def _build_rewrite_user_prompt(
 请直接输出正文段落，不要输出当前二级标题、章节标题或任何标题行。
 请检查引用的资料，不要出现常识性错误，例如误把民营企业（华为海思）当成央企国企，误把外资企业（英伟达）当成民营企业。
 要求报告正文不多于 1000字，段落不超过 3 段。
-不得标注 [知识图谱1]、[外部资料1] 等引用编号。
-不得输出参考文献、引用列表。
-如果正文生成涉及到总书记讲话、数字、政策等内容需要在正文里面输出引用外部资料来源，外部资料来源只需要指明具体的外部资料标题，比如[外部资料标题]。
+不得把 [知识图谱1] 等知识图谱编号当作文章来源。
+凡使用外部资料中的数字、政策、领导讲话、专家观点或企业案例，必须在对应句末保留该资料的 [C数字] 引用编号。
+只能使用用户选择的外部资料上下文中真实出现的 [C数字]，不得编造编号、标题或网址。
+正文不输出独立参考文献列表，参考资料列表由系统生成。
 不得生成摘要、目录、标题页、Word 导出说明或其他章节内容。"""
 
 
@@ -481,6 +497,8 @@ def _rewrite_error_response(body_section: dict, message: str) -> dict:
             "body_text": "",
             "graph_evidence_blocks": [],
             "selected_external_evidence_blocks": [],
+            "citation_ids": [],
+            "references": [],
             "warnings": [
                 {
                     "outline_id": result.get("outline_id", ""),

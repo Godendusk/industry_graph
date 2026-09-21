@@ -416,6 +416,7 @@ def report_body():
     report_title = str(data.get("report_title") or "").strip()
     industry = str(data.get("industry", "ai") or "").strip()
     writing_tasks = data.get("writing_tasks")
+    references = data.get("references", [])
     max_workers = data.get("max_workers", 3)
 
     if not user_prompt:
@@ -424,6 +425,8 @@ def report_body():
         return jsonify({"status": "error", "message": "report_title cannot be empty"}), 400
     if not isinstance(writing_tasks, list):
         return jsonify({"status": "error", "message": "writing_tasks must be an array"}), 400
+    if not isinstance(references, list):
+        return jsonify({"status": "error", "message": "references must be an array"}), 400
 
     result = generate_report_bodies(
         user_prompt=user_prompt,
@@ -431,6 +434,7 @@ def report_body():
         writing_tasks=writing_tasks,
         industry=industry,
         max_workers=max_workers,
+        references=references,
     )
     if result.get("status") == "error" and not result.get("body_sections"):
         return jsonify(result), 400
@@ -545,6 +549,7 @@ def report_export_word():
     abstract_text = str(data.get("abstract_text") or "").strip()
     industry = str(data.get("industry", "ai") or "").strip()
     body_sections = data.get("body_sections")
+    references = data.get("references", [])
 
     if not report_title:
         return jsonify({"status": "error", "message": "report_title cannot be empty"}), 400
@@ -552,12 +557,15 @@ def report_export_word():
         return jsonify({"status": "error", "message": "abstract_text cannot be empty"}), 400
     if not isinstance(body_sections, list):
         return jsonify({"status": "error", "message": "body_sections must be an array"}), 400
+    if not isinstance(references, list):
+        return jsonify({"status": "error", "message": "references must be an array"}), 400
 
     result = export_report_docx(
         report_title=report_title,
         abstract_text=abstract_text,
         body_sections=body_sections,
         industry=industry,
+        references=references,
     )
     if result.get("status") != "success":
         return jsonify(result), 400
@@ -629,6 +637,7 @@ def report_rewrite():
     body_section = data.get("body_section")
     graph_retrieval = data.get("graph_retrieval") or {}
     selected_external_evidence_blocks = data.get("selected_external_evidence_blocks") or []
+    references = data.get("references", [])
 
     if not rewrite_prompt:
         return jsonify({"status": "error", "message": "rewrite_prompt cannot be empty"}), 400
@@ -640,6 +649,8 @@ def report_rewrite():
         return jsonify({"status": "error", "message": "graph_retrieval must be an object"}), 400
     if not isinstance(selected_external_evidence_blocks, list):
         return jsonify({"status": "error", "message": "selected_external_evidence_blocks must be an array"}), 400
+    if not isinstance(references, list):
+        return jsonify({"status": "error", "message": "references must be an array"}), 400
 
     result = rewrite_body_section(
         rewrite_prompt=rewrite_prompt,
@@ -648,6 +659,7 @@ def report_rewrite():
         graph_retrieval=graph_retrieval,
         selected_external_evidence_blocks=selected_external_evidence_blocks,
         industry=industry,
+        references=references,
     )
     if result.get("status") != "success":
         return jsonify(result), 400

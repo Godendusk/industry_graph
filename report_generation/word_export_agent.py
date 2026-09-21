@@ -6,6 +6,7 @@ import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any, List
+from .citations import validate_body_citations
 from .industry_config import SUPPORTED_INDUSTRIES
 
 
@@ -20,11 +21,15 @@ def export_report_docx(
     body_sections: list,
     industry: str = "ai",
     output_dir: str = DEFAULT_OUTPUT_DIR,
+    references: list = None,
 ) -> dict:
     """Export the final report as a formatted DOCX file."""
     normalized_title = _safe_text(report_title)
     normalized_abstract = _safe_text(abstract_text)
     normalized_industry = _safe_text(industry)
+    if references is not None and not isinstance(references, list):
+        return _error_response("references must be an array", normalized_industry, "")
+    references = references or []
 
     if not normalized_title:
         return _error_response("report_title cannot be empty", normalized_industry, "")
@@ -65,7 +70,7 @@ def export_report_docx(
             industry_name,
         )
 
-    normalized_sections = _normalize_body_sections(body_sections, warnings)
+    normalized_sections = _normalize_body_sections(body_sections, warnings, references)
     if not normalized_sections:
         return _error_response(
             "body_sections must contain at least one non-empty body_text",
@@ -82,6 +87,7 @@ def export_report_docx(
             report_title=normalized_title,
             abstract_text=cleaned_abstract,
             body_sections=normalized_sections,
+            references=_collect_used_references(normalized_sections, references),
         )
     except ImportError as exc:
         return _error_response(
@@ -100,7 +106,7 @@ def export_report_docx(
     }
 
 
-def _normalize_body_sections(body_sections: list, warnings: List[dict]) -> List[dict]:
+def _normalize_body_sections(body_sections: list, warnings: List[dict], references: list) -> List[dict]:
     normalized: List[dict] = []
     fallback_level1_index = 0
     fallback_level2_index = 0
@@ -123,6 +129,22 @@ def _normalize_body_sections(body_sections: list, warnings: List[dict]) -> List[
             outline_id=outline_id,
         )
         warnings.extend(cleanup_warnings)
+        section_evidence = section.get("external_evidence_blocks")
+        if not isinstance(section_evidence, list) or not section_evidence:
+            known_ids = {
+                _safe_text(value)
+                for value in section.get("citation_ids", [])
+                if _safe_text(value)
+            }
+            section_evidence = [
+                reference for reference in references
+                if isinstance(reference, dict)
+                and _safe_text(reference.get("citation_id")) in known_ids
+            ]
+        body_text, citation_ids, citation_warnings = validate_body_citations(body_text, section_evidence)
+        for warning in citation_warnings:
+            warning["stage"] = "word_export_citation_validation"
+        warnings.extend(citation_warnings)
         if not body_text:
             warnings.append(
                 {
@@ -150,12 +172,13 @@ def _normalize_body_sections(body_sections: list, warnings: List[dict]) -> List[
                 "parent_level1_title": parent_title or f"正文一级标题{fallback_level1_index}",
                 "title": _safe_text(section.get("title")) or f"二级标题{fallback_level2_index}",
                 "paragraphs": _split_paragraphs(body_text),
+                "citation_ids": citation_ids,
             }
         )
     return normalized
 
 
-def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections: List[dict]) -> None:
+def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections: List[dict], references: List[dict]) -> None:
     docx = _import_docx_modules()
     document = docx.Document()
     _configure_section(document, docx)
@@ -192,7 +215,40 @@ def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections
             paragraph = document.add_paragraph(style="ReportBody")
             _add_body_runs(paragraph, paragraph_text)
 
+    if references:
+        heading = document.add_paragraph(style="ReportHeading1")
+        _add_single_run(heading, "参考资料", "黑体", "SimHei", 16)
+        for reference in references:
+            citation_id = _safe_text(reference.get("citation_id"))
+            title = _safe_text(reference.get("title")) or "未命名资料"
+            publish_date = _safe_text(reference.get("publish_date"))
+            retrieved_at = _safe_text(reference.get("retrieved_at"))
+            source_address = _safe_text(reference.get("source_address"))
+            details = f"[{citation_id}] {title}"
+            if publish_date:
+                details += f"，发布于 {publish_date}"
+            if retrieved_at:
+                details += f"，检索于 {retrieved_at}"
+            if source_address:
+                details += f"，{source_address}"
+            paragraph = document.add_paragraph(style="ReportBody")
+            _add_body_runs(paragraph, details)
+            excerpt = _safe_text(reference.get("evidence_excerpt"))
+            if excerpt:
+                paragraph = document.add_paragraph(style="ReportBody")
+                _add_body_runs(paragraph, f"命中片段：{excerpt}")
+
     document.save(path)
+
+
+def _collect_used_references(body_sections: list, references: list) -> List[dict]:
+    used_ids = {
+        citation_id
+        for section in body_sections
+        if isinstance(section, dict)
+        for citation_id in section.get("citation_ids", [])
+    }
+    return [reference for reference in references if isinstance(reference, dict) and reference.get("citation_id") in used_ids]
 
 
 def _import_docx_modules():
