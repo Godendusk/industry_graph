@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, List
 
 from llm_client import LLMQueryResult, llm
+from .citations import collect_used_references, validate_body_citations
 from .industry_config import SUPPORTED_INDUSTRIES
 
 
@@ -58,6 +59,11 @@ def generate_body_section(
 
     section_warnings = _copy_list(writing_task.get("warnings"))
     section_warnings.extend(cleanup_warnings)
+    external_evidence_blocks = _external_evidence_blocks(writing_task)
+    body_text, citation_ids, citation_warnings = validate_body_citations(
+        body_text, external_evidence_blocks
+    )
+    section_warnings.extend(citation_warnings)
 
     result = _base_section_payload(writing_task)
     result.update(
@@ -65,7 +71,8 @@ def generate_body_section(
             "status": "success",
             "body_text": body_text,
             "graph_evidence_blocks": _graph_evidence_blocks(writing_task),
-            "external_evidence_blocks": _external_evidence_blocks(writing_task),
+            "external_evidence_blocks": external_evidence_blocks,
+            "citation_ids": citation_ids,
             "warnings": section_warnings,
         }
     )
@@ -132,11 +139,15 @@ def generate_report_bodies(
     writing_tasks: list,
     industry: str = "ai",
     max_workers: int = DEFAULT_MAX_WORKERS,
+    references: list = None,
 ) -> dict:
     """Generate body text for all writing tasks, preserving input order."""
     normalized_prompt = _safe_text(user_prompt)
     normalized_title = _safe_text(report_title)
     normalized_industry = _safe_text(industry)
+
+    if references is not None and not isinstance(references, list):
+        return _error_response("references must be an array", normalized_industry, "")
 
     if not normalized_prompt:
         return _error_response("user_prompt cannot be empty", normalized_industry, "")
@@ -194,6 +205,7 @@ def generate_report_bodies(
                     body_sections[index] = section
 
     warnings = _collect_warnings(body_sections)
+    used_references = collect_used_references(body_sections, references or [])
     success_count = sum(
         1 for section in body_sections if section.get("status") == "success"
     )
@@ -211,6 +223,7 @@ def generate_report_bodies(
         "user_prompt": normalized_prompt,
         "report_title": normalized_title,
         "body_sections": body_sections,
+        "references": used_references,
         "warnings": warnings,
     }
 
@@ -350,9 +363,10 @@ def _build_body_user_prompt(
 特别需要注意生成正文时要刻意避免当前二级标题下以及同一一级标题不同二级标题下的每一自然段生成的正文的首句内容和句式重复或者高度相似。
 请检查引用的资料，不要出现常识性错误，例如误把民营企业（华为海思）当成央企国企，误把外资企业（英伟达）当成民营企业。
 要求报告正文绝对不多于 1000字，段落绝对不超过 3 段。
-不得标注 [知识图谱1] 等知识图谱的引用编号。
-不得输出参考文献、引用列表说明。
-如果正文生成涉及到总书记讲话、数字、政策等内容需要在正文里面输出引用外部资料来源的引用编号，外部资料来源只需要指明具体的外部资料标题，比如[外部资料标题]，里面的外部资料标题由真实引用的外部资料库上下文中的外部资料标题替换，不得自己编造，不得简单标注[外部资料1]等标记。
+不得把 [知识图谱1] 等知识图谱编号当作文章来源。
+凡使用外部资料中的数字、政策、领导讲话、专家观点或企业案例，必须在对应句末保留该资料的 [C数字] 引用编号。
+只能使用“外部资料库上下文”中真实出现的 [C数字]，不得编造引用编号、资料标题或网址。
+正文不输出独立参考文献列表，参考资料列表由系统生成。
 不要生成表格、图片等内容。
 不得生成摘要、目录、标题页、Word 导出说明或其他章节内容。"""
 
@@ -421,6 +435,7 @@ def _section_error_response(writing_task: dict, message: str) -> dict:
             "body_text": "",
             "graph_evidence_blocks": _graph_evidence_blocks(writing_task),
             "external_evidence_blocks": _external_evidence_blocks(writing_task),
+            "citation_ids": [],
             "warnings": _copy_list(writing_task.get("warnings")) + [warning]
             if isinstance(writing_task, dict)
             else [warning],
@@ -488,5 +503,6 @@ def _error_response(message: str, industry: str, industry_name: str) -> dict:
         "industry_name": industry_name,
         "message": message,
         "body_sections": [],
+        "references": [],
         "warnings": [],
     }

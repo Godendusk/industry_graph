@@ -5,6 +5,26 @@
 > 统一说明：项目内所有大模型调用统一走 `llm_client.py`（`llm = LLMClient()` 单例），由各模块脚本引用。
 > 部署、运行与数据准备（含数据格式与存放位置）详见：`DEPLOYMENT.md`。
 
+## 0）产业报告文章溯源
+
+### 0.1 数据关系
+
+- `coordinator` 完成外部资料检索后，按 `library + material_id`（缺失时回退 `vector_id`）分配报告级 `C1...Cn`。
+- `writing_tasks[].external_rag_retrieval.evidence_blocks` 保存本节允许使用的编号；`references` 保存报告级去重资料。
+- `body_sections[].citation_ids` 只保存正文实际出现且通过本节证据校验的编号。
+- 局部重写复用已有编号，新材料从当前最大编号后追加；历史记录缺少 `references` 时按空数组兼容加载。
+
+### 0.2 接口字段
+
+- `POST /api/report/coordinator`：返回带 `citation_id` 的外部证据块和候选 `references`。
+- `POST /api/report/body`：请求携带统筹阶段的完整 `references`；响应返回每节 `citation_ids` 以及实际使用的 `references`。
+- `POST /api/report/rewrite`：请求和响应携带 `references`；响应返回重写节的 `citation_ids`、更新后的证据块和引用表。
+- `POST /api/report/export/word`：请求携带 `references`；Word 只输出正文实际使用的参考资料。
+
+### 0.3 引用边界
+
+正文中的 `[C数字]` 只能引用当前小节证据集合中存在的编号；非法编号会被清理并产生可见 warning。引用校验保证材料可追溯，不自动证明材料充分支持相邻结论。知识图谱依据仅可打开图谱节点，不宣称具有原始文章溯源能力。
+
 ---
 
 ## 1）基础图谱通过其骨架进行补充
