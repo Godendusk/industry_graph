@@ -4,6 +4,7 @@ from unittest.mock import patch
 from llm_client import LLMQueryResult
 from report_generation.task_card_agent import (
     REPORT_REQUIREMENT_FALLBACK_MESSAGE,
+    _external_rag_available,
     _requirement_failure_reason,
     generate_report_requirement,
     generate_writing_task_card,
@@ -178,6 +179,28 @@ class TaskCardTest(unittest.TestCase):
         self.assertEqual(result["status"], "success")
         self.assertEqual(result["task_card"]["page_industry"], "embodied")
         self.assertEqual(query.call_count, 2)
+
+    def test_task_card_exposes_source_availability_flags(self):
+        with patch(
+            "report_generation.task_card_agent.llm.query_result",
+            side_effect=[_result(VALID_TASK_CARD_JSON), _result(VALID_REQUIREMENT)],
+        ):
+            result = generate_writing_task_card(
+                "具身智能投资状况", "关注沪深上市公司", "embodied"
+            )
+
+        self.assertEqual(result["status"], "success")
+        matches = result["task_card"]["industry_matches"]
+        ai_match = next(item for item in matches if item["key"] == "ai")
+        self.assertIn("external_rag_available", ai_match)
+        self.assertIn(ai_match["external_rag_status"], {"matched", "unavailable"})
+        self.assertIn("use_graph", result["task_card"])
+        self.assertIn("use_external_rag", result["task_card"])
+
+    def test_gitkeep_only_vector_directory_is_not_external_rag_available(self):
+        from report_generation.industry_config import INDUSTRY_CONFIG
+
+        self.assertFalse(_external_rag_available(INDUSTRY_CONFIG["quantum"]))
 
 
 if __name__ == "__main__":

@@ -27,6 +27,8 @@ def generate_writing_tasks(
     outline: list,
     industry: str = "ai",
     top_k: int = DEFAULT_TOP_K,
+    use_graph: bool = True,
+    use_external_rag: bool = True,
 ) -> dict:
     """Generate per-subsection writing system prompts after outline confirmation."""
     normalized_prompt = str(user_prompt or "").strip()
@@ -61,6 +63,8 @@ def generate_writing_tasks(
                 report_title=normalized_title,
                 industry=normalized_industry,
                 top_k=normalized_top_k,
+                use_graph=use_graph,
+                use_external_rag=use_external_rag,
             ): index
             for index, subsection in enumerate(final_subsections)
         }
@@ -99,6 +103,8 @@ def generate_writing_tasks(
         "status": "success",
         "industry": normalized_industry,
         "industry_name": industry_name,
+        "use_graph": bool(use_graph),
+        "use_external_rag": bool(use_external_rag),
         "user_prompt": normalized_prompt,
         "report_title": normalized_title,
         "writing_tasks": writing_tasks,
@@ -113,6 +119,8 @@ def _generate_writing_task_for_subsection(
     report_title: str,
     top_k: int,
     industry: str = "ai",
+    use_graph: bool = True,
+    use_external_rag: bool = True,
 ) -> tuple[dict, List[dict]]:
     task_warnings: List[dict] = []
     warnings: List[dict] = []
@@ -123,7 +131,7 @@ def _generate_writing_task_for_subsection(
         subsection_title=subsection["title"],
     )
 
-    if industry:
+    if industry and use_graph:
         graph_retrieval = _retrieve_graph_for_subsection(
             query=section_retrieval_query,
             industry=industry,
@@ -131,6 +139,10 @@ def _generate_writing_task_for_subsection(
             warnings=warnings,
             task_warnings=task_warnings,
         )
+    else:
+        graph_retrieval = {"status": "skipped", "graph_evidence_blocks": [], "evidence_blocks": []}
+
+    if industry and use_external_rag:
         external_rag_retrieval = _retrieve_external_rag_for_subsection(
             query=section_retrieval_query,
             industry=industry,
@@ -140,7 +152,6 @@ def _generate_writing_task_for_subsection(
             task_warnings=task_warnings,
         )
     else:
-        graph_retrieval = {"status": "skipped", "graph_evidence_blocks": []}
         external_rag_retrieval = {"status": "skipped", "evidence_blocks": []}
 
     prompt_result = _generate_writing_system_prompt(

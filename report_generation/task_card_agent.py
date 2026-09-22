@@ -234,6 +234,7 @@ def _normalize_task_card(
         config = INDUSTRY_CONFIG[key]
         # 图谱文件是否存在决定后续是否能走该产业的知识图谱增强。
         graph_available = Path(config.get("graph_path", "")).is_file()
+        external_rag_available = _external_rag_available(config)
         source = "recognized" if key == recognized_match.get("key") else "candidate"
         if key == page_industry and source != "recognized":
             source = "page"
@@ -244,6 +245,8 @@ def _normalize_task_card(
             "reason": candidate_reasons.get(key, ""),
             "graph_available": graph_available,
             "graph_status": "matched" if graph_available else "unavailable",
+            "external_rag_available": external_rag_available,
+            "external_rag_status": "matched" if external_rag_available else "unavailable",
         })
 
     selected_industry = recognized_match.get("key", "")
@@ -258,6 +261,7 @@ def _normalize_task_card(
         None,
     )
     graph_available = bool(selected_match and selected_match["graph_available"])
+    external_rag_available = bool(selected_match and selected_match["external_rag_available"])
     # graph_match 给前端展示图谱匹配状态，也给后续流程判断是否能启用图谱增强。
     # 返回的 task_card 会被前端保存到历史记录，并原样传给 outline 阶段。
     return {
@@ -274,6 +278,8 @@ def _normalize_task_card(
         "selected_industry": selected_industry,
         "selected_industry_name": _industry_name(selected_industry),
         "selection_source": selection_source or "none",
+        "use_graph": graph_available,
+        "use_external_rag": external_rag_available,
         "industry_conflict": bool(
             recognized_match.get("key")
             and page_industry in INDUSTRY_CONFIG
@@ -290,7 +296,31 @@ def _normalize_task_card(
                 else "未匹配到可用产业图谱，将使用已有资料和大模型能力继续生成。"
             ),
         },
+        "external_rag_match": {
+            "status": "matched" if external_rag_available else "unavailable",
+            "industry": selected_industry,
+            "industry_name": _industry_name(selected_industry),
+            "external_rag_available": external_rag_available,
+            "message": (
+                "已匹配可用外部资料库，后续生成将调用该资料库。"
+                if external_rag_available
+                else "未匹配到可用外部资料库，后续生成不会调用外部资料库。"
+            ),
+        },
     }
+
+
+def _external_rag_available(config: dict) -> bool:
+    """Return whether an industry has a locally configured external material source."""
+    if clean_text(config.get("external_column_id")):
+        return True
+    vector_db_path = config.get("vector_db_path")
+    if not vector_db_path:
+        return False
+    path = Path(vector_db_path)
+    if not path.exists():
+        return False
+    return any(item.name != ".gitkeep" for item in path.iterdir())
 
 
 def _normalize_candidate_keys(value: Any) -> List[str]:

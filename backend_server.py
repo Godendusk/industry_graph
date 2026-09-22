@@ -387,6 +387,8 @@ def report_coordinator():
     industry = str(data.get("industry", "ai") or "").strip()
     outline = data.get("outline")
     top_k = data.get("top_k", 10)
+    use_graph = _coerce_bool(data.get("use_graph"), True)
+    use_external_rag = _coerce_bool(data.get("use_external_rag"), True)
 
     if not user_prompt:
         return jsonify({"status": "error", "message": "user_prompt cannot be empty"}), 400
@@ -401,10 +403,26 @@ def report_coordinator():
         outline=outline,
         industry=industry,
         top_k=top_k,
+        use_graph=use_graph,
+        use_external_rag=use_external_rag,
     )
     if result.get("status") != "success":
         return jsonify(result), 400
     return jsonify(result)
+
+
+def _coerce_bool(value, default: bool = True) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return default
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"1", "true", "yes", "on"}:
+            return True
+        if normalized in {"0", "false", "no", "off"}:
+            return False
+    return bool(value)
 
 
 # --- Report generation: body agent ---

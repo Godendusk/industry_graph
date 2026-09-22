@@ -144,6 +144,41 @@ class CoordinatorStabilityTest(unittest.TestCase):
             [f"S{section_index}.{subsection_index}" for section_index in range(1, 5) for subsection_index in range(1, 6)],
         )
 
+    def test_source_switches_skip_graph_and_external_rag_retrieval(self):
+        graph_calls = []
+        rag_calls = []
+
+        with patch.object(
+            coordinator_agent,
+            "retrieve_industry_graph",
+            side_effect=lambda *args, **kwargs: graph_calls.append((args, kwargs)),
+        ), patch.object(
+            coordinator_agent,
+            "retrieve_external_rag",
+            side_effect=lambda *args, **kwargs: rag_calls.append((args, kwargs)),
+        ), patch.object(
+            coordinator_agent.llm,
+            "query",
+            return_value='{"writing_system_prompt": "本地模拟的正文任务书"}',
+        ):
+            result = coordinator_agent.generate_writing_tasks(
+                user_prompt="生成具身智能报告",
+                report_title="具身智能报告",
+                outline=_twenty_subsection_outline()[:1],
+                industry="embodied",
+                use_graph=False,
+                use_external_rag=False,
+            )
+
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(graph_calls, [])
+        self.assertEqual(rag_calls, [])
+        self.assertTrue(all(
+            task["graph_retrieval"]["status"] == "skipped"
+            and task["external_rag_retrieval"]["status"] == "skipped"
+            for task in result["writing_tasks"]
+        ))
+
     def test_unhandled_worker_errors_return_ordered_fallback_tasks_and_warnings(self):
         with patch.object(
             coordinator_agent,

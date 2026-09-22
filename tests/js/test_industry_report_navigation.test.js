@@ -316,6 +316,48 @@ test("embodied report coordinator request keeps the selected industry", async ()
     assert.equal(JSON.parse(requests[0].options.body).industry, "embodied");
 });
 
+test("report coordinator request includes selected source switches", async () => {
+    const { context } = loadReportScript();
+    const requests = [];
+    const elements = {
+        "industry-report-prompt": { value: "" },
+        "industry-report-title": { value: "具身智能产业报告" },
+    };
+    context.API_BASE = "";
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async (url, options) => {
+        requests.push({ url, options });
+        return {
+            ok: true,
+            async json() {
+                return { status: "success", writing_tasks: [] };
+            },
+        };
+    };
+    vm.runInContext(`
+        industryReportWorkspace.taskCard = {
+            selected_title: "具身智能产业报告",
+            report_requirement: "围绕具身智能产业开展研究。",
+            selected_industry: "embodied",
+            use_graph: false,
+            use_external_rag: false,
+        };
+        industryReportWorkspace.industry = "embodied";
+        readIndustryReportOutlineFromDom = () => [{
+            level1_id: "S1",
+            level1_title: "产业发展",
+            subsections: [{ outline_id: "S1.1", title: "技术进展" }],
+        }];
+    `, context);
+
+    await context.prepareIndustryReportTasks();
+
+    const body = JSON.parse(requests[0].options.body);
+    assert.equal(body.industry, "embodied");
+    assert.equal(body.use_graph, false);
+    assert.equal(body.use_external_rag, false);
+});
+
 test("embodied report header uses the supported-industry style", () => {
     const { context, window } = loadReportScript();
     const pill = { textContent: "", className: "" };
