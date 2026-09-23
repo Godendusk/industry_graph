@@ -236,7 +236,7 @@ def rag_query():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-# --- Report generation: editable writing task~ card ---
+# --- Report generation: editable writing task card ---
 # 生成可以编辑的写作任务卡片，供前端展示和修改
 @app.route("/api/report/task-card", methods=["POST"])
 @token_required
