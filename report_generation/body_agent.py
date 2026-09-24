@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import copy
 import re
+import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from queue import Queue
 from typing import Any, List
 
 from llm_client import LLMQueryResult, llm
@@ -228,6 +230,132 @@ def generate_report_bodies(
     }
 
 
+def stream_report_bodies(
+    user_prompt: str,
+    report_title: str,
+    writing_tasks: list,
+    industry: str = "ai",
+    max_workers: int = DEFAULT_MAX_WORKERS,
+    references: list = None,
+):
+    """Yield body-generation progress events as sections complete."""
+    normalized_prompt = _safe_text(user_prompt)
+    normalized_title = _safe_text(report_title)
+    normalized_industry = _safe_text(industry)
+    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry, "未配置行业")
+
+    if references is not None and not isinstance(references, list):
+        yield _stream_error_event("references must be an array", normalized_industry, industry_name)
+        return
+    if not normalized_prompt:
+        yield _stream_error_event("user_prompt cannot be empty", normalized_industry, industry_name)
+        return
+    if not normalized_title:
+        yield _stream_error_event("report_title cannot be empty", normalized_industry, industry_name)
+        return
+    if not isinstance(writing_tasks, list) or not writing_tasks:
+        yield _stream_error_event("writing_tasks must contain at least one item", normalized_industry, industry_name)
+        return
+
+    task_groups = _group_writing_tasks_by_level1(writing_tasks)
+    actual_workers = _normalize_max_workers(max_workers, len(task_groups))
+    body_sections: List[dict] = [None] * len(writing_tasks)  # type: ignore[list-item]
+    event_queue: Queue = Queue()
+    stop_token = object()
+
+    yield {
+        "event": "started",
+        "status": "started",
+        "industry": normalized_industry,
+        "industry_name": industry_name,
+        "total": len(writing_tasks),
+        "group_count": len(task_groups),
+        "max_workers": actual_workers,
+    }
+
+    def put_event(event: dict) -> None:
+        event_queue.put(event)
+
+    def run_group(group: List[dict]) -> List[tuple[int, dict]]:
+        return _generate_body_group(
+            task_group=group,
+            user_prompt=normalized_prompt,
+            report_title=normalized_title,
+            on_event=put_event,
+        )
+
+    def producer() -> None:
+        try:
+            if actual_workers == 1:
+                for group in task_groups:
+                    for index, section in run_group(group):
+                        body_sections[index] = section
+            else:
+                with ThreadPoolExecutor(max_workers=actual_workers) as executor:
+                    future_to_group = {
+                        executor.submit(run_group, group): group
+                        for group in task_groups
+                    }
+                    for future in as_completed(future_to_group):
+                        group = future_to_group[future]
+                        try:
+                            generated_sections = future.result()
+                        except Exception as exc:
+                            generated_sections = []
+                            for item in group:
+                                index = item["index"]
+                                section = _section_error_response(
+                                    item["task"] if isinstance(item["task"], dict) else {},
+                                    f"body group generation failed: {exc}",
+                                )
+                                generated_sections.append((index, section))
+                                event_queue.put(_section_stream_event("section_failed", index, section))
+                        for index, section in generated_sections:
+                            body_sections[index] = section
+
+            warnings = _collect_warnings(body_sections)
+            used_references = collect_used_references(body_sections, references or [])
+            success_count = sum(
+                1 for section in body_sections if isinstance(section, dict) and section.get("status") == "success"
+            )
+            if success_count == len(body_sections):
+                status = "success"
+            elif success_count == 0:
+                status = "error"
+            else:
+                status = "partial_success"
+            event_queue.put({
+                "event": "completed",
+                "status": status,
+                "industry": normalized_industry,
+                "industry_name": industry_name,
+                "user_prompt": normalized_prompt,
+                "report_title": normalized_title,
+                "body_sections": body_sections,
+                "references": used_references,
+                "warnings": warnings,
+                "success_count": success_count,
+                "total": len(body_sections),
+            })
+        except Exception as exc:
+            event_queue.put({
+                "event": "error",
+                "status": "error",
+                "industry": normalized_industry,
+                "industry_name": industry_name,
+                "message": str(exc),
+            })
+        finally:
+            event_queue.put(stop_token)
+
+    threading.Thread(target=producer, daemon=True).start()
+    while True:
+        event = event_queue.get()
+        if event is stop_token:
+            break
+        yield event
+
+
 def _group_writing_tasks_by_level1(writing_tasks: list) -> List[List[dict]]:
     groups: List[List[dict]] = []
     group_index_by_key = {}
@@ -260,6 +388,7 @@ def _generate_body_group(
     task_group: List[dict],
     user_prompt: str,
     report_title: str,
+    on_event=None,
 ) -> List[tuple[int, dict]]:
     generated_sections: List[tuple[int, dict]] = []
     previous_success_sections: List[dict] = []
@@ -267,6 +396,8 @@ def _generate_body_group(
     for item in task_group:
         index = item["index"]
         task = item["task"]
+        if callable(on_event):
+            on_event(_task_stream_event("section_started", index, task))
         try:
             section = generate_body_section(
                 writing_task=task,
@@ -281,6 +412,9 @@ def _generate_body_group(
             )
 
         generated_sections.append((index, section))
+        if callable(on_event):
+            event_name = "section_completed" if section.get("status") == "success" else "section_failed"
+            on_event(_section_stream_event(event_name, index, section))
         if (
             isinstance(section, dict)
             and section.get("status") == "success"
@@ -289,6 +423,32 @@ def _generate_body_group(
             previous_success_sections.append(section)
 
     return generated_sections
+
+
+def _task_stream_event(event_name: str, index: int, task: Any) -> dict:
+    payload = _base_section_payload(task if isinstance(task, dict) else {})
+    payload.update({"event": event_name, "index": index, "status": "started"})
+    return payload
+
+
+def _section_stream_event(event_name: str, index: int, section: dict) -> dict:
+    payload = dict(section if isinstance(section, dict) else {})
+    payload.update({
+        "event": event_name,
+        "index": index,
+        "status": payload.get("status") or ("success" if event_name == "section_completed" else "error"),
+    })
+    return payload
+
+
+def _stream_error_event(message: str, industry: str, industry_name: str) -> dict:
+    return {
+        "event": "error",
+        "status": "error",
+        "industry": industry,
+        "industry_name": industry_name,
+        "message": message,
+    }
 
 
 def _format_previous_body_sections(previous_body_sections: Any) -> str:

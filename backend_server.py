@@ -7,15 +7,15 @@ import requests
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from flask import Flask, request, jsonify, send_from_directory, render_template
+from flask import Flask, request, jsonify, send_from_directory, render_template, Response, stream_with_context
 from flask_cors import CORS
 from token_util import token_required
 from werkzeug.utils import secure_filename
 
 from graph_import_script import run_import
 from RAG.build_vector_db import query_vector_db, query_graph
-from report_generation.body_agent import generate_report_bodies
-from report_generation.coordinator_agent import generate_writing_tasks
+from report_generation.body_agent import generate_report_bodies, stream_report_bodies
+from report_generation.coordinator_agent import generate_writing_tasks, stream_writing_tasks
 from report_generation.outline_agent import generate_report_outline
 from report_generation.rewrite_agent import recommend_rewrite_materials, rewrite_body_section
 from report_generation.summary_agent import generate_report_summary
@@ -411,6 +411,47 @@ def report_coordinator():
     return jsonify(result)
 
 
+@app.route("/api/report/coordinator/stream", methods=["POST"])
+@token_required
+def report_coordinator_stream():
+    data = request.json or {}
+    user_prompt = str(data.get("user_prompt") or "").strip()
+    report_title = str(data.get("report_title") or "").strip()
+    industry = str(data.get("industry", "ai") or "").strip()
+    outline = data.get("outline")
+    top_k = data.get("top_k", 10)
+    use_graph = _coerce_bool(data.get("use_graph"), True)
+    use_external_rag = _coerce_bool(data.get("use_external_rag"), True)
+
+    if not user_prompt:
+        return jsonify({"status": "error", "message": "user_prompt cannot be empty"}), 400
+    if not report_title:
+        return jsonify({"status": "error", "message": "report_title cannot be empty"}), 400
+    if not isinstance(outline, list):
+        return jsonify({"status": "error", "message": "outline must be an array"}), 400
+
+    def generate_events():
+        for event in stream_writing_tasks(
+            user_prompt=user_prompt,
+            report_title=report_title,
+            outline=outline,
+            industry=industry,
+            top_k=top_k,
+            use_graph=use_graph,
+            use_external_rag=use_external_rag,
+        ):
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+    return Response(
+        stream_with_context(generate_events()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 def _coerce_bool(value, default: bool = True) -> bool:
     if isinstance(value, bool):
         return value
@@ -457,6 +498,47 @@ def report_body():
     if result.get("status") == "error" and not result.get("body_sections"):
         return jsonify(result), 400
     return jsonify(result)
+
+
+@app.route("/api/report/body/stream", methods=["POST"])
+@token_required
+def report_body_stream():
+    data = request.json or {}
+    user_prompt = str(data.get("user_prompt") or "").strip()
+    report_title = str(data.get("report_title") or "").strip()
+    industry = str(data.get("industry", "ai") or "").strip()
+    writing_tasks = data.get("writing_tasks")
+    references = data.get("references", [])
+    max_workers = data.get("max_workers", 3)
+
+    if not user_prompt:
+        return jsonify({"status": "error", "message": "user_prompt cannot be empty"}), 400
+    if not report_title:
+        return jsonify({"status": "error", "message": "report_title cannot be empty"}), 400
+    if not isinstance(writing_tasks, list):
+        return jsonify({"status": "error", "message": "writing_tasks must be an array"}), 400
+    if not isinstance(references, list):
+        return jsonify({"status": "error", "message": "references must be an array"}), 400
+
+    def generate_events():
+        for event in stream_report_bodies(
+            user_prompt=user_prompt,
+            report_title=report_title,
+            writing_tasks=writing_tasks,
+            industry=industry,
+            max_workers=max_workers,
+            references=references,
+        ):
+            yield f"data: {json.dumps(event, ensure_ascii=False)}\n\n"
+
+    return Response(
+        stream_with_context(generate_events()),
+        mimetype="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 # --- Report generation: server-local report history ---

@@ -59,6 +59,28 @@ class BodyAgentTest(unittest.TestCase):
         self.assertEqual(result["body_text"], "")
         self.assertIn("重试", result["message"])
 
+    def test_stream_report_bodies_emits_section_progress_and_completion(self):
+        with patch.object(
+            body_agent.llm,
+            "query_result",
+            return_value=LLMQueryResult(content="流式生成正文。", finish_reason="stop"),
+        ):
+            events = list(body_agent.stream_report_bodies(
+                user_prompt="分析具身智能龙头企业",
+                report_title="具身智能上市公司研究",
+                writing_tasks=[_writing_task()],
+                industry="embodied",
+                max_workers=1,
+                references=[],
+            ))
+
+        self.assertEqual(events[0]["event"], "started")
+        self.assertIn("section_started", [event["event"] for event in events])
+        self.assertIn("section_completed", [event["event"] for event in events])
+        self.assertEqual(events[-1]["event"], "completed")
+        self.assertEqual(events[-1]["status"], "success")
+        self.assertEqual(events[-1]["body_sections"][0]["body_text"], "流式生成正文。")
+
 
 if __name__ == "__main__":
     unittest.main()

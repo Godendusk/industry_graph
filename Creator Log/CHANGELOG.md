@@ -112,3 +112,22 @@
   - `report_generation/task_card_agent.py`：补充外部资料库可用性字段并修正占位目录判断。
   - `report_generation/coordinator_agent.py`、`backend_server.py`：新增图谱和外部资料库检索开关。
   - `tests/`：补充任务卡可用性、检索跳过和前端请求参数测试。
+
+## 2026-09-24
+
+- godendusk
+
+- 改动内容：
+  - 优化产业报告生成流程展示，新增“工作流”智能体区域，按需求理解、大纲生成、统筹任务、正文生成和报告导出展示状态。
+  - 新增统筹任务和正文生成 SSE 流式进度，网页端可逐个查看写作任务和正文小节的开始、完成或失败状态。
+  - 优化正文生成按钮状态，大纲未生成或未确认生成写作任务时保持置灰；编辑大纲后自动作废已确认状态。
+  - 调整报告需求区交互与状态文案，提交按钮移至输入区底部，需求区只显示需求提交相关状态。
+  - 修正外部资料库可用性判断，需同时存在 `external_column_id` 和对应 `chroma.sqlite3`。
+  - 修复统筹和正文进度分母跳动问题，统一按任务总数展示进度。
+
+- 主要修改代码：
+  - `templates/components/industry_report.html`：调整报告需求按钮布局和工作流区域位置。
+  - `static/js/modules/industry_report.js`：新增工作流智能体展示、流式进度消费、按钮禁用逻辑和前端状态同步。
+  - `report_generation/coordinator_agent.py`、`body_agent.py`、`backend_server.py`：新增统筹任务和正文生成流式接口。
+  - `report_generation/task_card_agent.py`：修正外部资料库可用性判定。
+  - `tests/`：补充外部资料库判定、统筹流式和正文流式相关测试。

@@ -14,9 +14,9 @@ from .structured_output import clean_text, clean_text_list, parse_json_object
 
 TASK_CARD_MAX_ATTEMPTS = 2
 REPORT_REQUIREMENT_MAX_ATTEMPTS = 2
-REPORT_REQUIREMENT_MAX_TOKENS = 900
-REPORT_REQUIREMENT_MIN_CHARS = 180
-REPORT_REQUIREMENT_MAX_CHARS = 360
+REPORT_REQUIREMENT_MAX_TOKENS = 1000
+REPORT_REQUIREMENT_MIN_CHARS = 220
+REPORT_REQUIREMENT_MAX_CHARS = 450
 REPORT_REQUIREMENT_FALLBACK_MESSAGE = "模型未返回完整报告需求，已生成可编辑基础需求，请确认后继续。"
 
 
@@ -311,16 +311,13 @@ def _normalize_task_card(
 
 
 def _external_rag_available(config: dict) -> bool:
-    """Return whether an industry has a locally configured external material source."""
-    if clean_text(config.get("external_column_id")):
-        return True
+    """Return whether an industry has a configured source and local Chroma store."""
+    if not clean_text(config.get("external_column_id")):
+        return False
     vector_db_path = config.get("vector_db_path")
     if not vector_db_path:
         return False
-    path = Path(vector_db_path)
-    if not path.exists():
-        return False
-    return any(item.name != ".gitkeep" for item in path.iterdir())
+    return (Path(vector_db_path) / "chroma.sqlite3").is_file()
 
 
 def _normalize_candidate_keys(value: Any) -> List[str]:
@@ -409,20 +406,37 @@ def _build_user_prompt(
 
 
 def _build_report_requirement_system_prompt() -> str:
-    # system prompt 负责限定角色、优先级和输出形态，防止模型额外输出标题或解释。
-    return f"""你是企业产业洞察报告的写作任务生成助手。你只负责生成 report_requirement。
-只输出恰好一段 180 至 360 个中文字符的正文，最后一个字符必须是“。”。
-报告需求必须忠实保留用户明确的研究对象、范围、重点、篇幅和禁止扩展项，可补足表达但不得擅自增加任务。
-report_requirement 要写成一段完整、明确、可直接用于后续大纲规划的写作需求，包含研究对象、核心问题、最多四个重点分析维度、边界排除和输出口径。
-如果用户提出“排除、不得、不包含、不分析”等边界，必须明确写入 report_requirement，且不得把被排除方向作为产业组成部分、案例或趋势展开。
-如果用户没有给出额外需求，则依据原始标题自动推导合理的研究任务，生成完整 report_requirement，禁止直接填写“无补充需求”作为任务书内容。
-报告需求要符合企业产业洞察报告风格：严谨、克制、问题导向或趋势研判导向，避免学生论文式、模板化和夸张营销表述。
-生成依据的重要程度必须是：用户原始需求 > 产业方向 > 用户原始标题。
-产业方向必须进入报告需求，作为后续大纲规划、产业图谱和资料检索的产业上下文。
-标题只作为弱参考，不得覆盖用户原始需求和产业方向。
-如用户原始需求与产业方向存在张力，应以用户原始需求为准，并围绕产业方向建立合理研究边界。
-只输出 report_requirement 正文，不要输出 JSON、Markdown、标题或解释。"""
+    # system prompt 负责限定角色、优先级和输出形态，防止模型额外输出标题或解释
+    return """你是企业产业洞察报告的写作任务生成助手，只负责生成 report_requirement。
 
+【输出硬约束】
+1. 只输出一段正文，字数严格控制在 220 至450 个中文字符，最后一个字符必须是“。”。
+2. 只输出正文本身，不要输出 JSON、Markdown、标题、序号、解释说明或任何额外内容。
+
+【内容规则】
+report_requirement 要写成一段完整、明确、可直接用于后续大纲规划的写作需求，包含研究对象、核心问题、最多四个或者五个重点分析维度、边界排除和输出口径。
+1. 必须忠实保留用户明确的研究对象、范围、重点、篇幅和禁止扩展项，可补足表达但不得擅自增加任务。
+2. 报告需求需包含：研究对象、核心问题、最多 4个或者5个重点分析维度、边界排除、输出口径。
+3. 分析维度之间相互独立、不交叉。
+4. 用户明确排除的内容，不得作为分析维度、佐证案例、背景铺垫或延伸议题，完全不纳入研究范围。
+5. 如果用户没有给出额外需求，则依据原始标题自动推导合理的研究任务，生成完整 report_requirement，禁止直接填写“无补充需求”作为任务书内容。
+
+【优先级规则】
+生成依据重要程度：用户原始需求 > 产业方向 > 用户原始标题。
+产业方向必须进入报告需求，作为后续大纲规划、产业图谱和资料检索的产业上下文。
+当用户需求与产业方向存在范围差异时，以用户需求为核心研究边界，产业方向仅作为行业背景和数据口径，不得扩展至全产业。
+如用户原始需求与产业方向存在张力，应以用户原始需求为准，并围绕产业方向建立合理研究边界。
+
+【风格要求】
+符合企业产业洞察报告风格：严谨、克制、陈述客观、问题导向。避免学生论文式、模板化和夸张营销表述。
+报告需求要符合企业产业洞察报告风格：严谨、克制、问题导向或趋势研判导向，
+
+【输出前自检】
+1. 字数是否在 220-450 字之间；
+2. 最后一个字符是否为“。”；
+3. 是否只输出了正文，无标题、序号、解释；
+4. 是否未超出用户原始需求范围；
+5. 分析维度是否不超过 5 个且互不重叠。"""
 
 def _build_report_requirement_prompt(
     title: str,

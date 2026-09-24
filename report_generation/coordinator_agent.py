@@ -5,7 +5,9 @@ from __future__ import annotations
 import copy
 import json
 import re
+import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from queue import Queue
 from typing import Any, Dict, List, Optional
 
 from llm_client import llm
@@ -111,6 +113,135 @@ def generate_writing_tasks(
         "references": references,
         "warnings": warnings,
     }
+
+
+def stream_writing_tasks(
+    user_prompt: str,
+    report_title: str,
+    outline: list,
+    industry: str = "ai",
+    top_k: int = DEFAULT_TOP_K,
+    use_graph: bool = True,
+    use_external_rag: bool = True,
+):
+    """Yield coordinator progress events as subsection tasks complete."""
+    normalized_prompt = str(user_prompt or "").strip()
+    normalized_title = str(report_title or "").strip()
+    normalized_industry = str(industry or "").strip()
+    normalized_top_k = _normalize_top_k(top_k)
+    industry_name = SUPPORTED_INDUSTRIES.get(normalized_industry, "未配置行业")
+
+    if not normalized_prompt:
+        yield _stream_error_event("user_prompt cannot be empty", normalized_industry, industry_name)
+        return
+    if not normalized_title:
+        yield _stream_error_event("report_title cannot be empty", normalized_industry, industry_name)
+        return
+
+    final_subsections = _flatten_body_subsections(outline)
+    if not final_subsections:
+        yield _stream_error_event("outline must contain at least one body subsection", normalized_industry, industry_name)
+        return
+
+    writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
+    warning_groups: List[List[dict]] = [[] for _ in final_subsections]
+    event_queue: Queue = Queue()
+    stop_token = object()
+    worker_count = min(DEFAULT_MAX_COORDINATOR_WORKERS, len(final_subsections))
+
+    yield {
+        "event": "started",
+        "status": "started",
+        "industry": normalized_industry,
+        "industry_name": industry_name,
+        "total": len(final_subsections),
+        "max_workers": worker_count,
+    }
+
+    def producer() -> None:
+        try:
+            with ThreadPoolExecutor(max_workers=worker_count) as executor:
+                future_to_index = {}
+                for index, subsection in enumerate(final_subsections):
+                    event_queue.put(_subsection_stream_event("task_started", index, subsection))
+                    future = executor.submit(
+                        _generate_writing_task_for_subsection,
+                        subsection=subsection,
+                        user_prompt=normalized_prompt,
+                        report_title=normalized_title,
+                        industry=normalized_industry,
+                        top_k=normalized_top_k,
+                        use_graph=use_graph,
+                        use_external_rag=use_external_rag,
+                    )
+                    future_to_index[future] = index
+
+                for future in as_completed(future_to_index):
+                    index = future_to_index[future]
+                    subsection = final_subsections[index]
+                    try:
+                        writing_task, task_warnings = future.result()
+                        event_name = "task_completed"
+                    except Exception as exc:
+                        writing_task, task_warnings = _writing_task_unhandled_error_response(
+                            subsection=subsection,
+                            user_prompt=normalized_prompt,
+                            report_title=normalized_title,
+                            top_k=normalized_top_k,
+                            message=f"coordinator task generation failed: {exc}",
+                        )
+                        event_name = "task_failed"
+                    writing_tasks[index] = writing_task
+                    warning_groups[index] = task_warnings
+                    event_queue.put(_task_stream_event(event_name, index, writing_task))
+
+            warnings: List[dict] = []
+            for task_warnings in warning_groups:
+                warnings.extend(task_warnings)
+
+            references: List[dict] = []
+            for task in writing_tasks:
+                retrieval = task.get("external_rag_retrieval") if isinstance(task, dict) else None
+                if not isinstance(retrieval, dict):
+                    continue
+                mapped_blocks, references = register_evidence_blocks(
+                    retrieval.get("evidence_blocks") or [], references
+                )
+                retrieval["evidence_blocks"] = mapped_blocks
+                retrieval["rag_context_text"] = build_rag_context_text(mapped_blocks)
+
+            event_queue.put({
+                "event": "completed",
+                "status": "success",
+                "industry": normalized_industry,
+                "industry_name": industry_name,
+                "use_graph": bool(use_graph),
+                "use_external_rag": bool(use_external_rag),
+                "user_prompt": normalized_prompt,
+                "report_title": normalized_title,
+                "writing_tasks": writing_tasks,
+                "references": references,
+                "warnings": warnings,
+                "success_count": len([task for task in writing_tasks if isinstance(task, dict)]),
+                "total": len(writing_tasks),
+            })
+        except Exception as exc:
+            event_queue.put({
+                "event": "error",
+                "status": "error",
+                "industry": normalized_industry,
+                "industry_name": industry_name,
+                "message": str(exc),
+            })
+        finally:
+            event_queue.put(stop_token)
+
+    threading.Thread(target=producer, daemon=True).start()
+    while True:
+        event = event_queue.get()
+        if event is stop_token:
+            break
+        yield event
 
 
 def _generate_writing_task_for_subsection(
@@ -236,6 +367,41 @@ def _writing_task_unhandled_error_response(
         "warnings": [warning],
     }
     return task, [warning]
+
+
+def _subsection_stream_event(event_name: str, index: int, subsection: dict) -> dict:
+    return {
+        "event": event_name,
+        "index": index,
+        "status": "started",
+        "outline_id": _safe_text(subsection.get("outline_id")),
+        "parent_level1_id": _safe_text(subsection.get("parent_level1_id")),
+        "parent_level1_title": _safe_text(subsection.get("parent_level1_title")),
+        "title": _safe_text(subsection.get("title")),
+    }
+
+
+def _task_stream_event(event_name: str, index: int, task: dict) -> dict:
+    payload = dict(task if isinstance(task, dict) else {})
+    payload.update({
+        "event": event_name,
+        "index": index,
+        "status": "success" if event_name == "task_completed" else "error",
+        "outline_id": _safe_text(payload.get("outline_id")),
+        "parent_level1_title": _safe_text(payload.get("parent_level1_title")),
+        "title": _safe_text(payload.get("title")),
+    })
+    return payload
+
+
+def _stream_error_event(message: str, industry: str, industry_name: str) -> dict:
+    return {
+        "event": "error",
+        "status": "error",
+        "industry": industry,
+        "industry_name": industry_name,
+        "message": message,
+    }
 
 
 def _flatten_body_subsections(outline: Any) -> List[dict]:

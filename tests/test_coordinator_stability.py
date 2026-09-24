@@ -204,6 +204,39 @@ class CoordinatorStabilityTest(unittest.TestCase):
             self.assertEqual(warning["stage"], "coordinator_task_generation")
             self.assertIn("mocked worker failure", warning["message"])
 
+    def test_stream_writing_tasks_emits_per_task_progress_and_completion(self):
+        def generate_task(*, subsection, **_kwargs):
+            return (
+                {
+                    "outline_id": subsection["outline_id"],
+                    "parent_level1_title": subsection["parent_level1_title"],
+                    "title": subsection["title"],
+                    "external_rag_retrieval": {"evidence_blocks": []},
+                    "warnings": [],
+                },
+                [],
+            )
+
+        with patch.object(
+            coordinator_agent,
+            "_generate_writing_task_for_subsection",
+            side_effect=generate_task,
+        ):
+            events = list(coordinator_agent.stream_writing_tasks(
+                user_prompt="生成报告",
+                report_title="具身智能报告",
+                outline=_twenty_subsection_outline()[:1],
+                industry="embodied",
+            ))
+
+        event_names = [event["event"] for event in events]
+        self.assertEqual(events[0]["event"], "started")
+        self.assertIn("task_started", event_names)
+        self.assertIn("task_completed", event_names)
+        self.assertEqual(events[-1]["event"], "completed")
+        self.assertEqual(events[-1]["status"], "success")
+        self.assertEqual(len(events[-1]["writing_tasks"]), 5)
+
 
 if __name__ == "__main__":
     unittest.main()

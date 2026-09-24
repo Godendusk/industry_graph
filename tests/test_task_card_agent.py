@@ -1,4 +1,6 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from llm_client import LLMQueryResult
@@ -197,10 +199,21 @@ class TaskCardTest(unittest.TestCase):
         self.assertIn("use_graph", result["task_card"])
         self.assertIn("use_external_rag", result["task_card"])
 
-    def test_gitkeep_only_vector_directory_is_not_external_rag_available(self):
-        from report_generation.industry_config import INDUSTRY_CONFIG
+    def test_external_rag_requires_column_id_and_chroma_store(self):
+        with TemporaryDirectory() as tmpdir:
+            vector_db_path = Path(tmpdir)
+            config = {
+                "external_column_id": "column-1",
+                "vector_db_path": vector_db_path,
+            }
 
-        self.assertFalse(_external_rag_available(INDUSTRY_CONFIG["quantum"]))
+            self.assertFalse(_external_rag_available(config))
+
+            (vector_db_path / "chroma.sqlite3").write_text("", encoding="utf-8")
+            self.assertTrue(_external_rag_available(config))
+
+            config["external_column_id"] = ""
+            self.assertFalse(_external_rag_available(config))
 
 
 if __name__ == "__main__":
