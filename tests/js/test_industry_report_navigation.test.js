@@ -66,6 +66,7 @@ function loadReportScript({ withSwitchView = true, withHistory = true } = {}) {
         sessionStorage,
     };
     const context = {
+        Date,
         URLSearchParams,
         clearTimeout,
         console,
@@ -886,4 +887,201 @@ test("a stale task-card failure cannot update or unlock a newer submission", asy
     );
     assert.equal(elements["report-task-card-confirm-btn"].disabled, false);
     assert.equal(elements["report-outline-btn"].disabled, false);
+});
+
+test("workflow execution log summarizes active coordinator and body progress", () => {
+    const { context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "body";
+        industryReportWorkspace.activeStep = "body";
+        industryReportWorkspace.completedSteps = ["requirement", "outline", "coordinator"];
+        industryReportWorkspace.outline = [{
+            level1_id: "S1",
+            level1_title: "产业发展",
+            subsections: [
+                { outline_id: "S1.1", title: "技术进展" },
+                { outline_id: "S1.2", title: "市场格局" },
+            ],
+        }];
+        industryReportWorkspace.writingTasks = [
+            { outline_id: "S1.1", title: "技术进展", parent_level1_title: "产业发展" },
+            { outline_id: "S1.2", title: "市场格局", parent_level1_title: "产业发展" },
+        ];
+        industryReportWorkspace.coordinatorProgressById = {
+            "S1.1": { status: "已统筹", statusState: "done" },
+            "S1.2": { status: "已统筹", statusState: "done" },
+        };
+        industryReportWorkspace.bodyProgressById = {
+            "S1.1": { status: "已生成", statusState: "done" },
+            "S1.2": { status: "生成中", statusState: "active" },
+        };
+    `, context);
+
+    const items = context.buildIndustryReportExecutionLogItems("body");
+    assert.ok(items.some(item => item.title === "分析 Agent 完成需求理解" && item.statusState === "done"));
+    assert.ok(items.some(item => item.title === "调度 Agent 完成任务分发 (1/2)" && item.statusState === "done"));
+    assert.ok(items.some(item => item.title === "写作 Agent 1 已完成" && item.subtitle === "技术进展" && item.statusState === "done"));
+    assert.equal(items.some(item => item.title.includes("正在生成")), false);
+});
+
+test("workflow execution log includes failures and pending initial state", () => {
+    const { context } = loadReportScript();
+    let items = context.buildIndustryReportExecutionLogItems("idle");
+    assert.equal(items.length, 1);
+    assert.equal(items[0].statusState, "active");
+    assert.match(items[0].detail, /等待提交题目与需求/);
+
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "body";
+        industryReportWorkspace.activeStep = "body";
+        industryReportWorkspace.completedSteps = ["requirement", "outline", "coordinator"];
+        industryReportWorkspace.writingTasks = [
+            { outline_id: "S1.1", title: "风险挑战", parent_level1_title: "产业发展" },
+        ];
+        industryReportWorkspace.bodyProgressById = {
+            "S1.1": { status: "生成失败", statusState: "failed" },
+        };
+    `, context);
+
+    items = context.buildIndustryReportExecutionLogItems("body");
+    assert.ok(items.some(item => item.title.includes("生成失败") && item.statusState === "failed"));
+});
+
+test("workflow execution log only lists coordinator tasks after they finish", () => {
+    const { context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "coordinator";
+        industryReportWorkspace.activeStep = "coordinator";
+        industryReportWorkspace.completedSteps = ["requirement", "outline"];
+        industryReportWorkspace.outline = [{
+            level1_id: "S1",
+            level1_title: "产业发展",
+            subsections: [
+                { outline_id: "S1.1", title: "技术进展" },
+                { outline_id: "S1.2", title: "市场格局" },
+            ],
+        }];
+        industryReportWorkspace.coordinatorProgressById = {
+            "S1.1": { status: "统筹中", statusState: "active" },
+        };
+    `, context);
+
+    let items = context.buildIndustryReportExecutionLogItems("coordinator");
+    assert.equal(items.some(item => item.key === "coordinator_S1.1"), false);
+
+    vm.runInContext(`
+        industryReportWorkspace.coordinatorProgressById = {
+            "S1.1": { status: "已统筹", statusState: "done" },
+        };
+    `, context);
+
+    items = context.buildIndustryReportExecutionLogItems("coordinator");
+    assert.ok(items.some(item => item.key === "coordinator_S1.1" && item.title === "调度 Agent 完成任务分发 (1/2)"));
+});
+
+test("workflow rendering puts selected step detail below the two-column workflow area", () => {
+    const { context } = loadReportScript();
+    const elements = {
+        "industry-report-stepper": { innerHTML: "" },
+        "industry-report-step-detail": { innerHTML: "" },
+        "industry-report-execution-log": { innerHTML: "" },
+    };
+    context.document.getElementById = id => elements[id] || null;
+
+    context.renderIndustryReportFlowSteps("idle");
+
+    assert.match(elements["industry-report-stepper"].innerHTML, /industry-report-milestone-row/);
+    assert.doesNotMatch(elements["industry-report-stepper"].innerHTML, /任务明细/);
+    assert.match(elements["industry-report-step-detail"].innerHTML, /任务明细/);
+});
+
+test("workflow execution log stamps items with the current render time", () => {
+    const { context } = loadReportScript();
+    const realDate = context.Date;
+    context.Date = class extends realDate {
+        constructor(...args) {
+            return args.length ? new realDate(...args) : new realDate("2026-09-24T09:08:00");
+        }
+    };
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "idle";
+        industryReportWorkspace.activeStep = "requirement";
+    `, context);
+
+    const stamped = context.stampIndustryReportExecutionLogItems(context.buildIndustryReportExecutionLogItems("idle"));
+
+    assert.equal(stamped[0].time, "09:08");
+});
+
+test("workflow step metric uses measured system duration instead of fixed labels", () => {
+    const { context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.stepTimingByKey = {
+            outline: { startedAt: 1000, completedAt: 90000 },
+        };
+    `, context);
+
+    const metric = context.getIndustryReportStepMetric("outline", "done");
+
+    assert.equal(metric.label, "1m 29s");
+});
+
+test("workflow body execution log uses the selected worker count for agent numbers", () => {
+    const { context } = loadReportScript();
+    const elements = {
+        "industry-report-workers": { value: "6" },
+    };
+    context.document.getElementById = id => elements[id] || null;
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "body";
+        industryReportWorkspace.activeStep = "body";
+        industryReportWorkspace.completedSteps = ["requirement", "outline", "coordinator"];
+        industryReportWorkspace.writingTasks = Array.from({ length: 6 }, (_, index) => ({
+            outline_id: "S1." + (index + 1),
+            title: "小节" + (index + 1),
+        }));
+        industryReportWorkspace.bodyProgressById = Object.fromEntries(
+            industryReportWorkspace.writingTasks.map(task => [task.outline_id, { status: "已生成", statusState: "done" }])
+        );
+    `, context);
+
+    const items = context.buildIndustryReportExecutionLogItems("body");
+
+    assert.ok(items.some(item => item.title === "写作 Agent 6 已完成"));
+});
+
+test("workflow export log appears only after export starts", () => {
+    const { context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "done";
+        industryReportWorkspace.activeStep = "review";
+        industryReportWorkspace.completedSteps = ["requirement", "outline", "coordinator", "body"];
+        industryReportWorkspace.bodySections = [{ outline_id: "S1.1", title: "技术进展", status: "success" }];
+    `, context);
+
+    let items = context.buildIndustryReportExecutionLogItems("done");
+    assert.equal(items.some(item => item.key === "review"), false);
+
+    vm.runInContext(`industryReportWorkspace.exportState = "active";`, context);
+    items = context.buildIndustryReportExecutionLogItems("done");
+    assert.ok(items.some(item => item.key === "review" && item.title === "导出 Agent 准备最终报告"));
+});
+
+test("workflow execution log scrolls to the newest item when entries change", () => {
+    const { context } = loadReportScript();
+    const logBox = {
+        dataset: {},
+        innerHTML: "",
+        scrollHeight: 480,
+        scrollTop: 0,
+    };
+    context.document.getElementById = id => id === "industry-report-execution-log" ? logBox : null;
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "idle";
+        industryReportWorkspace.activeStep = "requirement";
+    `, context);
+
+    context.renderIndustryReportExecutionLog("idle");
+
+    assert.equal(logBox.scrollTop, 480);
 });

@@ -219,6 +219,128 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+.industry-report-workflow-band {
+    height: 300px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.industry-report-milestone-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(170px, 1fr));
+    align-items: start;
+    gap: 18px;
+    min-height: 100%;
+    align-content: center;
+}
+
+.industry-report-milestone-row::before {
+    content: "";
+    position: absolute;
+    top: 22px;
+    left: 8%;
+    right: 8%;
+    height: 3px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #22c55e, #22c55e 45%, #3b82f6 78%, #bfdbfe);
+}
+
+.industry-report-milestone {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 8px;
+    padding: 0 4px 4px;
+    text-align: center;
+    transition: transform 0.18s ease, background-color 0.18s ease;
+}
+
+.industry-report-milestone:hover,
+.industry-report-milestone.is-selected {
+    background: rgba(255, 255, 255, 0.72);
+    transform: translateY(-1px);
+}
+
+.industry-report-milestone-node {
+    display: inline-flex;
+    width: 46px;
+    height: 46px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    border: 4px solid #eff6ff;
+    background: #dbeafe;
+    color: #2563eb;
+    font-weight: 800;
+    box-shadow: 0 8px 18px rgba(59, 130, 246, 0.18);
+}
+
+.industry-report-milestone.is-done .industry-report-milestone-node {
+    background: #10b981;
+    color: #ffffff;
+}
+
+.industry-report-milestone.is-active .industry-report-milestone-node {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.industry-report-milestone.is-failed .industry-report-milestone-node {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.industry-report-milestone-content {
+    width: 100%;
+    min-width: 0;
+    padding-top: 14px;
+}
+
+.industry-report-log-timeline {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.industry-report-log-timeline::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 62px;
+    width: 2px;
+    background: linear-gradient(#93c5fd, #86efac);
+}
+
+.industry-report-log-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 44px 20px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+}
+
+.industry-report-log-time {
+    padding-top: 6px;
+    color: #64748b;
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.industry-report-log-dot {
+    position: relative;
+    z-index: 1;
+    width: 10px;
+    height: 10px;
+    margin: 11px auto 0;
+    border-radius: 999px;
+    box-shadow: 0 0 0 4px rgba(239, 246, 255, 0.95);
+}
+
 
 
 /* 徽章样式 */

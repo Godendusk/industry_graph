@@ -21,9 +21,12 @@ let industryReportWorkspace = {
     rewriteMaterials: null,
     pendingRewrite: null,
     busy: false,
+    exportState: "",
     selectedAgentStep: "requirement",
     bodyProgressById: {},
     coordinatorProgressById: {},
+    executionLogTimeByKey: {},
+    stepTimingByKey: {},
     bodyTotal: 0,
     coordinatorTotal: 0,
     requirementRewriteSeq: 0,
@@ -31,6 +34,7 @@ let industryReportWorkspace = {
 
 let industryReportHistoryIndex = [];
 let industryReportRequirementRewriteSeq = 0;
+let industryReportWorkflowTimerId = null;
 
 function nextIndustryReportRequirementRewriteSeq() {
     const workspaceSeq = Number(industryReportWorkspace?.requirementRewriteSeq) || 0;
@@ -223,11 +227,38 @@ function markIndustryReportStepDone(stepKey) {
     if (!industryReportWorkspace.completedSteps.includes(stepKey)) {
         industryReportWorkspace.completedSteps.push(stepKey);
     }
+    completeIndustryReportStepTiming(stepKey);
 }
 
 function clearIndustryReportStepDone(stepKeys) {
     const remove = new Set(stepKeys || []);
     industryReportWorkspace.completedSteps = (industryReportWorkspace.completedSteps || []).filter(key => !remove.has(key));
+}
+
+function startIndustryReportStepTiming(stepKey) {
+    if (!stepKey) return;
+    industryReportWorkspace.stepTimingByKey = industryReportWorkspace.stepTimingByKey || {};
+    industryReportWorkspace.stepTimingByKey[stepKey] = {
+        startedAt: Date.now(),
+        completedAt: null,
+    };
+}
+
+function completeIndustryReportStepTiming(stepKey) {
+    if (!stepKey) return;
+    industryReportWorkspace.stepTimingByKey = industryReportWorkspace.stepTimingByKey || {};
+    const timing = industryReportWorkspace.stepTimingByKey[stepKey];
+    if (!timing?.startedAt || timing.completedAt) return;
+    timing.completedAt = Date.now();
+}
+
+function clearIndustryReportStepTiming(stepKeys) {
+    const remove = new Set(stepKeys || []);
+    if (!remove.size) return;
+    industryReportWorkspace.stepTimingByKey = industryReportWorkspace.stepTimingByKey || {};
+    remove.forEach(key => {
+        delete industryReportWorkspace.stepTimingByKey[key];
+    });
 }
 
 function getIndustryReportStepState(stepKey, stage) {
@@ -239,7 +270,12 @@ function getIndustryReportStepState(stepKey, stage) {
 
 function renderIndustryReportFlowSteps(stage = "idle") {
     const box = document.getElementById("industry-report-stepper");
-    if (!box) return;
+    if (!box) {
+        renderIndustryReportActiveStepDetail(stage);
+        renderIndustryReportExecutionLog(stage);
+        syncIndustryReportWorkflowTimer();
+        return;
+    }
     const selectedKey = industryReportWorkspace.selectedAgentStep;
     const activeStep = selectedKey
         ? INDUSTRY_REPORT_FLOW_STEPS.find(step => step.key === selectedKey)
@@ -251,37 +287,138 @@ function renderIndustryReportFlowSteps(stage = "idle") {
         return renderIndustryReportAgentCard(step, index, getIndustryReportWorkflowStyle(step, state), state, activeStep && step.key === activeStep.key);
     }).join("");
     box.innerHTML = `
-        <div class="flex items-stretch gap-4 overflow-x-auto pb-2">${stepsHtml}</div>
-        ${activeStep ? renderIndustryReportActiveStepPanel(activeStep, activeStyle) : ""}
+        <div class="industry-report-workflow-band rounded-lg border border-blue-100 bg-gradient-to-r from-blue-50 via-white to-blue-50 px-5 py-5 overflow-x-auto">
+            <div class="industry-report-milestone-row min-w-[920px]">${stepsHtml}</div>
+        </div>
     `;
+    renderIndustryReportActiveStepDetail(stage, activeStep, activeStyle);
+    renderIndustryReportExecutionLog(stage);
+    syncIndustryReportWorkflowTimer();
+}
+
+function syncIndustryReportWorkflowTimer() {
+    const hasRunningTiming = Object.values(industryReportWorkspace.stepTimingByKey || {})
+        .some(timing => timing?.startedAt && !timing.completedAt);
+    if (hasRunningTiming && !industryReportWorkflowTimerId && typeof setInterval === "function") {
+        industryReportWorkflowTimerId = setInterval(() => {
+            renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || "idle");
+        }, 1000);
+    }
+    if (!hasRunningTiming && industryReportWorkflowTimerId && typeof clearInterval === "function") {
+        clearInterval(industryReportWorkflowTimerId);
+        industryReportWorkflowTimerId = null;
+    }
+}
+
+function renderIndustryReportActiveStepDetail(stage = "idle", activeStep = null, activeStyle = null) {
+    const detailBox = document.getElementById("industry-report-step-detail");
+    if (!detailBox) return;
+    const selectedKey = industryReportWorkspace.selectedAgentStep;
+    const step = activeStep || (selectedKey ? INDUSTRY_REPORT_FLOW_STEPS.find(item => item.key === selectedKey) : null);
+    if (!step) {
+        detailBox.innerHTML = "";
+        return;
+    }
+    const state = getIndustryReportStepState(step.key, stage);
+    const style = activeStyle || getIndustryReportWorkflowStyle(step, state);
+    detailBox.innerHTML = renderIndustryReportActiveStepPanel(step, style);
 }
 
 function renderIndustryReportAgentCard(step, index, style, state, selected) {
     const summary = getIndustryReportAgentSummary(step.key);
-    const cardShape = selected ? "ring-2 ring-blue-300" : "";
-    const robotHtml = step.key === "body"
-        ? renderIndustryReportBodyRobots(state)
-        : `<div class="mx-auto w-16 h-16 rounded-xl ${style.robot} flex items-center justify-center text-2xl shadow-sm ${state === "active" ? "animate-pulse" : ""}"><i class="fas fa-robot"></i></div>`;
-    const connector = index < INDUSTRY_REPORT_FLOW_STEPS.length - 1
-        ? '<div class="hidden xl:flex items-center text-blue-300 px-1"><i class="fas fa-arrow-right-long"></i></div>'
-        : "";
+    const selectedClass = selected ? "is-selected" : "";
+    const stateClass = `is-${state}`;
+    const statusHtml = getIndustryReportMilestoneStatusHtml(index, state);
+    const agentHtml = step.key === "body"
+        ? renderIndustryReportBodyAgentBadges(state)
+        : renderIndustryReportSingleAgentBadge(step, state);
+    const metric = getIndustryReportStepMetric(step.key, state);
     return `
         <button type="button"
                 onclick="selectIndustryReportAgentStep('${escapeIndustryReportJs(step.key)}')"
-                class="text-center border ${style.item} ${cardShape} rounded-lg px-4 py-4 min-w-[190px] flex-1 transition hover:shadow-sm">
-            <div class="space-y-4">
-                <div class="mx-auto w-full max-w-[150px] rounded-lg border border-blue-700 bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm">
-                    ${escapeIndustryReportHtml(step.title)}
-                </div>
-                ${robotHtml}
-                <div>
-                    <div class="text-xs font-medium ${style.detail}">${escapeIndustryReportHtml(style.label)}</div>
-                    <div class="mt-1 text-sm font-semibold ${style.title} leading-5 min-h-[2.5rem] flex items-center justify-center">${escapeIndustryReportHtml(summary)}</div>
+                class="industry-report-milestone ${stateClass} ${selectedClass}">
+            <div class="industry-report-milestone-node ${state === "active" ? "animate-pulse" : ""}">
+                ${statusHtml}
+            </div>
+            <div class="industry-report-milestone-content">
+                <div class="text-[15px] font-bold ${style.title} leading-5">${index + 1}. ${escapeIndustryReportHtml(step.title)}</div>
+                <div class="mt-1 text-xs ${style.detail} leading-5 min-h-[1.25rem]">${escapeIndustryReportHtml(summary)}</div>
+                <div class="mt-3 flex flex-wrap justify-center gap-2">${agentHtml}</div>
+                <div class="mt-3 inline-flex items-center gap-1.5 rounded-full ${metric.className} px-3 py-1 text-xs font-semibold">
+                    <i class="${metric.icon}"></i>
+                    ${escapeIndustryReportHtml(metric.label)}
                 </div>
             </div>
         </button>
-        ${connector}
     `;
+}
+
+function getIndustryReportMilestoneStatusHtml(index, state) {
+    if (state === "done") return '<i class="fas fa-check"></i>';
+    if (state === "failed") return '<i class="fas fa-exclamation"></i>';
+    return String(index + 1);
+}
+
+function renderIndustryReportSingleAgentBadge(step, state) {
+    const iconClass = state === "done" ? "text-emerald-600 bg-emerald-50 border-emerald-100"
+        : state === "active" ? "text-blue-600 bg-blue-50 border-blue-100"
+            : "text-slate-500 bg-white border-slate-200";
+    return `
+        <span class="inline-flex items-center gap-2 rounded-lg border ${iconClass} px-3 py-2 text-xs font-semibold shadow-sm">
+            <i class="fas fa-robot"></i>
+            ${escapeIndustryReportHtml(getIndustryReportAgentName(step.key))}
+        </span>
+    `;
+}
+
+function renderIndustryReportBodyAgentBadges(state) {
+    const workerCount = getIndustryReportNumber("industry-report-workers", 3);
+    const cls = state === "done" ? "text-emerald-600 bg-emerald-50 border-emerald-100"
+        : state === "active" ? "text-blue-600 bg-blue-50 border-blue-100"
+            : state === "failed" ? "text-red-600 bg-red-50 border-red-100"
+                : "text-sky-600 bg-white border-sky-100";
+    return `
+        <span class="inline-flex items-center gap-2 rounded-lg border ${cls} px-3 py-2 text-xs font-semibold shadow-sm">
+            <i class="fas fa-robot"></i>
+            写作 Agent 1-${Math.max(1, workerCount)}
+        </span>
+    `;
+}
+
+function getIndustryReportAgentName(stepKey) {
+    const map = {
+        requirement: "分析 Agent",
+        outline: "规划 Agent",
+        coordinator: "调度 Agent",
+        review: "导出 Agent",
+    };
+    return map[stepKey] || "写作 Agent";
+}
+
+function getIndustryReportStepMetric(stepKey, state) {
+    if (state === "active") {
+        const elapsed = getIndustryReportStepElapsedLabel(stepKey);
+        return { label: elapsed ? `进行中 ${elapsed}` : "进行中", icon: "fas fa-spinner fa-spin", className: "bg-blue-100 text-blue-700" };
+    }
+    if (state === "failed") {
+        return { label: "需处理", icon: "fas fa-circle-exclamation", className: "bg-red-100 text-red-700" };
+    }
+    if (state === "done") {
+        const elapsed = getIndustryReportStepElapsedLabel(stepKey);
+        return { label: elapsed || "完成", icon: "fas fa-clock", className: "bg-emerald-100 text-emerald-700" };
+    }
+    return { label: "待开始", icon: "far fa-clock", className: "bg-slate-100 text-slate-500" };
+}
+
+function getIndustryReportStepElapsedLabel(stepKey) {
+    const timing = industryReportWorkspace.stepTimingByKey?.[stepKey];
+    if (!timing?.startedAt) return "";
+    const endAt = timing.completedAt || Date.now();
+    const seconds = Math.max(0, Math.round((endAt - timing.startedAt) / 1000));
+    if (seconds < 60) return `${seconds}s`;
+    const minutes = Math.floor(seconds / 60);
+    const rest = seconds % 60;
+    return rest ? `${minutes}m ${rest}s` : `${minutes}m`;
 }
 
 function getIndustryReportWorkflowStyle(step, state) {
@@ -530,7 +667,7 @@ function renderIndustryReportActiveStepPanel(step, style) {
     const emptyText = getIndustryReportStepEmptyText(step.key);
     const summary = getIndustryReportActiveStepSummary(step.key, items);
     return `
-        <div class="border ${style.panel} rounded-b-lg rounded-tr-lg px-4 py-3 min-h-[86px]">
+        <div class="mt-3 border ${style.panel} rounded-lg px-4 py-3 min-h-[86px]">
             <div class="flex items-center justify-between gap-3 mb-2">
                 <div class="font-semibold ${style.title}">${escapeIndustryReportHtml(step.title)}任务明细</div>
                 <div class="text-xs ${style.detail}">${escapeIndustryReportHtml(summary || style.label)}</div>
@@ -563,6 +700,155 @@ function getIndustryReportActiveStepSummary(stepKey, items) {
     if (stepKey === "coordinator") return `已统筹 ${done} / 共 ${total} 个任务`;
     if (stepKey === "outline") return `已生成 ${done} / 共 ${total} 个二级标题`;
     return "";
+}
+
+function renderIndustryReportExecutionLog(stage = industryReportWorkspace.currentStage || "idle") {
+    const box = document.getElementById("industry-report-execution-log");
+    if (!box) return;
+    const items = stampIndustryReportExecutionLogItems(buildIndustryReportExecutionLogItems(stage));
+    box.dataset = box.dataset || {};
+    const previousKeyList = box.dataset.logKeys || "";
+    const nextKeyList = items.map(item => item.key).join("|");
+    if (!items.length) {
+        box.innerHTML = '<div class="text-sm text-slate-400">等待任务启动后显示执行记录</div>';
+        box.dataset.logKeys = "";
+        return;
+    }
+    box.innerHTML = `
+        <div class="industry-report-log-timeline">
+            ${items.map(item => {
+                const style = getIndustryReportLogStyle(item.statusState);
+                return `
+                    <div class="industry-report-log-item">
+                        <div class="industry-report-log-time">${escapeIndustryReportHtml(item.time)}</div>
+                        <div class="industry-report-log-dot ${style.dot}"></div>
+                        <div class="min-w-0 flex-1">
+                            <div class="flex items-start gap-2">
+                                <span class="inline-flex w-8 h-8 shrink-0 items-center justify-center rounded-full ${style.icon}">
+                                    <i class="${style.iconHtml}"></i>
+                                </span>
+                                <div class="min-w-0">
+                                    <div class="text-sm font-semibold text-slate-800 leading-5">${escapeIndustryReportHtml(item.title)}</div>
+                                    ${item.subtitle ? `<div class="text-xs leading-5 text-slate-500 break-words">${escapeIndustryReportHtml(item.subtitle)}</div>` : ""}
+                                    ${item.detail ? `<div class="text-xs leading-5 ${style.text} break-words">${escapeIndustryReportHtml(item.detail)}</div>` : ""}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join("")}
+        </div>
+    `;
+    box.dataset.logKeys = nextKeyList;
+    if (nextKeyList !== previousKeyList) {
+        box.scrollTop = box.scrollHeight;
+    }
+}
+
+function buildIndustryReportExecutionLogItems(stage = "idle") {
+    const items = [];
+    const completed = new Set(industryReportWorkspace.completedSteps || []);
+    const pushStep = (key, title, doneDetail, pendingDetail) => {
+        const state = getIndustryReportStepState(key, stage);
+        if (state === "pending" && !completed.has(key) && key !== "requirement") return;
+        items.push({
+            key,
+            title,
+            detail: state === "done" ? doneDetail : pendingDetail,
+            statusState: state,
+        });
+    };
+    pushStep("requirement", "分析 Agent 完成需求理解", "任务卡已生成", "等待提交题目与需求");
+    pushStep("outline", "规划 Agent 生成报告大纲", `已生成 ${countIndustryReportSubsections(industryReportWorkspace.outline)} 个二级标题`, "正在生成报告结构");
+
+    const coordinatorItems = getIndustryReportStepSubitems("coordinator");
+    const coordinatorTotal = getIndustryReportCoordinatorTotal(coordinatorItems);
+    getIndustryReportStepSubitems("coordinator")
+        .filter(item => item.statusState === "done" || item.statusState === "failed")
+        .forEach((item, index) => {
+            const progressLabel = `(${Math.min(index + 1, coordinatorTotal || coordinatorItems.length || 1)}/${coordinatorTotal || coordinatorItems.length || 1})`;
+            items.push({
+                key: `coordinator_${item.key}`,
+                title: item.statusState === "failed" ? `调度 Agent 统筹失败 ${progressLabel}` : `调度 Agent 完成任务分发 ${progressLabel}`,
+                subtitle: item.title || "",
+                detail: item.status || item.parent || "已完成检索与写作任务拆分",
+                statusState: item.statusState,
+            });
+        });
+
+    getIndustryReportStepSubitems("body")
+        .filter(item => item.statusState === "done" || item.statusState === "failed")
+        .forEach((item, index) => {
+            const workerCount = Math.max(1, getIndustryReportNumber("industry-report-workers", 3));
+            const agentName = `写作 Agent ${(index % workerCount) + 1}`;
+            items.push({
+                key: `body_${item.key}`,
+                title: item.statusState === "failed" ? `${agentName} 生成失败` : `${agentName} ${item.statusState === "done" ? "已完成" : "正在生成"}`,
+                subtitle: item.title || "",
+                detail: item.statusState === "failed" ? "生成失败" : "",
+                statusState: item.statusState,
+            });
+        });
+
+    if (industryReportWorkspace.exportState) {
+        const reviewState = industryReportWorkspace.exportState;
+        items.push({
+            key: "review",
+            title: reviewState === "done" ? "导出 Agent 完成报告整理" : reviewState === "failed" ? "导出 Agent 导出失败" : "导出 Agent 准备最终报告",
+            detail: reviewState === "done" ? "Word 已生成并下载" : reviewState === "failed" ? "请检查导出失败原因" : "正在生成 Word 文件",
+            statusState: reviewState,
+        });
+    }
+    return items;
+}
+
+function stampIndustryReportExecutionLogItems(items) {
+    industryReportWorkspace.executionLogTimeByKey = industryReportWorkspace.executionLogTimeByKey || {};
+    return (items || []).map(item => {
+        const key = item.key || `${item.title}_${item.detail}`;
+        if (!industryReportWorkspace.executionLogTimeByKey[key]) {
+            industryReportWorkspace.executionLogTimeByKey[key] = getIndustryReportCurrentTimeLabel();
+        }
+        return {
+            ...item,
+            time: industryReportWorkspace.executionLogTimeByKey[key],
+        };
+    });
+}
+
+function getIndustryReportCurrentTimeLabel() {
+    const now = new Date();
+    return `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+}
+
+function getIndustryReportLogStyle(statusState) {
+    const map = {
+        done: {
+            dot: "bg-emerald-500",
+            icon: "bg-emerald-100 text-emerald-600",
+            text: "text-slate-500",
+            iconHtml: "fas fa-robot",
+        },
+        active: {
+            dot: "bg-blue-500",
+            icon: "bg-blue-100 text-blue-600",
+            text: "text-blue-600",
+            iconHtml: "fas fa-robot",
+        },
+        failed: {
+            dot: "bg-red-500",
+            icon: "bg-red-100 text-red-600",
+            text: "text-red-600",
+            iconHtml: "fas fa-triangle-exclamation",
+        },
+        pending: {
+            dot: "bg-slate-300",
+            icon: "bg-slate-100 text-slate-500",
+            text: "text-slate-400",
+            iconHtml: "far fa-clock",
+        },
+    };
+    return map[statusState] || map.pending;
 }
 
 function groupIndustryReportStepItems(items) {
@@ -703,9 +989,12 @@ function resetIndustryReportWorkspace() {
         rewriteMaterials: null,
         pendingRewrite: null,
         busy: false,
+        exportState: "",
         selectedAgentStep: "requirement",
         bodyProgressById: {},
         coordinatorProgressById: {},
+        executionLogTimeByKey: {},
+        stepTimingByKey: {},
         bodyTotal: 0,
         coordinatorTotal: 0,
         requirementRewriteSeq,
@@ -743,6 +1032,8 @@ async function submitIndustryReportRequirement() {
     const taskCardSeq = nextIndustryReportRequirementRewriteSeq();
     setIndustryReportBusy(true, "正在理解题目与需求并生成写作任务卡...");
     clearIndustryReportStepDone(["requirement", "outline", "coordinator", "body", "review"]);
+    clearIndustryReportStepTiming(["requirement", "outline", "coordinator", "body", "review"]);
+    startIndustryReportStepTiming("requirement");
     setIndustryReportStage("idle", "正在生成写作任务卡");
     try {
         const data = await industryReportApi("/api/report/task-card", {
@@ -767,6 +1058,7 @@ async function submitIndustryReportRequirement() {
         renderIndustryReportOutline([]);
         renderIndustryReportProgress([]);
         renderIndustryReportPreview();
+        markIndustryReportStepDone("requirement");
         setIndustryReportStage("idle", "写作任务卡已生成，等待确认");
         setIndustryReportRequirementSubmittedStatus();
     } catch (err) {
@@ -1137,7 +1429,9 @@ async function generateIndustryReportOutline() {
     }
     setIndustryReportBusy(true);
     clearIndustryReportStepDone(["outline", "coordinator", "body", "review"]);
+    clearIndustryReportStepTiming(["outline", "coordinator", "body", "review"]);
     markIndustryReportStepDone("requirement");
+    startIndustryReportStepTiming("outline");
     setIndustryReportStage("outline", "正在生成推荐大纲");
     try {
         const data = await industryReportApi("/api/report/outline", {
@@ -1424,8 +1718,10 @@ async function prepareIndustryReportTasks() {
     }
     setIndustryReportBusy(true);
     clearIndustryReportStepDone(["coordinator", "body", "review"]);
+    clearIndustryReportStepTiming(["coordinator", "body", "review"]);
     setIndustryReportStage("coordinator", "正在检索资料并生成写作任务");
     industryReportWorkspace.selectedAgentStep = "coordinator";
+    startIndustryReportStepTiming("coordinator");
     industryReportWorkspace.coordinatorProgressById = {};
     industryReportWorkspace.coordinatorTotal = countIndustryReportSubsections(industryReportWorkspace.outline);
     industryReportWorkspace.writingTasks = [];
@@ -1535,8 +1831,10 @@ async function startIndustryReportGeneration() {
     const reportIndustry = industryReportWorkspace.taskCard ? industryReportWorkspace.industry : formValues.industry;
     setIndustryReportBusy(true);
     clearIndustryReportStepDone(["body", "review"]);
+    clearIndustryReportStepTiming(["body", "review"]);
     setIndustryReportStage("body", "正在生成正文");
     industryReportWorkspace.selectedAgentStep = "body";
+    startIndustryReportStepTiming("body");
     industryReportWorkspace.bodyProgressById = {};
     industryReportWorkspace.bodyTotal = industryReportWorkspace.writingTasks.length;
     industryReportWorkspace.bodySections = [];
@@ -2395,9 +2693,12 @@ async function loadSelectedIndustryReportHistory() {
         rewriteMaterials: null,
         pendingRewrite: null,
         busy: false,
+        exportState: "",
         selectedAgentStep: getIndustryReportActiveStepKey(getIndustryReportStageFromRecord(record)),
         bodyProgressById: {},
         coordinatorProgressById: {},
+        executionLogTimeByKey: {},
+        stepTimingByKey: {},
         bodyTotal: Array.isArray(record.writingTasks) ? record.writingTasks.length : 0,
         coordinatorTotal: countIndustryReportSubsections(record.outline || []),
         requirementRewriteSeq,
@@ -2509,6 +2810,9 @@ async function exportIndustryReportWord() {
         return;
     }
 
+    industryReportWorkspace.exportState = "active";
+    industryReportWorkspace.selectedAgentStep = "review";
+    renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || "done");
     setIndustryReportStatus("正在导出 Word...", "loading");
     try {
         const data = await industryReportApi("/api/report/export/word", {
@@ -2529,10 +2833,13 @@ async function exportIndustryReportWord() {
         markIndustryReportStepDone("outline");
         markIndustryReportStepDone("coordinator");
         markIndustryReportStepDone("body");
+        industryReportWorkspace.exportState = "done";
         markIndustryReportStepDone("review");
         setIndustryReportStage("done", "Word 已生成并下载");
         setIndustryReportStatus("Word 已生成，正在下载", "success");
     } catch (err) {
+        industryReportWorkspace.exportState = "failed";
+        renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || "done");
         setIndustryReportStatus(`Word 导出失败：${err.message}`, "error");
     }
 }
