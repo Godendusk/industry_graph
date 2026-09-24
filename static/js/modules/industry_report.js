@@ -431,24 +431,44 @@ function getIndustryReportStepSubitems(stepKey) {
     if (stepKey === "coordinator") {
         const hasTasks = (industryReportWorkspace.writingTasks || []).length > 0;
         const progressById = industryReportWorkspace.coordinatorProgressById || {};
-        const tasks = hasTasks
-            ? industryReportWorkspace.writingTasks.map((task, index) => ({
+        const outlineItems = flattenIndustryReportOutlineSubsections();
+        const writingTaskById = new Map((industryReportWorkspace.writingTasks || [])
+            .map((task, index) => [task?.outline_id || `task_${index + 1}`, { task, index }]));
+        const sourceItems = outlineItems.length
+            ? outlineItems
+            : (industryReportWorkspace.writingTasks || []).map((task, index) => ({
                 key: task.outline_id || `task_${index + 1}`,
                 title: task.title || `写作任务 ${index + 1}`,
                 parent: task.parent_level1_title || "",
                 indexLabel: task.outline_id || String(index + 1),
-                status: progressById[task.outline_id]?.status || "已统筹",
-                statusState: progressById[task.outline_id]?.statusState || "done",
-            }))
-            : flattenIndustryReportOutlineSubsections().map(item => ({
-                ...item,
-                status: progressById[item.key]?.status || "待统筹",
-                statusState: progressById[item.key]?.statusState || "pending",
+                statusState: "pending",
             }));
-        if (!hasTasks && industryReportWorkspace.currentStage === "coordinator" && tasks.length && !Object.keys(progressById).length) {
-            tasks.forEach(item => {
-                item.status = "进行中";
-                item.statusState = "active";
+        const tasks = sourceItems.map((item, index) => {
+            const matched = writingTaskById.get(item.key);
+            const task = matched?.task || {};
+            const progress = progressById[item.key] || {};
+            return {
+                ...item,
+                title: task.title || item.title || `写作任务 ${index + 1}`,
+                parent: task.parent_level1_title || item.parent || "",
+                indexLabel: task.outline_id || item.indexLabel || String(index + 1),
+                status: progress.status || "待统筹检索",
+                statusState: progress.statusState || "pending",
+            };
+        });
+        if (hasTasks && !outlineItems.length) {
+            (industryReportWorkspace.writingTasks || []).forEach((task, index) => {
+                const key = task?.outline_id || `task_${index + 1}`;
+                if (tasks.some(item => item.key === key)) return;
+                const progress = progressById[key] || {};
+                tasks.push({
+                    key,
+                    title: task.title || `写作任务 ${index + 1}`,
+                    parent: task.parent_level1_title || "",
+                    indexLabel: task.outline_id || String(index + 1),
+                    status: progress.status || "待统筹检索",
+                    statusState: progress.statusState || "pending",
+                });
             });
         }
         return tasks;

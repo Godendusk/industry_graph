@@ -7,21 +7,20 @@ from typing import Dict
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-RAG_VECTOR_DB_ROOT = PROJECT_ROOT / "RAG"
 VECTOR_DB_ROOT = PROJECT_ROOT / "report_generation" / "vector_db"
 
 INDUSTRY_CONFIG: Dict[str, dict] = {
     "ai": {
         "name": "人工智能",
         "graph_path": PROJECT_ROOT / "static" / "data" / "ai" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_ai",
+        "vector_db_path": VECTOR_DB_ROOT / "ai",
         "external_column_id": "2008715487928750081",
     },
     "embodied": {
         "name": "具身智能",
         "graph_path": PROJECT_ROOT / "static" / "data" / "embodied" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_embodied",
-        "external_column_id": None,
+        "vector_db_path": VECTOR_DB_ROOT / "embodied",
+        "external_column_id": "2043590589800853505",
     },
     "low_altitude": {
         "name": "低空经济",

@@ -316,6 +316,69 @@ test("embodied report coordinator request keeps the selected industry", async ()
     assert.equal(JSON.parse(requests[0].options.body).industry, "embodied");
 });
 
+test("coordinator workflow lists all tasks as pending until each is completed", () => {
+    const { context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "coordinator";
+        industryReportWorkspace.outline = [{
+            level1_id: "S1",
+            level1_title: "产业发展",
+            subsections: [
+                { outline_id: "S1.1", title: "技术进展" },
+                { outline_id: "S1.2", title: "市场格局" },
+                { outline_id: "S1.3", title: "风险挑战" },
+            ],
+        }];
+        industryReportWorkspace.writingTasks = [{
+            outline_id: "S1.1",
+            title: "技术进展",
+            parent_level1_title: "产业发展",
+        }];
+        industryReportWorkspace.coordinatorProgressById = {
+            "S1.1": { status: "已统筹", statusState: "done" },
+        };
+    `, context);
+
+    const items = context.getIndustryReportStepSubitems("coordinator");
+
+    assert.equal(items.length, 3);
+    assert.equal(
+        JSON.stringify(items.map(item => [item.key, item.status, item.statusState])),
+        JSON.stringify([
+            ["S1.1", "已统筹", "done"],
+            ["S1.2", "待统筹检索", "pending"],
+            ["S1.3", "待统筹检索", "pending"],
+        ]),
+    );
+});
+
+test("coordinator workflow shows every task as pending before streaming progress starts", () => {
+    const { context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "coordinator";
+        industryReportWorkspace.outline = [{
+            level1_id: "S1",
+            level1_title: "产业发展",
+            subsections: [
+                { outline_id: "S1.1", title: "技术进展" },
+                { outline_id: "S1.2", title: "市场格局" },
+            ],
+        }];
+        industryReportWorkspace.writingTasks = [];
+        industryReportWorkspace.coordinatorProgressById = {};
+    `, context);
+
+    const items = context.getIndustryReportStepSubitems("coordinator");
+
+    assert.equal(
+        JSON.stringify(items.map(item => [item.key, item.status, item.statusState])),
+        JSON.stringify([
+            ["S1.1", "待统筹检索", "pending"],
+            ["S1.2", "待统筹检索", "pending"],
+        ]),
+    );
+});
+
 test("report coordinator request includes selected source switches", async () => {
     const { context } = loadReportScript();
     const requests = [];
