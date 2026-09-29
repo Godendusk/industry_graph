@@ -166,7 +166,7 @@ def _generate_direct_outline(
         content = llm.query(
             user_prompt=user_prompt_text,
             system_prompt=system_prompt,
-            max_tokens=5000,
+            max_tokens=8000,
             extra_log_info=f"report_generation.outline_agent direct_outline industry={industry or 'none'}",
         )
     except Exception as exc:
