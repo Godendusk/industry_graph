@@ -15,6 +15,7 @@ from llm_client import llm
 from .external_rag.retriever import retrieve_external_rag
 from .external_rag.report_adapter import build_rag_context_text
 from .citations import register_evidence_blocks
+from .material_allocator import allocate_evidence_blocks
 from .graph_retriever import retrieve_industry_graph
 from .industry_config import SUPPORTED_INDUSTRIES
 
@@ -53,7 +54,7 @@ def generate_writing_tasks(
             industry_name,
         )
 
-    writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
+    retrieval_rows: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
     warning_groups: List[List[dict]] = [[] for _ in final_subsections]
     worker_count = min(DEFAULT_MAX_COORDINATOR_WORKERS, len(final_subsections))
     with ThreadPoolExecutor(max_workers=worker_count) as executor:
@@ -74,32 +75,65 @@ def generate_writing_tasks(
             index = future_to_index[future]
             subsection = final_subsections[index]
             try:
-                writing_task, task_warnings = future.result()
+                retrieval, task_warnings = future.result()
             except Exception as exc:
-                writing_task, task_warnings = _writing_task_unhandled_error_response(
+                retrieval, task_warnings = _retrieval_unhandled_error_response(
                     subsection=subsection,
                     user_prompt=normalized_prompt,
                     report_title=normalized_title,
                     top_k=normalized_top_k,
                     message=f"coordinator task generation failed: {exc}",
                 )
-            writing_tasks[index] = writing_task
+            retrieval_rows[index] = retrieval
             warning_groups[index] = task_warnings
 
     warnings: List[dict] = []
     for task_warnings in warning_groups:
         warnings.extend(task_warnings)
 
+    allocated = _allocate_retrieved_evidence(final_subsections, retrieval_rows, normalized_top_k)
     references: List[dict] = []
-    for task in writing_tasks:
-        retrieval = task.get("external_rag_retrieval") if isinstance(task, dict) else None
-        if not isinstance(retrieval, dict):
-            continue
+    for index, row in enumerate(allocated):
+        retrieval = row.get("external_rag_retrieval") or {}
         mapped_blocks, references = register_evidence_blocks(
             retrieval.get("evidence_blocks") or [], references
         )
         retrieval["evidence_blocks"] = mapped_blocks
         retrieval["rag_context_text"] = build_rag_context_text(mapped_blocks)
+        row["external_rag_retrieval"] = retrieval
+
+    writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
+    for index, subsection in enumerate(final_subsections):
+        row = allocated[index]
+        if row.get("_retrieval_failed"):
+            writing_tasks[index], _ = _writing_task_unhandled_error_response(
+                subsection=subsection,
+                user_prompt=normalized_prompt,
+                report_title=normalized_title,
+                top_k=normalized_top_k,
+                message=row.get("_retrieval_error", "retrieval failed"),
+            )
+            continue
+        try:
+            writing_tasks[index], prompt_warnings = _build_writing_task_from_retrieval(
+                subsection=subsection,
+                graph_retrieval=row.get("graph_retrieval") or {},
+                external_rag_retrieval=row.get("external_rag_retrieval") or {},
+                user_prompt=normalized_prompt,
+                report_title=normalized_title,
+                warnings=warning_groups[index],
+            )
+        except Exception as exc:
+            writing_tasks[index], prompt_warnings = _writing_task_unhandled_error_response(
+                subsection=subsection,
+                user_prompt=normalized_prompt,
+                report_title=normalized_title,
+                top_k=normalized_top_k,
+                message=f"coordinator task generation failed: {exc}",
+            )
+            warning_groups[index].extend(prompt_warnings)
+
+    warnings = [warning for group in warning_groups for warning in group]
 
     return {
         "status": "success",
@@ -143,7 +177,7 @@ def stream_writing_tasks(
         yield _stream_error_event("outline must contain at least one body subsection", normalized_industry, industry_name)
         return
 
-    writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
+    retrieval_rows: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
     warning_groups: List[List[dict]] = [[] for _ in final_subsections]
     event_queue: Queue = Queue()
     stop_token = object()
@@ -180,35 +214,73 @@ def stream_writing_tasks(
                     index = future_to_index[future]
                     subsection = final_subsections[index]
                     try:
-                        writing_task, task_warnings = future.result()
-                        event_name = "task_completed"
+                        retrieval, task_warnings = future.result()
                     except Exception as exc:
-                        writing_task, task_warnings = _writing_task_unhandled_error_response(
+                        retrieval, task_warnings = _retrieval_unhandled_error_response(
                             subsection=subsection,
                             user_prompt=normalized_prompt,
                             report_title=normalized_title,
                             top_k=normalized_top_k,
                             message=f"coordinator task generation failed: {exc}",
                         )
-                        event_name = "task_failed"
-                    writing_tasks[index] = writing_task
+                    retrieval_rows[index] = retrieval
                     warning_groups[index] = task_warnings
-                    event_queue.put(_task_stream_event(event_name, index, writing_task))
 
             warnings: List[dict] = []
             for task_warnings in warning_groups:
                 warnings.extend(task_warnings)
 
+            allocated = _allocate_retrieved_evidence(final_subsections, retrieval_rows, normalized_top_k)
             references: List[dict] = []
-            for task in writing_tasks:
-                retrieval = task.get("external_rag_retrieval") if isinstance(task, dict) else None
-                if not isinstance(retrieval, dict):
-                    continue
+            for row in allocated:
+                retrieval = row.get("external_rag_retrieval") or {}
                 mapped_blocks, references = register_evidence_blocks(
                     retrieval.get("evidence_blocks") or [], references
                 )
                 retrieval["evidence_blocks"] = mapped_blocks
                 retrieval["rag_context_text"] = build_rag_context_text(mapped_blocks)
+                row["external_rag_retrieval"] = retrieval
+
+            writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
+            for index, subsection in enumerate(final_subsections):
+                row = allocated[index]
+                if row.get("_retrieval_failed"):
+                    writing_task, _ = _writing_task_unhandled_error_response(
+                        subsection=subsection,
+                        user_prompt=normalized_prompt,
+                        report_title=normalized_title,
+                        top_k=normalized_top_k,
+                        message=row.get("_retrieval_error", "retrieval failed"),
+                    )
+                    writing_tasks[index] = writing_task
+                    event_queue.put(_task_stream_event("task_failed", index, writing_task))
+                    continue
+                try:
+                    writing_task, prompt_warnings = _build_writing_task_from_retrieval(
+                        subsection=subsection,
+                        graph_retrieval=row.get("graph_retrieval") or {},
+                        external_rag_retrieval=row.get("external_rag_retrieval") or {},
+                        user_prompt=normalized_prompt,
+                        report_title=normalized_title,
+                        warnings=warning_groups[index],
+                    )
+                    writing_tasks[index] = writing_task
+                    event_name = "task_completed"
+                except Exception as exc:
+                    writing_task, prompt_warnings = _writing_task_unhandled_error_response(
+                        subsection=subsection,
+                        user_prompt=normalized_prompt,
+                        report_title=normalized_title,
+                        top_k=normalized_top_k,
+                        message=f"coordinator task generation failed: {exc}",
+                    )
+                    writing_tasks[index] = writing_task
+                    event_name = "task_failed"
+                event = _task_stream_event(event_name, index, writing_task)
+                event["references"] = copy.deepcopy(references)
+                event_queue.put(event)
+
+            warnings = [warning for group in warning_groups for warning in group]
 
             event_queue.put({
                 "event": "completed",
@@ -244,7 +316,7 @@ def stream_writing_tasks(
         yield event
 
 
-def _generate_writing_task_for_subsection(
+def _retrieve_candidates_for_subsection(
     subsection: dict,
     user_prompt: str,
     report_title: str,
@@ -253,38 +325,66 @@ def _generate_writing_task_for_subsection(
     use_graph: bool = True,
     use_external_rag: bool = True,
 ) -> tuple[dict, List[dict]]:
+    """Retrieve graph context and unallocated external candidates for one section."""
     task_warnings: List[dict] = []
     warnings: List[dict] = []
-    section_retrieval_query = _build_subsection_retrieval_query(
+    query = _build_subsection_retrieval_query(
         user_prompt=user_prompt,
         report_title=report_title,
         parent_level1_title=subsection["parent_level1_title"],
         subsection_title=subsection["title"],
     )
-
     if industry and use_graph:
         graph_retrieval = _retrieve_graph_for_subsection(
-            query=section_retrieval_query,
-            industry=industry,
-            outline_id=subsection["outline_id"],
-            warnings=warnings,
-            task_warnings=task_warnings,
+            query=query, industry=industry, outline_id=subsection["outline_id"],
+            warnings=warnings, task_warnings=task_warnings,
         )
     else:
         graph_retrieval = {"status": "skipped", "graph_evidence_blocks": [], "evidence_blocks": []}
 
     if industry and use_external_rag:
+        candidate_top_k = max(top_k, min(top_k * 2, 20))
         external_rag_retrieval = _retrieve_external_rag_for_subsection(
-            query=section_retrieval_query,
+            query=query, industry=industry, top_k=candidate_top_k,
+            outline_id=subsection["outline_id"], warnings=warnings,
+            task_warnings=task_warnings,
+        )
+        _expand_external_candidates_if_needed(
+            external_rag_retrieval=external_rag_retrieval,
+            query=query,
+            subsection=subsection,
             industry=industry,
-            top_k=top_k,
-            outline_id=subsection["outline_id"],
+            candidate_top_k=candidate_top_k,
             warnings=warnings,
             task_warnings=task_warnings,
         )
     else:
         external_rag_retrieval = {"status": "skipped", "evidence_blocks": []}
 
+    return (
+        {
+            "outline_id": subsection["outline_id"],
+            "parent_level1_id": subsection["parent_level1_id"],
+            "parent_level1_title": subsection["parent_level1_title"],
+            "title": subsection["title"],
+            "section_retrieval_query": query,
+            "graph_retrieval": graph_retrieval,
+            "external_rag_retrieval": external_rag_retrieval,
+        },
+        task_warnings,
+    )
+
+
+def _build_writing_task_from_retrieval(
+    subsection: dict,
+    graph_retrieval: dict,
+    external_rag_retrieval: dict,
+    user_prompt: str,
+    report_title: str,
+    warnings: List[dict],
+) -> tuple[dict, List[dict]]:
+    """Generate one writing task from retrieval already allocated at report level."""
+    task_warnings: List[dict] = list(warnings or [])
     prompt_result = _generate_writing_system_prompt(
         user_prompt=user_prompt,
         report_title=report_title,
@@ -306,25 +406,182 @@ def _generate_writing_task_for_subsection(
         warnings.append(warning)
         task_warnings.append(warning)
         writing_system_prompt = _fallback_writing_system_prompt(
-            user_prompt=user_prompt,
-            report_title=report_title,
+            user_prompt=user_prompt, report_title=report_title,
             parent_level1_title=subsection["parent_level1_title"],
             subsection_title=subsection["title"],
         )
+    return ({
+        "outline_id": subsection["outline_id"],
+        "parent_level1_id": subsection["parent_level1_id"],
+        "parent_level1_title": subsection["parent_level1_title"],
+        "title": subsection["title"],
+        "section_retrieval_query": _build_subsection_retrieval_query(
+            user_prompt=user_prompt, report_title=report_title,
+            parent_level1_title=subsection["parent_level1_title"],
+            subsection_title=subsection["title"],
+        ),
+        "graph_retrieval": graph_retrieval,
+        "external_rag_retrieval": external_rag_retrieval,
+        "writing_system_prompt": writing_system_prompt,
+        "warnings": task_warnings,
+    }, task_warnings)
 
-    return (
-        {
+
+def _allocate_retrieved_evidence(subsections: List[dict], retrieval_rows: List[dict], top_k: int) -> List[dict]:
+    candidate_sections = []
+    for subsection, row in zip(subsections, retrieval_rows):
+        row = row if isinstance(row, dict) else {}
+        retrieval = row.get("external_rag_retrieval") if isinstance(row.get("external_rag_retrieval"), dict) else {}
+        candidate_sections.append({
+            "outline_id": subsection.get("outline_id", ""),
+            "candidates": retrieval.get("evidence_blocks") or [],
+        })
+    allocated = allocate_evidence_blocks(candidate_sections, target_per_section=top_k)
+    output = []
+    for subsection, row, allocation in zip(subsections, retrieval_rows, allocated):
+        source = copy.deepcopy(row) if isinstance(row, dict) else {}
+        retrieval = source.get("external_rag_retrieval")
+        if not isinstance(retrieval, dict):
+            retrieval = {"status": "skipped", "evidence_blocks": []}
+        retrieval["evidence_blocks"] = allocation.get("evidence_blocks", [])
+        retrieval["diagnostics"] = allocation.get("diagnostics", {})
+        source["external_rag_retrieval"] = retrieval
+        source.setdefault("outline_id", subsection.get("outline_id", ""))
+        output.append(source)
+    return output
+
+
+def _expand_external_candidates_if_needed(
+    external_rag_retrieval: dict,
+    query: str,
+    subsection: dict,
+    industry: str,
+    candidate_top_k: int,
+    warnings: List[dict],
+    task_warnings: List[dict],
+) -> None:
+    blocks = external_rag_retrieval.get("evidence_blocks") or []
+    distinct = {_candidate_material_key(block) for block in blocks if _candidate_material_key(block)}
+    if len(distinct) >= 3:
+        return
+    focused_query = "\n".join([
+        query,
+        f"聚焦补充：仅补充{_safe_text(subsection.get('parent_level1_title'))} / {_safe_text(subsection.get('title'))}所需的不同资料来源。",
+    ])
+    retry_warnings: List[dict] = []
+    retry_task_warnings: List[dict] = []
+    try:
+        retry = _retrieve_external_rag_for_subsection(
+            query=focused_query,
+            industry=industry,
+            top_k=candidate_top_k,
+            outline_id=subsection["outline_id"],
+            warnings=retry_warnings,
+            task_warnings=retry_task_warnings,
+        )
+    except Exception as exc:
+        warning = {"outline_id": subsection["outline_id"], "stage": "external_rag_candidate_retry", "message": str(exc)}
+        warnings.append(warning)
+        task_warnings.append(warning)
+        return
+    warnings.extend(retry_warnings)
+    task_warnings.extend(retry_task_warnings)
+    if not isinstance(retry, dict):
+        return
+    if retry.get("status") != "success":
+        if retry_warnings:
+            return
+        warning = {
             "outline_id": subsection["outline_id"],
-            "parent_level1_id": subsection["parent_level1_id"],
-            "parent_level1_title": subsection["parent_level1_title"],
-            "title": subsection["title"],
-            "section_retrieval_query": section_retrieval_query,
-            "graph_retrieval": graph_retrieval,
-            "external_rag_retrieval": external_rag_retrieval,
-            "writing_system_prompt": writing_system_prompt,
-            "warnings": task_warnings,
-        },
-        warnings,
+            "stage": "external_rag_candidate_retry",
+            "message": retry.get("message", "focused candidate retrieval failed"),
+        }
+        warnings.append(warning)
+        task_warnings.append(warning)
+        return
+    retry_blocks = retry.get("evidence_blocks") or []
+    seen_vectors = {_candidate_vector_key(block) for block in blocks if _candidate_vector_key(block)}
+    seen_materials = {_candidate_material_key(block) for block in blocks if _candidate_material_key(block)}
+    for block in retry_blocks:
+        vector_key = _candidate_vector_key(block)
+        material_key = _candidate_material_key(block)
+        if vector_key and vector_key in seen_vectors:
+            continue
+        if not vector_key and material_key in seen_materials:
+            continue
+        blocks.append(copy.deepcopy(block))
+        if vector_key:
+            seen_vectors.add(vector_key)
+        if material_key:
+            seen_materials.add(material_key)
+    external_rag_retrieval["evidence_blocks"] = blocks
+    # The helper above already propagated retry warnings into both warning lists.
+    # Do not re-emit ``retry["warnings"]`` here: backend stages may differ after
+    # normalization and would otherwise produce duplicate entries.
+    external_rag_retrieval["status"] = "success"
+    for key in ("retrieval_version",):
+        if retry.get(key):
+            external_rag_retrieval[key] = retry[key]
+
+
+def _candidate_material_key(block: Any) -> str:
+    if not isinstance(block, dict):
+        return ""
+    library = _safe_text(block.get("library"))
+    identity = _safe_text(block.get("material_id")) or _safe_text(block.get("vector_id"))
+    return f"{library}:{identity}" if identity else ""
+
+
+def _candidate_vector_key(block: Any) -> str:
+    if not isinstance(block, dict):
+        return ""
+    return f"{_safe_text(block.get('library'))}:{_safe_text(block.get('vector_id'))}" if _safe_text(block.get("vector_id")) else ""
+
+
+def _retrieval_unhandled_error_response(
+    subsection: dict,
+    user_prompt: str,
+    report_title: str,
+    top_k: int,
+    message: str,
+) -> tuple[dict, List[dict]]:
+    query = _build_subsection_retrieval_query(
+        user_prompt=user_prompt, report_title=report_title,
+        parent_level1_title=_safe_text(subsection.get("parent_level1_title")),
+        subsection_title=_safe_text(subsection.get("title")),
+    )
+    warning = {"outline_id": _safe_text(subsection.get("outline_id")), "stage": "coordinator_task_generation", "message": message}
+    return ({
+        "outline_id": _safe_text(subsection.get("outline_id")),
+        "parent_level1_id": _safe_text(subsection.get("parent_level1_id")),
+        "parent_level1_title": _safe_text(subsection.get("parent_level1_title")),
+        "title": _safe_text(subsection.get("title")),
+        "section_retrieval_query": query,
+        "graph_retrieval": _graph_error_response(query=query, message=message),
+        "external_rag_retrieval": _external_error_response(query=query, top_k=top_k, message=message),
+        "_retrieval_failed": True,
+        "_retrieval_error": message,
+    }, [warning])
+
+
+def _generate_writing_task_for_subsection(
+    subsection: dict,
+    user_prompt: str,
+    report_title: str,
+    top_k: int,
+    industry: str = "ai",
+    use_graph: bool = True,
+    use_external_rag: bool = True,
+) -> tuple[dict, List[dict]]:
+    """Backward-compatible worker name that now performs retrieval only."""
+    return _retrieve_candidates_for_subsection(
+        subsection=subsection,
+        user_prompt=user_prompt,
+        report_title=report_title,
+        top_k=top_k,
+        industry=industry,
+        use_graph=use_graph,
+        use_external_rag=use_external_rag,
     )
 
 
