@@ -2504,6 +2504,8 @@ async function rewriteIndustryReportSection() {
                 graph_retrieval: industryReportWorkspace.rewriteMaterials.graph_retrieval || {},
                 selected_external_evidence_blocks: selected,
                 references: industryReportWorkspace.references || [],
+                previous_body_sections: (industryReportWorkspace.bodySections || [])
+                    .filter(item => item && item.outline_id !== section.outline_id),
             }),
         });
         appendIndustryReportWarnings(data.warnings);
