@@ -738,6 +738,7 @@ def report_rewrite():
     graph_retrieval = data.get("graph_retrieval") or {}
     selected_external_evidence_blocks = data.get("selected_external_evidence_blocks") or []
     references = data.get("references", [])
+    previous_body_sections = data.get("previous_body_sections", [])
 
     if not rewrite_prompt:
         return jsonify({"status": "error", "message": "rewrite_prompt cannot be empty"}), 400
@@ -751,6 +752,8 @@ def report_rewrite():
         return jsonify({"status": "error", "message": "selected_external_evidence_blocks must be an array"}), 400
     if not isinstance(references, list):
         return jsonify({"status": "error", "message": "references must be an array"}), 400
+    if not isinstance(previous_body_sections, list):
+        return jsonify({"status": "error", "message": "previous_body_sections must be an array"}), 400
 
     result = rewrite_body_section(
         rewrite_prompt=rewrite_prompt,
@@ -760,6 +763,7 @@ def report_rewrite():
         selected_external_evidence_blocks=selected_external_evidence_blocks,
         industry=industry,
         references=references,
+        previous_body_sections=previous_body_sections,
     )
     if result.get("status") != "success":
         return jsonify(result), 400

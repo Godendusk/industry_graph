@@ -9,6 +9,7 @@ from typing import Any, List
 
 from llm_client import llm
 from .citations import register_evidence_blocks, validate_body_citations
+from . import body_agent
 
 from .external_rag.retriever import retrieve_external_rag
 from .graph_retriever import retrieve_industry_graph
@@ -104,6 +105,7 @@ def rewrite_body_section(
     selected_external_evidence_blocks: list,
     industry: str = "ai",
     references: list = None,
+    previous_body_sections: list = None,
 ) -> dict:
     """Rewrite one body section using selected materials."""
     normalized_prompt = _safe_text(rewrite_prompt)
@@ -134,6 +136,8 @@ def rewrite_body_section(
         return _rewrite_error_response(body_section, "selected_external_evidence_blocks must be an array")
     if references is not None and not isinstance(references, list):
         return _rewrite_error_response(body_section, "references must be an array")
+    if previous_body_sections is not None and not isinstance(previous_body_sections, list):
+        return _rewrite_error_response(body_section, "previous_body_sections must be an array")
 
     mapped_blocks, updated_references = register_evidence_blocks(
         selected_external_evidence_blocks, references or []
@@ -146,12 +150,20 @@ def rewrite_body_section(
     if not original_body_text:
         return _rewrite_error_response(body_section, "body_section.body_text cannot be empty")
 
+    prior_report_facts = _build_prior_report_facts(
+        previous_body_sections=previous_body_sections or [],
+        current_outline_id=section["outline_id"],
+        selected_external_evidence_blocks=mapped_blocks,
+        current_body_section=body_section,
+    )
+
     user_prompt = _build_rewrite_user_prompt(
         rewrite_prompt=normalized_prompt,
         report_title=normalized_title,
         body_section=body_section,
         graph_retrieval=graph_retrieval,
         selected_external_evidence_blocks=mapped_blocks,
+        prior_report_facts=prior_report_facts,
     )
     system_prompt = """你是产业报告正文重写智能体。
 你的任务是根据用户重写要求、原正文和用户选择的材料，重写当前二级标题下的正文。
@@ -159,6 +171,8 @@ def rewrite_body_section(
 不得把 [知识图谱1] 等知识图谱编号当作文章来源。
 凡使用外部资料中的数字、政策、领导讲话、专家观点或企业案例，必须在对应句末保留该资料的 [C数字] 引用编号。
 只能使用用户选择的外部资料上下文中真实出现的 [C数字]，不得编造编号、标题或网址。
+“整篇报告已写事实”仅用于避重和调整叙述角度，不是事实证据、引用来源或可直接复述的依据；不得从该上下文引入外部事实或引用编号。
+如果用户明确要求重复某个背景、事实、案例或数据，应按用户要求重复，不得仅因避重上下文而拒绝。
 正文不输出独立参考文献列表，参考资料列表由系统生成。
 必须保持正式产业研究报告文风，逻辑清晰、表述准确，不要编造材料中没有的信息。"""
 
@@ -288,6 +302,7 @@ def _build_rewrite_user_prompt(
     body_section: dict,
     graph_retrieval: dict,
     selected_external_evidence_blocks: list,
+    prior_report_facts: str = "",
 ) -> str:
     graph_context_text = _safe_text(graph_retrieval.get("graph_context_text"))
     selected_rag_context_text = _build_selected_rag_context_text(
@@ -309,6 +324,9 @@ def _build_rewrite_user_prompt(
 【当前二级标题】
 {_safe_text(body_section.get("title"))}
 
+【整篇报告已写事实（仅用于避重，不是引用证据）】
+{prior_report_facts or "暂无整篇报告已生成正文"}
+
 【重新检索到的知识图谱上下文】
 {graph_context_text or "未提供可用知识图谱上下文。"}
 
@@ -319,12 +337,52 @@ def _build_rewrite_user_prompt(
 请根据用户重写要求重写当前二级标题下的正文。
 请直接输出正文段落，不要输出当前二级标题、章节标题或任何标题行。
 请检查引用的资料，不要出现常识性错误，例如误把民营企业（华为海思）当成央企国企，误把外资企业（英伟达）当成民营企业。
+上面的“整篇报告已写事实”仅用于避开重复的观点、案例、数据、句式和分析角度，不是当前小节的可引用证据。
 要求报告正文不多于 1000字，段落不超过 3 段。
 不得把 [知识图谱1] 等知识图谱编号当作文章来源。
 凡使用外部资料中的数字、政策、领导讲话、专家观点或企业案例，必须在对应句末保留该资料的 [C数字] 引用编号。
 只能使用用户选择的外部资料上下文中真实出现的 [C数字]，不得编造编号、标题或网址。
 正文不输出独立参考文献列表，参考资料列表由系统生成。
-不得生成摘要、目录、标题页、Word 导出说明或其他章节内容。"""
+    不得生成摘要、目录、标题页、Word 导出说明或其他章节内容。"""
+
+
+def _build_prior_report_facts(
+    previous_body_sections: list,
+    current_outline_id: str,
+    selected_external_evidence_blocks: list,
+    current_body_section: dict = None,
+) -> str:
+    """Build deterministic avoidance context from other generated sections.
+
+    The body agent formatter keeps this context compact and only surfaces
+    citation-bearing sentences when the citation is available to the current
+    section.  Filtering by outline id here prevents a stale client payload
+    from feeding the section being rewritten back into its own prompt.
+    """
+    current_id = _safe_text(current_outline_id)
+    current_section = current_body_section if isinstance(current_body_section, dict) else {}
+    current_title = _safe_text(current_section.get("title"))
+    current_body_text = _safe_text(current_section.get("body_text"))
+    prior_sections = [
+        copy.deepcopy(section)
+        for section in (previous_body_sections if isinstance(previous_body_sections, list) else [])
+        if isinstance(section, dict)
+        and not (
+            (current_id and _safe_text(section.get("outline_id")) == current_id)
+            or (
+                current_title
+                and current_body_text
+                and _safe_text(section.get("title")) == current_title
+                and _safe_text(section.get("body_text")) == current_body_text
+            )
+        )
+    ]
+    current_task = {
+        "external_rag_retrieval": {
+            "evidence_blocks": copy.deepcopy(selected_external_evidence_blocks)
+        }
+    }
+    return body_agent._format_prior_report_facts(prior_sections, current_task)
 
 
 def _build_selected_rag_context_text(evidence_blocks: list) -> str:

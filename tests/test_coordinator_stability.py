@@ -86,9 +86,9 @@ class CoordinatorStabilityTest(unittest.TestCase):
         )
         self.assertEqual(len(graph_calls), 20)
         self.assertTrue(all(industry == "embodied" for _, industry in graph_calls))
-        self.assertEqual(len(rag_calls), 20)
+        self.assertEqual(len(rag_calls), 40)
         self.assertTrue(
-            all(industry == "embodied" and top_k == 10 for _, industry, top_k in rag_calls)
+            all(industry == "embodied" and top_k == 20 for _, industry, top_k in rag_calls)
         )
         self.assertEqual(len(llm_calls), 20)
         self.assertTrue(

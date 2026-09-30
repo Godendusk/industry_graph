@@ -5,7 +5,6 @@ from __future__ import annotations
 import copy
 import re
 import threading
-from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue
 from typing import Any, List
 
@@ -165,46 +164,31 @@ def generate_report_bodies(
             industry_name,
         )
 
-    task_groups = _group_writing_tasks_by_level1(writing_tasks)
-    actual_workers = _normalize_max_workers(max_workers, len(task_groups))
+    # ``max_workers`` remains an accepted request field for client compatibility,
+    # while prior-section context requires one ordered generation stream.
+    actual_workers = 1
     body_sections: List[dict] = [None] * len(writing_tasks)  # type: ignore[list-item]
-
-    if actual_workers == 1:
-        for group in task_groups:
-            for index, section in _generate_body_group(
-                task_group=group,
+    previous_success_sections: List[dict] = []
+    for index, task in enumerate(writing_tasks):
+        try:
+            section = generate_body_section(
+                writing_task=task,
                 user_prompt=normalized_prompt,
                 report_title=normalized_title,
-            ):
-                body_sections[index] = section
-    else:
-        with ThreadPoolExecutor(max_workers=actual_workers) as executor:
-            future_to_group = {
-                executor.submit(
-                    _generate_body_group,
-                    task_group=group,
-                    user_prompt=normalized_prompt,
-                    report_title=normalized_title,
-                ): group
-                for group in task_groups
-            }
-            for future in as_completed(future_to_group):
-                group = future_to_group[future]
-                try:
-                    generated_sections = future.result()
-                except Exception as exc:
-                    generated_sections = [
-                        (
-                            item["index"],
-                            _section_error_response(
-                                item["task"] if isinstance(item["task"], dict) else {},
-                                f"body group generation failed: {exc}",
-                            ),
-                        )
-                        for item in group
-                    ]
-                for index, section in generated_sections:
-                    body_sections[index] = section
+                previous_body_sections=previous_success_sections,
+            )
+        except Exception as exc:
+            section = _section_error_response(
+                task if isinstance(task, dict) else {},
+                f"body generation failed: {exc}",
+            )
+        body_sections[index] = section
+        if (
+            isinstance(section, dict)
+            and section.get("status") == "success"
+            and _safe_text(section.get("body_text"))
+        ):
+            previous_success_sections.append(section)
 
     warnings = _collect_warnings(body_sections)
     used_references = collect_used_references(body_sections, references or [])
@@ -225,6 +209,7 @@ def generate_report_bodies(
         "user_prompt": normalized_prompt,
         "report_title": normalized_title,
         "body_sections": body_sections,
+        "max_workers": actual_workers,
         "references": used_references,
         "warnings": warnings,
     }
@@ -257,8 +242,10 @@ def stream_report_bodies(
         yield _stream_error_event("writing_tasks must contain at least one item", normalized_industry, industry_name)
         return
 
+    # ``max_workers`` remains accepted for API compatibility; generation is
+    # intentionally ordered so each section can see prior successful sections.
     task_groups = _group_writing_tasks_by_level1(writing_tasks)
-    actual_workers = _normalize_max_workers(max_workers, len(task_groups))
+    actual_workers = 1
     body_sections: List[dict] = [None] * len(writing_tasks)  # type: ignore[list-item]
     event_queue: Queue = Queue()
     stop_token = object()
@@ -273,45 +260,32 @@ def stream_report_bodies(
         "max_workers": actual_workers,
     }
 
-    def put_event(event: dict) -> None:
-        event_queue.put(event)
-
-    def run_group(group: List[dict]) -> List[tuple[int, dict]]:
-        return _generate_body_group(
-            task_group=group,
-            user_prompt=normalized_prompt,
-            report_title=normalized_title,
-            on_event=put_event,
-        )
-
     def producer() -> None:
         try:
-            if actual_workers == 1:
-                for group in task_groups:
-                    for index, section in run_group(group):
-                        body_sections[index] = section
-            else:
-                with ThreadPoolExecutor(max_workers=actual_workers) as executor:
-                    future_to_group = {
-                        executor.submit(run_group, group): group
-                        for group in task_groups
-                    }
-                    for future in as_completed(future_to_group):
-                        group = future_to_group[future]
-                        try:
-                            generated_sections = future.result()
-                        except Exception as exc:
-                            generated_sections = []
-                            for item in group:
-                                index = item["index"]
-                                section = _section_error_response(
-                                    item["task"] if isinstance(item["task"], dict) else {},
-                                    f"body group generation failed: {exc}",
-                                )
-                                generated_sections.append((index, section))
-                                event_queue.put(_section_stream_event("section_failed", index, section))
-                        for index, section in generated_sections:
-                            body_sections[index] = section
+            previous_success_sections: List[dict] = []
+            for index, task in enumerate(writing_tasks):
+                event_queue.put(_task_stream_event("section_started", index, task))
+                try:
+                    section = generate_body_section(
+                        writing_task=task,
+                        user_prompt=normalized_prompt,
+                        report_title=normalized_title,
+                        previous_body_sections=previous_success_sections,
+                    )
+                except Exception as exc:
+                    section = _section_error_response(
+                        task if isinstance(task, dict) else {},
+                        f"body generation failed: {exc}",
+                    )
+                body_sections[index] = section
+                event_name = "section_completed" if section.get("status") == "success" else "section_failed"
+                event_queue.put(_section_stream_event(event_name, index, section))
+                if (
+                    isinstance(section, dict)
+                    and section.get("status") == "success"
+                    and _safe_text(section.get("body_text"))
+                ):
+                    previous_success_sections.append(section)
 
             warnings = _collect_warnings(body_sections)
             used_references = collect_used_references(body_sections, references or [])
@@ -336,6 +310,7 @@ def stream_report_bodies(
                 "warnings": warnings,
                 "success_count": success_count,
                 "total": len(body_sections),
+                "max_workers": actual_workers,
             })
         except Exception as exc:
             event_queue.put({
@@ -468,6 +443,72 @@ def _format_previous_body_sections(previous_body_sections: Any) -> str:
     return "\n\n".join(blocks)
 
 
+def _format_prior_report_facts(previous_sections: Any, current_task: Any) -> str:
+    """Format compact, deterministic avoidance context from prior body sections.
+
+    The returned text is deliberately derived from existing section output and
+    never calls the model.  Only successful sections contribute facts, and
+    citation-bearing sentences are included when their citation is available to
+    the current task.
+    """
+    if not isinstance(previous_sections, list) or not previous_sections:
+        return "暂无整篇报告已生成正文"
+
+    current_evidence_ids = {
+        _safe_text(row.get("citation_id"))
+        for row in _external_evidence_blocks(current_task if isinstance(current_task, dict) else {})
+        if isinstance(row, dict) and _safe_text(row.get("citation_id"))
+    }
+    blocks: List[str] = []
+    for index, section in enumerate(previous_sections, 1):
+        if not isinstance(section, dict):
+            continue
+        status = _safe_text(section.get("status"))
+        if status and status != "success":
+            continue
+        body_text = _safe_text(section.get("body_text"))
+        if not body_text:
+            continue
+        sentences = _complete_sentences(body_text)
+        if not sentences:
+            continue
+        title = _safe_text(section.get("title")) or f"已生成二级标题{index}"
+        lines = [f"- {title}：{_truncate_sentence(sentences[0])}"]
+
+        matching_sentences = []
+        for sentence in sentences:
+            if sentence == sentences[0]:
+                continue
+            if any(f"[{citation_id}]" in sentence for citation_id in current_evidence_ids):
+                matching_sentences.append(_truncate_sentence(sentence))
+                if len(matching_sentences) >= 2:
+                    break
+        if matching_sentences:
+            lines.append("  当前资料对应事实：" + " ".join(matching_sentences))
+        blocks.append("\n".join(lines))
+
+    return "\n\n".join(blocks) or "暂无整篇报告已生成正文"
+
+
+def _complete_sentences(text: str) -> List[str]:
+    """Return complete sentences terminated by common Chinese/Latin punctuation."""
+    safe_text = _safe_text(text)
+    if not safe_text:
+        return []
+    return [
+        match.group(0).strip()
+        for match in re.finditer(r"[^\n]+?(?:[。！？!?；;]|\.(?=\s|$))", safe_text)
+        if match.group(0).strip()
+    ]
+
+
+def _truncate_sentence(text: str, max_length: int = 160) -> str:
+    safe_text = _safe_text(text)
+    if len(safe_text) <= max_length:
+        return safe_text
+    return safe_text[: max_length - 1].rstrip() + "…"
+
+
 def _truncate_text(text: str, max_length: int) -> str:
     safe_text = _safe_text(text)
     if len(safe_text) <= max_length:
@@ -491,8 +532,7 @@ def _build_body_user_prompt(
 
     graph_context_text = _safe_text(graph_retrieval.get("graph_context_text"))
     rag_context_text = _safe_text(external_rag_retrieval.get("rag_context_text"))
-    previous_body_text = _format_previous_body_sections(previous_body_sections)
-    previous_body_context = previous_body_text or "暂无同一一级标题下已生成正文。"
+    prior_report_facts = _format_prior_report_facts(previous_body_sections, writing_task)
 
     return f"""【用户原始需求】
 {user_prompt}
@@ -506,8 +546,8 @@ def _build_body_user_prompt(
 【当前二级标题】
 {_safe_text(writing_task.get("title"))}
 
-【同一一级标题下已生成正文】
-{previous_body_context}
+【整篇报告已写事实（仅用于避重）】
+{prior_report_facts}
 
 【知识图谱上下文】
 {graph_context_text or "未提供可用知识图谱上下文。"}
@@ -519,6 +559,7 @@ def _build_body_user_prompt(
 请生成当前二级标题下的报告正文。
 请直接输出正文段落，不要输出当前二级标题、章节标题或任何标题行。
 如果同一一级标题下已有前文正文，请主动避开前文已写过和引用过的知识图谱和外部资料、观点、案例、数据、句式和分析角度，不要生成高度相似的内容。
+上面的整篇报告已写事实仅用于改变当前叙述角度和避免重复，不是当前小节的可引用证据。正文中的 [C数字] 只能来自当前小节“外部资料库上下文”中真实出现的引用编号。
 生成正文时要重点参考关注当前的一级标题和二级标题，不要生成关联度不高的内容，比如标题让你分析现状你就分析现状，不要自作主张去分析突出问题和对策建议；标题让你分析对策建议你就分析对策建议，不要自作主张去分析现状和问题；标题让你分析现状你就分析现状，不要自作主张去分析突出问题和对策建议，绝对不要做多余的事。
 特别需要注意生成正文时要刻意避免当前二级标题下以及同一一级标题不同二级标题下的每一自然段生成的正文的首句内容和句式重复或者高度相似。
 请检查引用的资料，不要出现常识性错误，例如误把民营企业（华为海思）当成央企国企，误把外资企业（英伟达）当成民营企业。

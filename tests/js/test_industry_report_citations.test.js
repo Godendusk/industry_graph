@@ -98,3 +98,45 @@ test("manual edits only keep citations allowed by the current section", () => {
     );
     assert.deepEqual(Array.from(ids), ["C1"]);
 });
+
+test("rewrite request sends prior body sections without the active section", async () => {
+    const context = load();
+    context.API_BASE = "";
+    const requests = [];
+    const elements = {
+        "industry-report-rewrite-prompt": { value: "补充最新材料" },
+        "industry-report-rewrite-preview": { innerHTML: "" },
+    };
+    context.document.getElementById = id => elements[id] || null;
+    context.fetch = async (url, options) => {
+        requests.push({ url, options });
+        return {
+            ok: true,
+            status: 200,
+            async json() {
+                return { status: "success", body_text: "重写正文。", citation_ids: [] };
+            },
+        };
+    };
+    vm.runInContext(`
+        industryReportWorkspace.reportTitle = "测试报告";
+        industryReportWorkspace.activeSectionId = "S1.1";
+        industryReportWorkspace.bodySections = [
+            { outline_id: "S1.1", title: "当前", body_text: "当前正文" },
+            { outline_id: "S1.2", title: "前文", body_text: "前文正文" },
+        ];
+        industryReportWorkspace.rewriteMaterials = {
+            graph_retrieval: {},
+            external_rag_retrieval: { evidence_blocks: [] },
+        };
+    `, context);
+
+    await context.rewriteIndustryReportSection();
+
+    assert.equal(requests.length, 1);
+    const payload = JSON.parse(requests[0].options.body);
+    assert.deepEqual(
+        payload.previous_body_sections.map(item => item.outline_id),
+        ["S1.2"],
+    );
+});
