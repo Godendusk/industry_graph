@@ -7,9 +7,10 @@ from pathlib import Path
 from threading import Lock
 from typing import Any, Dict, Iterable, List
 
+from ..industry_config import get_industry_config
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-VECTOR_DB_DIR = PROJECT_ROOT / "RAG" / "vector_db_embodied"
+VECTOR_DB_DIR = Path(get_industry_config("embodied")["vector_db_path"])
 MODEL_PATH = PROJECT_ROOT / "RAG" / "model_store" / "bge-base-zh-v1.5"
 COLLECTION_NAME = "embodied_news"
 BATCH_SIZE = 64

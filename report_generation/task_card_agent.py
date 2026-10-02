@@ -312,12 +312,12 @@ def _normalize_task_card(
 
 def _external_rag_available(config: dict) -> bool:
     """Return whether an industry has a configured source and local Chroma store."""
-    if not clean_text(config.get("external_column_id")):
-        return False
     vector_db_path = config.get("vector_db_path")
-    if not vector_db_path:
+    if not vector_db_path or not (Path(vector_db_path) / "chroma.sqlite3").is_file():
         return False
-    return (Path(vector_db_path) / "chroma.sqlite3").is_file()
+    if config.get("rag_type") == "news":
+        return True
+    return bool(clean_text(config.get("external_column_id")))
 
 
 def _normalize_candidate_keys(value: Any) -> List[str]:

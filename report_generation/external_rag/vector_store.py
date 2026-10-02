@@ -7,12 +7,12 @@ from threading import Lock
 from typing import Any, Dict, List
 
 from .client import get_external_libraries
-from ..industry_config import get_vector_db_path
+from ..industry_config import get_industry_config, get_vector_db_path
 
 
 REPORT_GENERATION_DIR = Path(__file__).resolve().parents[1]
 PROJECT_ROOT = REPORT_GENERATION_DIR.parent
-VECTOR_DB_DIR = PROJECT_ROOT / "RAG" / "vector_db_ai"  # 报告五库：report_*_ai
+VECTOR_DB_DIR = Path(get_industry_config("ai")["vector_db_path"])
 MODEL_PATH = PROJECT_ROOT / "RAG" / "models"
 BATCH_SIZE = 128
 # 限制嵌入模型使用的 CPU 线程数，避免编码时 CPU 占用过高（默认 4 线程）
