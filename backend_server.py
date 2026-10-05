@@ -387,6 +387,7 @@ def report_coordinator():
     industry = str(data.get("industry", "ai") or "").strip()
     outline = data.get("outline")
     top_k = data.get("top_k", 10)
+    max_workers = data.get("max_workers", 3)
     use_graph = _coerce_bool(data.get("use_graph"), True)
     use_external_rag = _coerce_bool(data.get("use_external_rag"), True)
 
@@ -403,6 +404,7 @@ def report_coordinator():
         outline=outline,
         industry=industry,
         top_k=top_k,
+        max_workers=max_workers,
         use_graph=use_graph,
         use_external_rag=use_external_rag,
     )
@@ -420,6 +422,7 @@ def report_coordinator_stream():
     industry = str(data.get("industry", "ai") or "").strip()
     outline = data.get("outline")
     top_k = data.get("top_k", 10)
+    max_workers = data.get("max_workers", 3)
     use_graph = _coerce_bool(data.get("use_graph"), True)
     use_external_rag = _coerce_bool(data.get("use_external_rag"), True)
 
@@ -437,6 +440,7 @@ def report_coordinator_stream():
             outline=outline,
             industry=industry,
             top_k=top_k,
+            max_workers=max_workers,
             use_graph=use_graph,
             use_external_rag=use_external_rag,
         ):

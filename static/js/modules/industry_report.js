@@ -286,11 +286,15 @@ function renderIndustryReportFlowSteps(stage = "idle") {
         const state = getIndustryReportStepState(step.key, stage);
         return renderIndustryReportAgentCard(step, index, getIndustryReportWorkflowStyle(step, state), state, activeStep && step.key === activeStep.key);
     }).join("");
+    const previousBand = box.querySelector(".industry-report-workflow-band");
+    const previousScrollLeft = previousBand ? previousBand.scrollLeft : 0;
     box.innerHTML = `
         <div class="industry-report-workflow-band rounded-lg border border-blue-100 bg-gradient-to-r from-blue-50 via-white to-blue-50 px-5 py-5 overflow-x-auto">
             <div class="industry-report-milestone-row min-w-[920px]">${stepsHtml}</div>
         </div>
     `;
+    const nextBand = box.querySelector(".industry-report-workflow-band");
+    if (nextBand) nextBand.scrollLeft = previousScrollLeft;
     renderIndustryReportActiveStepDetail(stage, activeStep, activeStyle);
     renderIndustryReportExecutionLog(stage);
     syncIndustryReportWorkflowTimer();
@@ -317,11 +321,19 @@ function renderIndustryReportActiveStepDetail(stage = "idle", activeStep = null,
     const step = activeStep || (selectedKey ? INDUSTRY_REPORT_FLOW_STEPS.find(item => item.key === selectedKey) : null);
     if (!step) {
         detailBox.innerHTML = "";
+        detailBox.dataset.stepKey = "";
         return;
     }
     const state = getIndustryReportStepState(step.key, stage);
     const style = activeStyle || getIndustryReportWorkflowStyle(step, state);
+    const previousScrollBox = detailBox.querySelector(".industry-report-step-detail-scroll");
+    const previousScrollTop = detailBox.dataset.stepKey === step.key && previousScrollBox
+        ? previousScrollBox.scrollTop
+        : 0;
     detailBox.innerHTML = renderIndustryReportActiveStepPanel(step, style);
+    detailBox.dataset.stepKey = step.key;
+    const nextScrollBox = detailBox.querySelector(".industry-report-step-detail-scroll");
+    if (nextScrollBox) nextScrollBox.scrollTop = previousScrollTop;
 }
 
 function renderIndustryReportAgentCard(step, index, style, state, selected) {
@@ -331,7 +343,9 @@ function renderIndustryReportAgentCard(step, index, style, state, selected) {
     const statusHtml = getIndustryReportMilestoneStatusHtml(index, state);
     const agentHtml = step.key === "body"
         ? renderIndustryReportBodyAgentBadges(state)
-        : renderIndustryReportSingleAgentBadge(step, state);
+        : step.key === "coordinator"
+            ? renderIndustryReportCoordinatorAgentBadges(state)
+            : renderIndustryReportSingleAgentBadge(step, state);
     const metric = getIndustryReportStepMetric(step.key, state);
     return `
         <button type="button"
@@ -381,6 +395,20 @@ function renderIndustryReportBodyAgentBadges(state) {
         <span class="inline-flex items-center gap-2 rounded-lg border ${cls} px-3 py-2 text-xs font-semibold shadow-sm">
             <i class="fas fa-robot"></i>
             写作 Agent 1-${Math.max(1, workerCount)}
+        </span>
+    `;
+}
+
+function renderIndustryReportCoordinatorAgentBadges(state) {
+    const workerCount = getIndustryReportNumber("industry-report-coordinator-workers", 3);
+    const cls = state === "done" ? "text-emerald-600 bg-emerald-50 border-emerald-100"
+        : state === "active" ? "text-blue-600 bg-blue-50 border-blue-100"
+            : state === "failed" ? "text-red-600 bg-red-50 border-red-100"
+                : "text-amber-600 bg-white border-amber-100";
+    return `
+        <span class="inline-flex items-center gap-2 rounded-lg border ${cls} px-3 py-2 text-xs font-semibold shadow-sm">
+            <i class="fas fa-robot"></i>
+            调度 Agent 1-${Math.max(1, workerCount)}
         </span>
     `;
 }
@@ -673,7 +701,7 @@ function renderIndustryReportActiveStepPanel(step, style) {
                 <div class="text-xs ${style.detail}">${escapeIndustryReportHtml(summary || style.label)}</div>
             </div>
             ${groups.length ? `
-                <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
+                <div class="industry-report-step-detail-scroll space-y-3 max-h-64 overflow-y-auto pr-1">
                     ${groups.map(group => renderIndustryReportStepGroup(group)).join("")}
                 </div>
             ` : `<div class="text-sm ${style.detail}">${escapeIndustryReportHtml(emptyText)}</div>`}
@@ -1732,6 +1760,7 @@ async function prepareIndustryReportTasks() {
             industry: reportIndustry,
             outline: industryReportWorkspace.outline,
             top_k: getIndustryReportNumber("industry-report-top-k", 10),
+            max_workers: getIndustryReportNumber("industry-report-coordinator-workers", 3),
             use_graph: useGraph,
             use_external_rag: useExternalRag,
         });

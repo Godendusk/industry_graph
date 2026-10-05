@@ -22,6 +22,7 @@ from .industry_config import SUPPORTED_INDUSTRIES
 
 DEFAULT_TOP_K = 10
 DEFAULT_MAX_COORDINATOR_WORKERS = 3
+MAX_COORDINATOR_WORKERS_LIMIT = 6
 
 
 def generate_writing_tasks(
@@ -32,6 +33,7 @@ def generate_writing_tasks(
     top_k: int = DEFAULT_TOP_K,
     use_graph: bool = True,
     use_external_rag: bool = True,
+    max_workers: int = DEFAULT_MAX_COORDINATOR_WORKERS,
 ) -> dict:
     """Generate per-subsection writing system prompts after outline confirmation."""
     normalized_prompt = str(user_prompt or "").strip()
@@ -56,7 +58,7 @@ def generate_writing_tasks(
 
     retrieval_rows: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
     warning_groups: List[List[dict]] = [[] for _ in final_subsections]
-    worker_count = min(DEFAULT_MAX_COORDINATOR_WORKERS, len(final_subsections))
+    worker_count = _normalize_max_workers(max_workers, len(final_subsections))
     with ThreadPoolExecutor(max_workers=worker_count) as executor:
         future_to_index = {
             executor.submit(
@@ -103,19 +105,21 @@ def generate_writing_tasks(
         row["external_rag_retrieval"] = retrieval
 
     writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
-    for index, subsection in enumerate(final_subsections):
-        row = allocated[index]
-        if row.get("_retrieval_failed"):
-            writing_tasks[index], _ = _writing_task_unhandled_error_response(
-                subsection=subsection,
-                user_prompt=normalized_prompt,
-                report_title=normalized_title,
-                top_k=normalized_top_k,
-                message=row.get("_retrieval_error", "retrieval failed"),
-            )
-            continue
-        try:
-            writing_tasks[index], prompt_warnings = _build_writing_task_from_retrieval(
+    with ThreadPoolExecutor(max_workers=worker_count) as executor:
+        future_to_index = {}
+        for index, subsection in enumerate(final_subsections):
+            row = allocated[index]
+            if row.get("_retrieval_failed"):
+                writing_tasks[index], _ = _writing_task_unhandled_error_response(
+                    subsection=subsection,
+                    user_prompt=normalized_prompt,
+                    report_title=normalized_title,
+                    top_k=normalized_top_k,
+                    message=row.get("_retrieval_error", "retrieval failed"),
+                )
+                continue
+            future = executor.submit(
+                _build_writing_task_from_retrieval,
                 subsection=subsection,
                 graph_retrieval=row.get("graph_retrieval") or {},
                 external_rag_retrieval=row.get("external_rag_retrieval") or {},
@@ -123,15 +127,22 @@ def generate_writing_tasks(
                 report_title=normalized_title,
                 warnings=warning_groups[index],
             )
-        except Exception as exc:
-            writing_tasks[index], prompt_warnings = _writing_task_unhandled_error_response(
-                subsection=subsection,
-                user_prompt=normalized_prompt,
-                report_title=normalized_title,
-                top_k=normalized_top_k,
-                message=f"coordinator task generation failed: {exc}",
-            )
-            warning_groups[index].extend(prompt_warnings)
+            future_to_index[future] = index
+
+        for future in as_completed(future_to_index):
+            index = future_to_index[future]
+            subsection = final_subsections[index]
+            try:
+                writing_tasks[index], prompt_warnings = future.result()
+            except Exception as exc:
+                writing_tasks[index], prompt_warnings = _writing_task_unhandled_error_response(
+                    subsection=subsection,
+                    user_prompt=normalized_prompt,
+                    report_title=normalized_title,
+                    top_k=normalized_top_k,
+                    message=f"coordinator task generation failed: {exc}",
+                )
+                warning_groups[index].extend(prompt_warnings)
 
     warnings = [warning for group in warning_groups for warning in group]
 
@@ -143,6 +154,7 @@ def generate_writing_tasks(
         "use_external_rag": bool(use_external_rag),
         "user_prompt": normalized_prompt,
         "report_title": normalized_title,
+        "max_workers": worker_count,
         "writing_tasks": writing_tasks,
         "references": references,
         "warnings": warnings,
@@ -157,6 +169,7 @@ def stream_writing_tasks(
     top_k: int = DEFAULT_TOP_K,
     use_graph: bool = True,
     use_external_rag: bool = True,
+    max_workers: int = DEFAULT_MAX_COORDINATOR_WORKERS,
 ):
     """Yield coordinator progress events as subsection tasks complete."""
     normalized_prompt = str(user_prompt or "").strip()
@@ -181,7 +194,7 @@ def stream_writing_tasks(
     warning_groups: List[List[dict]] = [[] for _ in final_subsections]
     event_queue: Queue = Queue()
     stop_token = object()
-    worker_count = min(DEFAULT_MAX_COORDINATOR_WORKERS, len(final_subsections))
+    worker_count = _normalize_max_workers(max_workers, len(final_subsections))
 
     yield {
         "event": "started",
@@ -242,21 +255,23 @@ def stream_writing_tasks(
                 row["external_rag_retrieval"] = retrieval
 
             writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
-            for index, subsection in enumerate(final_subsections):
-                row = allocated[index]
-                if row.get("_retrieval_failed"):
-                    writing_task, _ = _writing_task_unhandled_error_response(
-                        subsection=subsection,
-                        user_prompt=normalized_prompt,
-                        report_title=normalized_title,
-                        top_k=normalized_top_k,
-                        message=row.get("_retrieval_error", "retrieval failed"),
-                    )
-                    writing_tasks[index] = writing_task
-                    event_queue.put(_task_stream_event("task_failed", index, writing_task))
-                    continue
-                try:
-                    writing_task, prompt_warnings = _build_writing_task_from_retrieval(
+            with ThreadPoolExecutor(max_workers=worker_count) as executor:
+                future_to_index = {}
+                for index, subsection in enumerate(final_subsections):
+                    row = allocated[index]
+                    if row.get("_retrieval_failed"):
+                        writing_task, _ = _writing_task_unhandled_error_response(
+                            subsection=subsection,
+                            user_prompt=normalized_prompt,
+                            report_title=normalized_title,
+                            top_k=normalized_top_k,
+                            message=row.get("_retrieval_error", "retrieval failed"),
+                        )
+                        writing_tasks[index] = writing_task
+                        event_queue.put(_task_stream_event("task_failed", index, writing_task))
+                        continue
+                    future = executor.submit(
+                        _build_writing_task_from_retrieval,
                         subsection=subsection,
                         graph_retrieval=row.get("graph_retrieval") or {},
                         external_rag_retrieval=row.get("external_rag_retrieval") or {},
@@ -264,21 +279,28 @@ def stream_writing_tasks(
                         report_title=normalized_title,
                         warnings=warning_groups[index],
                     )
+                    future_to_index[future] = index
+
+                for future in as_completed(future_to_index):
+                    index = future_to_index[future]
+                    subsection = final_subsections[index]
+                    try:
+                        writing_task, prompt_warnings = future.result()
+                        event_name = "task_completed"
+                    except Exception as exc:
+                        writing_task, prompt_warnings = _writing_task_unhandled_error_response(
+                            subsection=subsection,
+                            user_prompt=normalized_prompt,
+                            report_title=normalized_title,
+                            top_k=normalized_top_k,
+                            message=f"coordinator task generation failed: {exc}",
+                        )
+                        warning_groups[index].extend(prompt_warnings)
+                        event_name = "task_failed"
                     writing_tasks[index] = writing_task
-                    event_name = "task_completed"
-                except Exception as exc:
-                    writing_task, prompt_warnings = _writing_task_unhandled_error_response(
-                        subsection=subsection,
-                        user_prompt=normalized_prompt,
-                        report_title=normalized_title,
-                        top_k=normalized_top_k,
-                        message=f"coordinator task generation failed: {exc}",
-                    )
-                    writing_tasks[index] = writing_task
-                    event_name = "task_failed"
-                event = _task_stream_event(event_name, index, writing_task)
-                event["references"] = copy.deepcopy(references)
-                event_queue.put(event)
+                    event = _task_stream_event(event_name, index, writing_task)
+                    event["references"] = copy.deepcopy(references)
+                    event_queue.put(event)
 
             warnings = [warning for group in warning_groups for warning in group]
 
@@ -333,6 +355,10 @@ def _retrieve_candidates_for_subsection(
         report_title=report_title,
         parent_level1_title=subsection["parent_level1_title"],
         subsection_title=subsection["title"],
+        chapter_goal=subsection.get("chapter_goal", ""),
+        content_requirements=subsection.get("content_requirements", []),
+        writing_focus=subsection.get("writing_focus", ""),
+        suggested_query=subsection.get("suggested_query", ""),
     )
     if industry and use_graph:
         graph_retrieval = _retrieve_graph_for_subsection(
@@ -419,6 +445,10 @@ def _build_writing_task_from_retrieval(
             user_prompt=user_prompt, report_title=report_title,
             parent_level1_title=subsection["parent_level1_title"],
             subsection_title=subsection["title"],
+            chapter_goal=subsection.get("chapter_goal", ""),
+            content_requirements=subsection.get("content_requirements", []),
+            writing_focus=subsection.get("writing_focus", ""),
+            suggested_query=subsection.get("suggested_query", ""),
         ),
         "graph_retrieval": graph_retrieval,
         "external_rag_retrieval": external_rag_retrieval,
@@ -549,6 +579,10 @@ def _retrieval_unhandled_error_response(
         user_prompt=user_prompt, report_title=report_title,
         parent_level1_title=_safe_text(subsection.get("parent_level1_title")),
         subsection_title=_safe_text(subsection.get("title")),
+        chapter_goal=subsection.get("chapter_goal", ""),
+        content_requirements=subsection.get("content_requirements", []),
+        writing_focus=subsection.get("writing_focus", ""),
+        suggested_query=subsection.get("suggested_query", ""),
     )
     warning = {"outline_id": _safe_text(subsection.get("outline_id")), "stage": "coordinator_task_generation", "message": message}
     return ({
@@ -597,6 +631,10 @@ def _writing_task_unhandled_error_response(
         report_title=report_title,
         parent_level1_title=_safe_text(subsection.get("parent_level1_title")),
         subsection_title=_safe_text(subsection.get("title")),
+        chapter_goal=subsection.get("chapter_goal", ""),
+        content_requirements=subsection.get("content_requirements", []),
+        writing_focus=subsection.get("writing_focus", ""),
+        suggested_query=subsection.get("suggested_query", ""),
     )
     warning = {
         "outline_id": _safe_text(subsection.get("outline_id")),
@@ -678,6 +716,8 @@ def _flatten_body_subsections(outline: Any) -> List[dict]:
         parent_level1_title = _safe_text(section.get("level1_title"))
         if not parent_level1_title:
             parent_level1_title = f"正文一级标题{fallback_body_index}"
+        chapter_goal = _safe_text(section.get("chapter_goal"))
+        content_requirements = _safe_text_list(section.get("content_requirements"))
 
         subsection_index = 0
         for subsection in section.get("subsections") or []:
@@ -694,6 +734,10 @@ def _flatten_body_subsections(outline: Any) -> List[dict]:
                     "parent_level1_id": level1_id,
                     "parent_level1_title": parent_level1_title,
                     "title": title,
+                    "chapter_goal": chapter_goal,
+                    "content_requirements": content_requirements,
+                    "writing_focus": _safe_text(subsection.get("writing_focus")),
+                    "suggested_query": _safe_text(subsection.get("suggested_query")),
                 }
             )
     return flat
@@ -704,16 +748,77 @@ def _build_subsection_retrieval_query(
     report_title: str,
     parent_level1_title: str,
     subsection_title: str,
+    chapter_goal: Any = "",
+    content_requirements: Any = None,
+    writing_focus: Any = "",
+    suggested_query: Any = "",
 ) -> str:
-    return "\n".join(
-        [
-            f"用户需求：{user_prompt}",
-            f"报告标题：{report_title}",
-            f"当前一级标题：{parent_level1_title}",
-            f"当前二级标题：{subsection_title}",
-            "检索目标：为当前二级标题生成正文写作要求，检索相关产业链结构、央企布局、竞争格局、问题、政策、案例和建议依据。",
-        ]
+    '''把一个二级标题的写作任务信息，整理成一段给图谱检索和外部 RAG 检索使用的 query 字符串'''
+    '''
+    生成example
+    用户需求：分析人工智能产业
+    报告标题：人工智能产业报告
+    当前一级标题：应用落地
+    章节目标：回答应用落地路径
+    内容边界：企业案例；政策建议
+    当前二级标题：标杆案例与推进建议
+    二级写作重点：结合项目落地提出实践路径
+    建议检索 query：人工智能 企业案例 项目落地 政策建议
+    检索目标：为当前二级标题生成正文写作要求，检索政策建议、实践路径、推进措施、标杆经验和
+    可操作对策。 检索企业案例、项目落地、应用场景、标杆实践和商业化进展。
+    '''
+    requirement_text = "；".join(_safe_text_list(content_requirements))
+    lines = [
+        f"用户需求：{_safe_text(user_prompt)}",
+        f"报告标题：{_safe_text(report_title)}",
+        f"当前一级标题：{_safe_text(parent_level1_title)}",
+    ]
+    if _safe_text(chapter_goal):
+        lines.append(f"章节目标：{_safe_text(chapter_goal)}")
+    if requirement_text:
+        lines.append(f"内容边界：{requirement_text}")
+    lines.append(f"当前二级标题：{_safe_text(subsection_title)}")
+    if _safe_text(writing_focus):
+        lines.append(f"二级写作重点：{_safe_text(writing_focus)}")
+    if _safe_text(suggested_query):
+        lines.append(f"建议检索 query：{_safe_text(suggested_query)}")
+    lines.append(
+        "检索目标：为当前二级标题生成正文写作要求，"
+        + _subsection_retrieval_goal(
+            subsection_title=subsection_title,
+            writing_focus=writing_focus,
+            suggested_query=suggested_query,
+        )
     )
+    return "\n".join(lines)
+
+
+def _subsection_retrieval_goal(subsection_title: Any, writing_focus: Any = "", suggested_query: Any = "") -> str:
+    '''
+    **根据小节标题、写作侧重点、推荐查询词，自动判断这一小节需要检索什么信息，
+    生成检索目标描述字符串**，用于给检索模块（向量库 / 搜索引擎）明确该段落要查找哪类资料。
+    '''
+    text = " ".join(
+        item for item in (
+            _safe_text(subsection_title),
+            _safe_text(writing_focus),
+            _safe_text(suggested_query),
+        ) if item
+    )
+    matched_goals: List[str] = []
+    for keywords, goal in (
+        (("现状", "当前", "格局", "规模", "布局", "发展基础", "产业链"), "检索市场规模、产业链结构、上下游关系、核心企业布局和阶段性发展特征。"),
+        (("问题", "瓶颈", "挑战", "风险", "短板", "制约", "约束", "不足", "困难"), "检索产业瓶颈、风险挑战、能力短板、资源约束和落地障碍。"),
+        (("趋势", "演进", "展望", "预测", "方向", "前景", "未来"), "检索技术演进、政策趋势、市场预测、产业发展方向和长期影响。"),
+        (("建议", "对策", "路径", "策略", "措施", "启示", "推进", "优化"), "检索政策建议、实践路径、推进措施、标杆经验和可操作对策。"),
+        (("案例", "实践", "落地", "应用", "场景", "项目", "标杆", "企业案例"), "检索企业案例、项目落地、应用场景、标杆实践和商业化进展。"),
+    ):
+        if any(keyword in text for keyword in keywords):
+            matched_goals.append(goal)
+
+    if not matched_goals:
+        matched_goals.append("检索相关产业链结构、央企布局、竞争格局、问题、政策、案例和建议依据。")
+    return " ".join(dict.fromkeys(matched_goals))
 
 
 def _retrieve_graph_for_subsection(
@@ -949,10 +1054,28 @@ def _normalize_top_k(top_k: Any) -> int:
     return value if value > 0 else DEFAULT_TOP_K
 
 
+def _normalize_max_workers(max_workers: Any, task_count: int) -> int:
+    try:
+        value = int(max_workers)
+    except (TypeError, ValueError):
+        value = DEFAULT_MAX_COORDINATOR_WORKERS
+    if value <= 0:
+        value = DEFAULT_MAX_COORDINATOR_WORKERS
+    value = min(value, MAX_COORDINATOR_WORKERS_LIMIT)
+    return min(value, max(1, task_count))
+
+
 def _safe_text(value: Any) -> str:
     if value is None:
         return ""
     return str(value).strip()
+
+
+def _safe_text_list(value: Any) -> List[str]:
+    if isinstance(value, list):
+        return [_safe_text(item) for item in value if _safe_text(item)]
+    text = _safe_text(value)
+    return [text] if text else []
 
 
 def _graph_error_response(query: str, message: str) -> dict:

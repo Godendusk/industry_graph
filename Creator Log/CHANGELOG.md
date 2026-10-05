@@ -131,3 +131,22 @@
   - `report_generation/coordinator_agent.py`、`body_agent.py`、`backend_server.py`：新增统筹任务和正文生成流式接口。
   - `report_generation/task_card_agent.py`：修正外部资料库可用性判定。
   - `tests/`：补充外部资料库判定、统筹流式和正文流式相关测试。
+
+## 2026-10-05
+
+- godendusk
+
+- 改动内容：
+  - 优化产业报告“统筹写作任务”阶段，新增独立的统筹并发数配置，支持前端设置 1～6 个统筹 worker。
+  - 将统筹阶段的资料检索和每节 `writing_system_prompt` 生成都改为并发执行，并保持最终 `writing_tasks` 按原大纲顺序输出。
+  - 增强统筹 Agent 的检索 query 构造逻辑，将大纲中的 `chapter_goal`、`content_requirements`、`writing_focus`、`suggested_query` 纳入检索意图，降低不同二级标题召回同质资料的概率。
+  - 根据二级标题、写作重点和建议检索 query 自动识别现状、问题、趋势、建议、案例等小节类型，并生成差异化检索目标。
+  - 调整前端参数布局，将“检索数量”和“统筹并发数”移动到大纲编辑底部，与“确认并统筹写作任务”按钮放在同一区域；将原“生成参数”改为“报告生成”。
+  - 修复工作流卡片和任务明细列表在进度刷新时自动回到开头/顶部的问题，保留用户当前滚动位置。
+
+- 主要修改代码：
+  - `report_generation/coordinator_agent.py`：新增统筹并发参数、并发生成写作任务 prompt、增强二级标题检索 query 构造和小节类型检索目标识别。
+  - `backend_server.py`：统筹任务接口和流式接口接收并传递 `max_workers`。
+  - `templates/components/industry_report.html`：调整大纲确认区、检索数量、统筹并发数和报告生成参数布局。
+  - `static/js/modules/industry_report.js`：接入统筹并发数参数，优化工作流展示，并保留工作流横向滚动和任务明细纵向滚动位置。
+  - `tests/test_coordinator_stability.py`：补充统筹并发、prompt 并发、增强 query 字段保留、多类型检索目标和检索调用一致性测试。
