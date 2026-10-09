@@ -22,18 +22,24 @@ def _task(outline_id, evidence_blocks):
 
 
 class ReportBodyCitationsTest(unittest.TestCase):
-    def test_body_generation_passes_prior_sections_across_level1_groups(self):
+    def test_body_generation_passes_prior_sections_within_level1_group_only(self):
         tasks = [
             _task("S1.1", [{"citation_id": "C1", "title": "材料一"}]),
-            _task("S2.1", [{"citation_id": "C2", "title": "材料二"}]),
-            _task("S3.1", [{"citation_id": "C3", "title": "材料三"}]),
+            _task("S1.2", [{"citation_id": "C2", "title": "材料二"}]),
+            _task("S2.1", [{"citation_id": "C3", "title": "材料三"}]),
         ]
-        prompts = []
+        prompts_by_title = {}
 
         def query_result(**kwargs):
-            prompts.append(kwargs["user_prompt"])
-            index = len(prompts)
-            return LLMQueryResult(content=f"第{index}节首句。第{index}节补充。", finish_reason="stop")
+            prompt = kwargs["user_prompt"]
+            if "【当前二级标题】\n小节 S1.1" in prompt:
+                prompts_by_title["S1.1"] = prompt
+                return LLMQueryResult(content="第一节首句。第一节补充。", finish_reason="stop")
+            if "【当前二级标题】\n小节 S1.2" in prompt:
+                prompts_by_title["S1.2"] = prompt
+                return LLMQueryResult(content="第二节首句。第二节补充。", finish_reason="stop")
+            prompts_by_title["S2.1"] = prompt
+            return LLMQueryResult(content="第三节首句。第三节补充。", finish_reason="stop")
 
         with patch.object(body_agent.llm, "query_result", side_effect=query_result):
             result = body_agent.generate_report_bodies(
@@ -45,23 +51,29 @@ class ReportBodyCitationsTest(unittest.TestCase):
             )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(len(prompts), 3)
-        self.assertIn("小节 S1.1", prompts[1])
-        self.assertIn("第1节首句", prompts[1])
-        self.assertIn("小节 S1.1", prompts[2])
-        self.assertIn("小节 S2.1", prompts[2])
+        self.assertEqual(len(prompts_by_title), 3)
+        self.assertIn("小节 S1.1", prompts_by_title["S1.2"])
+        self.assertIn("第一节首句", prompts_by_title["S1.2"])
+        self.assertNotIn("小节 S1.1", prompts_by_title["S2.1"])
+        self.assertNotIn("第一节首句", prompts_by_title["S2.1"])
 
     def test_failed_section_is_not_added_to_prior_report_facts(self):
         tasks = [
             _task("S1.1", [{"citation_id": "C1", "title": "材料一"}]),
-            _task("S2.1", [{"citation_id": "C2", "title": "材料二"}]),
-            _task("S3.1", [{"citation_id": "C3", "title": "材料三"}]),
+            _task("S1.2", [{"citation_id": "C2", "title": "材料二"}]),
+            _task("S1.3", [{"citation_id": "C3", "title": "材料三"}]),
         ]
-        prompts = []
+        prompts_by_title = {}
 
         def query_result(**kwargs):
-            prompts.append(kwargs["user_prompt"])
-            if "小节 S2.1" in kwargs["user_prompt"]:
+            prompt = kwargs["user_prompt"]
+            if "【当前二级标题】\n小节 S1.1" in prompt:
+                prompts_by_title["S1.1"] = prompt
+            elif "【当前二级标题】\n小节 S1.2" in prompt:
+                prompts_by_title["S1.2"] = prompt
+            else:
+                prompts_by_title["S1.3"] = prompt
+            if "小节 S1.2" in kwargs["user_prompt"]:
                 return LLMQueryResult(content="", finish_reason="length")
             return LLMQueryResult(content="成功小节正文。", finish_reason="stop")
 
@@ -76,9 +88,9 @@ class ReportBodyCitationsTest(unittest.TestCase):
 
         self.assertEqual(result["status"], "partial_success")
         self.assertEqual(result["body_sections"][1]["status"], "error")
-        third_prompt = prompts[-1]
+        third_prompt = prompts_by_title["S1.3"]
         self.assertIn("小节 S1.1", third_prompt)
-        self.assertNotIn("小节 S2.1", third_prompt)
+        self.assertNotIn("小节 S1.2", third_prompt)
 
     def test_format_prior_report_facts_uses_current_evidence(self):
         prior_sections = [

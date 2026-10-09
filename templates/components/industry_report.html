@@ -234,10 +234,10 @@
                             <input id="industry-report-workers" type="number" min="1" max="6" value="3"
                                    oninput="renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || 'idle')"
                                    class="mt-1 w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                            <span class="mt-1 block text-[11px] leading-4 text-gray-500">生成正文时同时写几个一级标题。</span>
+                            <span class="mt-1 block text-[11px] leading-4 text-gray-500">正文阶段同时生成几个一级标题组。</span>
                         </label>
                         <div class="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs leading-5 text-emerald-800">
-                            <div class="mt-1"><span class="font-semibold">正文并发数</span>保留给正文阶段调度，默认 3 比较稳。</div>
+                            <div class="mt-1"><span class="font-semibold">正文并发数</span>控制一级标题组并行数量；同一一级标题内仍按顺序生成，以保留前文避重和衔接。</div>
                         </div>
                     </div>
                     <button id="report-generate-btn"

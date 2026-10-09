@@ -1,3 +1,4 @@
+import threading
 import unittest
 from unittest.mock import patch
 
@@ -14,6 +15,33 @@ def _writing_task():
         "writing_system_prompt": "只写当前小节正文。",
         "graph_retrieval": {"status": "error", "graph_context_text": ""},
         "external_rag_retrieval": {"status": "success", "rag_context_text": "上市公司筛选材料"},
+    }
+
+
+def _task(outline_id):
+    return {
+        "outline_id": outline_id,
+        "parent_level1_id": outline_id.split(".")[0],
+        "parent_level1_title": f"一级标题 {outline_id.split('.')[0]}",
+        "title": f"小节 {outline_id}",
+        "writing_system_prompt": "只写当前小节正文。",
+        "graph_retrieval": {"status": "error", "graph_context_text": ""},
+        "external_rag_retrieval": {"status": "success", "rag_context_text": "", "evidence_blocks": []},
+    }
+
+
+def _section_for(task):
+    return {
+        "outline_id": task["outline_id"],
+        "parent_level1_id": task["parent_level1_id"],
+        "parent_level1_title": task["parent_level1_title"],
+        "title": task["title"],
+        "status": "success",
+        "body_text": f"{task['title']}正文。",
+        "warnings": [],
+        "citation_ids": [],
+        "graph_evidence_blocks": [],
+        "external_evidence_blocks": [],
     }
 
 
@@ -80,6 +108,55 @@ class BodyAgentTest(unittest.TestCase):
         self.assertEqual(events[-1]["event"], "completed")
         self.assertEqual(events[-1]["status"], "success")
         self.assertEqual(events[-1]["body_sections"][0]["body_text"], "流式生成正文。")
+
+    def test_generates_level1_groups_in_parallel_but_keeps_group_order_and_output_order(self):
+        tasks = [_task("S1.1"), _task("S1.2"), _task("S2.1")]
+        second_group_started = threading.Event()
+        call_order = []
+        call_lock = threading.Lock()
+
+        def generate_section(*, writing_task, **_kwargs):
+            outline_id = writing_task["outline_id"]
+            with call_lock:
+                call_order.append(outline_id)
+            if outline_id == "S2.1":
+                second_group_started.set()
+            if outline_id == "S1.1":
+                if not second_group_started.wait(timeout=1):
+                    self.fail("S1.1 did not observe S2.1 starting concurrently")
+            return _section_for(writing_task)
+
+        with patch.object(body_agent, "generate_body_section", side_effect=generate_section):
+            result = body_agent.generate_report_bodies(
+                user_prompt="生成报告",
+                report_title="测试报告",
+                writing_tasks=tasks,
+                max_workers=2,
+                references=[],
+            )
+
+        self.assertEqual(result["max_workers"], 2)
+        self.assertLess(call_order.index("S1.1"), call_order.index("S1.2"))
+        self.assertEqual([section["outline_id"] for section in result["body_sections"]], ["S1.1", "S1.2", "S2.1"])
+
+    def test_stream_report_bodies_reports_actual_group_workers(self):
+        tasks = [_task("S1.1"), _task("S2.1")]
+        with patch.object(body_agent, "generate_body_section", side_effect=lambda writing_task, **_kwargs: _section_for(writing_task)):
+            events = list(body_agent.stream_report_bodies(
+                user_prompt="生成报告",
+                report_title="测试报告",
+                writing_tasks=tasks,
+                max_workers=6,
+                references=[],
+            ))
+
+        self.assertEqual(events[0]["event"], "started")
+        self.assertEqual(events[0]["group_count"], 2)
+        self.assertEqual(events[0]["max_workers"], 2)
+        self.assertEqual(events[-1]["event"], "completed")
+        self.assertEqual(events[-1]["group_count"], 2)
+        self.assertEqual(events[-1]["max_workers"], 2)
+        self.assertEqual([section["outline_id"] for section in events[-1]["body_sections"]], ["S1.1", "S2.1"])
 
 
 if __name__ == "__main__":
