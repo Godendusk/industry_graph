@@ -16,6 +16,10 @@ from .external_rag.retriever import retrieve_external_rag
 from .external_rag.report_adapter import build_rag_context_text
 from .citations import register_evidence_blocks
 from .material_allocator import allocate_evidence_blocks
+from .repetition_context import focus_terms_for_task
+from .writing_decisions import request_decision, fallback_decision, render_decision_prompt, decision_topics
+from .task_coordination import coordinate_writing_tasks
+from .outline_adjustments import apply_outline_adjustments
 from .graph_retriever import retrieve_industry_graph
 from .industry_config import SUPPORTED_INDUSTRIES
 
@@ -23,6 +27,21 @@ from .industry_config import SUPPORTED_INDUSTRIES
 DEFAULT_TOP_K = 10
 DEFAULT_MAX_COORDINATOR_WORKERS = 3
 MAX_COORDINATOR_WORKERS_LIMIT = 6
+
+
+def finalize_coordination_outline(outline, writing_tasks, coordination, user_prompt):
+    """Apply the coordinator's bounded outline proposal after decisions settle."""
+    operations = (coordination or {}).get('outline_operations') or []
+    protected = set()
+    for task in writing_tasks:
+        title = str(task.get('title') or '').strip()
+        if title and title in user_prompt:
+            protected.add(task.get('outline_id'))
+        external = (task.get('external_rag_retrieval') or {}).get('status')
+        graph = (task.get('graph_retrieval') or {}).get('status')
+        if external in ('error', 'skipped') and graph != 'success':
+            protected.add(task.get('outline_id'))
+    return apply_outline_adjustments(outline, writing_tasks, operations, protected)
 
 
 def generate_writing_tasks(
@@ -55,6 +74,8 @@ def generate_writing_tasks(
             normalized_industry,
             industry_name,
         )
+
+    _attach_outline_context(final_subsections)
 
     retrieval_rows: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
     warning_groups: List[List[dict]] = [[] for _ in final_subsections]
@@ -105,46 +126,43 @@ def generate_writing_tasks(
         row["external_rag_retrieval"] = retrieval
 
     writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
-    with ThreadPoolExecutor(max_workers=worker_count) as executor:
-        future_to_index = {}
-        for index, subsection in enumerate(final_subsections):
-            row = allocated[index]
-            if row.get("_retrieval_failed"):
-                writing_tasks[index], _ = _writing_task_unhandled_error_response(
-                    subsection=subsection,
-                    user_prompt=normalized_prompt,
-                    report_title=normalized_title,
-                    top_k=normalized_top_k,
-                    message=row.get("_retrieval_error", "retrieval failed"),
-                )
-                continue
-            future = executor.submit(
-                _build_writing_task_from_retrieval,
+    for index, subsection in enumerate(final_subsections):
+        row = allocated[index]
+        if row.get("_retrieval_failed"):
+            writing_tasks[index], _ = _writing_task_unhandled_error_response(
+                subsection=subsection,
+                user_prompt=normalized_prompt,
+                report_title=normalized_title,
+                top_k=normalized_top_k,
+                message=row.get("_retrieval_error", "retrieval failed"),
+            )
+            continue
+        try:
+            writing_tasks[index], prompt_warnings = _build_writing_task_from_retrieval(
                 subsection=subsection,
                 graph_retrieval=row.get("graph_retrieval") or {},
                 external_rag_retrieval=row.get("external_rag_retrieval") or {},
                 user_prompt=normalized_prompt,
                 report_title=normalized_title,
                 warnings=warning_groups[index],
+                previous_tasks=writing_tasks[:index],
+                outline_ids={item["outline_id"] for item in final_subsections},
             )
-            future_to_index[future] = index
+        except Exception as exc:
+            writing_tasks[index], prompt_warnings = _writing_task_unhandled_error_response(
+                subsection=subsection,
+                user_prompt=normalized_prompt,
+                report_title=normalized_title,
+                top_k=normalized_top_k,
+                message=f"coordinator task generation failed: {exc}",
+            )
+            warning_groups[index].extend(prompt_warnings)
 
-        for future in as_completed(future_to_index):
-            index = future_to_index[future]
-            subsection = final_subsections[index]
-            try:
-                writing_tasks[index], prompt_warnings = future.result()
-            except Exception as exc:
-                writing_tasks[index], prompt_warnings = _writing_task_unhandled_error_response(
-                    subsection=subsection,
-                    user_prompt=normalized_prompt,
-                    report_title=normalized_title,
-                    top_k=normalized_top_k,
-                    message=f"coordinator task generation failed: {exc}",
-                )
-                warning_groups[index].extend(prompt_warnings)
-
-    warnings = [warning for group in warning_groups for warning in group]
+    writing_tasks, coordination, review_warnings = coordinate_writing_tasks(writing_tasks)
+    final_outline, writing_tasks, adjustment_notes, adjustment_warnings = finalize_coordination_outline(
+        outline, writing_tasks, coordination, normalized_prompt)
+    warnings = ([warning for task in writing_tasks for warning in task.get("warnings", [])]
+                + review_warnings + adjustment_warnings)
 
     return {
         "status": "success",
@@ -156,6 +174,10 @@ def generate_writing_tasks(
         "report_title": normalized_title,
         "max_workers": worker_count,
         "writing_tasks": writing_tasks,
+        "final_outline": final_outline,
+        "adjustment_notes": adjustment_notes,
+        "fallback_count": _fallback_count(writing_tasks),
+        "coordination": coordination,
         "references": references,
         "warnings": warnings,
     }
@@ -189,6 +211,8 @@ def stream_writing_tasks(
     if not final_subsections:
         yield _stream_error_event("outline must contain at least one body subsection", normalized_industry, industry_name)
         return
+
+    _attach_outline_context(final_subsections)
 
     retrieval_rows: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
     warning_groups: List[List[dict]] = [[] for _ in final_subsections]
@@ -255,54 +279,54 @@ def stream_writing_tasks(
                 row["external_rag_retrieval"] = retrieval
 
             writing_tasks: List[dict] = [None] * len(final_subsections)  # type: ignore[list-item]
-            with ThreadPoolExecutor(max_workers=worker_count) as executor:
-                future_to_index = {}
-                for index, subsection in enumerate(final_subsections):
-                    row = allocated[index]
-                    if row.get("_retrieval_failed"):
-                        writing_task, _ = _writing_task_unhandled_error_response(
-                            subsection=subsection,
-                            user_prompt=normalized_prompt,
-                            report_title=normalized_title,
-                            top_k=normalized_top_k,
-                            message=row.get("_retrieval_error", "retrieval failed"),
-                        )
-                        writing_tasks[index] = writing_task
-                        event_queue.put(_task_stream_event("task_failed", index, writing_task))
-                        continue
-                    future = executor.submit(
-                        _build_writing_task_from_retrieval,
+            for index, subsection in enumerate(final_subsections):
+                row = allocated[index]
+                if row.get("_retrieval_failed"):
+                    writing_task, _ = _writing_task_unhandled_error_response(
+                        subsection=subsection,
+                        user_prompt=normalized_prompt,
+                        report_title=normalized_title,
+                        top_k=normalized_top_k,
+                        message=row.get("_retrieval_error", "retrieval failed"),
+                    )
+                    writing_tasks[index] = writing_task
+                    event_queue.put(_task_stream_event("task_failed", index, writing_task))
+                    continue
+                try:
+                    writing_task, prompt_warnings = _build_writing_task_from_retrieval(
                         subsection=subsection,
                         graph_retrieval=row.get("graph_retrieval") or {},
                         external_rag_retrieval=row.get("external_rag_retrieval") or {},
                         user_prompt=normalized_prompt,
                         report_title=normalized_title,
                         warnings=warning_groups[index],
+                        previous_tasks=writing_tasks[:index],
+                        outline_ids={item["outline_id"] for item in final_subsections},
                     )
-                    future_to_index[future] = index
-
-                for future in as_completed(future_to_index):
-                    index = future_to_index[future]
-                    subsection = final_subsections[index]
-                    try:
-                        writing_task, prompt_warnings = future.result()
-                        event_name = "task_completed"
-                    except Exception as exc:
-                        writing_task, prompt_warnings = _writing_task_unhandled_error_response(
-                            subsection=subsection,
-                            user_prompt=normalized_prompt,
-                            report_title=normalized_title,
-                            top_k=normalized_top_k,
-                            message=f"coordinator task generation failed: {exc}",
-                        )
-                        warning_groups[index].extend(prompt_warnings)
-                        event_name = "task_failed"
                     writing_tasks[index] = writing_task
-                    event = _task_stream_event(event_name, index, writing_task)
-                    event["references"] = copy.deepcopy(references)
-                    event_queue.put(event)
+                    event_name = "task_completed"
+                except Exception as exc:
+                    writing_task, prompt_warnings = _writing_task_unhandled_error_response(
+                        subsection=subsection,
+                        user_prompt=normalized_prompt,
+                        report_title=normalized_title,
+                        top_k=normalized_top_k,
+                        message=f"coordinator task generation failed: {exc}",
+                    )
+                    writing_tasks[index] = writing_task
+                    event_name = "task_failed"
+                event = _task_stream_event(event_name, index, writing_task)
+                event["references"] = copy.deepcopy(references)
+                event_queue.put(event)
 
-            warnings = [warning for group in warning_groups for warning in group]
+            event_queue.put({"event": "coordination_started", "status": "started"})
+            writing_tasks, coordination, review_warnings = coordinate_writing_tasks(writing_tasks)
+            final_outline, writing_tasks, adjustment_notes, adjustment_warnings = finalize_coordination_outline(
+                outline, writing_tasks, coordination, normalized_prompt)
+            warnings = ([warning for task in writing_tasks for warning in task.get("warnings", [])]
+                        + review_warnings + adjustment_warnings)
+            event_queue.put({"event": "coordination_completed", "coordination": coordination,
+                             "warnings": review_warnings + adjustment_warnings})
 
             event_queue.put({
                 "event": "completed",
@@ -314,6 +338,10 @@ def stream_writing_tasks(
                 "user_prompt": normalized_prompt,
                 "report_title": normalized_title,
                 "writing_tasks": writing_tasks,
+                "final_outline": final_outline,
+                "adjustment_notes": adjustment_notes,
+                "fallback_count": _fallback_count(writing_tasks),
+                "coordination": coordination,
                 "references": references,
                 "warnings": warnings,
                 "success_count": len([task for task in writing_tasks if isinstance(task, dict)]),
@@ -336,6 +364,20 @@ def stream_writing_tasks(
         if event is stop_token:
             break
         yield event
+
+
+def _attach_outline_context(subsections: List[dict]) -> None:
+    context = "\n".join(
+        f"{row['outline_id']} | {row['parent_level1_title']} | {row['title']}"
+        for row in subsections
+    )
+    for row in subsections:
+        row["report_outline_context"] = context
+
+
+def _fallback_count(tasks: list) -> int:
+    return sum(task.get("writing_prompt_status") == "fallback"
+               for task in tasks if isinstance(task, dict))
 
 
 def _retrieve_candidates_for_subsection(
@@ -408,35 +450,11 @@ def _build_writing_task_from_retrieval(
     user_prompt: str,
     report_title: str,
     warnings: List[dict],
+    previous_tasks: list = None,
+    outline_ids: set = None,
 ) -> tuple[dict, List[dict]]:
-    """Generate one writing task from retrieval already allocated at report level."""
-    task_warnings: List[dict] = list(warnings or [])
-    prompt_result = _generate_writing_system_prompt(
-        user_prompt=user_prompt,
-        report_title=report_title,
-        parent_level1_title=subsection["parent_level1_title"],
-        subsection_title=subsection["title"],
-        graph_context_text=graph_retrieval.get("graph_context_text", ""),
-        rag_context_text=external_rag_retrieval.get("rag_context_text", ""),
-    )
-    if prompt_result["status"] == "success":
-        writing_system_prompt = prompt_result["writing_system_prompt"]
-    else:
-        warning = {
-            "outline_id": subsection["outline_id"],
-            "stage": "writing_prompt_generation",
-            "message": prompt_result.get("message", "failed to generate writing system prompt"),
-        }
-        if prompt_result.get("raw_output"):
-            warning["raw_output"] = prompt_result["raw_output"]
-        warnings.append(warning)
-        task_warnings.append(warning)
-        writing_system_prompt = _fallback_writing_system_prompt(
-            user_prompt=user_prompt, report_title=report_title,
-            parent_level1_title=subsection["parent_level1_title"],
-            subsection_title=subsection["title"],
-        )
-    return ({
+    """Generate a bounded writing decision from already allocated evidence."""
+    task = {
         "outline_id": subsection["outline_id"],
         "parent_level1_id": subsection["parent_level1_id"],
         "parent_level1_title": subsection["parent_level1_title"],
@@ -452,9 +470,22 @@ def _build_writing_task_from_retrieval(
         ),
         "graph_retrieval": graph_retrieval,
         "external_rag_retrieval": external_rag_retrieval,
-        "writing_system_prompt": writing_system_prompt,
-        "warnings": task_warnings,
-    }, task_warnings)
+        "warnings": list(warnings or []),
+    }
+    result = request_decision(
+        task=task, user_prompt=user_prompt, report_title=report_title,
+        outline_context=subsection.get("report_outline_context", ""),
+        previous_tasks=previous_tasks or [],
+        outline_ids=outline_ids or {subsection["outline_id"]},
+    )
+    task["writing_decision"] = result["decision"]
+    task["writing_prompt_status"] = result["status"]
+    task["decision_review_status"] = "unchanged"
+    task["writing_system_prompt"] = render_decision_prompt(result["decision"])
+    task["warnings"].extend(result["warnings"])
+    task["repetition_focus_terms"] = decision_topics(result["decision"])
+    task["repetition_focus_terms"] = focus_terms_for_task(task)
+    return task, task["warnings"]
 
 
 def _allocate_retrieved_evidence(subsections: List[dict], retrieval_rows: List[dict], top_k: int) -> List[dict]:
@@ -653,14 +684,13 @@ def _writing_task_unhandled_error_response(
             top_k=top_k,
             message=message,
         ),
-        "writing_system_prompt": _fallback_writing_system_prompt(
-            user_prompt=user_prompt,
-            report_title=report_title,
-            parent_level1_title=_safe_text(subsection.get("parent_level1_title")),
-            subsection_title=_safe_text(subsection.get("title")),
-        ),
+        "writing_prompt_status": "fallback",
         "warnings": [warning],
     }
+    task["writing_decision"] = fallback_decision(task)
+    task["writing_system_prompt"] = render_decision_prompt(task["writing_decision"])
+    task["decision_review_status"] = "unchanged"
+    task["repetition_focus_terms"] = focus_terms_for_task(task)
     return task, [warning]
 
 
@@ -905,128 +935,6 @@ def _retrieve_external_rag_for_subsection(
         warnings.append(warning)
         task_warnings.append(warning)
     return normalized
-
-
-def _generate_writing_system_prompt(
-    user_prompt: str,
-    report_title: str,
-    parent_level1_title: str,
-    subsection_title: str,
-    graph_context_text: str,
-    rag_context_text: str,
-) -> dict:
-    system_prompt = """你是产业报告统筹智能体。
-你的任务是把检索材料转化为后续正文生成智能体可执行的写作任务书 system prompt，不要撰写正文。
-生成写作任务书时要重点参考关注当前的一级标题和二级标题，不要生成关联度不高的内容，比如标题让你分析现状你就分析现状，不要自作主张去分析突出问题和对策建议；标题让你分析对策建议你就分析对策建议，不要自作主张去分析现状和问题；标题让你分析现状你就分析现状，不要自作主张去分析突出问题和对策建议，绝对不要做多余的事。
-必须只输出 JSON 对象，不要输出 Markdown、代码块或解释说明。
-JSON 只能包含 writing_system_prompt 字段。
-writing_system_prompt 必须是带有具体材料要点的任务书，而不是泛化写作要求。
-writing_system_prompt 必须要求正文生成智能体使用外部资料上下文中真实存在的 [C数字] 引用编号，不得把知识图谱编号当作文章来源。"""
-
-    user_prompt_text = f"""请根据以下信息，为当前二级标题生成正文生成智能体使用的 system prompt。
-
-【用户原始需求】
-{user_prompt}
-
-【报告标题】
-{report_title}
-
-【当前一级标题】
-{parent_level1_title}
-
-【当前二级标题】
-{subsection_title}
-
-【知识图谱检索上下文】
-{graph_context_text or "未检索到可用知识图谱上下文。"}
-
-【外部资料库检索上下文】
-{rag_context_text or "未检索到可用外部资料库上下文。"}
-
-【writing_system_prompt 必须包含的要求】
-1. 必须生成“正文生成智能体”的 system prompt，不要生成正文。
-2. system prompt 必须采用任务书结构，至少包含以下小标题：当前写作范围、写作任务、材料要点、外部资料要点、写作结构、边界要求。
-3. “当前写作范围”必须写明用户原始需求、报告标题、当前一级标题、当前二级标题。
-4. “材料要点”必须从知识图谱检索上下文中提炼具体要点，例如产业链环节、上下游关系、企业/实体布局、可用于正文分析的产业链路径等；如果图谱上下文没有可用信息，要明确说明“知识图谱未提供可用要点”，不要编造。
-5. 请检查引用的资料，不要出现常识性错误，例如误把民营企业（华为海思）当成央企国企，误把外资企业（英伟达）当成民营企业。
-6. “外部资料要点”必须从外部资料库检索上下文中提炼具体要点，例如政策、案例、趋势、问题、建议、数据表述、机构观点等；如果外部资料上下文没有可用信息，要明确说明“外部资料未提供可用要点”，不要编造。
-7. “写作结构”必须给出当前小节正文的建议展开层次，例如先写什么、再写什么、最后如何收束或过渡，要求规定正文不多于 1000 字，段落不超过 3 段。
-8. 不要只写“结合上下文”“吸收材料”“形成专业正文”等泛化表述；必须把检索上下文中的具体名称、环节、企业、政策、案例、趋势或数据要点转写进 writing_system_prompt。
-9. 正文生成智能体只写当前二级标题对应正文，不写其他章节。
-10. 不得把 [知识图谱1] 等知识图谱编号当作文章来源。
-11. 正文使用外部资料中的数字、政策、领导讲话、专家观点或企业案例时，必须在对应句末使用上下文中真实存在的 [C数字]。
-12. 不得编造 [C数字]、资料标题或网址；正文不输出独立参考文献列表，参考资料由系统生成。
-13. 正文不得生成摘要、标题页、目录、Word 导出说明或其他无关内容。
-
-【输出格式】
-{{"writing_system_prompt": "正文生成智能体 system prompt"}}
-"""
-    try:
-        content = llm.query(
-            user_prompt=user_prompt_text,
-            system_prompt=system_prompt,
-            max_tokens=5000,
-            extra_log_info=f"report_generation.coordinator_agent outline={subsection_title}",
-        )
-    except Exception as exc:
-        return {"status": "error", "message": f"writing prompt LLM call failed: {exc}"}
-
-    if not content:
-        return {"status": "error", "message": "writing prompt LLM returned empty output"}
-
-    try:
-        data = _parse_json_object(content)
-    except ValueError as exc:
-        return {
-            "status": "error",
-            "message": f"writing prompt JSON parse failed: {exc}",
-            "raw_output": content,
-        }
-
-    writing_system_prompt = _safe_text(data.get("writing_system_prompt"))
-    if not writing_system_prompt:
-        return {
-            "status": "error",
-            "message": "writing prompt JSON missing writing_system_prompt",
-            "raw_output": content,
-        }
-    return {
-        "status": "success",
-        "writing_system_prompt": _ensure_writing_prompt_constraints(writing_system_prompt),
-    }
-
-
-def _fallback_writing_system_prompt(
-    user_prompt: str,
-    report_title: str,
-    parent_level1_title: str,
-    subsection_title: str,
-) -> str:
-    return _ensure_writing_prompt_constraints(f"""你是产业报告正文生成智能体。
-你只负责撰写当前二级标题对应正文，不要生成其他章节。
-用户原始需求：{user_prompt}
-报告标题：{report_title}
-当前一级标题：{parent_level1_title}
-当前二级标题：{subsection_title}
-请结合传入的知识图谱上下文和外部资料库上下文，形成自然、连贯、专业的报告正文。
-不得把 [知识图谱1] 等知识图谱编号当作文章来源。
-使用外部资料中的数字、政策、领导讲话、专家观点或企业案例时，必须使用上下文中真实存在的 [C数字]。
-不得编造 [C数字]、资料标题或网址；正文不输出独立参考文献列表，参考资料由系统生成。
-不得生成摘要、标题页、目录、Word 导出说明或其他无关内容。""")
-
-
-def _ensure_writing_prompt_constraints(prompt: str) -> str:
-    text = _safe_text(prompt)
-    hard_rules = [
-        "不得把 [知识图谱1] 等知识图谱编号当作文章来源。",
-        "使用外部资料中的数字、政策、领导讲话、专家观点或企业案例时，必须使用上下文中真实存在的 [C数字]。",
-        "不得编造 [C数字]、资料标题或网址；正文不输出独立参考文献列表，参考资料由系统生成。",
-        "不得生成摘要、标题页、目录、Word 导出说明或其他无关内容。",
-    ]
-    missing_rules = [rule for rule in hard_rules if rule not in text]
-    if not missing_rules:
-        return text
-    return text.rstrip() + "\n" + "\n".join(missing_rules)
 
 
 def _parse_json_object(text: str) -> dict:

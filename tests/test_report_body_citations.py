@@ -22,6 +22,13 @@ def _task(outline_id, evidence_blocks):
 
 
 class ReportBodyCitationsTest(unittest.TestCase):
+    def test_budget_omission_is_retained_as_section_warning(self):
+        context = {'text':'相关已写表述', 'omitted_fact_count':2}
+        with patch.object(body_agent, 'build_prior_context', return_value=context), \
+             patch.object(body_agent.llm, 'query_result', return_value=LLMQueryResult(content='正文[C1]。', finish_reason='stop')):
+            result = body_agent.generate_body_section(_task('S1.1', [{'citation_id':'C1'}]), '报告', '测试')
+        assert any(w.get('omitted_fact_count') == 2 for w in result['warnings'])
+
     def test_body_generation_passes_prior_sections_across_level1_groups(self):
         tasks = [
             _task("S1.1", [{"citation_id": "C1", "title": "材料一"}]),
@@ -31,6 +38,8 @@ class ReportBodyCitationsTest(unittest.TestCase):
         prompts = []
 
         def query_result(**kwargs):
+            if kwargs.get("extra_log_info") == "report_generation.review_agent":
+                return LLMQueryResult(content='{"issues":[]}', finish_reason="stop")
             prompts.append(kwargs["user_prompt"])
             index = len(prompts)
             return LLMQueryResult(content=f"第{index}节首句。第{index}节补充。", finish_reason="stop")
@@ -153,3 +162,19 @@ class ReportBodyCitationsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_cross_source_body_context_never_authorizes_prior_citation():
+    current = _task('S2.1', [{'citation_id':'C17','text':'中国移动牵头成立具身智能产业联盟'}])
+    current['repetition_focus_terms'] = ['中国移动', '具身智能产业联盟']
+    prior = [{'outline_id':'S1.1','title':'布局','status':'success',
+              'body_text':'背景。中国移动牵头成立具身智能产业联盟[C14]。'}]
+    with patch.object(body_agent.llm,'query_result',return_value=LLMQueryResult(
+        content='承接[C14]，新分析[C17]。',finish_reason='stop')) as query:
+        result=body_agent.generate_body_section(current,'报告','测试',prior)
+    assert '中国移动牵头成立具身智能产业联盟[C14]' in query.call_args.kwargs['user_prompt']
+    assert '允许小节变短' in query.call_args.kwargs['system_prompt']
+    assert '待验证条件' in query.call_args.kwargs['system_prompt']
+    assert '同一一级标题下已有前文' not in query.call_args.kwargs['user_prompt']
+    assert result['citation_ids'] == ['C17']
+    assert result['repetition_focus_terms'] == ['中国移动','具身智能产业联盟']

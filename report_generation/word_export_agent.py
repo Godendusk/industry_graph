@@ -22,6 +22,7 @@ def export_report_docx(
     industry: str = "ai",
     output_dir: str = DEFAULT_OUTPUT_DIR,
     references: list = None,
+    adjustment_notes: list = None,
 ) -> dict:
     """Export the final report as a formatted DOCX file."""
     normalized_title = _safe_text(report_title)
@@ -88,6 +89,7 @@ def export_report_docx(
             abstract_text=cleaned_abstract,
             body_sections=normalized_sections,
             references=_collect_used_references(normalized_sections, references),
+            adjustment_notes=adjustment_notes or [],
         )
     except ImportError as exc:
         return _error_response(
@@ -178,7 +180,7 @@ def _normalize_body_sections(body_sections: list, warnings: List[dict], referenc
     return normalized
 
 
-def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections: List[dict], references: List[dict]) -> None:
+def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections: List[dict], references: List[dict], adjustment_notes: list = None) -> None:
     docx = _import_docx_modules()
     document = docx.Document()
     _configure_section(document, docx)
@@ -214,6 +216,15 @@ def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections
         for paragraph_text in section["paragraphs"]:
             paragraph = document.add_paragraph(style="ReportBody")
             _add_body_runs(paragraph, paragraph_text)
+
+    if adjustment_notes:
+        heading = document.add_paragraph(style="ReportHeading1")
+        _add_single_run(heading, "报告调整说明", "黑体", "SimHei", 16)
+        for note in adjustment_notes:
+            reason = _safe_text(note.get("reason")) if isinstance(note, dict) else ""
+            if reason:
+                paragraph = document.add_paragraph(style="ReportBody")
+                _add_body_runs(paragraph, reason)
 
     if references:
         heading = document.add_paragraph(style="ReportHeading1")

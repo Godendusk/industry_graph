@@ -654,6 +654,7 @@ def report_export_word():
     industry = str(data.get("industry", "ai") or "").strip()
     body_sections = data.get("body_sections")
     references = data.get("references", [])
+    adjustment_notes = data.get("adjustment_notes", [])
 
     if not report_title:
         return jsonify({"status": "error", "message": "report_title cannot be empty"}), 400
@@ -663,6 +664,8 @@ def report_export_word():
         return jsonify({"status": "error", "message": "body_sections must be an array"}), 400
     if not isinstance(references, list):
         return jsonify({"status": "error", "message": "references must be an array"}), 400
+    if not isinstance(adjustment_notes, list):
+        return jsonify({"status": "error", "message": "adjustment_notes must be an array"}), 400
 
     result = export_report_docx(
         report_title=report_title,
@@ -670,6 +673,7 @@ def report_export_word():
         body_sections=body_sections,
         industry=industry,
         references=references,
+        adjustment_notes=adjustment_notes,
     )
     if result.get("status") != "success":
         return jsonify(result), 400

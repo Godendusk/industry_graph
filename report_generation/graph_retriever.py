@@ -55,7 +55,9 @@ def retrieve_industry_graph(query: str, industry: str = "ai") -> dict:
 
     llm_result = _select_terminal_segments_with_llm(normalized_query, graph, industry_name)
     if llm_result["status"] != "success":
-        return _error_response(llm_result["message"], normalized_query, normalized_industry)
+        result = _error_response(llm_result["message"], normalized_query, normalized_industry)
+        result["selection_diagnostics"] = llm_result.get("diagnostics", {})
+        return result
 
     selected_segments = _validate_llm_terminal_selection(llm_result["data"], graph)
     if not selected_segments:
@@ -107,6 +109,7 @@ def retrieve_industry_graph(query: str, industry: str = "ai") -> dict:
         "graph_context_text": _build_graph_context_text(normalized_query, evidence_blocks),
         "matched_segments": matched_segments,
         "evidence_blocks": evidence_blocks,
+        "selection_diagnostics": llm_result.get("diagnostics", {}),
     }
 
 
@@ -234,54 +237,149 @@ class _IndustryGraph:
         return rows
 
 
+_QUERY_LABELS = (
+    '用户需求', '用户重写要求', '报告标题', '当前一级标题', '章节目标',
+    '内容边界', '当前二级标题', '二级写作重点', '建议检索 query', '检索目标',
+)
+
+
+def _graph_query_fields(query: str) -> dict:
+    labels = '|'.join(re.escape(label) for label in _QUERY_LABELS)
+    return dict(re.findall(
+        rf'(?:^|\n)({labels})：([\s\S]*?)(?=\n(?:{labels})：|\Z)', query))
+
+
+def _focus_graph_query(query: str) -> str:
+    fields = _graph_query_fields(query)
+    if not fields.get('当前二级标题', '').strip():
+        return query
+    # Local writing/rewrite requirements can change the requested segment, so
+    # retain them; only the repeated global requirement and chapter boilerplate
+    # are omitted from this node-selection prompt.
+    keep = ('报告标题', '当前一级标题', '当前二级标题', '二级写作重点',
+            '建议检索 query', '用户重写要求', '检索目标')
+    return '\n'.join(f'{key}：{fields[key].strip()}' for key in keep
+                     if fields.get(key, '').strip())
+
+
+def _graph_candidate_focus(query: str) -> str:
+    fields = _graph_query_fields(query)
+    if not fields.get('当前二级标题', '').strip():
+        return query
+    return ' '.join(fields.get(key, '').strip() for key in (
+        '当前二级标题', '二级写作重点', '建议检索 query', '用户重写要求')
+        if fields.get(key, '').strip())
+
+
+def _keyword_pairs(text: str) -> set:
+    # Chinese pairs also match compound node names without a new tokenizer
+    # dependency. Exclude generic report words that do not identify segments.
+    generic = {'产业', '技术', '环节', '布局', '发展', '能力', '条件', '分析',
+               '研究', '价值', '现状', '趋势', '路径', '关键', '相关', '央企', '智能'}
+    pairs = set()
+    text = text.replace('具身智能', '')
+    for token in re.findall(r'[\u4e00-\u9fff]+|[A-Za-z][A-Za-z0-9/+-]*', text.lower()):
+        if re.fullmatch(r'[\u4e00-\u9fff]+', token):
+            pairs.update(token[i:i + 2] for i in range(len(token) - 1))
+        else:
+            pairs.add(token)
+    return pairs - generic
+
+
+def _prefilter_terminal_rows(rows: List[str], focus: str) -> tuple:
+    if len(rows) <= 15:
+        return rows, 'full_small'
+    terms = _keyword_pairs(focus)
+    matches = []
+    for index, row in enumerate(rows):
+        path = row.split('路径: ', 1)[-1]
+        leaf = path.split(' > ')[-1]
+        leaf_hits = len(terms & _keyword_pairs(leaf))
+        path_hits = len(terms & _keyword_pairs(path))
+        # One short pair is too weak to exclude the rest of the graph.
+        if path_hits >= 2:
+            matches.append((leaf_hits, path_hits, index, row))
+    if len(matches) < 3:
+        return rows, 'full_fallback'
+    matches.sort(key=lambda item: (-item[0], -item[1], item[2]))
+    return [item[3] for item in matches[:15]], 'keyword'
+
+
 def _select_terminal_segments_with_llm(query: str, graph: _IndustryGraph, industry_name: str) -> dict:
+    focused_query = _focus_graph_query(query)
+    all_rows = graph.terminal_prompt_rows()
+    candidate_rows, mode = _prefilter_terminal_rows(all_rows, _graph_candidate_focus(query))
+    candidate_ids = {int(row.split(' | ', 1)[0].split(': ', 1)[1]) for row in candidate_rows}
+    diagnostics = {'original_query_chars': len(query), 'focused_query_chars': len(focused_query),
+                   'total_candidates': len(all_rows), 'sent_candidates': len(candidate_rows),
+                   'candidate_mode': mode}
+
+    def response(status, message, data=None):
+        return {'status': status, 'message': message, 'data': data, 'diagnostics': diagnostics}
     system_prompt = (
         f"你是{industry_name}产业知识图谱检索助手。"
         "你只能从用户提供的末级环节清单中选择相关环节。"
         "必须只输出 JSON 数组，不要输出解释、Markdown 或代码块。"
+        "为节省输出，只返回选中末级环节的数字 ID，不要返回名称、理由或分数。"
     )
     user_prompt = f"""请根据用户查询，从下面的{industry_name}产业末级环节清单中选择最相关的 1 到 3 个。
 
 用户查询：
-{query}
+{focused_query}
 
 选择要求：
 1. 只能选择清单中真实存在的末级环节。
 2. 输出数量必须是 1 到 3 个。
-3. 每项必须包含 id、name、reason、score。
-4. score 使用 0 到 1 的数字表示相关性。
-5. name 必须与清单中的末级环节名称完全一致。
+3. 输出数组中的每个值必须是清单中真实存在的数字 ID。
+4. 不要输出名称、理由、分数或其他字段。
 
 输出 JSON 示例：
-[
-  {{"id": 23, "name": "GPU/AI芯片", "reason": "与查询中的 GPU 和 AI 芯片直接相关", "score": 0.95}}
-]
+[23, 31]
 
 末级环节清单：
-{chr(10).join(graph.terminal_prompt_rows())}
+{chr(10).join(candidate_rows)}
 """
     try:
         content = llm.query(
             user_prompt=user_prompt,
             system_prompt=system_prompt,
-            max_tokens=1200,
+            max_tokens=800,
+            reasoning_effort=None,
+            extra_body={"thinking": {"type": "disabled"}},
             extra_log_info=f"report_generation.graph_retriever query={query}",
         )
     except Exception as exc:
-        return {"status": "error", "message": f"LLM 调用失败: {exc}", "data": None}
+        return response('error', f'LLM 调用失败: {exc}')
 
     if not content:
-        return {"status": "error", "message": "LLM 返回为空", "data": None}
+        return response('error', 'LLM 返回为空')
 
     try:
         data = _parse_json_array(content)
     except ValueError as exc:
-        return {"status": "error", "message": f"LLM 返回 JSON 解析失败: {exc}", "data": None}
+        return response('error', f'LLM 返回 JSON 解析失败: {exc}')
 
     if not isinstance(data, list) or not (1 <= len(data) <= 3):
-        return {"status": "error", "message": "LLM 返回的末级环节数量不合规，必须为 1 到 3 个", "data": None}
+        return response('error', 'LLM 返回的末级环节数量不合规，必须为 1 到 3 个')
 
-    return {"status": "success", "message": "", "data": data}
+    # Keep the historical object contract readable while accepting the compact
+    # ID-only response used by the production prompt.
+    if all(isinstance(item, (int, str)) for item in data):
+        data = [
+            {
+                "id": item,
+                "name": graph.node_name(_coerce_node_id(item)),
+                "reason": "",
+                "score": 1.0,
+            }
+            for item in data
+        ]
+
+    data = [item for item in data if isinstance(item, dict)
+            and _coerce_node_id(item.get('id')) in candidate_ids]
+    if not data:
+        return response('error', 'LLM 未返回本次候选清单中的末级环节')
+    return response('success', '', data)
 
 
 def _validate_llm_terminal_selection(items: List[dict], graph: _IndustryGraph) -> List[dict]:

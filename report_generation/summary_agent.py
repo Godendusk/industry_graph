@@ -14,7 +14,10 @@ from .industry_config import SUPPORTED_INDUSTRIES
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TEMPLATE_PATH = PROJECT_ROOT / "产业链报告模板.docx"
-DEFAULT_MAX_TOKENS = 5000
+# 摘要保留深度思考。模型的推理和可见摘要共同计入输出预算；8000 不足以
+# 稳定完成当前报告摘要，因此为思考和 400—600 字正文预留 12000 tokens。
+DEFAULT_MAX_TOKENS = 12000
+RETRY_MAX_TOKENS = 16000
 
 
 def generate_report_summary(
@@ -75,12 +78,15 @@ def generate_report_summary(
     summary_system_prompt = _build_summary_system_prompt(abstract_template)
 
     try:
-        content = llm.query(
-            user_prompt=summary_user_prompt,
-            system_prompt=summary_system_prompt,
-            max_tokens=DEFAULT_MAX_TOKENS,
-            extra_log_info="report_generation.summary_agent",
-        )
+        query_kwargs = {
+            "user_prompt": summary_user_prompt,
+            "system_prompt": summary_system_prompt,
+            "max_tokens": DEFAULT_MAX_TOKENS,
+            "reasoning_effort": "high",
+            "extra_body": {"thinking": {"type": "enabled"}},
+            "extra_log_info": "report_generation.summary_agent",
+        }
+        query_result = llm.query_result(**query_kwargs)
     except Exception as exc:
         return _error_response(
             f"summary LLM call failed: {exc}",
@@ -88,8 +94,57 @@ def generate_report_summary(
             industry_name,
         )
 
+    if query_result.error_message:
+        return _error_response(
+            f"summary LLM call failed: {query_result.error_message}",
+            normalized_industry,
+            industry_name,
+        )
+
+    # 深度思考和可见正文共用输出预算。若第一次调用把预算耗尽，增加一次预算
+    # 重试；始终保留思考模式，不把失败退化为无思考摘要。
+    if not query_result.error_message and (
+        not query_result.content or query_result.finish_reason == "length"
+    ):
+        warnings.append(
+            {
+                "stage": "summary_retry",
+                "message": "summary output was empty or truncated; retried with a larger thinking budget",
+            }
+        )
+        query_kwargs["max_tokens"] = RETRY_MAX_TOKENS
+        try:
+            query_result = llm.query_result(**query_kwargs)
+        except Exception as exc:
+            return _error_response(
+                f"summary LLM retry failed: {exc}",
+                normalized_industry,
+                industry_name,
+            )
+
+        if query_result.error_message:
+            return _error_response(
+                f"summary LLM retry failed: {query_result.error_message}",
+                normalized_industry,
+                industry_name,
+            )
+
+    if query_result.finish_reason == "length":
+        return _error_response(
+            "summary LLM output remained truncated after retry (finish_reason=length)",
+            normalized_industry,
+            industry_name,
+        )
+
+    content = query_result.content
     if not content:
-        return _error_response("summary LLM returned empty output", normalized_industry, industry_name)
+        finish_reason = _safe_text(query_result.finish_reason)
+        suffix = f" (finish_reason={finish_reason})" if finish_reason else ""
+        return _error_response(
+            f"summary LLM returned empty output{suffix}",
+            normalized_industry,
+            industry_name,
+        )
 
     abstract_text, cleanup_warnings = _clean_abstract_text(content)
     warnings.extend(cleanup_warnings)

@@ -44,6 +44,27 @@ class ReportRagModesTest(unittest.TestCase):
             result = retrieve_external_rag("查询", top_k=10)
         self.assertEqual(result["retrieval_fallback"], "legacy")
 
+    def test_empty_embodied_collection_is_reported_as_unavailable(self):
+        empty = {"ids": [[]], "documents": [[]], "metadatas": [[]], "distances": [[]]}
+        with patch("report_generation.external_rag.embodied_store.query_embodied_news", return_value=empty):
+            result = retrieve_external_rag("查询", top_k=10, industry="embodied")
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["evidence_blocks"], [])
+        self.assertTrue(any(item.get("code") == "rag_store_empty" for item in result["warnings"]))
+
+    def test_news_industry_dispatches_to_its_news_collection(self):
+        raw = {
+            "ids": [["news-1"]],
+            "documents": [["低空经济资料"]],
+            "metadatas": [[{"title": "资料标题", "source_id": "m1", "url": "https://example.test"}]],
+            "distances": [[0.1]],
+        }
+        with patch("RAG.topic_news.query_topic_news", return_value=raw) as query:
+            result = retrieve_external_rag("低空经济产业链", top_k=3, industry="low_altitude")
+        query.assert_called_once_with("低空经济产业链", "low_altitude", 3)
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(len(result["evidence_blocks"]), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

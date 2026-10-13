@@ -11,6 +11,9 @@ from typing import Any, List
 from llm_client import LLMQueryResult, llm
 from .citations import collect_used_references, validate_body_citations
 from .industry_config import SUPPORTED_INDUSTRIES
+from .repetition_context import REUSE_RULES, build_prior_context, focus_terms_for_task
+from .writing_decisions import render_decision_prompt
+from .review_agent import review_report_bodies
 
 
 DEFAULT_MAX_WORKERS = 3
@@ -35,7 +38,17 @@ def generate_body_section(
     if not normalized_title:
         return _section_error_response(writing_task, "report_title cannot be empty")
 
-    writing_system_prompt = _safe_text(writing_task.get("writing_system_prompt"))
+    if "writing_decision" in writing_task:
+        try:
+            writing_system_prompt = render_decision_prompt(writing_task["writing_decision"])
+        except (ValueError, TypeError) as exc:
+            error = _section_error_response(writing_task, f"invalid writing_decision: {exc}")
+            error["warnings"].append({"stage": "writing_decision_validation", "message": str(exc),
+                                      "outline_id": writing_task.get("outline_id", "")})
+            return error
+    else:
+        # Saved reports without decisions retain their existing writing instructions.
+        writing_system_prompt = _safe_text(writing_task.get("writing_system_prompt"))
     if not writing_system_prompt:
         return _section_error_response(writing_task, "writing_system_prompt cannot be empty")
 
@@ -43,16 +56,18 @@ def generate_body_section(
     if not subsection_title:
         return _section_error_response(writing_task, "writing_task.title cannot be empty")
 
+    prior_context = build_prior_context(previous_body_sections, writing_task)
     body_user_prompt = _build_body_user_prompt(
         writing_task=writing_task,
         user_prompt=normalized_prompt,
         report_title=normalized_title,
         previous_body_sections=previous_body_sections,
+        prior_report_facts=prior_context["text"],
     )
 
     body_text, cleanup_warnings, failure_message = _generate_body_text_with_retry(
         body_user_prompt=body_user_prompt,
-        writing_system_prompt=writing_system_prompt,
+        writing_system_prompt=writing_system_prompt + "\n" + REUSE_RULES,
         subsection_title=subsection_title,
     )
     if not body_text:
@@ -60,6 +75,10 @@ def generate_body_section(
 
     section_warnings = _copy_list(writing_task.get("warnings"))
     section_warnings.extend(cleanup_warnings)
+    if prior_context["omitted_fact_count"]:
+        section_warnings.append({"stage": "repetition_context",
+            "message": "related prior statements omitted by prompt budget",
+            "omitted_fact_count": prior_context["omitted_fact_count"]})
     external_evidence_blocks = _external_evidence_blocks(writing_task)
     body_text, citation_ids, citation_warnings = validate_body_citations(
         body_text, external_evidence_blocks
@@ -74,6 +93,7 @@ def generate_body_section(
             "graph_evidence_blocks": _graph_evidence_blocks(writing_task),
             "external_evidence_blocks": external_evidence_blocks,
             "citation_ids": citation_ids,
+            "repetition_focus_terms": focus_terms_for_task(writing_task),
             "warnings": section_warnings,
         }
     )
@@ -190,7 +210,14 @@ def generate_report_bodies(
         ):
             previous_success_sections.append(section)
 
-    warnings = _collect_warnings(body_sections)
+    review_result = review_report_bodies(
+        body_sections=body_sections, writing_tasks=writing_tasks,
+        report_title=normalized_title, user_prompt=normalized_prompt,
+        references=references or [],
+    ) if previous_success_sections else None
+    if review_result:
+        body_sections = review_result['body_sections']
+    warnings = _collect_warnings(body_sections) + (review_result['warnings'] if review_result else [])
     used_references = collect_used_references(body_sections, references or [])
     success_count = sum(
         1 for section in body_sections if section.get("status") == "success"
@@ -212,6 +239,8 @@ def generate_report_bodies(
         "max_workers": actual_workers,
         "references": used_references,
         "warnings": warnings,
+        "review": review_result['review'] if review_result else None,
+        "adjustment_notes": review_result['adjustment_notes'] if review_result else [],
     }
 
 
@@ -287,7 +316,14 @@ def stream_report_bodies(
                 ):
                     previous_success_sections.append(section)
 
-            warnings = _collect_warnings(body_sections)
+            review_result = review_report_bodies(
+                body_sections=body_sections, writing_tasks=writing_tasks,
+                report_title=normalized_title, user_prompt=normalized_prompt,
+                references=references or [], on_event=event_queue.put,
+            ) if previous_success_sections else None
+            if review_result:
+                body_sections[:] = review_result['body_sections']
+            warnings = _collect_warnings(body_sections) + (review_result['warnings'] if review_result else [])
             used_references = collect_used_references(body_sections, references or [])
             success_count = sum(
                 1 for section in body_sections if isinstance(section, dict) and section.get("status") == "success"
@@ -308,6 +344,8 @@ def stream_report_bodies(
                 "body_sections": body_sections,
                 "references": used_references,
                 "warnings": warnings,
+                "review": review_result['review'] if review_result else None,
+                "adjustment_notes": review_result['adjustment_notes'] if review_result else [],
                 "success_count": success_count,
                 "total": len(body_sections),
                 "max_workers": actual_workers,
@@ -444,50 +482,7 @@ def _format_previous_body_sections(previous_body_sections: Any) -> str:
 
 
 def _format_prior_report_facts(previous_sections: Any, current_task: Any) -> str:
-    """Format compact, deterministic avoidance context from prior body sections.
-
-    The returned text is deliberately derived from existing section output and
-    never calls the model.  Only successful sections contribute facts, and
-    citation-bearing sentences are included when their citation is available to
-    the current task.
-    """
-    if not isinstance(previous_sections, list) or not previous_sections:
-        return "暂无整篇报告已生成正文"
-
-    current_evidence_ids = {
-        _safe_text(row.get("citation_id"))
-        for row in _external_evidence_blocks(current_task if isinstance(current_task, dict) else {})
-        if isinstance(row, dict) and _safe_text(row.get("citation_id"))
-    }
-    blocks: List[str] = []
-    for index, section in enumerate(previous_sections, 1):
-        if not isinstance(section, dict):
-            continue
-        status = _safe_text(section.get("status"))
-        if status and status != "success":
-            continue
-        body_text = _safe_text(section.get("body_text"))
-        if not body_text:
-            continue
-        sentences = _complete_sentences(body_text)
-        if not sentences:
-            continue
-        title = _safe_text(section.get("title")) or f"已生成二级标题{index}"
-        lines = [f"- {title}：{_truncate_sentence(sentences[0])}"]
-
-        matching_sentences = []
-        for sentence in sentences:
-            if sentence == sentences[0]:
-                continue
-            if any(f"[{citation_id}]" in sentence for citation_id in current_evidence_ids):
-                matching_sentences.append(_truncate_sentence(sentence))
-                if len(matching_sentences) >= 2:
-                    break
-        if matching_sentences:
-            lines.append("  当前资料对应事实：" + " ".join(matching_sentences))
-        blocks.append("\n".join(lines))
-
-    return "\n\n".join(blocks) or "暂无整篇报告已生成正文"
+    return build_prior_context(previous_sections, current_task)["text"]
 
 
 def _complete_sentences(text: str) -> List[str]:
@@ -521,6 +516,7 @@ def _build_body_user_prompt(
     user_prompt: str,
     report_title: str,
     previous_body_sections: list = None,
+    prior_report_facts: str = None,
 ) -> str:
     graph_retrieval = writing_task.get("graph_retrieval")
     if not isinstance(graph_retrieval, dict):
@@ -532,7 +528,8 @@ def _build_body_user_prompt(
 
     graph_context_text = _safe_text(graph_retrieval.get("graph_context_text"))
     rag_context_text = _safe_text(external_rag_retrieval.get("rag_context_text"))
-    prior_report_facts = _format_prior_report_facts(previous_body_sections, writing_task)
+    if prior_report_facts is None:
+        prior_report_facts = _format_prior_report_facts(previous_body_sections, writing_task)
 
     return f"""【用户原始需求】
 {user_prompt}
@@ -558,10 +555,8 @@ def _build_body_user_prompt(
 【生成要求】
 请生成当前二级标题下的报告正文。
 请直接输出正文段落，不要输出当前二级标题、章节标题或任何标题行。
-如果同一一级标题下已有前文正文，请主动避开前文已写过和引用过的知识图谱和外部资料、观点、案例、数据、句式和分析角度，不要生成高度相似的内容。
 上面的整篇报告已写事实仅用于改变当前叙述角度和避免重复，不是当前小节的可引用证据。正文中的 [C数字] 只能来自当前小节“外部资料库上下文”中真实出现的引用编号。
 生成正文时要重点参考关注当前的一级标题和二级标题，不要生成关联度不高的内容，比如标题让你分析现状你就分析现状，不要自作主张去分析突出问题和对策建议；标题让你分析对策建议你就分析对策建议，不要自作主张去分析现状和问题；标题让你分析现状你就分析现状，不要自作主张去分析突出问题和对策建议，绝对不要做多余的事。
-特别需要注意生成正文时要刻意避免当前二级标题下以及同一一级标题不同二级标题下的每一自然段生成的正文的首句内容和句式重复或者高度相似。
 请检查引用的资料，不要出现常识性错误，例如误把民营企业（华为海思）当成央企国企，误把外资企业（英伟达）当成民营企业。
 要求报告正文绝对不多于 1000字，段落绝对不超过 3 段。
 不得把 [知识图谱1] 等知识图谱编号当作文章来源。

@@ -5,6 +5,27 @@ from report_generation import rewrite_agent
 
 
 class ReportRewriteCitationsTest(unittest.TestCase):
+    def test_rewrite_reviews_only_current_section_and_uses_reviewed_text(self):
+        current = {'outline_id': 'S1.1', 'title': '当前', 'body_text': '旧文。'}
+        other = {'outline_id': 'S1.2', 'title': '其他', 'status': 'success', 'body_text': '其他正文。'}
+        def reviewed(**kwargs):
+            assert kwargs['target_outline_id'] == 'S1.1'
+            assert [row['outline_id'] for row in kwargs['body_sections']] == ['S1.2', 'S1.1']
+            return {'body_sections': [other, dict(kwargs['body_sections'][1], body_text='精简后正文。')],
+                    'review': {'status':'completed'}, 'adjustment_notes': [], 'warnings': []}
+        with patch.object(rewrite_agent.llm, 'query', return_value='重写正文。'), \
+             patch.object(rewrite_agent, 'review_report_bodies', side_effect=reviewed) as review:
+            result = rewrite_agent.rewrite_body_section('重写', '报告', current, {}, [],
+                                                        previous_body_sections=[other])
+        assert review.call_count == 1
+        assert result['body_text'] == '精简后正文。'
+
+    def test_budget_omission_is_retained_as_rewrite_warning(self):
+        with patch.object(rewrite_agent, '_build_prior_report_context', return_value={'text':'相关已写表述', 'omitted_fact_count':2}), \
+             patch.object(rewrite_agent.llm, 'query', return_value='重写正文。'):
+            result = rewrite_agent.rewrite_body_section('重写', '报告', {'title':'当前', 'body_text':'旧文。'}, {}, [])
+        assert any(w.get('omitted_fact_count') == 2 for w in result['warnings'])
+
     def test_reuses_existing_id_and_appends_new_material(self):
         body_section = {
             "outline_id": "S1.1",
@@ -144,3 +165,18 @@ class ReportRewriteCitationsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_rewrite_cross_source_focus_is_preserved_and_current_excluded():
+    current = {'outline_id':'S2.1','title':'建议','body_text':'当前旧文。',
+               'repetition_focus_terms':['中国移动','虚构名称']}
+    selected = [{'library':'news','material_id':'new','vector_id':'vnew',
+                 'text':'中国移动牵头成立具身智能产业联盟'}]
+    prior = [{'outline_id':'S1.1','title':'布局','body_text':'背景。中国移动牵头成立具身智能产业联盟[C14]。'},current]
+    with patch.object(rewrite_agent.llm,'query',return_value='新分析[C1]。') as query:
+        result = rewrite_agent.rewrite_body_section('完善建议','测试',current,{},selected,
+                                                    references=[],industry='embodied',previous_body_sections=prior)
+    assert '中国移动牵头成立具身智能产业联盟[C14]' in query.call_args.kwargs['user_prompt']
+    assert '允许小节变短' in query.call_args.kwargs['system_prompt']
+    assert result['repetition_focus_terms'] == ['中国移动']
+    assert len(result['selected_external_evidence_blocks']) == 1

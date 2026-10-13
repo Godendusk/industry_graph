@@ -1,8 +1,22 @@
 import unittest
+import json
+import pytest
+from llm_client import LLMQueryResult
+from report_generation.writing_decisions import fallback_decision
 from unittest.mock import patch
 
 from report_generation import coordinator_agent
 
+
+@pytest.fixture(autouse=True)
+def mock_task_models():
+    # Existing citation tests exercise retrieval/allocation, never external services.
+    def result(**kwargs):
+        if kwargs.get('extra_log_info') == 'report_generation.task_coordination':
+            return LLMQueryResult(content='{"changes":[]}', finish_reason='stop')
+        return LLMQueryResult(content=json.dumps(fallback_decision({'title':'本节问题'}),ensure_ascii=False), finish_reason='stop')
+    with patch.object(coordinator_agent.llm, 'query_result', side_effect=result):
+        yield
 
 class ReportCoordinatorCitationsTest(unittest.TestCase):
     def test_registers_sources_in_outline_order_and_rebuilds_context(self):
@@ -105,7 +119,7 @@ class ReportCoordinatorCitationsTest(unittest.TestCase):
             }, [])
 
         with patch.object(coordinator_agent, "_retrieve_candidates_for_subsection", side_effect=[retrieval_for({"outline_id": "S1.1"}), retrieval_for({"outline_id": "S1.2"})]), \
-             patch.object(coordinator_agent, "_generate_writing_system_prompt", return_value={"status": "success", "writing_system_prompt": "prompt"}) as prompt:
+             patch.object(coordinator_agent, "request_decision", return_value={"status": "generated", "decision": fallback_decision({"title":"本节"}), "warnings": []}) as prompt:
             result = coordinator_agent.generate_writing_tasks(
                 user_prompt="生成报告", report_title="测试报告", outline=outline,
                 industry="embodied", top_k=2,
@@ -114,7 +128,7 @@ class ReportCoordinatorCitationsTest(unittest.TestCase):
         self.assertEqual(result["status"], "success")
         second_blocks = result["writing_tasks"][1]["external_rag_retrieval"]["evidence_blocks"]
         self.assertEqual([row["material_id"] for row in second_blocks], ["m3", "m1"])
-        prompt_contexts = [call.kwargs["rag_context_text"] for call in prompt.call_args_list]
+        prompt_contexts = [call.kwargs["task"]["external_rag_retrieval"]["rag_context_text"] for call in prompt.call_args_list]
         self.assertIn("[C", prompt_contexts[0])
         self.assertIn("丙", prompt_contexts[1])
         self.assertNotIn("乙", prompt_contexts[1])
@@ -200,7 +214,7 @@ class ReportCoordinatorCitationsTest(unittest.TestCase):
         }, [])
         kwargs = dict(user_prompt="生成报告", report_title="测试报告", outline=outline, industry="embodied")
         with patch.object(coordinator_agent, "_retrieve_candidates_for_subsection", return_value=retrieval), \
-             patch.object(coordinator_agent, "_generate_writing_system_prompt", return_value={"status": "success", "writing_system_prompt": "prompt"}):
+             patch.object(coordinator_agent, "request_decision", return_value={"status": "generated", "decision": fallback_decision({"title":"本节"}), "warnings": []}):
             ordinary = coordinator_agent.generate_writing_tasks(**kwargs)
             streamed = list(coordinator_agent.stream_writing_tasks(**kwargs))
 
@@ -212,3 +226,83 @@ class ReportCoordinatorCitationsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_single_task_prompt_call_has_outline_focus_and_direct_output():
+    from llm_client import LLMQueryResult
+    with patch.object(coordinator_agent.llm, 'query_result', return_value=LLMQueryResult(
+        content=json.dumps({'section_question':'能力有哪些？','evidence_uses':[], 'content_scope':{'full_exposition':['中国移动','虚构对象'], 'carry_over':[]}, 'judgment_limits':[]},ensure_ascii=False),
+        finish_reason='stop')) as query:
+        result = coordinator_agent._build_writing_task_from_retrieval(
+            subsection={'outline_id':'S1.1','parent_level1_id':'S1','parent_level1_title':'布局',
+                        'title':'能力','report_outline_context':'S1.1 能力\nS2.1 建议'},
+            graph_retrieval={}, external_rag_retrieval={'evidence_blocks':[{'text':'中国移动'}],
+                                                      'rag_context_text':'中国移动'},
+            user_prompt='报告', report_title='测试', warnings=[])[0]
+    assert query.call_count == 1
+    assert 'S2.1 建议' in query.call_args.kwargs['user_prompt']
+    assert query.call_args.kwargs['extra_body'] == {'thinking': {'type': 'disabled'}}
+    assert result['repetition_focus_terms'] == ['中国移动']
+    assert result['writing_prompt_status'] == 'generated'
+
+
+def test_truncated_task_uses_explicit_fallback_without_retry():
+    from llm_client import LLMQueryResult
+    with patch.object(coordinator_agent.llm, 'query_result', return_value=LLMQueryResult(
+        content='{"writing_system_prompt":"看似有效但截断"}', finish_reason='length')) as query:
+        result = coordinator_agent._build_writing_task_from_retrieval(
+            subsection={'outline_id':'S1.1','parent_level1_id':'S1','parent_level1_title':'布局',
+                        'title':'能力','report_outline_context':'S2.1 建议'},
+            graph_retrieval={}, external_rag_retrieval={'evidence_blocks':[{'text':'《具体产业研究报告》'}]},
+            user_prompt='报告',report_title='测试',warnings=[])[0]
+    assert query.call_count == 1
+    assert result['writing_prompt_status'] == 'fallback'
+    assert result['writing_decision']['section_question']=='围绕“能力”回答本节问题。'
+    assert '允许缩短' in result['writing_system_prompt']
+    assert result['repetition_focus_terms'] == ['具体产业研究报告']
+    assert result['warnings']
+
+
+def test_both_entries_have_outline_and_accurate_fallback_count():
+    from llm_client import LLMQueryResult
+    outline=[{'section_type':'body','level1_id':'S1','level1_title':'现状',
+              'subsections':[{'outline_id':'S1.1','title':'布局'},{'outline_id':'S1.2','title':'能力'}]}]
+    retrieval=({'graph_retrieval':{},'external_rag_retrieval':{'evidence_blocks':[]}},[])
+    outputs=[LLMQueryResult(content=json.dumps(fallback_decision({'title':'具体任务'}),ensure_ascii=False),finish_reason='stop'),
+             LLMQueryResult(content='{"section_question":',finish_reason='length'),
+             LLMQueryResult(content='{"changes":[]}',finish_reason='stop')]
+    for streaming in (False,True):
+        with patch.object(coordinator_agent,'_retrieve_candidates_for_subsection',return_value=retrieval), \
+             patch.object(coordinator_agent.llm,'query_result',side_effect=outputs) as query:
+            kwargs=dict(user_prompt='报告',report_title='测试',outline=outline,industry='embodied')
+            result=(list(coordinator_agent.stream_writing_tasks(**kwargs))[-1] if streaming
+                    else coordinator_agent.generate_writing_tasks(**kwargs))
+        assert query.call_count==3
+        assert result['fallback_count']==1
+        assert [t['writing_prompt_status'] for t in result['writing_tasks']]==['generated','fallback']
+        for call in query.call_args_list[:2]:
+            assert 'S1.1 | 现状 | 布局' in call.kwargs['user_prompt']
+            assert 'S1.2 | 现状 | 能力' in call.kwargs['user_prompt']
+
+
+def test_empty_and_invalid_json_task_outputs_fallback_without_extra_call():
+    from llm_client import LLMQueryResult
+    for output in ['', '{"writing_system_prompt":', '{"writing_system_prompt":""}']:
+        with patch.object(coordinator_agent.llm,'query_result',return_value=LLMQueryResult(content=output,finish_reason='stop')) as query:
+            result=coordinator_agent._build_writing_task_from_retrieval(
+                {'outline_id':'S1.1','parent_level1_id':'S1','parent_level1_title':'布局','title':'能力'},
+                {},{},'报告','测试',[])[0]
+        assert result['writing_prompt_status']=='fallback'
+        assert query.call_count==1
+
+
+def test_retrieval_failure_is_counted_as_fallback_with_outline_context():
+    outline = [{'section_type':'body', 'level1_id':'S1', 'level1_title':'布局',
+                'subsections':[{'outline_id':'S1.1', 'title':'能力'}]}]
+    for streaming in (False, True):
+        with patch.object(coordinator_agent, '_retrieve_candidates_for_subsection', side_effect=RuntimeError('retrieval failed')):
+            kwargs = dict(user_prompt='报告', report_title='测试', outline=outline, industry='embodied')
+            result = (list(coordinator_agent.stream_writing_tasks(**kwargs))[-1] if streaming
+                      else coordinator_agent.generate_writing_tasks(**kwargs))
+        assert result['fallback_count'] == 1
+        assert result['writing_tasks'][0]['writing_decision']['evidence_uses']==[]

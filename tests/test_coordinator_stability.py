@@ -1,8 +1,21 @@
+from llm_client import LLMQueryResult
 import threading
+import json
+import pytest
+from report_generation.writing_decisions import fallback_decision
 import unittest
 from unittest.mock import patch
 
 from report_generation import coordinator_agent
+
+
+@pytest.fixture(autouse=True)
+def mock_models_for_flow_tests():
+    def result(**kwargs):
+        content = '{"changes":[]}' if kwargs.get('extra_log_info') == 'report_generation.task_coordination' else json.dumps(fallback_decision({'title':'本节'}),ensure_ascii=False)
+        return LLMQueryResult(content=content,finish_reason='stop')
+    with patch.object(coordinator_agent.llm,'query_result',side_effect=result):
+        yield
 
 
 def _twenty_subsection_outline():
@@ -164,7 +177,8 @@ class CoordinatorStabilityTest(unittest.TestCase):
         def local_llm_query(**kwargs):
             with calls_lock:
                 llm_calls.append(kwargs)
-            return '{"writing_system_prompt": "本地模拟的正文任务书"}'
+            content = '{"changes":[]}' if kwargs.get('extra_log_info') == 'report_generation.task_coordination' else json.dumps(fallback_decision({'title':'本节问题'}),ensure_ascii=False)
+            return LLMQueryResult(content=content, finish_reason='stop')
 
         outline = _twenty_subsection_outline()
         expected_ids = [
@@ -180,7 +194,7 @@ class CoordinatorStabilityTest(unittest.TestCase):
             coordinator_agent,
             "retrieve_external_rag",
             side_effect=local_rag_retrieval,
-        ), patch.object(coordinator_agent.llm, "query", side_effect=local_llm_query):
+        ), patch.object(coordinator_agent.llm, "query_result", side_effect=local_llm_query):
             result = coordinator_agent.generate_writing_tasks(
                 user_prompt="生成具身智能报告",
                 report_title="具身智能报告",
@@ -199,13 +213,13 @@ class CoordinatorStabilityTest(unittest.TestCase):
         self.assertTrue(
             all(industry == "embodied" and top_k == 20 for _, industry, top_k in rag_calls)
         )
-        self.assertEqual(len(llm_calls), 20)
+        self.assertEqual(len(llm_calls), 21)
         self.assertTrue(
             all(
                 call["extra_log_info"].startswith(
-                    "report_generation.coordinator_agent outline="
+                    "report_generation.writing_decisions outline="
                 )
-                for call in llm_calls
+                for call in llm_calls[:-1]
             )
         )
 
@@ -238,6 +252,7 @@ class CoordinatorStabilityTest(unittest.TestCase):
                 "parent_level1_title": subsection["parent_level1_title"],
                 "title": subsection["title"],
                 "writing_system_prompt": "本地模拟的正文任务书",
+                "writing_decision": fallback_decision(subsection),
                 "warnings": [],
             }, [])
 
@@ -257,7 +272,7 @@ class CoordinatorStabilityTest(unittest.TestCase):
                 industry="embodied",
             )
 
-        self.assertEqual(configured_worker_counts, [3, 3])
+        self.assertEqual(configured_worker_counts, [3])
         self.assertLess(
             completion_order.index("S1.2"),
             completion_order.index("S1.1"),
@@ -282,6 +297,7 @@ class CoordinatorStabilityTest(unittest.TestCase):
                 "parent_level1_title": subsection["parent_level1_title"],
                 "title": subsection["title"],
                 "writing_system_prompt": "本地模拟的正文任务书",
+                "writing_decision": fallback_decision(subsection),
                 "warnings": [],
             }, [])
 
@@ -302,7 +318,7 @@ class CoordinatorStabilityTest(unittest.TestCase):
                 max_workers=5,
             )
 
-        self.assertEqual(configured_worker_counts, [5, 5])
+        self.assertEqual(configured_worker_counts, [5])
         self.assertEqual(result["max_workers"], 5)
 
     def test_max_workers_is_capped_and_limited_by_task_count(self):
@@ -320,6 +336,7 @@ class CoordinatorStabilityTest(unittest.TestCase):
                 "parent_level1_title": subsection["parent_level1_title"],
                 "title": subsection["title"],
                 "writing_system_prompt": "本地模拟的正文任务书",
+                "writing_decision": fallback_decision(subsection),
                 "warnings": [],
             }, [])
 
@@ -347,14 +364,12 @@ class CoordinatorStabilityTest(unittest.TestCase):
                 max_workers=6,
             )
 
-        self.assertEqual(configured_worker_counts, [6, 6, 5, 5])
+        self.assertEqual(configured_worker_counts, [6, 5])
         self.assertEqual(capped["max_workers"], 6)
         self.assertEqual(limited["max_workers"], 5)
 
-    def test_prompt_generation_uses_coordinator_workers_and_keeps_outline_order(self):
+    def test_decisions_are_serial_and_receive_all_previous_tasks(self):
         prompt_order = []
-        prompt_lock = threading.Lock()
-        second_prompt_completed = threading.Event()
 
         def generate_task(*, subsection, **_kwargs):
             return ({
@@ -366,21 +381,16 @@ class CoordinatorStabilityTest(unittest.TestCase):
                 "external_rag_retrieval": {"status": "skipped", "evidence_blocks": []},
             }, [])
 
-        def build_task(*, subsection, **_kwargs):
-            outline_id = subsection["outline_id"]
-            if outline_id == "S1.1":
-                if not second_prompt_completed.wait(timeout=1):
-                    self.fail("S1.1 did not receive the S1.2 prompt completion event")
-            with prompt_lock:
-                prompt_order.append(outline_id)
-            if outline_id == "S1.2":
-                second_prompt_completed.set()
+        def build_task(*, subsection, previous_tasks, **_kwargs):
+            self.assertEqual([task["outline_id"] for task in previous_tasks], prompt_order)
+            prompt_order.append(subsection["outline_id"])
             return ({
                 "outline_id": subsection["outline_id"],
                 "parent_level1_id": subsection["parent_level1_id"],
                 "parent_level1_title": subsection["parent_level1_title"],
                 "title": subsection["title"],
                 "writing_system_prompt": "本地模拟的正文任务书",
+                "writing_decision": fallback_decision(subsection),
                 "warnings": [],
             }, [])
 
@@ -401,10 +411,7 @@ class CoordinatorStabilityTest(unittest.TestCase):
                 max_workers=3,
             )
 
-        self.assertLess(
-            prompt_order.index("S1.2"),
-            prompt_order.index("S1.1"),
-        )
+        self.assertEqual(prompt_order, [f"S{i}.{j}" for i in range(1,5) for j in range(1,6)])
         self.assertEqual(
             [task["outline_id"] for task in result["writing_tasks"]],
             [f"S{section_index}.{subsection_index}" for section_index in range(1, 5) for subsection_index in range(1, 6)],
@@ -434,10 +441,6 @@ class CoordinatorStabilityTest(unittest.TestCase):
             coordinator_agent,
             "retrieve_external_rag",
             side_effect=lambda *args, **kwargs: rag_calls.append((args, kwargs)),
-        ), patch.object(
-            coordinator_agent.llm,
-            "query",
-            return_value='{"writing_system_prompt": "本地模拟的正文任务书"}',
         ):
             result = coordinator_agent.generate_writing_tasks(
                 user_prompt="生成具身智能报告",
@@ -508,6 +511,7 @@ class CoordinatorStabilityTest(unittest.TestCase):
                 "parent_level1_title": subsection["parent_level1_title"],
                 "title": subsection["title"],
                 "writing_system_prompt": "本地模拟的正文任务书",
+                "writing_decision": fallback_decision(subsection),
                 "warnings": [],
             }, []),
         ):

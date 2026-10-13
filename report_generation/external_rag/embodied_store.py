@@ -11,7 +11,15 @@ from ..industry_config import get_industry_config
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 VECTOR_DB_DIR = Path(get_industry_config("embodied")["vector_db_path"])
-MODEL_PATH = PROJECT_ROOT / "RAG" / "model_store" / "bge-base-zh-v1.5"
+_LOCAL_MODEL_PATH = PROJECT_ROOT / "RAG" / "model_store" / "bge-base-zh-v1.5"
+_SHARED_MODEL_PATH = PROJECT_ROOT.parent / "industry_graph" / "RAG" / "model_store" / "bge-base-zh-v1.5"
+_configured_model_path = os.environ.get("EMBODIED_RAG_MODEL_PATH", "").strip()
+if _configured_model_path:
+    MODEL_PATH = Path(_configured_model_path).expanduser()
+elif _LOCAL_MODEL_PATH.is_dir():
+    MODEL_PATH = _LOCAL_MODEL_PATH
+else:
+    MODEL_PATH = _SHARED_MODEL_PATH
 COLLECTION_NAME = "embodied_news"
 BATCH_SIZE = 64
 

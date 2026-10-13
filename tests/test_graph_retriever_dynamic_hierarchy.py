@@ -63,6 +63,20 @@ class DynamicGraphRetrieverTests(unittest.TestCase):
         self.assertEqual(result["evidence_blocks"][0]["downward_entities"][0]["id"], 102)
         self.assertIn("具身智能", query.call_args.kwargs["system_prompt"])
 
+    def test_selection_uses_compact_non_thinking_contract(self):
+        llm_response = json.dumps([20])
+        with patch.object(graph_retriever, "get_industry_config", return_value={"name": "人工智能", "graph_path": FIXTURE_PATH}), patch.object(
+            graph_retriever.llm, "query", return_value=llm_response
+        ) as query:
+            result = graph_retriever.retrieve_ai_graph("三级叶子")
+
+        self.assertEqual(result["status"], "success")
+        self.assertEqual(result["matched_segments"][0]["id"], 20)
+        self.assertEqual(query.call_args.kwargs["max_tokens"], 800)
+        self.assertIsNone(query.call_args.kwargs["reasoning_effort"])
+        self.assertEqual(query.call_args.kwargs["extra_body"], {"thinking": {"type": "disabled"}})
+        self.assertIn("只返回选中末级环节的数字 ID", query.call_args.kwargs["system_prompt"])
+
 
 if __name__ == "__main__":
     unittest.main()

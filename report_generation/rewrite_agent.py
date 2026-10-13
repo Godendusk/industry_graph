@@ -8,8 +8,9 @@ import re
 from typing import Any, List
 
 from llm_client import llm
+from .repetition_context import REUSE_RULES, build_prior_context, focus_terms_for_task
 from .citations import register_evidence_blocks, validate_body_citations
-from . import body_agent
+from .review_agent import review_report_bodies
 
 from .external_rag.retriever import retrieve_external_rag
 from .graph_retriever import retrieve_industry_graph
@@ -150,7 +151,7 @@ def rewrite_body_section(
     if not original_body_text:
         return _rewrite_error_response(body_section, "body_section.body_text cannot be empty")
 
-    prior_report_facts = _build_prior_report_facts(
+    prior_context = _build_prior_report_context(
         previous_body_sections=previous_body_sections or [],
         current_outline_id=section["outline_id"],
         selected_external_evidence_blocks=mapped_blocks,
@@ -163,7 +164,7 @@ def rewrite_body_section(
         body_section=body_section,
         graph_retrieval=graph_retrieval,
         selected_external_evidence_blocks=mapped_blocks,
-        prior_report_facts=prior_report_facts,
+        prior_report_facts=prior_context["text"],
     )
     system_prompt = """你是产业报告正文重写智能体。
 你的任务是根据用户重写要求、原正文和用户选择的材料，重写当前二级标题下的正文。
@@ -172,9 +173,10 @@ def rewrite_body_section(
 凡使用外部资料中的数字、政策、领导讲话、专家观点或企业案例，必须在对应句末保留该资料的 [C数字] 引用编号。
 只能使用用户选择的外部资料上下文中真实出现的 [C数字]，不得编造编号、标题或网址。
 “整篇报告已写事实”仅用于避重和调整叙述角度，不是事实证据、引用来源或可直接复述的依据；不得从该上下文引入外部事实或引用编号。
-如果用户明确要求重复某个背景、事实、案例或数据，应按用户要求重复，不得仅因避重上下文而拒绝。
 正文不输出独立参考文献列表，参考资料列表由系统生成。
 必须保持正式产业研究报告文风，逻辑清晰、表述准确，不要编造材料中没有的信息。"""
+
+    system_prompt += "\n" + REUSE_RULES
 
     try:
         content = llm.query(
@@ -194,6 +196,10 @@ def rewrite_body_section(
         return _rewrite_error_response(body_section, "rewrite LLM returned empty output after cleanup")
     body_text, citation_ids, citation_warnings = validate_body_citations(body_text, mapped_blocks)
     cleanup_warnings.extend(citation_warnings)
+    if prior_context["omitted_fact_count"]:
+        cleanup_warnings.append({"stage": "repetition_context",
+            "message": "related prior statements omitted by prompt budget",
+            "omitted_fact_count": prior_context["omitted_fact_count"]})
 
     result = _base_section_payload(body_section)
     result.update(
@@ -206,10 +212,31 @@ def rewrite_body_section(
             "graph_evidence_blocks": _copy_list(graph_retrieval.get("evidence_blocks")),
             "selected_external_evidence_blocks": mapped_blocks,
             "citation_ids": citation_ids,
+            "repetition_focus_terms": focus_terms_for_task({
+                "title": section["title"],
+                "repetition_focus_terms": body_section.get("repetition_focus_terms", []),
+                "external_rag_retrieval": {"evidence_blocks": mapped_blocks}}),
             "references": updated_references,
             "warnings": cleanup_warnings,
         }
     )
+    if section["outline_id"]:
+        comparison_sections = [copy.deepcopy(item) for item in (previous_body_sections or [])
+                               if isinstance(item, dict) and item.get("outline_id") != section["outline_id"]]
+        comparison_sections.append({**result, "external_evidence_blocks": mapped_blocks})
+        review_result = review_report_bodies(
+            body_sections=comparison_sections, writing_tasks=[],
+            report_title=normalized_title, user_prompt=normalized_prompt,
+            references=updated_references, target_outline_id=section["outline_id"],
+        )
+        reviewed_section = next((item for item in review_result["body_sections"]
+                                 if item.get("outline_id") == section["outline_id"]), None)
+        if reviewed_section:
+            result["body_text"] = reviewed_section["body_text"]
+            result["citation_ids"] = reviewed_section["citation_ids"]
+        result["review"] = review_result["review"]
+        result["adjustment_notes"] = review_result["adjustment_notes"]
+        result["warnings"].extend(review_result["warnings"])
     return result
 
 
@@ -346,18 +373,23 @@ def _build_rewrite_user_prompt(
     不得生成摘要、目录、标题页、Word 导出说明或其他章节内容。"""
 
 
-def _build_prior_report_facts(
+def _build_prior_report_facts(previous_body_sections: list, current_outline_id: str,
+                              selected_external_evidence_blocks: list,
+                              current_body_section: dict = None) -> str:
+    return _build_prior_report_context(previous_body_sections, current_outline_id,
+        selected_external_evidence_blocks, current_body_section)["text"]
+
+
+def _build_prior_report_context(
     previous_body_sections: list,
     current_outline_id: str,
     selected_external_evidence_blocks: list,
     current_body_section: dict = None,
-) -> str:
+) -> dict:
     """Build deterministic avoidance context from other generated sections.
 
-    The body agent formatter keeps this context compact and only surfaces
-    citation-bearing sentences when the citation is available to the current
-    section.  Filtering by outline id here prevents a stale client payload
-    from feeding the section being rewritten back into its own prompt.
+    Select complete cited statements by shared material or grounded focus term.
+    Exclude the section being rewritten from its own avoidance context.
     """
     current_id = _safe_text(current_outline_id)
     current_section = current_body_section if isinstance(current_body_section, dict) else {}
@@ -378,11 +410,13 @@ def _build_prior_report_facts(
         )
     ]
     current_task = {
+        "title": current_title,
+        "repetition_focus_terms": current_section.get("repetition_focus_terms", []),
         "external_rag_retrieval": {
             "evidence_blocks": copy.deepcopy(selected_external_evidence_blocks)
         }
     }
-    return body_agent._format_prior_report_facts(prior_sections, current_task)
+    return build_prior_context(prior_sections, current_task)
 
 
 def _build_selected_rag_context_text(evidence_blocks: list) -> str:
