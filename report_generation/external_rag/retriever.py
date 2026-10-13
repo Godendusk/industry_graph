@@ -36,6 +36,8 @@ def retrieve_external_rag(
         get_industry_config(normalized_industry)
     except ValueError as exc:
         return _error_response(str(exc), normalized_query, normalized_top_k, normalized_industry)
+    if (get_industry_config(normalized_industry).get("rag_type") == "news"):
+        return retrieve_topic_news(normalized_query, normalized_top_k, normalized_industry)
     if normalized_industry != "ai":
         return _retrieve_legacy(query, normalized_top_k, industry=normalized_industry)
     mode = _mode()
@@ -104,13 +106,80 @@ def retrieve_embodied_news(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
                 "text": text,
             }
         )
+    warnings = []
+    if not evidence_blocks:
+        warnings.append({
+            "code": "rag_store_empty",
+            "message": "具身智能产业 RAG 向量库暂无资料，本次主要参考知识图谱生成",
+        })
     return {
         "status": "success",
         "query": normalized_query,
         "top_k": normalized_top_k,
         "rag_context_text": _build_rag_context_text(evidence_blocks),
         "evidence_blocks": evidence_blocks,
+        "warnings": warnings,
         "retrieval_version": "embodied_chroma",
+    }
+
+
+def retrieve_topic_news(query: str, top_k: int, industry: str) -> dict:
+    """Retrieve a configured non-embodied industry news collection."""
+    normalized_query = str(query or "").strip()
+    normalized_top_k = _normalize_top_k(top_k)
+    try:
+        from RAG.topic_news import query_topic_news
+
+        results = query_topic_news(normalized_query, industry, normalized_top_k)
+    except Exception as exc:
+        return _error_response(
+            f"{industry} RAG initialization failed: {exc}",
+            normalized_query,
+            normalized_top_k,
+            industry,
+        )
+
+    ids = _first_result_list(results.get("ids"))
+    documents = _first_result_list(results.get("documents"))
+    metadatas = _first_result_list(results.get("metadatas"))
+    distances = _first_result_list(results.get("distances"))
+    evidence_blocks = []
+    for index, vector_id in enumerate(ids):
+        text = _safe_text(_list_get(documents, index))
+        if not text:
+            continue
+        metadata = _list_get(metadatas, index)
+        metadata = metadata if isinstance(metadata, dict) else {}
+        evidence_blocks.append({
+            "citation_id": f"外部资料{len(evidence_blocks) + 1}",
+            "rank": len(evidence_blocks) + 1,
+            "library": f"{industry}_news",
+            "classification_type": "",
+            "classification_name": get_industry_config(industry).get("name", ""),
+            "material_id": _metadata_value(metadata, "source_id", ""),
+            "title": _metadata_value(metadata, "title", ""),
+            "publish_date": _metadata_value(metadata, "publish_date", ""),
+            "source_address": _metadata_value(metadata, "url", ""),
+            "paragraph_index": _coerce_int(metadata.get("chunk_index")),
+            "vector_id": _safe_text(vector_id),
+            "distance": _coerce_float(_list_get(distances, index)),
+            "text": text,
+        })
+    warnings = []
+    if not evidence_blocks:
+        warnings.append({
+            "code": "rag_store_empty",
+            "message": f"{get_industry_config(industry)['name']}产业 RAG 向量库暂无资料，本次主要参考知识图谱生成",
+        })
+    return {
+        "status": "success",
+        "industry": industry,
+        "query": normalized_query,
+        "top_k": normalized_top_k,
+        "rag_context_text": _build_rag_context_text(evidence_blocks),
+        "evidence_blocks": evidence_blocks,
+        "warnings": warnings,
+        "retrieval_version": "topic_news_chroma",
     }
 
 

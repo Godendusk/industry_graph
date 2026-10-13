@@ -6,19 +6,20 @@ from RAG.topic_news import TOPIC_NEWS_COLLECTIONS
 
 def test_report_industries_use_rag_vector_db_root():
     expected = {
-        "ai": "vector_db_ai",
-        "embodied": "vector_db_embodied",
-        "low_altitude": "vector_db_low_altitude",
-        "sea": "vector_db_sea",
-        "quantum": "vector_db_quantum",
-        "biology": "vector_db_biology",
-        "brain": "vector_db_brain",
-        "material": "vector_db_material",
+        "ai": "ai",
+        "embodied": "embodied",
+        "low_altitude": "low_altitude",
+        "sea": "sea",
+        "quantum": "quantum",
+        "biology": "biology",
+        "brain": "brain",
+        "material": "material",
     }
     for industry, dirname in expected.items():
         config = INDUSTRY_CONFIG[industry]
         assert Path(config["vector_db_path"]).name == dirname
-        assert Path(config["vector_db_path"]).parent.name == "RAG"
+        assert Path(config["vector_db_path"]).parent.name == "vector_db"
+        assert Path(config["vector_db_path"]).parent.parent.name == "report_generation"
 
 
 def test_qa_database_is_not_report_industry():

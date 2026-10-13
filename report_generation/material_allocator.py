@@ -49,44 +49,38 @@ def allocate_evidence_blocks(section_candidates: list[dict[str, Any]], target_pe
         selected: list[tuple[int, dict[str, Any], str]] = []
         selected_keys: set[str] = set()
         first = valid[0] if valid else None
+        seen_vectors = set()
         if target and first is not None:
             selected.append(first)
             selected_keys.add(first[2])
-
-            # Distinct sources are ordered by report-level reuse, then retrieval order.
-            distinct = sorted(
-                (row for row in valid if row[2] not in selected_keys),
-                key=lambda row: (prior_usage[row[2]], row[0]),
-            )
-            for row in distinct:
-                if len(selected) >= target:
-                    break
-                selected.append(row)
-                selected_keys.add(row[2])
-
-            # Keep output order governed by reuse priority while retaining the first
-            # candidate in the selected set (e.g. an unused source precedes a reused one).
-            selected.sort(key=lambda row: (prior_usage[row[2]], row[0]))
-
-            # Fill remaining slots with a second chunk, at most two per material.
+            seen_vectors.add((first[1].get("library"), first[1].get("vector_id")))
+            for pool in ([r for r in valid if r[0] < 10],
+                         [r for r in valid if r[0] >= 10]):
+                for row in sorted(pool, key=lambda r: (prior_usage[r[2]], r[0])):
+                    if len(selected) >= target:
+                        break
+                    vector = (row[1].get("library"), row[1].get("vector_id"))
+                    if row[2] in selected_keys or (vector[1] and vector in seen_vectors):
+                        continue
+                    selected.append(row)
+                    selected_keys.add(row[2])
+                    if vector[1]:
+                        seen_vectors.add(vector)
+            selected.sort(key=lambda r: (r[0] >= 10, prior_usage[r[2]], r[0]))
             per_material = defaultdict(int)
-            seen_vectors: set[str] = set()
-            for _, candidate, key in selected:
-                per_material[key] += 1
-                vector_id = str(candidate.get("vector_id") or "").strip()
-                seen_vectors.add(vector_id)
+            for row in selected:
+                per_material[row[2]] += 1
             for row in valid:
                 if len(selected) >= target:
                     break
-                index, candidate, key = row
-                vector_id = str(candidate.get("vector_id") or "").strip()
-                if key not in selected_keys or per_material[key] >= 2:
+                vector = (row[1].get("library"), row[1].get("vector_id"))
+                if row[2] not in selected_keys or per_material[row[2]] >= 2:
                     continue
-                if vector_id in seen_vectors:
+                if not vector[1] or vector in seen_vectors:
                     continue
                 selected.append(row)
-                per_material[key] += 1
-                seen_vectors.add(vector_id)
+                per_material[row[2]] += 1
+                seen_vectors.add(vector)
 
         blocks = [copy.deepcopy(candidate) for _, candidate, _ in selected]
         selected_materials = {key for _, _, key in selected}

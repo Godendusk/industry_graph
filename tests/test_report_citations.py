@@ -106,3 +106,10 @@ class ReportCitationValidationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_malformed_citation_is_removed_without_mapping_to_allowed_id():
+    text, used, warnings = validate_body_citations('事实[citation:4]。另一事实[C4]。', [{'citation_id':'C4'}])
+    assert text == '事实。另一事实[C4]。'
+    assert used == ['C4']
+    assert warnings[0]['malformed_citation_markers'] == ['[citation:4]']

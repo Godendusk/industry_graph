@@ -292,14 +292,20 @@ test("embodied report coordinator request keeps the selected industry", async ()
     };
     window.currentIndustry = "embodied";
     context.API_BASE = "";
+    context.TextDecoder = TextDecoder;
     context.document.getElementById = id => elements[id] || null;
     context.fetch = async (url, options) => {
         requests.push({ url, options });
+        const event = {event:"completed", status:"success", success_count:1,
+            writing_tasks:[{outline_id:"S1.1", title:"技术进展"}], references:[], warnings:[]};
+        let sent = false;
         return {
             ok: true,
-            async json() {
-                return { status: "success", writing_tasks: [] };
-            },
+            body: {getReader() {return {async read() {
+                if (sent) return {done:true};
+                sent = true;
+                return {done:false, value:new TextEncoder().encode(`data: ${JSON.stringify(event)}\n\n`)};
+            }}}},
         };
     };
     vm.runInContext(`
@@ -310,11 +316,14 @@ test("embodied report coordinator request keeps the selected industry", async ()
         }];
     `, context);
 
-    await context.prepareIndustryReportTasks();
+    const result = await context.prepareIndustryReportTasks();
 
     assert.equal(requests.length, 1);
-    assert.equal(requests[0].url, "/api/report/coordinator");
+    assert.equal(requests[0].url, "/api/report/coordinator/stream");
     assert.equal(JSON.parse(requests[0].options.body).industry, "embodied");
+    assert.equal(result.status, "success");
+    assert.equal(result.writing_tasks[0].outline_id, "S1.1");
+    assert.equal(vm.runInContext("industryReportWorkspace.writingTasks[0].outline_id", context), "S1.1");
 });
 
 test("coordinator workflow lists all tasks as pending until each is completed", () => {
@@ -982,9 +991,9 @@ test("workflow execution log only lists coordinator tasks after they finish", ()
 test("workflow rendering puts selected step detail below the two-column workflow area", () => {
     const { context } = loadReportScript();
     const elements = {
-        "industry-report-stepper": { innerHTML: "" },
-        "industry-report-step-detail": { innerHTML: "" },
-        "industry-report-execution-log": { innerHTML: "" },
+        "industry-report-stepper": { innerHTML: "", dataset: {}, querySelector() { return null; } },
+        "industry-report-step-detail": { innerHTML: "", dataset: {}, querySelector() { return null; } },
+        "industry-report-execution-log": { innerHTML: "", dataset: {}, querySelector() { return null; } },
     };
     context.document.getElementById = id => elements[id] || null;
 
@@ -1084,4 +1093,11 @@ test("workflow execution log scrolls to the newest item when entries change", ()
     context.renderIndustryReportExecutionLog("idle");
 
     assert.equal(logBox.scrollTop, 480);
+});
+
+
+test("normal task-card submission still shows a success status", () => {
+    const {calls, context} = loadReportScript();
+    context.setIndustryReportRequirementSubmittedStatus([]);
+    assert.deepEqual(calls.statuses.at(-1), {message:"报告需求已提交", type:"success"});
 });

@@ -66,6 +66,13 @@ def validate_body_citations(
     """
 
     text = _text(body_text)
+    malformed = re.findall(r"\[citation:\d+\]", text)
+    warnings: list[dict] = []
+    if malformed:
+        text = re.sub(r"\[citation:\d+\]", "", text)
+        warnings.append({"stage": "citation_validation",
+            "message": "removed malformed citation markers without assigning source ids",
+            "malformed_citation_markers": list(dict.fromkeys(malformed))})
     allowed = {
         _text(row.get("citation_id"))
         for row in evidence_blocks
@@ -85,7 +92,6 @@ def validate_body_citations(
         return match.group(0)
 
     cleaned = _CITATION_PATTERN.sub(replace, text)
-    warnings: list[dict] = []
     if invalid:
         warnings.append(
             {

@@ -59,3 +59,16 @@ class WordExportCitationsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_export_removes_malformed_marker_without_guessing_reference():
+    with tempfile.TemporaryDirectory() as output_dir:
+        result=export_report_docx(report_title='测试报告',abstract_text='摘要',
+            body_sections=[{'parent_level1_title':'现状','title':'案例',
+                            'body_text':'背景[citation:4]。证据[C4]。',
+                            'external_evidence_blocks':[{'citation_id':'C4'}]}],
+            references=[{'citation_id':'C4','title':'资料'}],output_dir=output_dir)
+        text='\n'.join(p.text for p in Document(result['docx_path']).paragraphs)
+    assert '背景。证据[C4]。' in text
+    assert '[citation:4]' not in text
+    assert any(w.get('malformed_citation_markers') for w in result['warnings'])

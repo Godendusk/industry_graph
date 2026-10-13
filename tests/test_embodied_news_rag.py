@@ -243,7 +243,7 @@ class EmbodiedStoreTest(unittest.TestCase):
         module = load_module(self, "report_generation.external_rag.embodied_store")
         self.assertEqual(module.COLLECTION_NAME, "embodied_news")
         self.assertEqual(module.MODEL_PATH.name, "bge-base-zh-v1.5")
-        self.assertEqual(module.VECTOR_DB_DIR.name, "vector_db_embodied")
+        self.assertEqual(module.VECTOR_DB_DIR.name, "embodied")
 
     def test_device_prefers_mps_when_cuda_is_unavailable(self):
         module = load_module(self, "report_generation.external_rag.embodied_store")

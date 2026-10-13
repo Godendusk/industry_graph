@@ -24,6 +24,7 @@ VALID_REQUIREMENT = (
     "分析资本预期、经营表现、估值分化和龙头企业表现，比较不同企业在技术路线、产品落地和商业化进程中的差异，"
     "明确行业景气变化对投资价值的影响，不延伸至非上市公司融资及用户未要求的其他领域，"
     "并统一采用公开市场数据和可核验资料，说明样本范围、时间口径与数据限制，形成面向企业决策的产业洞察报告，服务管理层决策。"
+    "比较时统一采用同一观察窗口和估值口径，区分市场价格变化与实际经营表现，不将短期股价波动直接解释为产业长期发展趋势，并明确研究结论的适用范围。"
 )
 
 
@@ -36,8 +37,14 @@ def _result(content="", finish_reason="stop", error_message=""):
 
 
 class ReportRequirementTest(unittest.TestCase):
+    def test_requirement_accepts_only_current_length_boundaries(self):
+        for length, expected in ((219, "incomplete"), (220, ""), (450, ""), (451, "truncated")):
+            text = "研" * (length - 1) + "。"
+            with self.subTest(length=length):
+                self.assertEqual(_requirement_failure_reason(_result(text), text), expected)
+
     def test_requirement_failure_reason_classification(self):
-        overlong = "具身智能产业研究" * 50 + "。"
+        overlong = "具身智能产业研究" * 70 + "。"
         cases = [
             (_result("可见正文", error_message="provider unavailable"), "可见正文", "llm_request_failed"),
             (_result(""), "", "empty_visible_content"),
@@ -65,7 +72,7 @@ class ReportRequirementTest(unittest.TestCase):
         self.assertEqual(result["source"], "model_retry")
         self.assertEqual(result["report_requirement"], VALID_REQUIREMENT)
         self.assertEqual(query.call_count, 2)
-        self.assertTrue(all(call.kwargs["max_tokens"] == 900 for call in query.call_args_list))
+        self.assertTrue(all(call.kwargs["max_tokens"] == 1000 for call in query.call_args_list))
         self.assertTrue(all(call.kwargs["reasoning_effort"] is None for call in query.call_args_list))
         self.assertTrue(all(
             call.kwargs["extra_body"] == {"thinking": {"type": "disabled"}}

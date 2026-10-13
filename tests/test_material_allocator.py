@@ -66,3 +66,19 @@ class MaterialAllocatorTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_nonfirst_material_does_not_consume_distinct_slots():
+    candidates = [block('a', 'a1', 1), block('b', 'b1', 2),
+                  block('b', 'b2', 3), block('b', 'b3', 4), block('c', 'c1', 5)]
+    result = allocate_evidence_blocks([{'candidates': candidates}], 4)[0]
+    assert [b['vector_id'] for b in result['evidence_blocks']] == ['a1', 'b1', 'c1', 'b2']
+
+
+def test_front_ten_are_preferred_before_unused_tail():
+    prior = {'candidates': [block('used', 'u0', 1)]}
+    current = {'candidates': [block('anchor', 'a1', 1)] +
+               [block('used', f'u{i}', i + 1) for i in range(1, 10)] +
+               [block('new', 'n1', 11)]}
+    result = allocate_evidence_blocks([prior, current], 2)[1]
+    assert {b['material_id'] for b in result['evidence_blocks']} == {'anchor', 'used'}
