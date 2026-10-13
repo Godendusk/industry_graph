@@ -7,20 +7,20 @@ from typing import Dict
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-RAG_VECTOR_DB_ROOT = PROJECT_ROOT / "RAG"
+REPORT_VECTOR_DB_ROOT = PROJECT_ROOT / "report_generation" / "vector_db"
 
 INDUSTRY_CONFIG: Dict[str, dict] = {
     "ai": {
         "name": "人工智能",
         "graph_path": PROJECT_ROOT / "static" / "data" / "ai" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_ai",
+        "vector_db_path": REPORT_VECTOR_DB_ROOT / "ai",
         "rag_type": "report",
         "external_column_id": "2008715487928750081",
     },
     "embodied": {
         "name": "具身智能",
         "graph_path": PROJECT_ROOT / "static" / "data" / "embodied" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_embodied",
+        "vector_db_path": REPORT_VECTOR_DB_ROOT / "embodied",
         "rag_type": "news",
         "collection_name": "embodied_news",
         "external_column_id": "2043590589800853505",
@@ -28,7 +28,7 @@ INDUSTRY_CONFIG: Dict[str, dict] = {
     "low_altitude": {
         "name": "低空经济",
         "graph_path": PROJECT_ROOT / "static" / "data" / "low_altitude" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_low_altitude",
+        "vector_db_path": REPORT_VECTOR_DB_ROOT / "low_altitude",
         "rag_type": "news",
         "collection_name": "low_altitude_news",
         "external_column_id": None,
@@ -36,7 +36,7 @@ INDUSTRY_CONFIG: Dict[str, dict] = {
     "sea": {
         "name": "海洋经济",
         "graph_path": PROJECT_ROOT / "static" / "data" / "sea" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_sea",
+        "vector_db_path": REPORT_VECTOR_DB_ROOT / "sea",
         "rag_type": "news",
         "collection_name": "sea_news",
         "external_column_id": None,
@@ -44,7 +44,7 @@ INDUSTRY_CONFIG: Dict[str, dict] = {
     "quantum": {
         "name": "量子科技",
         "graph_path": PROJECT_ROOT / "static" / "data" / "quantum" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_quantum",
+        "vector_db_path": REPORT_VECTOR_DB_ROOT / "quantum",
         "rag_type": "news",
         "collection_name": "quantum_news",
         "external_column_id": None,
@@ -52,7 +52,7 @@ INDUSTRY_CONFIG: Dict[str, dict] = {
     "biology": {
         "name": "生物制造",
         "graph_path": PROJECT_ROOT / "static" / "data" / "biology" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_biology",
+        "vector_db_path": REPORT_VECTOR_DB_ROOT / "biology",
         "rag_type": "news",
         "collection_name": "biology_news",
         "external_column_id": None,
@@ -60,7 +60,7 @@ INDUSTRY_CONFIG: Dict[str, dict] = {
     "brain": {
         "name": "脑机接口",
         "graph_path": PROJECT_ROOT / "static" / "data" / "brain" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_brain",
+        "vector_db_path": REPORT_VECTOR_DB_ROOT / "brain",
         "rag_type": "news",
         "collection_name": "brain_news",
         "external_column_id": None,
@@ -68,7 +68,7 @@ INDUSTRY_CONFIG: Dict[str, dict] = {
     "material": {
         "name": "新材料",
         "graph_path": PROJECT_ROOT / "static" / "data" / "material" / "graph_data.json",
-        "vector_db_path": RAG_VECTOR_DB_ROOT / "vector_db_material",
+        "vector_db_path": REPORT_VECTOR_DB_ROOT / "material",
         "rag_type": "news",
         "collection_name": "material_news",
         "external_column_id": None,

@@ -42,6 +42,14 @@ conda activate <environment.yml 里的 name>
 
 ## 3. 配置项说明
 
+### 产业报告本地资料库目录
+
+产业报告的八个资料库统一放在 `report_generation/vector_db/<industry>/`，产业键为 `ai`、`embodied`、`low_altitude`、`sea`、`quantum`、`biology`、`brain`、`material`。路径由 `report_generation/industry_config.py` 统一配置。
+
+每个产业目录保存完整的 Chroma 数据库，包括 `chroma.sqlite3` 及向量索引子目录。已有 `RAG/vector_db_<industry>/` 数据应整体迁入对应目录，不需要重新向量化。资料库只保留本地，Git 仅保留 `.gitkeep`。
+
+通用问答库仍位于 `RAG/vector_db_QA/`，本地模型仍位于 `RAG/model_store/`，报告 Hybrid 索引仍位于 `RAG/indexes/report_v2/`。
+
 ### 3.1 后端路径配置（`backend_server.py`）
 
 可按实际部署路径调整的主要常量：
