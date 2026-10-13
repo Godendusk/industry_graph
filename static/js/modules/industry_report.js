@@ -30,6 +30,7 @@ let industryReportWorkspace = {
     bodyTotal: 0,
     coordinatorTotal: 0,
     requirementRewriteSeq: 0,
+    previewTarget: { type: "all", key: "" },
 };
 
 let industryReportHistoryIndex = [];
@@ -269,6 +270,7 @@ function getIndustryReportStepState(stepKey, stage) {
 }
 
 function renderIndustryReportFlowSteps(stage = "idle") {
+    renderIndustryReportAgentHub(stage);
     const box = document.getElementById("industry-report-stepper");
     if (!box) {
         renderIndustryReportActiveStepDetail(stage);
@@ -298,6 +300,215 @@ function renderIndustryReportFlowSteps(stage = "idle") {
     renderIndustryReportActiveStepDetail(stage, activeStep, activeStyle);
     renderIndustryReportExecutionLog(stage);
     syncIndustryReportWorkflowTimer();
+}
+
+function renderIndustryReportAgentHub(stage = industryReportWorkspace.currentStage || "idle") {
+    const box = document.getElementById("industry-report-agent-hub");
+    const summaryEl = document.getElementById("industry-report-agent-hub-summary");
+    if (!box) return;
+    const agents = buildIndustryReportAgentHubItems(stage);
+    if (summaryEl) summaryEl.textContent = getIndustryReportAgentHubSummary(agents);
+    box.innerHTML = `
+        <div class="industry-report-agent-hub-shell">
+            <div class="industry-report-agent-hub-lines" aria-hidden="true">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <path d="M50 50 C38 36 27 24 16 20"></path>
+                    <path d="M50 50 C38 64 27 76 16 80"></path>
+                    <path d="M50 50 C62 64 73 76 84 80"></path>
+                    <path d="M50 50 C62 36 73 24 84 20"></path>
+                </svg>
+            </div>
+            <div class="industry-report-agent-hub-center">
+                <div class="industry-report-agent-hub-center-icon"><i class="fas fa-network-wired"></i></div>
+                <div class="font-bold text-blue-800">协作中枢</div>
+                <div class="mt-1 text-[11px] leading-4 text-blue-600">任务协调 · 进度管理 · 结果汇总</div>
+            </div>
+            <div class="industry-report-agent-hub-grid">
+                ${agents.map(item => renderIndustryReportAgentHubNode(item)).join("")}
+            </div>
+        </div>
+    `;
+}
+
+function buildIndustryReportAgentHubItems(stage) {
+    const visibleStepKeys = ["requirement", "outline", "coordinator", "body"];
+    return visibleStepKeys.map(stepKey => INDUSTRY_REPORT_FLOW_STEPS.find(step => step.key === stepKey)).filter(Boolean).map(step => {
+        const state = getIndustryReportStepState(step.key, stage);
+        const metric = getIndustryReportAgentHubMetric(step.key, state);
+        const progress = getIndustryReportAgentHubProgress(step.key, state);
+        return {
+            key: step.key,
+            title: getIndustryReportAgentName(step.key),
+            role: getIndustryReportAgentHubRole(step.key),
+            state,
+            stateLabel: getIndustryReportAgentHubStateLabel(state),
+            actionLabel: getIndustryReportAgentHubActionLabel(step.key, state),
+            metric,
+            progress,
+            elapsed: getIndustryReportStepElapsedLabel(step.key),
+            icon: getIndustryReportAgentHubIcon(step.key),
+        };
+    });
+}
+
+function getIndustryReportAgentHubRole(stepKey) {
+    const map = {
+        requirement: "需求分析",
+        outline: "大纲规划",
+        coordinator: "任务统筹",
+        body: "正文写作",
+        review: "汇总预览、摘要与导出结果",
+    };
+    return map[stepKey] || "暂无职责说明";
+}
+
+function getIndustryReportAgentHubIcon(stepKey) {
+    const map = {
+        requirement: "fas fa-chart-simple",
+        outline: "fas fa-list-check",
+        coordinator: "fas fa-circle-nodes",
+        body: "fas fa-file-lines",
+    };
+    return map[stepKey] || "fas fa-microchip";
+}
+
+function getIndustryReportAgentHubStateLabel(state) {
+    const map = {
+        active: "运行中",
+        done: "已完成",
+        failed: "失败",
+        pending: "待开始",
+    };
+    return map[state] || "待开始";
+}
+
+function getIndustryReportAgentHubActionLabel(stepKey, state) {
+    if (state === "done") return "已完成";
+    if (state === "failed") return "执行失败";
+    if (state === "pending") return "等待中";
+    const map = {
+        requirement: "正在分析",
+        outline: "正在规划",
+        coordinator: "正在统筹",
+        body: "正在写作",
+    };
+    return map[stepKey] || "运行中";
+}
+
+function getIndustryReportAgentHubMetric(stepKey, state) {
+    if (stepKey === "requirement") {
+        return industryReportWorkspace.taskCard ? "任务卡已生成" : "暂无状态数据";
+    }
+    if (stepKey === "outline") {
+        const total = countIndustryReportSubsections(industryReportWorkspace.outline);
+        return total ? `${total} 个二级标题` : "暂无状态数据";
+    }
+    if (stepKey === "coordinator") {
+        const items = getIndustryReportStepSubitems("coordinator");
+        const total = getIndustryReportCoordinatorTotal(items);
+        const done = items.filter(item => item.statusState === "done").length;
+        const failed = items.filter(item => item.statusState === "failed").length;
+        if (!total) return "暂无状态数据";
+        return failed ? `${done}/${total} 完成，${failed} 失败` : `${done}/${total} 完成`;
+    }
+    if (stepKey === "body") {
+        const items = getIndustryReportStepSubitems("body");
+        const total = getIndustryReportBodyTotal(items);
+        const done = items.filter(item => item.statusState === "done").length;
+        const failed = items.filter(item => item.statusState === "failed").length;
+        if (!total) return "暂无状态数据";
+        return failed ? `${done}/${total} 完成，${failed} 失败` : `${done}/${total} 完成`;
+    }
+    if (stepKey === "review") {
+        return (industryReportWorkspace.bodySections || []).length ? "可预览和导出" : "暂无状态数据";
+    }
+    return "暂无状态数据";
+}
+
+function getIndustryReportAgentHubProgress(stepKey, state) {
+    if (state === "done") return 100;
+    if (stepKey === "requirement") return industryReportWorkspace.taskCard ? 100 : 0;
+    if (stepKey === "outline") {
+        const total = countIndustryReportSubsections(industryReportWorkspace.outline);
+        return total ? 100 : 0;
+    }
+    if (stepKey === "coordinator") {
+        const items = getIndustryReportStepSubitems("coordinator");
+        const total = getIndustryReportCoordinatorTotal(items);
+        if (!total) return 0;
+        const done = items.filter(item => item.statusState === "done").length;
+        return Math.round((done / total) * 100);
+    }
+    if (stepKey === "body") {
+        const items = getIndustryReportStepSubitems("body");
+        const total = getIndustryReportBodyTotal(items);
+        if (!total) return 0;
+        const done = items.filter(item => item.statusState === "done").length;
+        return Math.round((done / total) * 100);
+    }
+    return state === "active" ? 35 : 0;
+}
+
+function getIndustryReportAgentHubSummary(agents) {
+    const active = agents.find(item => item.state === "active");
+    if (active) return `${active.title}运行中`;
+    if (agents.some(item => item.state === "failed")) return "存在失败任务";
+    if (agents.every(item => item.state === "done")) return "全部完成";
+    if (agents.some(item => item.state === "done")) return "Agent协同推进中";
+    return "暂无状态数据";
+}
+
+function renderIndustryReportAgentHubNode(item) {
+    const stateClass = `is-${item.state}`;
+    const pulseClass = item.state === "active" ? "industry-report-agent-hub-pulse" : "";
+    const progress = Math.max(0, Math.min(100, Number(item.progress) || 0));
+    const elapsed = item.elapsed || "--";
+    return `
+        <button type="button"
+                onclick="jumpToIndustryReportAgentTarget('${escapeIndustryReportJs(item.key)}')"
+                class="industry-report-agent-hub-node ${stateClass} ${pulseClass}">
+            <div class="flex items-start gap-3">
+                <span class="industry-report-agent-hub-node-icon"><i class="${item.icon}"></i></span>
+                <div class="min-w-0 flex-1">
+                    <div class="font-semibold text-gray-800 leading-5 truncate">${escapeIndustryReportHtml(item.title)}</div>
+                    <div class="industry-report-agent-hub-status">
+                        <span class="industry-report-agent-hub-status-dot"></span>
+                        ${escapeIndustryReportHtml(item.actionLabel)}
+                    </div>
+                    <div class="mt-1 text-xs leading-5 text-gray-500">${escapeIndustryReportHtml(item.role)}</div>
+                    <div class="industry-report-agent-hub-progress">
+                        <span class="industry-report-agent-hub-progress-bar" style="width: ${progress}%"></span>
+                    </div>
+                    <div class="mt-1 flex items-center justify-between gap-2 text-[11px] font-semibold text-slate-400">
+                        <span>${escapeIndustryReportHtml(elapsed)}</span>
+                        <span>${progress}%</span>
+                    </div>
+                </div>
+            </div>
+        </button>
+    `;
+}
+
+function jumpToIndustryReportAgentTarget(stepKey) {
+    industryReportWorkspace.selectedAgentStep = stepKey || "";
+    renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || "idle");
+    const targetMap = {
+        requirement: "industry-report-requirement-panel",
+        outline: "industry-report-outline-panel",
+        coordinator: "industry-report-outline-panel",
+        body: "industry-report-generation-panel",
+    };
+    const target = document.getElementById(targetMap[stepKey] || "industry-report-stepper");
+    if (target?.scrollIntoView) {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+}
+
+function getIndustryReportAgentHubStatusIcon(state) {
+    if (state === "done") return "fas fa-check-circle";
+    if (state === "active") return "fas fa-spinner fa-spin";
+    if (state === "failed") return "fas fa-circle-exclamation";
+    return "far fa-clock";
 }
 
 function syncIndustryReportWorkflowTimer() {
@@ -415,12 +626,11 @@ function renderIndustryReportCoordinatorAgentBadges(state) {
 
 function getIndustryReportAgentName(stepKey) {
     const map = {
-        requirement: "分析 Agent",
-        outline: "规划 Agent",
-        coordinator: "调度 Agent",
-        review: "导出 Agent",
+        requirement: "分析Agent",
+        outline: "规划Agent",
+        coordinator: "统筹Agent",
     };
-    return map[stepKey] || "写作 Agent";
+    return map[stepKey] || "写作Agent";
 }
 
 function getIndustryReportStepMetric(stepKey, state) {
@@ -1026,6 +1236,7 @@ function resetIndustryReportWorkspace() {
         bodyTotal: 0,
         coordinatorTotal: 0,
         requirementRewriteSeq,
+        previewTarget: { type: "all", key: "" },
     };
     const titleInput = document.getElementById("industry-report-title");
     if (titleInput) {
@@ -1181,7 +1392,7 @@ function renderIndustryReportTaskCard(taskCard) {
         suggestionOptions.innerHTML = titleOptions.map((title, index) => {
             const checked = title === (selectedTitle?.value || "") ? " checked" : "";
             return `
-                <label class="flex items-start gap-2 text-sm text-gray-700 cursor-pointer">
+                <label class="flex items-start gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 cursor-pointer hover:border-blue-200 hover:bg-blue-50/40">
                     <input type="radio" name="industry-report-title-suggestion" value="${escapeIndustryReportHtml(title)}"
                            onchange="selectIndustryReportSuggestedTitle(this.value)" class="mt-1 text-blue-600"${checked}>
                     <span class="leading-5">${escapeIndustryReportHtml(title)}</span>
@@ -1600,6 +1811,9 @@ function syncIndustryReportGenerateButton(outline = industryReportWorkspace.outl
 function renderIndustryReportOutline(outline) {
     const box = document.getElementById("industry-report-outline");
     if (!box) return;
+    const previousScrollTop = box.scrollTop;
+    updateIndustryReportOutlineSummary(outline || []);
+    renderIndustryReportPreviewNav();
     if (!outline || !outline.length) {
         box.innerHTML = '<div class="text-gray-400 text-sm">生成推荐大纲后可编辑</div>';
         syncIndustryReportOutlineConfirmButton([]);
@@ -1608,39 +1822,169 @@ function renderIndustryReportOutline(outline) {
         return;
     }
     box.innerHTML = outline.map((section, sectionIndex) => `
-        <div class="border border-gray-200 rounded-lg p-4 bg-gray-50" data-report-section="${sectionIndex}">
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-indigo-600 w-6">${sectionIndex + 1}</span>
-                <input class="report-section-title flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium"
+        <div class="industry-report-outline-section overflow-hidden rounded-lg border border-blue-100 bg-white" data-report-section="${sectionIndex}">
+            <div class="flex items-center gap-3 bg-blue-50/70 px-3 py-2">
+                <button type="button" onclick="toggleIndustryReportOutlineSection(${sectionIndex})"
+                        class="industry-report-outline-toggle w-7 h-7 rounded-lg text-slate-500 hover:bg-white hover:text-blue-600" title="展开或收起">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <span class="inline-flex w-7 h-7 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-white text-sm font-bold text-blue-600">${sectionIndex + 1}</span>
+                <input class="report-section-title min-w-0 flex-1 bg-transparent px-2 py-1 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 rounded"
                        oninput="handleIndustryReportOutlineInput()"
                        value="${escapeIndustryReportHtml(section.level1_title || "")}">
-                <button onclick="addIndustryReportSubsection(${sectionIndex})" class="w-8 h-8 rounded-lg bg-white border border-gray-300 hover:bg-gray-100 text-gray-600" title="新增二级标题">
+                <button onclick="addIndustryReportSubsection(${sectionIndex})" class="w-8 h-8 rounded-lg bg-white border border-blue-100 hover:bg-blue-50 text-blue-600" title="新增二级标题">
                     <i class="fas fa-plus"></i>
                 </button>
-                <button onclick="removeIndustryReportSection(${sectionIndex})" class="w-8 h-8 rounded-lg bg-white border border-gray-300 hover:bg-red-50 text-red-500" title="删除章节">
+                <button onclick="removeIndustryReportSection(${sectionIndex})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 hover:bg-red-50 text-gray-500 hover:text-red-500" title="删除章节">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
-            <div class="mt-3 space-y-2">
-                ${(section.subsections || []).map((sub, subIndex) => `
-                    <div class="rounded-lg bg-white border border-gray-200 p-2" data-report-subsection="${subIndex}">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-gray-400 w-8">${sectionIndex + 1}.${subIndex + 1}</span>
-                            <input class="report-subsection-title flex-1 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                                   oninput="handleIndustryReportOutlineInput()"
-                                   value="${escapeIndustryReportHtml(sub.title || "")}">
-                            <button onclick="removeIndustryReportSubsection(${sectionIndex}, ${subIndex})" class="w-8 h-8 rounded-lg bg-white border border-gray-300 hover:bg-red-50 text-red-500" title="删除二级标题">
+            <div class="industry-report-outline-subsections divide-y divide-gray-100 bg-white">
+                ${(section.subsections || []).map((sub, subIndex) => {
+                    const outlineId = sub.outline_id || `${section.level1_id || `S${sectionIndex + 1}`}.${subIndex + 1}`;
+                    const coordinated = isIndustryReportSubsectionCoordinated(outlineId);
+                    return `
+                    <div class="grid grid-cols-[28px_48px_minmax(0,1fr)_minmax(88px,auto)] items-center gap-2 px-4 py-2 transition-colors"
+                         data-report-subsection="${subIndex}"
+                         data-report-subsection-original-index="${subIndex}"
+                         ondragleave="handleIndustryReportOutlineDragLeave(event)"
+                         ondragover="handleIndustryReportOutlineDragOver(event)"
+                         ondrop="handleIndustryReportOutlineDrop(event, ${sectionIndex})">
+                        <span class="industry-report-outline-drag-handle text-center text-slate-300 hover:text-blue-500 cursor-grab active:cursor-grabbing"
+                              draggable="true"
+                              ondragstart="handleIndustryReportOutlineDragStart(event, ${sectionIndex}, ${subIndex})"
+                              ondragend="handleIndustryReportOutlineDragEnd()"
+                              title="拖动调整本章二级标题顺序">
+                            <i class="fas fa-grip-vertical"></i>
+                        </span>
+                        <span class="text-xs font-semibold text-slate-500">${sectionIndex + 1}.${subIndex + 1}</span>
+                        <input class="report-subsection-title min-w-0 bg-transparent px-2 py-1 text-sm font-medium text-slate-700 outline-none focus:bg-blue-50 focus:ring-2 focus:ring-blue-100 rounded"
+                               oninput="handleIndustryReportOutlineInput()"
+                               value="${escapeIndustryReportHtml(sub.title || "")}">
+                        <div class="flex items-center justify-end gap-2">
+                            ${coordinated ? '<span class="industry-report-outline-coordinated">已统筹</span>' : ""}
+                            <button onclick="removeIndustryReportSubsection(${sectionIndex}, ${subIndex})" class="w-8 h-8 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500" title="删除二级标题">
                                 <i class="fas fa-minus"></i>
                             </button>
                         </div>
                     </div>
-                `).join("")}
+                    `;
+                }).join("")}
             </div>
         </div>
     `).join("");
+    box.scrollTop = previousScrollTop;
     syncIndustryReportOutlineConfirmButton(outline);
     syncIndustryReportGenerateButton(outline);
     renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || "idle");
+}
+
+function isIndustryReportSubsectionCoordinated(outlineId) {
+    if (!outlineId) return false;
+    const progress = industryReportWorkspace.coordinatorProgressById?.[outlineId];
+    if (progress?.statusState === "done") return true;
+    return (industryReportWorkspace.writingTasks || []).some(task => task?.outline_id === outlineId);
+}
+
+function updateIndustryReportOutlineSummary(outline = industryReportWorkspace.outline) {
+    const summary = document.getElementById("industry-report-outline-summary");
+    if (!summary) return;
+    const level1Count = Array.isArray(outline) ? outline.length : 0;
+    const level2Count = countIndustryReportSubsections(outline || []);
+    summary.textContent = level1Count
+        ? `已创建 ${level1Count} 个一级标题，${level2Count} 个二级标题`
+        : "暂无大纲";
+}
+
+function toggleIndustryReportOutlineSection(sectionIndex) {
+    const section = document.querySelector(`[data-report-section="${sectionIndex}"]`);
+    if (!section) return;
+    const body = section.querySelector(".industry-report-outline-subsections");
+    const icon = section.querySelector(".industry-report-outline-toggle i");
+    if (!body) return;
+    const collapsed = body.classList.toggle("hidden");
+    if (icon) {
+        icon.classList.toggle("fa-chevron-down", !collapsed);
+        icon.classList.toggle("fa-chevron-right", collapsed);
+    }
+}
+
+function handleIndustryReportOutlineDragStart(event, sectionIndex, subIndex) {
+    const row = event.target?.closest?.("[data-report-subsection]");
+    if (!row) return;
+    row.classList.add("opacity-50", "bg-blue-50", "ring-2", "ring-blue-100");
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", JSON.stringify({ sectionIndex, subIndex }));
+}
+
+function handleIndustryReportOutlineDragEnd() {
+    clearIndustryReportOutlineDragStyles();
+}
+
+function handleIndustryReportOutlineDragOver(event) {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    const row = event.target?.closest?.("[data-report-subsection]");
+    if (!row) return;
+    clearIndustryReportOutlineDropTargetStyles(row);
+    const rect = row.getBoundingClientRect();
+    const insertAfter = event.clientY > rect.top + rect.height / 2;
+    row.classList.add("bg-blue-50/70");
+    row.classList.add(insertAfter ? "border-b-2" : "border-t-2", "border-blue-400");
+}
+
+function handleIndustryReportOutlineDragLeave(event) {
+    const row = event.target?.closest?.("[data-report-subsection]");
+    if (!row || row.contains(event.relatedTarget)) return;
+    clearIndustryReportOutlineDropTargetStyles(row);
+}
+
+function handleIndustryReportOutlineDrop(event, targetSectionIndex) {
+    event.preventDefault();
+    const targetRow = event.target?.closest?.("[data-report-subsection]");
+    if (!targetRow) return;
+    let payload = {};
+    try {
+        payload = JSON.parse(event.dataTransfer.getData("text/plain") || "{}");
+    } catch (_err) {
+        payload = {};
+    }
+    if (payload.sectionIndex !== targetSectionIndex) return;
+    const section = targetRow.closest("[data-report-section]");
+    const sourceRow = section?.querySelector(`[data-report-subsection="${payload.subIndex}"]`);
+    if (!section || !sourceRow || sourceRow === targetRow) return;
+
+    const rect = targetRow.getBoundingClientRect();
+    const insertAfter = event.clientY > rect.top + rect.height / 2;
+    targetRow.parentNode.insertBefore(sourceRow, insertAfter ? targetRow.nextSibling : targetRow);
+    clearIndustryReportOutlineDragStyles();
+
+    const outline = readIndustryReportOutlineFromDom();
+    industryReportWorkspace.outline = outline;
+    invalidateIndustryReportConfirmedOutline();
+    renderIndustryReportOutline(outline);
+}
+
+function clearIndustryReportOutlineDragStyles() {
+    document.querySelectorAll("[data-report-subsection]").forEach(row => {
+        row.classList.remove(
+            "opacity-50",
+            "bg-blue-50",
+            "ring-2",
+            "ring-blue-100",
+            "bg-blue-50/70",
+            "border-t-2",
+            "border-b-2",
+            "border-blue-400",
+        );
+    });
+}
+
+function clearIndustryReportOutlineDropTargetStyles(exceptRow = null) {
+    document.querySelectorAll("[data-report-subsection]").forEach(row => {
+        if (row === exceptRow) return;
+        row.classList.remove("bg-blue-50/70", "border-t-2", "border-b-2", "border-blue-400");
+    });
 }
 
 function handleIndustryReportOutlineInput() {
@@ -1661,7 +2005,10 @@ function readIndustryReportOutlineFromDom() {
         const level1Id = previous.level1_id || `S${sectionIndex + 1}`;
         const subsections = [];
         sectionEl.querySelectorAll("[data-report-subsection]").forEach((subEl, subIndex) => {
-            const previousSub = previous.subsections?.[subIndex] || {};
+            const originalSubIndex = Number(subEl.getAttribute("data-report-subsection-original-index"));
+            const previousSub = previous.subsections?.[
+                Number.isInteger(originalSubIndex) ? originalSubIndex : subIndex
+            ] || {};
             const subTitle = subEl.querySelector(".report-subsection-title")?.value.trim();
             if (!subTitle) return;
             subsections.push({
@@ -1770,6 +2117,7 @@ async function prepareIndustryReportTasks() {
         industryReportWorkspace.writingTasks = data.writing_tasks || [];
         industryReportWorkspace.references = Array.isArray(data.references) ? data.references : [];
         appendIndustryReportWarnings(data.warnings);
+        renderIndustryReportOutline(industryReportWorkspace.outline);
         renderIndustryReportProgress([
             { key: "outline", title: "推荐大纲", status: "done", detail: `${countIndustryReportSubsections(industryReportWorkspace.outline)} 个二级标题` },
             { key: "coordinator", title: "写作任务", status: "done", detail: `${industryReportWorkspace.writingTasks.length} 个任务` },
@@ -2042,7 +2390,7 @@ function updateIndustryReportCoordinatorProgress(event, status, statusState) {
         status,
         statusState,
     };
-    renderIndustryReportFlowSteps("coordinator");
+    renderIndustryReportOutline(industryReportWorkspace.outline);
 }
 
 function upsertIndustryReportWritingTask(task, index) {
@@ -2154,6 +2502,7 @@ function getIndustryReportProgressStyle(status) {
 function renderIndustryReportPreview() {
     const box = document.getElementById("industry-report-preview");
     if (!box) return;
+    renderIndustryReportPreviewNav();
     const title = (document.getElementById("industry-report-title")?.value || industryReportWorkspace.reportTitle || "产业报告").trim();
     industryReportWorkspace.reportTitle = title;
     if (!industryReportWorkspace.bodySections.length) {
@@ -2166,21 +2515,105 @@ function renderIndustryReportPreview() {
         return;
     }
     const groups = groupIndustryReportBodySections();
+    const visibleGroups = filterIndustryReportPreviewGroups(groups);
     box.innerHTML = `
         <div class="border-b border-gray-200 pb-4">
             <h1 class="text-2xl font-bold text-gray-900 leading-tight">${escapeIndustryReportHtml(title)}</h1>
         </div>
         ${renderIndustryReportAbstractBlock()}
-        ${groups.map((group, groupIndex) => `
+        ${visibleGroups.length ? visibleGroups.map((group, groupIndex) => `
             <article class="border-b border-gray-200 pb-4 last:border-b-0">
-                <h2 class="text-xl font-bold text-gray-900 mb-3">${groupIndex + 1}. ${escapeIndustryReportHtml(group.title)}</h2>
+                <h2 class="text-xl font-bold text-gray-900 mb-3">${escapeIndustryReportHtml(group.displayNumber || String(groupIndex + 1))}. ${escapeIndustryReportHtml(group.title)}</h2>
                 <div class="space-y-4">
-                    ${group.children.map((section, sectionIndex) => renderIndustryReportBodySection(section, groupIndex + 1, sectionIndex + 1)).join("")}
+                    ${group.children.map((section, sectionIndex) => renderIndustryReportBodySection(section, group.displayNumber || groupIndex + 1, section.displayNumber || sectionIndex + 1)).join("")}
                 </div>
             </article>
-        `).join("")}
+        `).join("") : '<div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-sm text-gray-500">当前标题暂无正文内容。</div>'}
         ${renderIndustryReportReferences()}
     `;
+}
+
+function filterIndustryReportPreviewGroups(groups) {
+    const target = industryReportWorkspace.previewTarget || { type: "all", key: "" };
+    return (groups || []).map((group, groupIndex) => {
+        const groupKey = getIndustryReportPreviewGroupKey(group.title, groupIndex);
+        const displayNumber = String(groupIndex + 1);
+        const children = (group.children || []).map((section, sectionIndex) => ({
+            ...section,
+            displayNumber: sectionIndex + 1,
+        }));
+        return { ...group, key: groupKey, displayNumber, children };
+    }).filter(group => {
+        if (target.type === "all" || !target.key) return true;
+        if (target.type === "group") return group.key === target.key;
+        if (target.type === "section") {
+            group.children = group.children.filter(section => section.outline_id === target.key);
+            return group.children.length > 0;
+        }
+        return true;
+    });
+}
+
+function renderIndustryReportPreviewNav() {
+    const box = document.getElementById("industry-report-preview-nav");
+    if (!box) return;
+    const outline = Array.isArray(industryReportWorkspace.outline) ? industryReportWorkspace.outline : [];
+    if (!outline.length) {
+        box.innerHTML = '<div class="text-gray-400 text-sm">生成大纲后显示标题导航</div>';
+        return;
+    }
+    const target = industryReportWorkspace.previewTarget || { type: "all", key: "" };
+    const allActive = target.type === "all" || !target.type;
+    const generatedSectionIds = new Set((industryReportWorkspace.bodySections || [])
+        .filter(section => section?.outline_id && String(section.body_text || "").trim())
+        .map(section => section.outline_id));
+    box.innerHTML = `
+        <button type="button"
+                onclick="selectIndustryReportPreviewTarget('all', '')"
+                class="w-full rounded-lg border ${allActive ? "border-blue-200 bg-white text-blue-700 font-semibold" : "border-blue-100 bg-white/70 text-slate-600 hover:bg-white hover:text-blue-700"} px-3 py-2 text-left text-sm">
+            <i class="fas fa-file-lines mr-2"></i>整篇报告
+        </button>
+    ` + outline.map((section, sectionIndex) => {
+        const children = Array.isArray(section.subsections) ? section.subsections : [];
+        const groupKey = getIndustryReportPreviewGroupKey(section.level1_title || `章节 ${sectionIndex + 1}`, sectionIndex);
+        const groupActive = target.type === "group" && target.key === groupKey;
+        return `
+            <div class="rounded-lg border border-blue-100 bg-white overflow-hidden">
+                <button type="button"
+                        onclick="selectIndustryReportPreviewTarget('group', '${escapeIndustryReportJs(groupKey)}')"
+                        class="w-full flex items-center gap-2 px-3 py-2 text-left text-sm font-bold ${groupActive ? "bg-blue-100 text-blue-900" : "bg-blue-50 text-blue-900 hover:bg-blue-100"}">
+                    <span class="inline-flex w-5 h-5 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-700">${sectionIndex + 1}</span>
+                    <span class="min-w-0 truncate">${escapeIndustryReportHtml(section.level1_title || `章节 ${sectionIndex + 1}`)}</span>
+                </button>
+                ${children.length ? `
+                    <div class="space-y-1 px-3 py-2">
+                        ${children.map((sub, subIndex) => {
+                            const outlineId = sub.outline_id || `${section.level1_id || `S${sectionIndex + 1}`}.${subIndex + 1}`;
+                            const active = target.type === "section" && target.key === outlineId;
+                            const generated = generatedSectionIds.has(outlineId);
+                            return `
+                                <button type="button"
+                                        onclick="selectIndustryReportPreviewTarget('section', '${escapeIndustryReportJs(outlineId)}')"
+                                        class="w-full flex items-center gap-2 rounded px-2 py-1 text-left text-xs leading-5 transition ${active ? "bg-white text-blue-700 font-semibold shadow-sm" : "text-slate-500 hover:bg-white hover:text-blue-700"}">
+                                    <span class="w-8 shrink-0 font-semibold">${sectionIndex + 1}.${subIndex + 1}</span>
+                                    <span class="industry-report-preview-nav-title min-w-0 truncate ${generated ? "is-generated" : ""}">${escapeIndustryReportHtml(sub.title || `二级标题 ${subIndex + 1}`)}</span>
+                                </button>
+                            `;
+                        }).join("")}
+                    </div>
+                ` : ""}
+            </div>
+        `;
+    }).join("");
+}
+
+function getIndustryReportPreviewGroupKey(title, index) {
+    return `${index}:${String(title || "").trim()}`;
+}
+
+function selectIndustryReportPreviewTarget(type, key) {
+    industryReportWorkspace.previewTarget = { type: type || "all", key: key || "" };
+    renderIndustryReportPreview();
 }
 
 function renderIndustryReportAbstractBlock() {
@@ -2733,6 +3166,7 @@ async function loadSelectedIndustryReportHistory() {
         bodyTotal: Array.isArray(record.writingTasks) ? record.writingTasks.length : 0,
         coordinatorTotal: countIndustryReportSubsections(record.outline || []),
         requirementRewriteSeq,
+        previewTarget: { type: "all", key: "" },
     };
     const titleInput = document.getElementById("industry-report-title");
     const promptInput = document.getElementById("industry-report-prompt");
