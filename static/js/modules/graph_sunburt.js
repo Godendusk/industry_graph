@@ -21,6 +21,37 @@ let sunburstPendingCenterX = 50; // 待处理的中心X
 let sunburstPendingCenterY = 50; // 待处理的中心Y
 let sunburstAllCompanyNodes = []; // 所有公司节点引用，用于缩放时动态调整label显示
 let sunburstTreeData = null; // 树数据引用，用于缩放时重渲染label
+
+const SEGMENT_LEVEL_COLORS = {
+    0: '#364A67',
+    1: '#456DA1',
+    2: '#6D90BB',
+    3: '#8FAACE',
+    4: '#AEC4DF',
+    5: '#CBD9EA'
+};
+if (typeof window !== 'undefined') window.SEGMENT_LEVEL_COLORS = SEGMENT_LEVEL_COLORS;
+
+function segmentLevelColor(level) {
+    return SEGMENT_LEVEL_COLORS[Number(level)] || '#CBD9EA';
+}
+
+function countSegmentLevels(nodes) {
+    const labels = ['', '一级环节', '二级环节', '三级环节', '四级环节', '五级环节'];
+    const counts = new Map();
+    (nodes || []).forEach(node => {
+        if (!node || !Array.isArray(node.labels) || !node.labels.includes('环节')) return;
+        const level = Number(node.properties && node.properties.level);
+        if (!Number.isFinite(level) || level < 1 || level > 5) return;
+        counts.set(level, (counts.get(level) || 0) + 1);
+    });
+    return Array.from(counts.keys()).sort((a, b) => a - b).map(level => ({
+        level,
+        label: labels[level] || `${level}级环节`,
+        count: counts.get(level),
+        color: segmentLevelColor(level)
+    }));
+}
 // 全屏模式下各层级的基准配置（含样式，参考 sunburst_2k_v7.html）
 const SUNBURST_BASE_LEVELS = [
     {},
@@ -41,12 +72,22 @@ const SUNBURST_BASE_LEVELS = [
     },
     {
         r0_pct: 40, r_pct: 60,
+        itemStyle: { color: '#8FAACE' },
+        label: { color: '#000000', position: 'inside', padding: 3, silent: false }
+    },
+    {
+        r0_pct: 60, r_pct: 78,
         itemStyle: { color: '#AEC4DF' },
         label: { color: '#000000', position: 'inside', padding: 3, silent: false }
     },
     {
+        r0_pct: 78, r_pct: 94,
+        itemStyle: { color: '#CBD9EA' },
+        label: { color: '#000000', position: 'inside', padding: 3, silent: false }
+    },
+    {
         // 最后一层：叶子节点 (公司)
-        r0_pct: 60, r_pct: 94,
+        r0_pct: 94, r_pct: 100,
         itemStyle: { borderWidth: 0 }
     }
 ];
@@ -475,7 +516,7 @@ function buildHierarchyWithRoot(nodes, relationships, rootId) {
     });
 
     // 参考量子科技旭日图配色：各层级环节使用统一蓝色系，从深到浅
-    var colorList = ['#364A67', '#456DA1', '#6D90BB', '#AEC4DF'];
+    var colorList = [1, 2, 3, 4, 5].map(segmentLevelColor);
     
     // 判断是否为公司节点（叶子节点）
     function isCompanyNode(node) {
@@ -2494,11 +2535,9 @@ function toggleSunburstFullscreen() {
  * @returns {Object} 包含六类节点计数的对象
  */
 function countSunburstNodeTypes() {
+    const levelLabels = ['', '一级环节', '二级环节', '三级环节', '四级环节', '五级环节'];
     const counts = {
         '产业': 0,
-        '一级环节': 0,
-        '二级环节': 0,
-        '三级环节': 0,
         '中央企业': 0,
         '其他国资': 0,
         '民营企业': 0,
@@ -2524,16 +2563,14 @@ function countSunburstNodeTypes() {
             } else if (node.labels && node.labels.includes('Root')) {
                 counts['产业']++;
             } else if (node.labels && node.labels.includes('环节')) {
-                // 根据层级拆分为一级/二级/三级环节
                 const level = node.properties?.level;
                 const name = (node.properties?.name || '');
-                if (level === 1 || (!level && (name.includes('上游') || name.includes('中游') || name.includes('下游')))) {
-                    counts['一级环节']++;
-                } else if (level === 2 || (!level && (name.includes('基础设施') || name.includes('软件开发') || name.includes('主要产品') || name.includes('应用场景')))) {
-                    counts['二级环节']++;
-                } else {
-                    counts['三级环节']++;
-                }
+                const normalizedLevel = Number(level);
+                const resolvedLevel = Number.isFinite(normalizedLevel) && normalizedLevel >= 1 && normalizedLevel <= 5
+                    ? normalizedLevel
+                    : (name.includes('上游') || name.includes('中游') || name.includes('下游') ? 1 : 3);
+                const label = levelLabels[resolvedLevel] || `${resolvedLevel}级环节`;
+                counts[label] = (counts[label] || 0) + 1;
             }
         });
     }
@@ -2571,12 +2608,11 @@ function createSunburstLegend() {
     legendContent.style.flexDirection = 'column';
     legendContent.style.gap = '0';
     
-    // 定义图例类型和颜色（与旭日图 levels 配色一致，参考量子科技配色）
+    // 定义图例类型和颜色（只展示当前数据中实际出现的层级）
+    const segmentLegendTypes = countSegmentLevels(typeof allGraphData !== 'undefined' ? allGraphData.nodes : [])
+        .map(item => ({ type: item.label, color: item.color }));
     const legendTypes = [
-        // { type: '产业', color: '#364A67' },
-        // { type: '一级环节', color: '#456DA1' },
-        // { type: '二级环节', color: '#6D90BB' },
-        // { type: '三级环节', color: '#AEC4DF' },
+        ...segmentLegendTypes,
         { type: '中央企业', color: '#AB4232' },
         { type: '其他国资', color: '#D2A450' },
         { type: '民营企业', color: '#7B72B7' },
@@ -3441,3 +3477,7 @@ function exitTechRouteViewer() {
 
 // 确保全屏模式行业切换函数全局可访问
 window.handleSunburstFullscreenIndustrySearch = handleSunburstFullscreenIndustrySearch;
+
+if (typeof module === 'object' && module.exports) {
+    module.exports = { countSegmentLevels, segmentLevelColor, countSunburstNodeTypes };
+}

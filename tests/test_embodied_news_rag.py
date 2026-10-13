@@ -432,7 +432,7 @@ class EmbodiedReportRoutingTest(unittest.TestCase):
         fake_graph = object()
         with patch.object(module, "_IndustryGraph", return_value=fake_graph) as graph_loader, patch.object(
             module,
-            "_select_level3_with_llm",
+            "_select_terminal_segments_with_llm",
             return_value={"status": "error", "message": "test stop"},
         ):
             result = module.retrieve_graph("查询", industry="embodied")

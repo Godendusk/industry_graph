@@ -1127,8 +1127,8 @@ def get_settings():
         "chain_panorama_column": {
             "l2": True,
             "l2_ratio": True,
-            "l3": True,
-            "l3_ratio": True,
+            "leaf": True,
+            "leaf_ratio": True,
             "representative": True
         },
         "chain_panorama_rep_picks": {},
@@ -1140,6 +1140,15 @@ def get_settings():
                 settings = json.load(f)
             if "chain_panorama_column" not in settings:
                 settings["chain_panorama_column"] = default_settings["chain_panorama_column"]
+            else:
+                raw_columns = settings["chain_panorama_column"] or {}
+                settings["chain_panorama_column"] = {
+                    "l2": raw_columns.get("l2", True),
+                    "l2_ratio": raw_columns.get("l2_ratio", True),
+                    "leaf": raw_columns.get("leaf", raw_columns.get("l3", True)),
+                    "leaf_ratio": raw_columns.get("leaf_ratio", raw_columns.get("l3_ratio", True)),
+                    "representative": raw_columns.get("representative", True),
+                }
             if "chain_panorama_rep_picks" not in settings:
                 settings["chain_panorama_rep_picks"] = {}
             if "chain_panorama_rep_sort" not in settings:
@@ -1163,7 +1172,7 @@ def update_settings():
         if cp is not None:
             if not isinstance(cp, dict):
                 return jsonify({"status": "error", "message": "chain_panorama_column 必须是对象"}), 400
-            expected_keys = {"l2", "l2_ratio", "l3", "l3_ratio", "representative"}
+            expected_keys = {"l2", "l2_ratio", "leaf", "leaf_ratio", "representative"}
             for k in expected_keys:
                 if k in cp and not isinstance(cp[k], bool):
                     return jsonify({"status": "error", "message": f"chain_panorama_column.{k} 必须是布尔值"}), 400
@@ -1204,8 +1213,18 @@ def update_settings():
                     existing_settings = json.load(f)
             except (json.JSONDecodeError, IOError):
                 existing_settings = {}
-        # 合并 body 到现有设置中
-        existing_settings.update(body)
+        # 合并 body 到现有设置中；列设置使用规范化的新字段名写回。
+        if cp is not None:
+            existing_settings["chain_panorama_column"] = {
+                "l2": cp.get("l2", True),
+                "l2_ratio": cp.get("l2_ratio", True),
+                "leaf": cp.get("leaf", True),
+                "leaf_ratio": cp.get("leaf_ratio", True),
+                "representative": cp.get("representative", True),
+            }
+        for key, value in body.items():
+            if key != "chain_panorama_column":
+                existing_settings[key] = value
         with open(SETTINGS_PATH, "w", encoding="utf-8") as f:
             json.dump(existing_settings, f, ensure_ascii=False, indent=2)
         return jsonify({"status": "success"})

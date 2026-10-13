@@ -246,7 +246,7 @@ def _retrieve_graph_for_rewrite(
     normalized = copy.deepcopy(result) if isinstance(result, dict) else {"status": "error"}
     normalized["query"] = _safe_text(normalized.get("query")) or query
     normalized["graph_context_text"] = _safe_text(normalized.get("graph_context_text"))
-    normalized["matched_level3"] = normalized.get("matched_level3") or []
+    normalized["matched_segments"] = normalized.get("matched_segments") or []
     normalized["evidence_blocks"] = normalized.get("evidence_blocks") or []
 
     if normalized.get("status") != "success":
@@ -585,7 +585,7 @@ def _graph_error_response(query: str, message: str) -> dict:
         "query": query,
         "message": message,
         "graph_context_text": "",
-        "matched_level3": [],
+        "matched_segments": [],
         "evidence_blocks": [],
     }
 
