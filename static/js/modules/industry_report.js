@@ -29,6 +29,7 @@ let industryReportWorkspace = {
     stepTimingByKey: {},
     bodyTotal: 0,
     coordinatorTotal: 0,
+    outlineLocked: false,
     requirementRewriteSeq: 0,
     previewTarget: { type: "all", key: "" },
 };
@@ -288,14 +289,18 @@ function renderIndustryReportFlowSteps(stage = "idle") {
         const state = getIndustryReportStepState(step.key, stage);
         return renderIndustryReportAgentCard(step, index, getIndustryReportWorkflowStyle(step, state), state, activeStep && step.key === activeStep.key);
     }).join("");
-    const previousBand = box.querySelector(".industry-report-workflow-band");
+    const previousBand = typeof box.querySelector === "function"
+        ? box.querySelector(".industry-report-workflow-band")
+        : null;
     const previousScrollLeft = previousBand ? previousBand.scrollLeft : 0;
     box.innerHTML = `
         <div class="industry-report-workflow-band rounded-lg border border-blue-100 bg-gradient-to-r from-blue-50 via-white to-blue-50 px-5 py-5 overflow-x-auto">
             <div class="industry-report-milestone-row min-w-[920px]">${stepsHtml}</div>
         </div>
     `;
-    const nextBand = box.querySelector(".industry-report-workflow-band");
+    const nextBand = typeof box.querySelector === "function"
+        ? box.querySelector(".industry-report-workflow-band")
+        : null;
     if (nextBand) nextBand.scrollLeft = previousScrollLeft;
     renderIndustryReportActiveStepDetail(stage, activeStep, activeStyle);
     renderIndustryReportExecutionLog(stage);
@@ -537,13 +542,18 @@ function renderIndustryReportActiveStepDetail(stage = "idle", activeStep = null,
     }
     const state = getIndustryReportStepState(step.key, stage);
     const style = activeStyle || getIndustryReportWorkflowStyle(step, state);
-    const previousScrollBox = detailBox.querySelector(".industry-report-step-detail-scroll");
+    const previousScrollBox = typeof detailBox.querySelector === "function"
+        ? detailBox.querySelector(".industry-report-step-detail-scroll")
+        : null;
+    detailBox.dataset = detailBox.dataset || {};
     const previousScrollTop = detailBox.dataset.stepKey === step.key && previousScrollBox
         ? previousScrollBox.scrollTop
         : 0;
     detailBox.innerHTML = renderIndustryReportActiveStepPanel(step, style);
     detailBox.dataset.stepKey = step.key;
-    const nextScrollBox = detailBox.querySelector(".industry-report-step-detail-scroll");
+    const nextScrollBox = typeof detailBox.querySelector === "function"
+        ? detailBox.querySelector(".industry-report-step-detail-scroll")
+        : null;
     if (nextScrollBox) nextScrollBox.scrollTop = previousScrollTop;
 }
 
@@ -1235,6 +1245,7 @@ function resetIndustryReportWorkspace() {
         stepTimingByKey: {},
         bodyTotal: 0,
         coordinatorTotal: 0,
+        outlineLocked: false,
         requirementRewriteSeq,
         previewTarget: { type: "all", key: "" },
     };
@@ -1289,6 +1300,7 @@ async function submitIndustryReportRequirement() {
         industryReportWorkspace.outline = [];
         industryReportWorkspace.writingTasks = [];
         industryReportWorkspace.bodySections = [];
+        industryReportWorkspace.outlineLocked = false;
         industryReportWorkspace.references = [];
         industryReportWorkspace.abstractText = "";
         industryReportWorkspace.warnings = [];
@@ -1778,6 +1790,15 @@ function hasConfirmedIndustryReportOutline() {
         && industryReportWorkspace.writingTasks.length > 0;
 }
 
+function isIndustryReportOutlineLocked() {
+    const activeStages = new Set(["coordinator", "body", "done"]);
+    return Boolean(industryReportWorkspace.outlineLocked)
+        || activeStages.has(industryReportWorkspace.currentStage)
+        || (industryReportWorkspace.completedSteps || []).some(step => ["coordinator", "body", "review"].includes(step))
+        || (industryReportWorkspace.writingTasks || []).length > 0
+        || Object.keys(industryReportWorkspace.coordinatorProgressById || {}).length > 0;
+}
+
 function invalidateIndustryReportConfirmedOutline() {
     industryReportWorkspace.writingTasks = [];
     industryReportWorkspace.bodySections = [];
@@ -1790,11 +1811,19 @@ function invalidateIndustryReportConfirmedOutline() {
 
 function syncIndustryReportOutlineConfirmButton(outline = industryReportWorkspace.outline) {
     const btn = document.getElementById("report-outline-confirm-btn");
-    if (!btn) return;
-    const disabled = industryReportWorkspace.busy || !hasIndustryReportOutline(outline);
-    btn.disabled = disabled;
-    btn.classList.toggle("opacity-60", disabled);
-    btn.classList.toggle("cursor-not-allowed", disabled);
+    const addBtn = document.getElementById("report-outline-add-section-btn");
+    const outlineLocked = isIndustryReportOutlineLocked();
+    const confirmDisabled = industryReportWorkspace.busy || outlineLocked || !hasIndustryReportOutline(outline);
+    if (btn) {
+        btn.disabled = confirmDisabled;
+        btn.classList.toggle("opacity-60", confirmDisabled);
+        btn.classList.toggle("cursor-not-allowed", confirmDisabled);
+    }
+    if (addBtn) {
+        addBtn.disabled = industryReportWorkspace.busy || outlineLocked;
+        addBtn.classList.toggle("opacity-60", addBtn.disabled);
+        addBtn.classList.toggle("cursor-not-allowed", addBtn.disabled);
+    }
 }
 
 function syncIndustryReportGenerateButton(outline = industryReportWorkspace.outline) {
@@ -1812,6 +1841,12 @@ function renderIndustryReportOutline(outline) {
     const box = document.getElementById("industry-report-outline");
     if (!box) return;
     const previousScrollTop = box.scrollTop;
+    const outlineLocked = isIndustryReportOutlineLocked();
+    const lockedInputClass = outlineLocked ? " cursor-not-allowed text-slate-500" : "";
+    const lockedButtonClass = outlineLocked ? " opacity-50 cursor-not-allowed" : "";
+    const lockedDragClass = outlineLocked ? " cursor-not-allowed opacity-40" : " hover:text-blue-500 cursor-grab active:cursor-grabbing";
+    const lockedAttr = outlineLocked ? "disabled" : "";
+    const lockedDragAttr = outlineLocked ? 'draggable="false" aria-disabled="true"' : 'draggable="true"';
     updateIndustryReportOutlineSummary(outline || []);
     renderIndustryReportPreviewNav();
     if (!outline || !outline.length) {
@@ -1829,13 +1864,14 @@ function renderIndustryReportOutline(outline) {
                     <i class="fas fa-chevron-down"></i>
                 </button>
                 <span class="inline-flex w-7 h-7 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-white text-sm font-bold text-blue-600">${sectionIndex + 1}</span>
-                <input class="report-section-title min-w-0 flex-1 bg-transparent px-2 py-1 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 rounded"
+                <input class="report-section-title min-w-0 flex-1 bg-transparent px-2 py-1 text-sm font-bold text-slate-800 outline-none focus:bg-white focus:ring-2 focus:ring-blue-100 rounded${lockedInputClass}"
                        oninput="handleIndustryReportOutlineInput()"
+                       ${lockedAttr}
                        value="${escapeIndustryReportHtml(section.level1_title || "")}">
-                <button onclick="addIndustryReportSubsection(${sectionIndex})" class="w-8 h-8 rounded-lg bg-white border border-blue-100 hover:bg-blue-50 text-blue-600" title="新增二级标题">
+                <button onclick="addIndustryReportSubsection(${sectionIndex})" ${lockedAttr} class="w-8 h-8 rounded-lg bg-white border border-blue-100 hover:bg-blue-50 text-blue-600${lockedButtonClass}" title="新增二级标题">
                     <i class="fas fa-plus"></i>
                 </button>
-                <button onclick="removeIndustryReportSection(${sectionIndex})" class="w-8 h-8 rounded-lg bg-white border border-gray-200 hover:bg-red-50 text-gray-500 hover:text-red-500" title="删除章节">
+                <button onclick="removeIndustryReportSection(${sectionIndex})" ${lockedAttr} class="w-8 h-8 rounded-lg bg-white border border-gray-200 hover:bg-red-50 text-gray-500 hover:text-red-500${lockedButtonClass}" title="删除章节">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
@@ -1850,20 +1886,21 @@ function renderIndustryReportOutline(outline) {
                          ondragleave="handleIndustryReportOutlineDragLeave(event)"
                          ondragover="handleIndustryReportOutlineDragOver(event)"
                          ondrop="handleIndustryReportOutlineDrop(event, ${sectionIndex})">
-                        <span class="industry-report-outline-drag-handle text-center text-slate-300 hover:text-blue-500 cursor-grab active:cursor-grabbing"
-                              draggable="true"
+                        <span class="industry-report-outline-drag-handle text-center text-slate-300${lockedDragClass}"
+                              ${lockedDragAttr}
                               ondragstart="handleIndustryReportOutlineDragStart(event, ${sectionIndex}, ${subIndex})"
                               ondragend="handleIndustryReportOutlineDragEnd()"
                               title="拖动调整本章二级标题顺序">
                             <i class="fas fa-grip-vertical"></i>
                         </span>
                         <span class="text-xs font-semibold text-slate-500">${sectionIndex + 1}.${subIndex + 1}</span>
-                        <input class="report-subsection-title min-w-0 bg-transparent px-2 py-1 text-sm font-medium text-slate-700 outline-none focus:bg-blue-50 focus:ring-2 focus:ring-blue-100 rounded"
+                        <input class="report-subsection-title min-w-0 bg-transparent px-2 py-1 text-sm font-medium text-slate-700 outline-none focus:bg-blue-50 focus:ring-2 focus:ring-blue-100 rounded${lockedInputClass}"
                                oninput="handleIndustryReportOutlineInput()"
+                               ${lockedAttr}
                                value="${escapeIndustryReportHtml(sub.title || "")}">
                         <div class="flex items-center justify-end gap-2">
                             ${coordinated ? '<span class="industry-report-outline-coordinated">已统筹</span>' : ""}
-                            <button onclick="removeIndustryReportSubsection(${sectionIndex}, ${subIndex})" class="w-8 h-8 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500" title="删除二级标题">
+                            <button onclick="removeIndustryReportSubsection(${sectionIndex}, ${subIndex})" ${lockedAttr} class="w-8 h-8 rounded-lg hover:bg-red-50 text-slate-400 hover:text-red-500${lockedButtonClass}" title="删除二级标题">
                                 <i class="fas fa-minus"></i>
                             </button>
                         </div>
@@ -1910,6 +1947,10 @@ function toggleIndustryReportOutlineSection(sectionIndex) {
 }
 
 function handleIndustryReportOutlineDragStart(event, sectionIndex, subIndex) {
+    if (isIndustryReportOutlineLocked()) {
+        event?.preventDefault?.();
+        return;
+    }
     const row = event.target?.closest?.("[data-report-subsection]");
     if (!row) return;
     row.classList.add("opacity-50", "bg-blue-50", "ring-2", "ring-blue-100");
@@ -1922,6 +1963,7 @@ function handleIndustryReportOutlineDragEnd() {
 }
 
 function handleIndustryReportOutlineDragOver(event) {
+    if (isIndustryReportOutlineLocked()) return;
     event.preventDefault();
     event.dataTransfer.dropEffect = "move";
     const row = event.target?.closest?.("[data-report-subsection]");
@@ -1941,6 +1983,10 @@ function handleIndustryReportOutlineDragLeave(event) {
 
 function handleIndustryReportOutlineDrop(event, targetSectionIndex) {
     event.preventDefault();
+    if (isIndustryReportOutlineLocked()) {
+        clearIndustryReportOutlineDragStyles();
+        return;
+    }
     const targetRow = event.target?.closest?.("[data-report-subsection]");
     if (!targetRow) return;
     let payload = {};
@@ -1988,6 +2034,10 @@ function clearIndustryReportOutlineDropTargetStyles(exceptRow = null) {
 }
 
 function handleIndustryReportOutlineInput() {
+    if (isIndustryReportOutlineLocked()) {
+        renderIndustryReportOutline(industryReportWorkspace.outline);
+        return;
+    }
     const outline = readIndustryReportOutlineFromDom();
     industryReportWorkspace.outline = outline;
     invalidateIndustryReportConfirmedOutline();
@@ -2030,6 +2080,7 @@ function readIndustryReportOutlineFromDom() {
 }
 
 function addIndustryReportSection() {
+    if (isIndustryReportOutlineLocked()) return;
     const outline = readIndustryReportOutlineFromDom();
     const index = outline.length + 1;
     outline.push({
@@ -2044,6 +2095,7 @@ function addIndustryReportSection() {
 }
 
 function addIndustryReportSubsection(sectionIndex) {
+    if (isIndustryReportOutlineLocked()) return;
     const outline = readIndustryReportOutlineFromDom();
     if (!outline[sectionIndex]) return;
     const next = (outline[sectionIndex].subsections || []).length + 1;
@@ -2059,6 +2111,7 @@ function addIndustryReportSubsection(sectionIndex) {
 }
 
 function removeIndustryReportSection(sectionIndex) {
+    if (isIndustryReportOutlineLocked()) return;
     const outline = readIndustryReportOutlineFromDom();
     outline.splice(sectionIndex, 1);
     industryReportWorkspace.outline = outline;
@@ -2067,6 +2120,7 @@ function removeIndustryReportSection(sectionIndex) {
 }
 
 function removeIndustryReportSubsection(sectionIndex, subIndex) {
+    if (isIndustryReportOutlineLocked()) return;
     const outline = readIndustryReportOutlineFromDom();
     if (!outline[sectionIndex]) return;
     outline[sectionIndex].subsections.splice(subIndex, 1);
@@ -2097,9 +2151,11 @@ async function prepareIndustryReportTasks() {
     setIndustryReportStage("coordinator", "正在检索资料并生成写作任务");
     industryReportWorkspace.selectedAgentStep = "coordinator";
     startIndustryReportStepTiming("coordinator");
+    industryReportWorkspace.outlineLocked = true;
     industryReportWorkspace.coordinatorProgressById = {};
     industryReportWorkspace.coordinatorTotal = countIndustryReportSubsections(industryReportWorkspace.outline);
     industryReportWorkspace.writingTasks = [];
+    renderIndustryReportOutline(industryReportWorkspace.outline);
     try {
         const data = await streamIndustryReportCoordinator({
             user_prompt: effectivePrompt,
@@ -3165,6 +3221,7 @@ async function loadSelectedIndustryReportHistory() {
         stepTimingByKey: {},
         bodyTotal: Array.isArray(record.writingTasks) ? record.writingTasks.length : 0,
         coordinatorTotal: countIndustryReportSubsections(record.outline || []),
+        outlineLocked: Boolean(record.writingTasks?.length || record.bodySections?.length),
         requirementRewriteSeq,
         previewTarget: { type: "all", key: "" },
     };

@@ -46,7 +46,7 @@ class RagStorageSeparationTest(unittest.TestCase):
         self.assertEqual(self.qa_rag.DB_DIR, PROJECT_ROOT / "RAG" / "vector_db_QA")
         self.assertEqual(
             self.report_rag.VECTOR_DB_DIR,
-            PROJECT_ROOT / "RAG" / "vector_db_ai",
+            PROJECT_ROOT / "report_generation" / "vector_db" / "ai",
         )
         self.assertNotEqual(self.qa_rag.DB_DIR, self.report_rag.VECTOR_DB_DIR)
 

@@ -343,11 +343,32 @@
 
 .industry-report-top-card {
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    min-height: 0;
+}
+
+.industry-report-top-workspace {
+    min-height: 0;
+}
+
+.industry-report-agent-card {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+}
+
+#industry-report-agent-hub {
+    flex: 1;
+    min-height: 0;
+}
+
+.industry-report-log-card {
+    overflow: hidden;
 }
 
 .industry-report-agent-hub-shell {
     position: relative;
-    min-height: 340px;
+    height: 100%;
+    min-height: 420px;
     overflow: hidden;
     border-radius: 8px;
     background:
@@ -414,11 +435,12 @@
     position: relative;
     z-index: 1;
     display: grid;
-    min-height: 340px;
+    height: 100%;
+    min-height: 420px;
     grid-template-columns: minmax(188px, 0.88fr) minmax(146px, 0.7fr) minmax(188px, 0.88fr);
-    grid-template-rows: repeat(2, minmax(138px, auto));
-    gap: 28px 24px;
-    padding: 28px 32px;
+    grid-template-rows: repeat(2, minmax(150px, auto));
+    gap: 34px 22px;
+    padding: 34px 30px;
     align-content: space-between;
 }
 
@@ -600,7 +622,16 @@
 }
 
 @media (max-width: 1024px) {
+    .industry-report-top-workspace {
+        height: auto;
+    }
+
+    .industry-report-log-card {
+        max-height: 420px;
+    }
+
     .industry-report-agent-hub-shell {
+        height: auto;
         min-height: auto;
     }
 
@@ -625,13 +656,17 @@
     }
 }
 
+@media (min-width: 1280px) {
+    .industry-report-top-workspace {
+        height: 500px;
+    }
+}
+
 @media (max-width: 640px) {
     .industry-report-agent-hub-grid {
         grid-template-columns: 1fr;
     }
 }
-
-
 
 /* 徽章样式 */
 .badge-green {
