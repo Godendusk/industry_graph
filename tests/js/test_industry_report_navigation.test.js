@@ -133,6 +133,49 @@ test("empty body placeholder is not treated as editable report text", () => {
     assert.equal(context.getIndustryReportEditableText(placeholder), "");
 });
 
+test("section preview references only include citations from the selected subsection", () => {
+    const { context } = loadReportScript();
+
+    vm.runInContext(`
+        industryReportWorkspace.bodySections = [
+            { outline_id: "S1.1", citation_ids: ["C1"] },
+            { outline_id: "S1.2", citation_ids: ["C2"] },
+        ];
+        industryReportWorkspace.references = [
+            { citation_id: "C1", title: "资料一", evidence_excerpt: "一" },
+            { citation_id: "C2", title: "资料二", evidence_excerpt: "二" },
+        ];
+        industryReportWorkspace.previewTarget = { type: "section", key: "S1.1" };
+    `, context);
+
+    const html = context.renderIndustryReportReferences();
+
+    assert.match(html, /\[C1\]/);
+    assert.doesNotMatch(html, /\[C2\]/);
+});
+
+test("standalone references view prefers the last selected subsection", () => {
+    const { context } = loadReportScript();
+
+    vm.runInContext(`
+        industryReportWorkspace.bodySections = [
+            { outline_id: "S1.1", citation_ids: ["C1"] },
+            { outline_id: "S1.2", citation_ids: ["C2"] },
+        ];
+        industryReportWorkspace.references = [
+            { citation_id: "C1", title: "资料一", evidence_excerpt: "一" },
+            { citation_id: "C2", title: "资料二", evidence_excerpt: "二" },
+        ];
+        industryReportWorkspace.previewTarget = { type: "references", key: "" };
+        industryReportWorkspace.lastSectionPreviewKey = "S1.2";
+    `, context);
+
+    const html = context.renderIndustryReportReferences({ standalone: true });
+
+    assert.doesNotMatch(html, /\[C1\]/);
+    assert.match(html, /\[C2\]/);
+});
+
 test("body generation with an empty section is not considered complete", () => {
     const { context } = loadReportScript();
 
@@ -980,7 +1023,7 @@ test("rollback from generated body returns to coordinator and clears body artifa
 
     assert.equal(vm.runInContext("industryReportWorkspace.historyId", context), "");
     assert.equal(vm.runInContext("industryReportWorkspace.currentStage", context), "coordinator");
-    assert.deepEqual(vm.runInContext("industryReportWorkspace.completedSteps", context), ["requirement", "outline", "coordinator"]);
+    assert.deepEqual(Array.from(vm.runInContext("industryReportWorkspace.completedSteps", context)), ["requirement", "outline", "coordinator"]);
     assert.equal(vm.runInContext("industryReportWorkspace.bodySections.length", context), 0);
     assert.equal(vm.runInContext("industryReportWorkspace.abstractText", context), "");
     assert.equal(vm.runInContext("industryReportWorkspace.writingTasks.length", context), 1);
@@ -1007,7 +1050,7 @@ test("rollback from coordinator returns to editable outline and clears task prog
     `, context);
 
     assert.equal(vm.runInContext("industryReportWorkspace.currentStage", context), "outline");
-    assert.deepEqual(vm.runInContext("industryReportWorkspace.completedSteps", context), ["requirement", "outline"]);
+    assert.deepEqual(Array.from(vm.runInContext("industryReportWorkspace.completedSteps", context)), ["requirement", "outline"]);
     assert.equal(vm.runInContext("industryReportWorkspace.writingTasks.length", context), 0);
     assert.equal(vm.runInContext("industryReportWorkspace.references.length", context), 0);
     assert.equal(vm.runInContext("Object.keys(industryReportWorkspace.coordinatorProgressById).length", context), 0);
@@ -1030,11 +1073,11 @@ test("rollback from outline returns to editable task card and clears outline", (
     `, context);
 
     assert.equal(vm.runInContext("industryReportWorkspace.currentStage", context), "idle");
-    assert.deepEqual(vm.runInContext("industryReportWorkspace.completedSteps", context), ["requirement"]);
+    assert.deepEqual(Array.from(vm.runInContext("industryReportWorkspace.completedSteps", context)), ["requirement"]);
     assert.equal(vm.runInContext("industryReportWorkspace.taskCard.selected_title", context), "产业报告");
     assert.equal(vm.runInContext("industryReportWorkspace.outline.length", context), 0);
     assert.equal(vm.runInContext("isIndustryReportTaskCardLocked()", context), false);
-    assert.equal(vm.runInContext("isIndustryReportRequirementLocked()", context), true);
+    assert.equal(vm.runInContext("isIndustryReportRequirementLocked()", context), false);
     assert.deepEqual(calls.statuses.at(-1), { message: "报告需求已提交", type: "success" });
 });
 

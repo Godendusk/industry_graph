@@ -231,7 +231,7 @@ class LexicalStoreTests(unittest.TestCase):
 
     def test_index_metadata_update_is_atomic_across_processes(self):
         store = self.make_store()
-        context = multiprocessing.get_context("fork")
+        context = multiprocessing.get_context("spawn")
         barrier = context.Barrier(2)
         processes = [
             context.Process(

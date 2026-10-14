@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from contextlib import contextmanager
-import fcntl
 import hashlib
 import json
 import math
@@ -17,6 +16,7 @@ import os
 from pathlib import Path
 import stat
 import tempfile
+import time
 from threading import RLock, local
 from typing import Any, Callable, Iterable, Mapping, Optional, Sequence, Tuple
 
@@ -41,6 +41,30 @@ INDEX_HEALTH_KEY = "report_v2_index_health"
 
 _TRANSITION_LOCK = RLock()
 _LOCK_STATE = local()
+
+
+def _file_lock(descriptor: int, *, unlock: bool = False) -> None:
+    if os.name != "nt":
+        import fcntl
+
+        fcntl.flock(descriptor, fcntl.LOCK_UN if unlock else fcntl.LOCK_EX)
+        return
+    import msvcrt
+
+    if os.fstat(descriptor).st_size == 0:
+        os.write(descriptor, b"\0")
+    os.lseek(descriptor, 0, os.SEEK_SET)
+    if unlock:
+        msvcrt.locking(descriptor, msvcrt.LK_UNLCK, 1)
+        return
+    while True:
+        try:
+            msvcrt.locking(descriptor, msvcrt.LK_NBLCK, 1)
+            return
+        except OSError as error:
+            if error.errno not in (13, 11, 36):
+                raise
+            time.sleep(0.05)
 
 
 class UnsupportedSchemaVersion(ValueError):
@@ -152,7 +176,7 @@ class V2IndexWriter:
             entry = held.get(key)
             if entry is None:
                 descriptor = os.open(lock_path, os.O_CREAT | os.O_RDWR, 0o600)
-                fcntl.flock(descriptor, fcntl.LOCK_EX)
+                _file_lock(descriptor)
                 held[key] = [descriptor, 1]
                 _LOCK_STATE.held = held
             else:
@@ -166,7 +190,7 @@ class V2IndexWriter:
                 else:
                     del held[key]
                     try:
-                        fcntl.flock(descriptor, fcntl.LOCK_UN)
+                        _file_lock(descriptor, unlock=True)
                     finally:
                         os.close(descriptor)
 
@@ -788,11 +812,14 @@ class V2IndexWriter:
                     self._fsync(handle.fileno())
                 os.replace(temporary_name, self.ready_path)
                 temporary_name = None
-                directory_fd = os.open(self.ready_path.parent, os.O_RDONLY)
-                try:
-                    self._fsync(directory_fd)
-                finally:
-                    os.close(directory_fd)
+                # Windows cannot open a directory with os.open; the marker file
+                # itself was flushed before the atomic replacement above.
+                if os.name != "nt":
+                    directory_fd = os.open(self.ready_path.parent, os.O_RDONLY)
+                    try:
+                        self._fsync(directory_fd)
+                    finally:
+                        os.close(directory_fd)
             except BaseException:
                 # A failed directory sync means publication is not durable.  Put
                 # back a previous marker when available and never claim success.

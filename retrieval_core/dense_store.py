@@ -216,7 +216,12 @@ class DenseStore:
                     self.path.mkdir(parents=True, exist_ok=True)
                     import chromadb
 
-                    self._client = chromadb.PersistentClient(path=str(self.path))
+                    # Native HNSW on Windows cannot persist Unicode absolute paths.
+                    try:
+                        client_path = self.path.resolve().relative_to(Path.cwd())
+                    except ValueError:
+                        client_path = self.path
+                    self._client = chromadb.PersistentClient(path=str(client_path))
                 else:
                     self._client = self._client_factory(self.path)
             collection = self._client.get_or_create_collection(

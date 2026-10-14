@@ -30,158 +30,64 @@ def retrieve_external_rag(
     normalized_industry = str(industry or "ai").strip() or "ai"
     normalized_query = str(query or "").strip()
     normalized_top_k = _normalize_top_k(top_k)
-    if normalized_industry == "embodied":
-        return retrieve_embodied_news(normalized_query, normalized_top_k)
     try:
         get_industry_config(normalized_industry)
     except ValueError as exc:
         return _error_response(str(exc), normalized_query, normalized_top_k, normalized_industry)
-    if (get_industry_config(normalized_industry).get("rag_type") == "news"):
-        return retrieve_topic_news(normalized_query, normalized_top_k, normalized_industry)
-    if normalized_industry != "ai":
-        return _retrieve_legacy(query, normalized_top_k, industry=normalized_industry)
+    if not normalized_query:
+        return _error_response("query cannot be empty", normalized_query, normalized_top_k, normalized_industry)
+    hybrid_retrieve = _retrieve_hybrid if normalized_industry == "ai" else partial(
+        _retrieve_news_hybrid, industry=normalized_industry
+    )
     mode = _mode()
     if mode == "legacy":
-        return _retrieve_legacy(query, top_k, industry=normalized_industry)
+        return _retrieve_legacy(normalized_query, normalized_top_k, industry=normalized_industry)
     if mode == "compare":
-        legacy = _retrieve_legacy(query, top_k, industry=normalized_industry)
+        legacy = _retrieve_legacy(normalized_query, normalized_top_k, industry=normalized_industry)
         try:
-            hybrid = _retrieve_hybrid(query, top_k)
+            hybrid = hybrid_retrieve(normalized_query, normalized_top_k)
         except Exception as error:
-            hybrid = _error_response("hybrid shadow failed", str(query or ""), _normalize_top_k(top_k))
+            hybrid = _error_response("hybrid shadow failed", normalized_query, normalized_top_k, normalized_industry)
             hybrid["comparison_error"] = type(error).__name__
         _log_comparison(query, legacy, hybrid)
+        legacy["hybrid_comparison"] = {key: hybrid.get(key) for key in (
+            "status", "retrieval_version", "diagnostics", "warnings", "message"
+        )}
+        legacy["industry"] = normalized_industry
         return legacy
-    hybrid = _retrieve_hybrid(query, top_k)
+    hybrid = hybrid_retrieve(normalized_query, normalized_top_k)
+    hybrid["industry"] = normalized_industry
     if hybrid.get("status") == "error" and os.environ.get("REPORT_RETRIEVAL_ALLOW_LEGACY_FALLBACK", "1") != "0":
-        legacy = _retrieve_legacy(query, top_k, industry=normalized_industry)
+        legacy = _retrieve_legacy(normalized_query, normalized_top_k, industry=normalized_industry)
         legacy["retrieval_fallback"] = "legacy"
         legacy["hybrid_error"] = hybrid.get("message", "hybrid retrieval failed")
+        legacy["diagnostics"] = {"hybrid": hybrid.get("diagnostics", {}),
+                                 "legacy": legacy.get("diagnostics", {})}
+        legacy.setdefault("warnings", []).append({
+            "code": "hybrid_fallback", "message": legacy["hybrid_error"]
+        })
+        legacy["industry"] = normalized_industry
         return legacy
     return hybrid
 
 
-def retrieve_embodied_news(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
-    """Retrieve embodied news chunks from the isolated Chroma collection."""
-    normalized_query = str(query or "").strip()
-    normalized_top_k = _normalize_top_k(top_k)
-    if not normalized_query:
-        return _error_response("query cannot be empty", normalized_query, normalized_top_k)
+def _retrieve_news_hybrid(query: str, top_k: int, industry: str) -> dict:
     try:
-        from .embodied_store import query_embodied_news
+        from .news_retrieval import retrieve_news_hybrid
 
-        results = query_embodied_news(normalized_query, normalized_top_k)
-    except Exception as exc:
-        return _error_response(
-            f"embodied RAG initialization failed: {exc}",
-            normalized_query,
-            normalized_top_k,
-        )
+        return retrieve_news_hybrid(query, top_k, industry)
+    except Exception as error:
+        return _error_response(f"news hybrid retrieval failed: {error}", query, top_k, industry)
 
-    ids = _first_result_list(results.get("ids"))
-    documents = _first_result_list(results.get("documents"))
-    metadatas = _first_result_list(results.get("metadatas"))
-    distances = _first_result_list(results.get("distances"))
-    evidence_blocks = []
-    for index, vector_id in enumerate(ids):
-        text = _safe_text(_list_get(documents, index))
-        if not text:
-            continue
-        metadata = _list_get(metadatas, index)
-        metadata = metadata if isinstance(metadata, dict) else {}
-        evidence_blocks.append(
-            {
-                "citation_id": f"外部资料{len(evidence_blocks) + 1}",
-                "rank": len(evidence_blocks) + 1,
-                "library": "embodied_news",
-                "classification_type": "",
-                "classification_name": "具身智能专题资讯",
-                "material_id": _metadata_value(metadata, "source_id", ""),
-                "title": _metadata_value(metadata, "title", ""),
-                "publish_date": _metadata_value(metadata, "publish_date", ""),
-                "source_address": _metadata_value(metadata, "source_url", "") or _metadata_value(metadata, "url", ""),
-                "paragraph_index": _coerce_int(metadata.get("chunk_index")),
-                "vector_id": _safe_text(vector_id),
-                "distance": _coerce_float(_list_get(distances, index)),
-                "text": text,
-            }
-        )
-    warnings = []
-    if not evidence_blocks:
-        warnings.append({
-            "code": "rag_store_empty",
-            "message": "具身智能产业 RAG 向量库暂无资料，本次主要参考知识图谱生成",
-        })
-    return {
-        "status": "success",
-        "query": normalized_query,
-        "top_k": normalized_top_k,
-        "rag_context_text": _build_rag_context_text(evidence_blocks),
-        "evidence_blocks": evidence_blocks,
-        "warnings": warnings,
-        "retrieval_version": "embodied_chroma",
-    }
+
+def retrieve_embodied_news(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
+    """Compatibility entry point for embodied-only vector retrieval."""
+    return _retrieve_legacy(query, top_k, industry="embodied")
 
 
 def retrieve_topic_news(query: str, top_k: int, industry: str) -> dict:
-    """Retrieve a configured non-embodied industry news collection."""
-    normalized_query = str(query or "").strip()
-    normalized_top_k = _normalize_top_k(top_k)
-    try:
-        from RAG.topic_news import query_topic_news
-
-        results = query_topic_news(normalized_query, industry, normalized_top_k)
-    except Exception as exc:
-        return _error_response(
-            f"{industry} RAG initialization failed: {exc}",
-            normalized_query,
-            normalized_top_k,
-            industry,
-        )
-
-    ids = _first_result_list(results.get("ids"))
-    documents = _first_result_list(results.get("documents"))
-    metadatas = _first_result_list(results.get("metadatas"))
-    distances = _first_result_list(results.get("distances"))
-    evidence_blocks = []
-    for index, vector_id in enumerate(ids):
-        text = _safe_text(_list_get(documents, index))
-        if not text:
-            continue
-        metadata = _list_get(metadatas, index)
-        metadata = metadata if isinstance(metadata, dict) else {}
-        evidence_blocks.append({
-            "citation_id": f"外部资料{len(evidence_blocks) + 1}",
-            "rank": len(evidence_blocks) + 1,
-            "library": f"{industry}_news",
-            "classification_type": "",
-            "classification_name": get_industry_config(industry).get("name", ""),
-            "material_id": _metadata_value(metadata, "source_id", ""),
-            "title": _metadata_value(metadata, "title", ""),
-            "publish_date": _metadata_value(metadata, "publish_date", ""),
-            "source_address": _metadata_value(metadata, "source_url", "") or _metadata_value(metadata, "url", ""),
-            "paragraph_index": _coerce_int(metadata.get("chunk_index")),
-            "vector_id": _safe_text(vector_id),
-            "distance": _coerce_float(_list_get(distances, index)),
-            "text": text,
-        })
-    warnings = []
-    if not evidence_blocks:
-        warnings.append({
-            "code": "rag_store_empty",
-            "message": f"{get_industry_config(industry)['name']}产业 RAG 向量库暂无资料，本次主要参考知识图谱生成",
-        })
-    return {
-        "status": "success",
-        "industry": industry,
-        "query": normalized_query,
-        "top_k": normalized_top_k,
-        "rag_context_text": _build_rag_context_text(evidence_blocks),
-        "evidence_blocks": evidence_blocks,
-        "warnings": warnings,
-        "retrieval_version": "topic_news_chroma",
-    }
-
+    """Compatibility entry point using the unified industry retrieval mode."""
+    return retrieve_external_rag(query, top_k, industry)
 
 def _retrieve_hybrid(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
     normalized_query = str(query or "").strip()
@@ -197,19 +103,22 @@ def _retrieve_hybrid(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
         from retrieval_core.config import RetrievalConfig
         from retrieval_core.dense_store import DenseStore
         from retrieval_core.lexical_store import LexicalStore
-        from retrieval_core.model_manager import ModelManager
+        from retrieval_core.chunker import _search_text
         from retrieval_core.pipeline import HybridRetrievalPipeline
         from retrieval_core.reranker import rerank_candidates
 
         config = RetrievalConfig.for_project(Path(__file__).resolve().parents[2])
         dense = DenseStore(config.index_root / "chroma")
-        lexical = LexicalStore(config.index_root / "lexical.sqlite3")
+        lexical = LexicalStore(config.index_root / "lexical.sqlite3",
+                               query_tokenizer=lambda text: _search_text(text, None).split())
         ready = V2IndexWriter(dense, lexical, ready_path=config.index_root / "READY",
                               model_version=config.embedding_model_path.name,
                               chunker_version="v2", dictionary_version="v1", audit_only=True)
         if not ready.validate_ready_marker():
             return _error_response("report v2 index is not ready", normalized_query, normalized_top_k)
-        models = ModelManager(config.embedding_model_path, config.reranker_model_path)
+        from .news_retrieval import local_models
+
+        models = local_models()
         scorer = lambda pairs: models.rerank_pairs(pairs[0][0], [pair[1] for pair in pairs])
         pipeline = HybridRetrievalPipeline(
             embed_query=lambda text: models.embed_queries([text])[0], dense_search=dense.search,
@@ -221,12 +130,28 @@ def _retrieve_hybrid(query: str, top_k: int = DEFAULT_TOP_K) -> dict:
         routed = retrieve_with_soft_routing(pipeline.retrieve, focused.semantic_query,
                                             route_libraries(focused), normalized_top_k)
         evidence_blocks = to_evidence_blocks(routed.candidates)
+        degraded = bool(routed.warnings)
+        version = "hybrid_v2_degraded" if degraded else "hybrid_v2"
+        for block in evidence_blocks:
+            block["retrieval_version"] = version
+            block["industry"] = "ai"
+        attempts = [attempt.result for attempt in routed.attempts if attempt.result is not None]
+        diagnostics = {"attempts": [{"status": result.status, "timings": dict(result.timings),
+                                    "candidate_counts": dict(result.candidate_counts),
+                                    "warnings": [dict(item) for item in result.warnings]} for result in attempts]}
+        if not evidence_blocks and attempts and all(result.status == "error" for result in attempts):
+            response = _error_response("all report hybrid recall attempts failed", normalized_query, normalized_top_k)
+            response.update(warnings=[dict(item) for item in routed.warnings], diagnostics=diagnostics)
+            return response
+        warnings = [dict(item) for item in routed.warnings]
+        if not evidence_blocks:
+            warnings.append({"code": "rag_no_evidence", "message": "No external evidence matched this query."})
         return {"status": "success", "query": normalized_query, "top_k": normalized_top_k,
                 "rag_context_text": build_rag_context_text(evidence_blocks),
-                "evidence_blocks": evidence_blocks, "warnings": list(routed.warnings),
-                "retrieval_version": "hybrid_v2"}
+                "evidence_blocks": evidence_blocks, "warnings": warnings,
+                "retrieval_version": version, "retrieval_degraded": degraded, "diagnostics": diagnostics}
     except Exception as error:
-        return _error_response(f"hybrid v2 retrieval failed: {type(error).__name__}", normalized_query, normalized_top_k)
+        return _error_response(f"hybrid v2 retrieval failed: {error}", normalized_query, normalized_top_k)
 
 
 def _log_comparison(query: str, legacy: dict, hybrid: dict) -> None:
@@ -246,6 +171,14 @@ def _retrieve_legacy(
 
     try:
         industry_config = get_industry_config(normalized_industry)
+        if industry_config.get("rag_type") == "news":
+            from .news_retrieval import retrieve_news_legacy
+
+            try:
+                return retrieve_news_legacy(normalized_query, normalized_top_k, normalized_industry)
+            except Exception as error:
+                return _error_response(f"news RAG retrieval failed: {error}", normalized_query,
+                                       normalized_top_k, normalized_industry)
         libraries = get_external_libraries(normalized_industry)
     except ValueError as exc:
         return _error_response(str(exc), normalized_query, normalized_top_k, normalized_industry)
@@ -292,6 +225,7 @@ def _retrieve_legacy(
     return {
         "status": "success",
         "industry": normalized_industry,
+        "retrieval_version": "legacy",
         "query": normalized_query,
         "top_k": normalized_top_k,
         "rag_context_text": _build_rag_context_text(evidence_blocks),
@@ -551,4 +485,6 @@ def _error_response(message: str, query: str, top_k: int, industry: str = "ai") 
         "rag_context_text": "",
         "evidence_blocks": [],
         "warnings": [],
+        "retrieval_version": "unavailable",
+        "diagnostics": {},
     }

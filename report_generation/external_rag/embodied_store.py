@@ -49,11 +49,11 @@ def _get_model() -> Any:
     if _MODEL is None:
         with _MODEL_LOCK:
             if _MODEL is None:
-                from sentence_transformers import SentenceTransformer
+                from retrieval_core.model_manager import _default_embedding_factory
 
                 if not MODEL_PATH.is_dir():
                     raise FileNotFoundError(f"embedding model not found: {MODEL_PATH}")
-                _MODEL = SentenceTransformer(str(MODEL_PATH), device=_device())
+                _MODEL = _default_embedding_factory(MODEL_PATH, _device())
     return _MODEL
 
 
@@ -98,7 +98,11 @@ class EmbodiedNewsStore:
         self.db_dir.mkdir(parents=True, exist_ok=True)
         import chromadb
 
-        self.client = chromadb.PersistentClient(path=str(self.db_dir))
+        try:
+            client_path = self.db_dir.resolve().relative_to(Path.cwd())
+        except ValueError:
+            client_path = self.db_dir
+        self.client = chromadb.PersistentClient(path=str(client_path))
         self.collection = self.client.get_or_create_collection(name=COLLECTION_NAME)
 
     def upsert(self, chunks: Iterable[Dict[str, Any]]) -> int:
@@ -123,9 +127,9 @@ class EmbodiedNewsStore:
         return len(records)
 
     def _load_custom_model(self) -> Any:
-        from sentence_transformers import SentenceTransformer
+        from retrieval_core.model_manager import _default_embedding_factory
 
-        return SentenceTransformer(str(self.model_path), device=_device())
+        return _default_embedding_factory(self.model_path, _device())
 
     def query(self, query: str, top_k: int = 5) -> Dict[str, Any]:
         model = _get_model() if self.model_path == MODEL_PATH else self._load_custom_model()

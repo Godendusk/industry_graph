@@ -35,6 +35,7 @@ let industryReportWorkspace = {
     outlineLocked: false,
     requirementRewriteSeq: 0,
     previewTarget: { type: "all", key: "" },
+    lastSectionPreviewKey: "",
 };
 
 let industryReportHistoryIndex = [];
@@ -583,6 +584,7 @@ function setIndustryReportBusy(isBusy, text = "") {
             btn.classList.toggle("opacity-60", Boolean(isBusy));
             btn.classList.toggle("cursor-not-allowed", Boolean(isBusy));
         });
+    syncIndustryReportOutlineConfirmButton();
     syncIndustryReportGenerateButton();
     syncIndustryReportEditableState();
     if (text) setIndustryReportStatus(text, isBusy ? "loading" : "info");
@@ -641,6 +643,7 @@ function rollbackIndustryReportWorkflow() {
     industryReportWorkspace.rewriteMaterials = null;
     industryReportWorkspace.activeSectionId = "";
     industryReportWorkspace.previewTarget = { type: "all", key: "" };
+    industryReportWorkspace.lastSectionPreviewKey = "";
 
     if (target.key === "coordinator") {
         industryReportWorkspace.bodySections = [];
@@ -1794,6 +1797,7 @@ function resetIndustryReportWorkspace() {
         outlineLocked: false,
         requirementRewriteSeq,
         previewTarget: { type: "all", key: "" },
+        lastSectionPreviewKey: "",
     };
     const titleInput = document.getElementById("industry-report-title");
     if (titleInput) {
@@ -3220,6 +3224,25 @@ function renderIndustryReportPreview() {
     renderIndustryReportPreviewNav();
     const title = (document.getElementById("industry-report-title")?.value || industryReportWorkspace.reportTitle || "产业报告").trim();
     industryReportWorkspace.reportTitle = title;
+    const target = industryReportWorkspace.previewTarget || { type: "all", key: "" };
+    if (target.type === "abstract" && !industryReportWorkspace.bodySections.length) {
+        box.innerHTML = `
+            <div class="border-b border-gray-200 pb-4">
+                <h1 class="text-2xl font-bold text-gray-900 leading-tight">${escapeIndustryReportHtml(title)}</h1>
+            </div>
+            ${renderIndustryReportAbstractBlock() || '<div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-sm text-gray-500">暂无摘要内容</div>'}
+        `;
+        return;
+    }
+    if (target.type === "references" && !industryReportWorkspace.bodySections.length) {
+        box.innerHTML = `
+            <div class="border-b border-gray-200 pb-4">
+                <h1 class="text-2xl font-bold text-gray-900 leading-tight">${escapeIndustryReportHtml(title)}</h1>
+            </div>
+            ${renderIndustryReportReferences({ standalone: true })}
+        `;
+        return;
+    }
     if (!industryReportWorkspace.bodySections.length) {
         box.innerHTML = `
             <div class="border-b border-gray-200 pb-4">
@@ -3229,13 +3252,31 @@ function renderIndustryReportPreview() {
         `;
         return;
     }
+    if (target.type === "abstract") {
+        box.innerHTML = `
+            <div class="border-b border-gray-200 pb-4">
+                <h1 class="text-2xl font-bold text-gray-900 leading-tight">${escapeIndustryReportHtml(title)}</h1>
+            </div>
+            ${renderIndustryReportAbstractBlock() || '<div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-sm text-gray-500">暂无摘要内容</div>'}
+        `;
+        return;
+    }
+    if (target.type === "references") {
+        box.innerHTML = `
+            <div class="border-b border-gray-200 pb-4">
+                <h1 class="text-2xl font-bold text-gray-900 leading-tight">${escapeIndustryReportHtml(title)}</h1>
+            </div>
+            ${renderIndustryReportReferences({ standalone: true })}
+        `;
+        return;
+    }
     const groups = groupIndustryReportBodySections();
     const visibleGroups = filterIndustryReportPreviewGroups(groups);
     box.innerHTML = `
         <div class="border-b border-gray-200 pb-4">
             <h1 class="text-2xl font-bold text-gray-900 leading-tight">${escapeIndustryReportHtml(title)}</h1>
         </div>
-        ${renderIndustryReportAbstractBlock()}
+        ${target.type === "section" ? "" : renderIndustryReportAbstractBlock()}
         ${renderIndustryReportAdjustmentNotes()}
         ${visibleGroups.length ? visibleGroups.map((group, groupIndex) => `
             <article class="border-b border-gray-200 pb-4 last:border-b-0">
@@ -3289,6 +3330,8 @@ function renderIndustryReportPreviewNav() {
     }
     const target = industryReportWorkspace.previewTarget || { type: "all", key: "" };
     const allActive = target.type === "all" || !target.type;
+    const abstractActive = target.type === "abstract";
+    const referencesActive = target.type === "references";
     const generatedSectionIds = new Set((industryReportWorkspace.bodySections || [])
         .filter(section => section?.outline_id && String(section.body_text || "").trim())
         .map(section => section.outline_id));
@@ -3297,6 +3340,11 @@ function renderIndustryReportPreviewNav() {
                 onclick="selectIndustryReportPreviewTarget('all', '')"
                 class="w-full rounded-lg border ${allActive ? "border-blue-200 bg-white text-blue-700 font-semibold" : "border-blue-100 bg-white/70 text-slate-600 hover:bg-white hover:text-blue-700"} px-3 py-2 text-left text-sm">
             <i class="fas fa-file-lines mr-2"></i>整篇报告
+        </button>
+        <button type="button"
+                onclick="selectIndustryReportPreviewTarget('abstract', '')"
+                class="w-full rounded-lg border ${abstractActive ? "border-amber-200 bg-amber-50 text-amber-700 font-semibold" : "border-blue-100 bg-white/70 text-slate-600 hover:bg-white hover:text-amber-700"} px-3 py-2 text-left text-sm">
+            <i class="fas fa-align-left mr-2"></i>摘要
         </button>
     ` + outline.map((section, sectionIndex) => {
         const children = Array.isArray(section.subsections) ? section.subsections : [];
@@ -3329,7 +3377,13 @@ function renderIndustryReportPreviewNav() {
                 ` : ""}
             </div>
         `;
-    }).join("");
+    }).join("") + `
+        <button type="button"
+                onclick="selectIndustryReportPreviewTarget('references', '')"
+                class="w-full rounded-lg border ${referencesActive ? "border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold" : "border-blue-100 bg-white/70 text-slate-600 hover:bg-white hover:text-emerald-700"} px-3 py-2 text-left text-sm">
+            <i class="fas fa-book-open mr-2"></i>参考资料
+        </button>
+    `;
 }
 
 function getIndustryReportPreviewGroupKey(title, index) {
@@ -3337,7 +3391,12 @@ function getIndustryReportPreviewGroupKey(title, index) {
 }
 
 function selectIndustryReportPreviewTarget(type, key) {
-    industryReportWorkspace.previewTarget = { type: type || "all", key: key || "" };
+    const nextType = type || "all";
+    const nextKey = key || "";
+    if (nextType === "section" && nextKey) {
+        industryReportWorkspace.lastSectionPreviewKey = nextKey;
+    }
+    industryReportWorkspace.previewTarget = { type: nextType, key: nextKey };
     renderIndustryReportPreview();
 }
 
@@ -3474,12 +3533,21 @@ function renderIndustryReportEvidenceDetails(section) {
     `;
 }
 
-function renderIndustryReportReferences() {
-    const usedIds = new Set((industryReportWorkspace.bodySections || [])
-        .flatMap(section => Array.isArray(section.citation_ids) ? section.citation_ids : []));
+function renderIndustryReportReferences(options = {}) {
+    const sections = getIndustryReportReferenceSections(options);
+    const usedIds = new Set((sections || [])
+        .flatMap(section => Array.isArray(section?.citation_ids) ? section.citation_ids : []));
     const references = (industryReportWorkspace.references || [])
         .filter(item => usedIds.has(item?.citation_id));
-    if (!references.length) return "";
+    if (!references.length) {
+        if (!options.standalone) return "";
+        return `
+            <section class="border-t border-gray-200 pt-5 mt-6" id="industry-report-references">
+                <h2 class="text-lg font-bold text-gray-900 mb-3">参考资料</h2>
+                <div class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-6 text-sm text-gray-500">当前视图暂无已引用参考资料。</div>
+            </section>
+        `;
+    }
     return `
         <section class="border-t border-gray-200 pt-5 mt-6" id="industry-report-references">
             <h2 class="text-lg font-bold text-gray-900 mb-3">参考资料</h2>
@@ -3495,6 +3563,23 @@ function renderIndustryReportReferences() {
             </div>
         </section>
     `;
+}
+
+function getIndustryReportReferenceSections(options = {}) {
+    if (Array.isArray(options.sections)) return options.sections.filter(Boolean);
+    const target = industryReportWorkspace.previewTarget || { type: "all", key: "" };
+    const bodySections = industryReportWorkspace.bodySections || [];
+    if (target.type === "section" && target.key) {
+        return bodySections.filter(section => section?.outline_id === target.key);
+    }
+    if (target.type === "references") {
+        const sectionKey = industryReportWorkspace.lastSectionPreviewKey || "";
+        if (sectionKey) {
+            const sections = bodySections.filter(section => section?.outline_id === sectionKey);
+            if (sections.length) return sections;
+        }
+    }
+    return bodySections;
 }
 
 function getIndustryReportSectionReferences(section) {
@@ -3879,6 +3964,7 @@ async function loadSelectedIndustryReportHistory() {
         outlineLocked: Boolean(record.writingTasks?.length || record.bodySections?.length),
         requirementRewriteSeq,
         previewTarget: { type: "all", key: "" },
+        lastSectionPreviewKey: "",
     };
     appendIndustryReportWarnings(industryReportWorkspace.bodySections.flatMap(section => section.warnings || []));
     const titleInput = document.getElementById("industry-report-title");

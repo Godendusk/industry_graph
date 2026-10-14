@@ -220,7 +220,7 @@ class EmbodiedRoutingTest(unittest.TestCase):
         module = load_module(self, "report_generation.external_rag.retriever")
         with patch.object(
             module,
-            "retrieve_embodied_news",
+            "_retrieve_news_hybrid",
             return_value={"status": "success", "evidence_blocks": []},
         ) as embodied:
             result = module.retrieve_external_rag(
@@ -228,7 +228,7 @@ class EmbodiedRoutingTest(unittest.TestCase):
             )
 
         self.assertEqual(result["status"], "success")
-        embodied.assert_called_once_with("具身智能机器人进展", 5)
+        embodied.assert_called_once_with("具身智能机器人进展", 5, industry="embodied")
 
     def test_unknown_industry_returns_error_without_ai_fallback(self):
         module = load_module(self, "report_generation.external_rag.retriever")

@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, PropertyMock
 
 from report_generation.external_rag.retriever import retrieve_external_rag
 
@@ -45,8 +45,9 @@ class ReportRagModesTest(unittest.TestCase):
         self.assertEqual(result["retrieval_fallback"], "legacy")
 
     def test_empty_embodied_collection_is_reported_as_unavailable(self):
-        empty = {"ids": [[]], "documents": [[]], "metadatas": [[]], "distances": [[]]}
-        with patch("report_generation.external_rag.embodied_store.query_embodied_news", return_value=empty):
+        empty = {"status": "success", "evidence_blocks": [],
+                 "warnings": [{"code": "rag_store_empty"}], "retrieval_version": "hybrid_v2"}
+        with patch("report_generation.external_rag.retriever._retrieve_news_hybrid", return_value=empty):
             result = retrieve_external_rag("查询", top_k=10, industry="embodied")
         self.assertEqual(result["status"], "success")
         self.assertEqual(result["evidence_blocks"], [])
@@ -59,9 +60,19 @@ class ReportRagModesTest(unittest.TestCase):
             "metadatas": [[{"title": "资料标题", "source_id": "m1", "url": "https://example.test"}]],
             "distances": [[0.1]],
         }
-        with patch("RAG.topic_news.query_topic_news", return_value=raw) as query:
+        from report_generation.external_rag.news_retrieval import NewsDenseStore
+        with patch.dict("os.environ", {"REPORT_RETRIEVAL_MODE": "hybrid_v2"}), patch(
+            "report_generation.external_rag.news_retrieval.check_news_index", return_value={"status": "ready"}
+        ), patch("report_generation.external_rag.news_retrieval.local_models") as models, patch(
+            "report_generation.external_rag.news_retrieval.NewsLexicalStore.search", return_value=[]
+        ), patch.object(NewsDenseStore, "collection", new_callable=PropertyMock) as collection:
+            models.return_value.embed_documents.return_value = [[1.0] + [0.0] * 767]
+            models.return_value.rerank_pairs.return_value = [0.9]
+            collection.return_value.count.return_value = 1
+            collection.return_value.query.return_value = raw
             result = retrieve_external_rag("低空经济产业链", top_k=3, industry="low_altitude")
-        query.assert_called_once_with("低空经济产业链", "low_altitude", 3)
+        self.assertEqual(collection.return_value.query.call_args.kwargs['n_results'], 1)
+        self.assertEqual(result["retrieval_version"], "hybrid_v2")
         self.assertEqual(result["status"], "success")
         self.assertEqual(len(result["evidence_blocks"]), 1)
 

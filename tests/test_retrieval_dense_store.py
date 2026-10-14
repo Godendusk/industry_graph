@@ -100,6 +100,7 @@ class DenseStoreTests(unittest.TestCase):
             )
             store.delete_ids(["c1", "not-present"])
             self.assertEqual(store.all_chunk_ids(), {"c2"})
+            store._client._system.stop()
 
     def test_collection_is_lazy_and_configured_for_cosine(self):
         collection = FakeCollection(

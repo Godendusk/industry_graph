@@ -505,7 +505,9 @@ def _allocate_retrieved_evidence(subsections: List[dict], retrieval_rows: List[d
         if not isinstance(retrieval, dict):
             retrieval = {"status": "skipped", "evidence_blocks": []}
         retrieval["evidence_blocks"] = allocation.get("evidence_blocks", [])
-        retrieval["diagnostics"] = allocation.get("diagnostics", {})
+        diagnostics = dict(retrieval.get("diagnostics") or {})
+        diagnostics.update(allocation.get("diagnostics", {}))
+        retrieval["diagnostics"] = diagnostics
         source["external_rag_retrieval"] = retrieval
         source.setdefault("outline_id", subsection.get("outline_id", ""))
         output.append(source)

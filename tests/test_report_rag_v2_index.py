@@ -256,6 +256,30 @@ class V2IndexWriterTests(unittest.TestCase):
             )
         self.assertEqual(report["status"], "error")
         self.assertFalse(writer.mark_ready.called)
+
+    def test_resume_skips_complete_documents_and_rebuilds_partial_documents(self):
+        with tempfile.TemporaryDirectory() as directory:
+            subject = writer(directory=directory)
+            options = dict(legacy_client=_BuilderLegacyClient(), writer=subject,
+                           tokenizer=_BuilderTokenizer(), dry_run=False,
+                           embedding_model_path=Path(directory))
+            self.assertEqual(build_from_legacy(**options)["status"], "success")
+            dense_calls = len(subject.dense.calls)
+            original_encoder = subject.embed_documents
+            subject.embed_documents = Mock(side_effect=AssertionError("complete document encoded twice"))
+            result = build_from_legacy(**options, resume=True)
+            self.assertEqual(result["materials_resumed"], 5)
+            self.assertEqual(len(subject.dense.calls), dense_calls)
+            subject.embed_documents.assert_not_called()
+            document_id = next(iter(subject.dense.documents))
+            subject.dense.documents[document_id].clear()
+            subject.embed_documents = Mock(side_effect=original_encoder)
+            result = build_from_legacy(**options, resume=True)
+            self.assertEqual(result["status"], "success")
+            self.assertEqual(result["materials_resumed"], 4)
+            subject.embed_documents.assert_called_once()
+            self.assertTrue(subject.validate_ready_marker())
+
     def test_write_result_and_ready_facts_are_deeply_immutable(self):
         diagnostics = {"nested": [{"values": [1, 2]}]}
         ids = ["c1"]
@@ -509,7 +533,7 @@ class V2IndexWriterTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "lexical.sqlite3"
             LexicalStore(path)
-            context = multiprocessing.get_context("fork")
+            context = multiprocessing.get_context("spawn" if os.name == "nt" else "fork")
             barrier = context.Barrier(2)
             processes = [
                 context.Process(
@@ -534,7 +558,7 @@ class V2IndexWriterTests(unittest.TestCase):
 
     def test_lifecycle_lock_serializes_ready_transitions_across_processes(self):
         with tempfile.TemporaryDirectory() as directory:
-            context = multiprocessing.get_context("fork")
+            context = multiprocessing.get_context("spawn" if os.name == "nt" else "fork")
             barrier = context.Barrier(2)
             results = context.Queue()
             processes = [
@@ -711,6 +735,7 @@ class V2IndexWriterTests(unittest.TestCase):
             ready_path.write_text("{}")
             self.assertFalse(subject.validate_ready_marker())
 
+    @unittest.skipIf(os.name == "nt", "Windows does not support directory fsync")
     def test_directory_fsync_failure_restores_prior_valid_ready_and_cleans_files(self):
         with tempfile.TemporaryDirectory() as directory:
             dense, lexical = FakeDense(), FakeLexical()
@@ -749,9 +774,14 @@ class V2IndexWriterTests(unittest.TestCase):
             ready_path = Path(directory) / "READY"
             target = Path(directory) / "target"
             ready_path.replace(target)
-            ready_path.symlink_to(target)
-            self.assertFalse(subject.validate_ready_marker())
-            ready_path.unlink()
+            try:
+                ready_path.symlink_to(target)
+            except OSError as error:
+                if getattr(error, "winerror", None) != 1314:
+                    raise
+            else:
+                self.assertFalse(subject.validate_ready_marker())
+                ready_path.unlink()
             for field, value in (
                 ("schema_version", True),
                 ("dimension", 768.0),

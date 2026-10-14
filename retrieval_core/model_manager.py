@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import errno
+import json
 import logging
 import re
 from pathlib import Path
@@ -84,16 +85,92 @@ def _default_embedding_factory(path: Path, device: str) -> Any:
     if not path.exists():
         raise _missing_path(path)
     from sentence_transformers import SentenceTransformer
+    if device == "cpu":
+        import torch
 
-    return SentenceTransformer(str(path), device=device, local_files_only=True)
+        torch.set_num_threads(4)
+
+    try:
+        return SentenceTransformer(str(path), device=device, local_files_only=True)
+    except ModuleNotFoundError as error:
+        if not error.name or not error.name.startswith((
+            "sentence_transformers.base", "sentence_transformers.sentence_transformer"
+        )):
+            raise
+        # New ST exports moved these classes; reconstruct only the known BGE stack.
+        from sentence_transformers import models
+
+        modules = json.loads((path / "modules.json").read_text(encoding="utf-8"))
+        expected = ("Transformer", "Pooling", "Normalize")
+        if len(modules) != 3 or tuple(item["type"].rsplit(".", 1)[-1] for item in modules) != expected:
+            raise ValueError("unsupported local embedding module stack") from error
+        if [item["path"] for item in modules] != ["", "1_Pooling", "2_Normalize"]:
+            raise ValueError("unsupported local embedding module paths") from error
+        pooling = json.loads((path / "1_Pooling" / "config.json").read_text(encoding="utf-8"))
+        if pooling.get("pooling_mode") != "cls" or pooling.get("embedding_dimension") != 768:
+            raise ValueError("unsupported local BGE pooling configuration") from error
+        transformer = models.Transformer(
+            str(path), model_args={"local_files_only": True},
+            tokenizer_args={"local_files_only": True},
+        )
+        pool = models.Pooling(768, pooling_mode="cls", include_prompt=pooling.get("include_prompt", True))
+        LOGGER.warning("Loading local BGE with compatible Transformer/CLS/Normalize modules")
+        return SentenceTransformer(modules=[transformer, pool, models.Normalize()], device=device)
 
 
 def _default_reranker_factory(path: Path, device: str) -> Any:
     if not path.exists():
         raise _missing_path(path)
     from sentence_transformers import CrossEncoder
+    if device == "cpu":
+        import torch
 
-    return CrossEncoder(str(path), device=device, local_files_only=True)
+        torch.set_num_threads(4)
+
+    try:
+        return CrossEncoder(str(path), device=device, local_files_only=True)
+    except AttributeError as error:
+        config = json.loads((path / "config.json").read_text(encoding="utf-8"))
+        if str(error) != "'dict' object has no attribute 'model_type'" or config.get("model_type") != "xlm-roberta":
+            raise
+        LOGGER.warning("Loading local XLM-R reranker with the compatible fast tokenizer")
+        return _CompatibleCrossEncoder(path, device)
+
+
+class _CompatibleCrossEncoder:
+    """Bypass the Transformers 4.57.2 local large-vocabulary loader bug."""
+
+    def __init__(self, path: Path, device: str):
+        from transformers import AddedToken, AutoModelForSequenceClassification, XLMRobertaTokenizerFast
+
+        config = json.loads((path / "tokenizer_config.json").read_text(encoding="utf-8"))
+        tokens = {}
+        for key in ("bos_token", "eos_token", "sep_token", "cls_token", "unk_token", "pad_token", "mask_token"):
+            value = config[key]
+            if isinstance(value, dict):
+                value = AddedToken(**{name: item for name, item in value.items() if name != "__type"})
+            tokens[key] = value
+        self.tokenizer = XLMRobertaTokenizerFast(
+            tokenizer_file=str(path / "tokenizer.json"), model_max_length=config.get("model_max_length", 512),
+            **tokens,
+        )
+        self.model = AutoModelForSequenceClassification.from_pretrained(str(path), local_files_only=True).to(device).eval()
+        self.device = device
+
+    def predict(self, pairs, batch_size=4):
+        import torch
+
+        scores = []
+        with torch.inference_mode():
+            for start in range(0, len(pairs), batch_size):
+                batch = pairs[start:start + batch_size]
+                encoded = self.tokenizer([pair[0] for pair in batch], [pair[1] for pair in batch],
+                                         padding=True, truncation=True, max_length=512, return_tensors="pt")
+                logits = self.model(**{key: value.to(self.device) for key, value in encoded.items()}).logits
+                if logits.shape[-1] != 1:
+                    raise ValueError("compatible BGE reranker requires one classification logit")
+                scores.extend(torch.sigmoid(logits[:, 0]).cpu().tolist())
+        return scores
 
 
 def _plain_vectors(values: Any) -> List[List[float]]:
