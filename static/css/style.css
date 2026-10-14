@@ -354,6 +354,7 @@
     display: flex;
     min-height: 0;
     flex-direction: column;
+    container-type: inline-size;
 }
 
 #industry-report-agent-hub {
@@ -368,7 +369,7 @@
 .industry-report-agent-hub-shell {
     position: relative;
     height: 100%;
-    min-height: 420px;
+    min-height: clamp(360px, 32vw, 420px);
     overflow: hidden;
     border-radius: 8px;
     background:
@@ -379,7 +380,7 @@
 
 .industry-report-agent-hub-lines {
     position: absolute;
-    inset: 20px;
+    inset: clamp(14px, 2vw, 20px);
     pointer-events: none;
 }
 
@@ -401,8 +402,8 @@
     left: 50%;
     top: 50%;
     z-index: 2;
-    width: 150px;
-    height: 150px;
+    width: clamp(104px, 17cqw, 150px);
+    height: clamp(104px, 17cqw, 150px);
     transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
@@ -411,11 +412,11 @@
     border: 1px solid #93c5fd;
     border-radius: 999px;
     background: #ffffff;
-    padding: 16px;
+    padding: clamp(10px, 1.8cqw, 16px);
     text-align: center;
     box-shadow:
-        0 0 0 14px rgba(147, 197, 253, 0.15),
-        0 0 0 30px rgba(147, 197, 253, 0.08),
+        0 0 0 clamp(7px, 1.5cqw, 14px) rgba(147, 197, 253, 0.15),
+        0 0 0 clamp(14px, 3cqw, 30px) rgba(147, 197, 253, 0.08),
         0 12px 24px rgba(37, 99, 235, 0.12);
 }
 
@@ -428,7 +429,7 @@
     border-radius: 999px;
     background: #eff6ff;
     color: #2563eb;
-    margin-bottom: 8px;
+    margin-bottom: clamp(5px, 1cqw, 8px);
 }
 
 .industry-report-agent-hub-grid {
@@ -436,11 +437,11 @@
     z-index: 1;
     display: grid;
     height: 100%;
-    min-height: 420px;
-    grid-template-columns: minmax(188px, 0.88fr) minmax(146px, 0.7fr) minmax(188px, 0.88fr);
-    grid-template-rows: repeat(2, minmax(150px, auto));
-    gap: 34px 22px;
-    padding: 34px 30px;
+    min-height: clamp(360px, 32vw, 420px);
+    grid-template-columns: minmax(148px, 0.92fr) minmax(clamp(76px, 14cqw, 136px), 0.52fr) minmax(148px, 0.92fr);
+    grid-template-rows: repeat(2, minmax(126px, auto));
+    gap: clamp(16px, 2.6cqw, 34px) clamp(10px, 1.8cqw, 22px);
+    padding: clamp(18px, 3cqw, 34px) clamp(18px, 2.8cqw, 30px);
     align-content: space-between;
 }
 
@@ -450,7 +451,7 @@
     border: 1px solid #dbe3ef;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.92);
-    padding: 16px;
+    padding: clamp(12px, 2cqw, 16px);
     box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
     text-align: left;
     font: inherit;
@@ -485,8 +486,8 @@
 
 .industry-report-agent-hub-node-icon {
     display: inline-flex;
-    width: 44px;
-    height: 44px;
+    width: clamp(36px, 5.4cqw, 44px);
+    height: clamp(36px, 5.4cqw, 44px);
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
@@ -494,7 +495,7 @@
     border: 1px solid #dbeafe;
     background: #eff6ff;
     color: #2563eb;
-    font-size: 18px;
+    font-size: clamp(15px, 2.2cqw, 18px);
 }
 
 .industry-report-agent-hub-progress {
@@ -621,15 +622,7 @@
     }
 }
 
-@media (max-width: 1024px) {
-    .industry-report-top-workspace {
-        height: auto;
-    }
-
-    .industry-report-log-card {
-        max-height: 420px;
-    }
-
+@container (max-width: 520px) {
     .industry-report-agent-hub-shell {
         height: auto;
         min-height: auto;
@@ -641,9 +634,11 @@
     }
 
     .industry-report-agent-hub-grid {
+        height: auto;
         min-height: 0;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         grid-template-rows: none;
+        gap: 14px;
         padding: 16px;
     }
 
@@ -651,20 +646,29 @@
     .industry-report-agent-hub-node:nth-child(n) {
         grid-column: auto;
         grid-row: auto;
-        max-width: none;
         justify-self: stretch;
+    }
+}
+
+@container (max-width: 420px) {
+    .industry-report-agent-hub-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 1024px) {
+    .industry-report-top-workspace {
+        height: auto;
+    }
+
+    .industry-report-log-card {
+        max-height: 420px;
     }
 }
 
 @media (min-width: 1280px) {
     .industry-report-top-workspace {
         height: 500px;
-    }
-}
-
-@media (max-width: 640px) {
-    .industry-report-agent-hub-grid {
-        grid-template-columns: 1fr;
     }
 }
 
@@ -920,3 +924,22 @@ html, body {
 #graph-sidebar-handle {
     transition: left 0.3s ease, background-color 0.2s;
 }
+.industry-report-template-modal[hidden] { display: none; }
+.industry-report-template-modal { position: fixed; inset: 0; z-index: 100; background: rgba(17, 24, 39, .35); display: flex; align-items: center; justify-content: center; padding: 16px; }
+.industry-report-template-dialog { width: min(1040px, 100%); max-height: calc(100dvh - 32px); display: flex; flex-direction: column; gap: 16px; background: white; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 16px 48px rgba(0, 0, 0, .15); }
+.industry-report-template-header, .industry-report-template-footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; flex-shrink: 0; }
+.industry-report-template-header { border-bottom: 1px solid #e5e7eb; flex-wrap: wrap; }
+.industry-report-template-footer { justify-content: flex-end; border-top: 1px solid #e5e7eb; }
+.industry-report-template-content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 0 20px; overflow-y: auto; min-height: 0; }
+.industry-report-template-column { min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+.industry-report-template-column + .industry-report-template-column { border-left: 1px solid #e5e7eb; padding-left: 20px; }
+.industry-report-template-column-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 767px) {
+    .industry-report-template-content { grid-template-columns: minmax(0, 1fr); }
+    .industry-report-template-column + .industry-report-template-column { border-left: 0; border-top: 1px solid #e5e7eb; padding-left: 0; padding-top: 20px; }
+    .industry-report-template-footer { flex-wrap: wrap; }
+}
+.industry-report-template-row { display: grid; grid-template-columns: 24px minmax(0, 1fr) auto; gap: 8px; align-items: center; margin-bottom: 10px; }
+.industry-report-template-row input { width: 100%; min-width: 0; padding: 8px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; }
+.industry-report-template-row button { width: 28px; height: 32px; color: #6b7280; }
+.industry-report-template-dialog button:disabled { opacity: .4; cursor: not-allowed; }
