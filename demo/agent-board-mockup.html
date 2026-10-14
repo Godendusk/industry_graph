@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent协作看板预览</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f6f8fb;
+      color: #1f2937;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      padding: 32px;
+    }
+    .board-card {
+      width: min(1320px, 100%);
+      margin: 0 auto;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, .06);
+      padding: 24px;
+    }
+    .board-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .header-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+    }
+    .board-title {
+      margin: 0;
+      font-size: 26px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+    .board-stage {
+      margin-left: auto;
+      color: #64748b;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .stage-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #10b981;
+    }
+    .board-canvas {
+      position: relative;
+      min-height: 520px;
+      border-radius: 14px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 48%, rgba(37, 99, 235, .11), transparent 36%),
+        linear-gradient(135deg, #f8fbff 0%, #eef6ff 100%);
+      border: 1px solid #e8f0ff;
+      padding: 28px;
+    }
+    .links {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    .hub {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 210px;
+      height: 210px;
+      transform: translate(-50%, -50%);
+      border-radius: 999px;
+      background: #fff;
+      border: 2px solid #93c5fd;
+      box-shadow:
+        0 0 0 18px rgba(147, 197, 253, .16),
+        0 0 0 38px rgba(147, 197, 253, .10),
+        0 16px 40px rgba(37, 99, 235, .14);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #1d4ed8;
+      z-index: 3;
+    }
+    .hub-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      margin-bottom: 12px;
+    }
+    .hub-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+    .hub-subtitle {
+      color: #2563eb;
+      font-size: 13px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .agent {
+      position: absolute;
+      width: 310px;
+      min-height: 148px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .92);
+      border: 1px solid #dbeafe;
+      box-shadow: 0 16px 34px rgba(15, 23, 42, .07);
+      padding: 18px 18px 16px;
+      z-index: 2;
+    }
+    .agent.done {
+      border-color: #a7f3d0;
+      background: #f0fdf4;
+    }
+    .agent.running {
+      border-color: #93c5fd;
+      background: #eff6ff;
+    }
+    .agent.pending {
+      border-color: #e2e8f0;
+      background: #fff;
+    }
+    .agent-row {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .agent-icon {
+      width: 52px;
+      height: 52px;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #2563eb;
+    }
+    .agent-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+    .agent-main { min-width: 0; flex: 1; }
+    .agent-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .agent-name {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1f2937;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pill {
+      margin-left: auto;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .pill.done { background: #dcfce7; color: #047857; }
+    .pill.running { background: #dbeafe; color: #1d4ed8; }
+    .pill.pending { background: #f1f5f9; color: #64748b; }
+    .agent-desc {
+      color: #64748b;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+    .agent-metrics {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      color: #64748b;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+    .agent-time {
+      color: #334155;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .progress {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .track {
+      position: relative;
+      flex: 1;
+      height: 7px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e2e8f0;
+    }
+    .bar {
+      position: absolute;
+      inset: 0 auto 0 0;
+      border-radius: inherit;
+      background: #2563eb;
+    }
+    .done .bar { background: #10b981; }
+    .running .bar { background: #2563eb; }
+    .pending .bar { background: #94a3b8; }
+    .progress-value {
+      width: 38px;
+      color: #64748b;
+      font-size: 13px;
+      font-weight: 800;
+      text-align: right;
+    }
+    .a1 { left: 72px; top: 62px; }
+    .a2 { left: 72px; bottom: 62px; }
+    .a3 { right: 72px; bottom: 62px; }
+    .a4 { right: 72px; top: 62px; }
+    @media (max-width: 980px) {
+      body { padding: 16px; }
+      .board-canvas {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 14px;
+        min-height: 0;
+      }
+      .links, .hub { display: none; }
+      .agent {
+        position: static;
+        width: 100%;
+        transform: none;
+      }
+      .board-stage { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <section class="board-card">
+    <header class="board-header">
+      <div class="header-icon" aria-hidden="true">
+        <svg width="23" height="23" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          <circle cx="12" cy="5" r="2.4" fill="currentColor"/>
+          <circle cx="5" cy="12" r="2.4" fill="currentColor"/>
+          <circle cx="19" cy="12" r="2.4" fill="currentColor"/>
+          <circle cx="12" cy="19" r="2.4" fill="currentColor"/>
+        </svg>
+      </div>
+      <h1 class="board-title">Agent协作看板</h1>
+      <div class="board-stage"><span class="stage-dot"></span>Agent运行中</div>
+    </header>
+
+    <div class="board-canvas">
+      <svg class="links" viewBox="0 0 1260 520" preserveAspectRatio="none">
+        <g fill="none" stroke-width="2.5" stroke-linecap="round">
+          <path d="M630 260 C515 190 425 132 330 120" stroke="#60a5fa"/>
+          <path d="M630 260 C515 330 425 388 330 400" stroke="#34d399"/>
+          <path d="M630 260 C745 330 835 388 930 400" stroke="#38bdf8"/>
+          <path d="M630 260 C745 190 835 132 930 120" stroke="#2563eb"/>
+        </g>
+        <g>
+          <circle cx="330" cy="120" r="5" fill="#60a5fa"/>
+          <circle cx="330" cy="400" r="5" fill="#34d399"/>
+          <circle cx="930" cy="400" r="5" fill="#38bdf8"/>
+          <circle cx="930" cy="120" r="5" fill="#2563eb"/>
+        </g>
+      </svg>
+
+      <div class="hub">
+        <div class="hub-icon" aria-hidden="true">
+          <svg width="27" height="27" viewBox="0 0 24 24" fill="none">
+            <path d="M12 7v5m0 0-5 4m5-4 5 4" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+            <circle cx="12" cy="5" r="3" fill="currentColor"/>
+            <circle cx="6" cy="18" r="3" fill="currentColor"/>
+            <circle cx="18" cy="18" r="3" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="hub-title">协作中枢</div>
+        <div class="hub-subtitle">任务分解 · 进度协调 · 结果整合</div>
+      </div>
+
+      <article class="agent done a1">
+        <div class="agent-row">
+          <div class="agent-icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="6" y="8" width="12" height="10" rx="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 8V5m6 3V5M8.5 13h.01M15.5 13h.01M10 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 12h2m12 0h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="agent-main">
+            <div class="agent-head">
+              <div class="agent-name">分析Agent</div>
+              <span class="pill done">✓ 已完成</span>
+            </div>
+            <div class="agent-desc">理解题目与需求，生成可编辑任务卡</div>
+            <div class="agent-metrics">
+              <span>任务卡已生成</span>
+              <span class="agent-time">用时 00:18</span>
+            </div>
+            <div class="progress">
+              <div class="track"><span class="bar" style="width: 100%"></span></div>
+              <span class="progress-value">100%</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="agent done a2">
+        <div class="agent-row">
+          <div class="agent-icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="6" y="8" width="12" height="10" rx="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 8V5m6 3V5M8.5 13h.01M15.5 13h.01M10 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 12h2m12 0h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="agent-main">
+            <div class="agent-head">
+              <div class="agent-name">规划Agent</div>
+              <span class="pill done">✓ 已完成</span>
+            </div>
+            <div class="agent-desc">规划章节结构，形成可编辑大纲</div>
+            <div class="agent-metrics">
+              <span>20 个二级标题</span>
+              <span class="agent-time">用时 00:32</span>
+            </div>
+            <div class="progress">
+              <div class="track"><span class="bar" style="width: 100%"></span></div>
+              <span class="progress-value">100%</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="agent done a3">
+        <div class="agent-row">
+          <div class="agent-icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="6" y="8" width="12" height="10" rx="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 8V5m6 3V5M8.5 13h.01M15.5 13h.01M10 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 12h2m12 0h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="agent-main">
+            <div class="agent-head">
+              <div class="agent-name">统筹Agent</div>
+              <span class="pill done">✓ 已完成</span>
+            </div>
+            <div class="agent-desc">检索资料并统筹写作任务</div>
+            <div class="agent-metrics">
+              <span>20/20 完成</span>
+              <span class="agent-time">用时 01:24</span>
+            </div>
+            <div class="progress">
+              <div class="track"><span class="bar" style="width: 100%"></span></div>
+              <span class="progress-value">100%</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="agent running a4">
+        <div class="agent-row">
+          <div class="agent-icon">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="6" y="8" width="12" height="10" rx="3" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 8V5m6 3V5M8.5 13h.01M15.5 13h.01M10 17h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M4 12h2m12 0h2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="agent-main">
+            <div class="agent-head">
+              <div class="agent-name">写作Agent</div>
+              <span class="pill running">● 运行中</span>
+            </div>
+            <div class="agent-desc">按任务生成正文小节</div>
+            <div class="agent-metrics">
+              <span>12/20 小节</span>
+              <span class="agent-time">用时 02:06</span>
+            </div>
+            <div class="progress">
+              <div class="track"><span class="bar" style="width: 60%"></span></div>
+              <span class="progress-value">60%</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

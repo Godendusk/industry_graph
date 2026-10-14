@@ -341,7 +341,332 @@
     box-shadow: 0 0 0 4px rgba(239, 246, 255, 0.95);
 }
 
+.industry-report-top-card {
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+    min-height: 0;
+}
 
+.industry-report-top-workspace {
+    min-height: 0;
+}
+
+.industry-report-agent-card {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+}
+
+#industry-report-agent-hub {
+    flex: 1;
+    min-height: 0;
+}
+
+.industry-report-log-card {
+    overflow: hidden;
+}
+
+.industry-report-agent-hub-shell {
+    position: relative;
+    height: 100%;
+    min-height: 420px;
+    overflow: hidden;
+    border-radius: 8px;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.10), transparent 35%),
+        linear-gradient(135deg, #f8fafc 0%, #ffffff 48%, #eff6ff 100%);
+    border: 1px solid #edf3ff;
+}
+
+.industry-report-agent-hub-lines {
+    position: absolute;
+    inset: 20px;
+    pointer-events: none;
+}
+
+.industry-report-agent-hub-lines svg {
+    width: 100%;
+    height: 100%;
+}
+
+.industry-report-agent-hub-lines path {
+    stroke: #93c5fd;
+    stroke-width: 0.9;
+    stroke-linecap: round;
+    fill: none;
+    opacity: 0.72;
+}
+
+.industry-report-agent-hub-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    width: 150px;
+    height: 150px;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #93c5fd;
+    border-radius: 999px;
+    background: #ffffff;
+    padding: 16px;
+    text-align: center;
+    box-shadow:
+        0 0 0 14px rgba(147, 197, 253, 0.15),
+        0 0 0 30px rgba(147, 197, 253, 0.08),
+        0 12px 24px rgba(37, 99, 235, 0.12);
+}
+
+.industry-report-agent-hub-center-icon {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #2563eb;
+    margin-bottom: 8px;
+}
+
+.industry-report-agent-hub-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    height: 100%;
+    min-height: 420px;
+    grid-template-columns: minmax(188px, 0.88fr) minmax(146px, 0.7fr) minmax(188px, 0.88fr);
+    grid-template-rows: repeat(2, minmax(150px, auto));
+    gap: 34px 22px;
+    padding: 34px 30px;
+    align-content: space-between;
+}
+
+.industry-report-agent-hub-node {
+    width: 100%;
+    min-width: 0;
+    border: 1px solid #dbe3ef;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.92);
+    padding: 16px;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.05);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.industry-report-agent-hub-node:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.10);
+}
+
+.industry-report-agent-hub-node:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.industry-report-agent-hub-node:nth-child(2) {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.industry-report-agent-hub-node:nth-child(3) {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.industry-report-agent-hub-node:nth-child(4) {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.industry-report-agent-hub-node-icon {
+    display: inline-flex;
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 18px;
+}
+
+.industry-report-agent-hub-progress {
+    position: relative;
+    height: 6px;
+    margin-top: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e2e8f0;
+}
+
+.industry-report-agent-hub-progress-bar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: inherit;
+    background: #3b82f6;
+}
+
+.industry-report-agent-hub-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 18px;
+}
+
+.industry-report-agent-hub-status-dot {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: #94a3b8;
+}
+
+.industry-report-agent-hub-node.is-active {
+    border-color: #93c5fd;
+    background: #eff6ff;
+}
+
+.industry-report-agent-hub-node.is-active .industry-report-agent-hub-status {
+    color: #1d4ed8;
+}
+
+.industry-report-agent-hub-node.is-active .industry-report-agent-hub-progress-bar {
+    background: #2563eb;
+}
+
+.industry-report-agent-hub-node.is-active .industry-report-agent-hub-status-dot {
+    background: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.industry-report-agent-hub-node.is-done {
+    border-color: #bbf7d0;
+    background: #f0fdf4;
+}
+
+.industry-report-agent-hub-node.is-done .industry-report-agent-hub-status {
+    color: #047857;
+}
+
+.industry-report-agent-hub-node.is-done .industry-report-agent-hub-progress-bar {
+    background: #10b981;
+}
+
+.industry-report-agent-hub-node.is-done .industry-report-agent-hub-status-dot {
+    background: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+.industry-report-agent-hub-node.is-failed {
+    border-color: #fecaca;
+    background: #fef2f2;
+}
+
+.industry-report-agent-hub-node.is-failed .industry-report-agent-hub-status {
+    color: #dc2626;
+}
+
+.industry-report-agent-hub-node.is-failed .industry-report-agent-hub-progress-bar {
+    background: #ef4444;
+}
+
+.industry-report-agent-hub-node.is-failed .industry-report-agent-hub-status-dot {
+    background: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
+}
+
+.industry-report-outline-coordinated {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    border-radius: 999px;
+    background: #ecfdf5;
+    color: #059669;
+    padding: 2px 7px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.industry-report-preview-nav-title {
+    display: inline-block;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 1px;
+}
+
+.industry-report-preview-nav-title.is-generated {
+    border-bottom-color: #a7f3d0;
+}
+
+.industry-report-agent-hub-pulse {
+    animation: industry-report-hub-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes industry-report-hub-pulse {
+    0%, 100% {
+        box-shadow: 0 8px 18px rgba(37, 99, 235, 0.08);
+    }
+    50% {
+        box-shadow: 0 10px 22px rgba(37, 99, 235, 0.18);
+    }
+}
+
+@media (max-width: 1024px) {
+    .industry-report-top-workspace {
+        height: auto;
+    }
+
+    .industry-report-log-card {
+        max-height: 420px;
+    }
+
+    .industry-report-agent-hub-shell {
+        height: auto;
+        min-height: auto;
+    }
+
+    .industry-report-agent-hub-lines,
+    .industry-report-agent-hub-center {
+        display: none;
+    }
+
+    .industry-report-agent-hub-grid {
+        min-height: 0;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: none;
+        padding: 16px;
+    }
+
+    .industry-report-agent-hub-node,
+    .industry-report-agent-hub-node:nth-child(n) {
+        grid-column: auto;
+        grid-row: auto;
+        max-width: none;
+        justify-self: stretch;
+    }
+}
+
+@media (min-width: 1280px) {
+    .industry-report-top-workspace {
+        height: 500px;
+    }
+}
+
+@media (max-width: 640px) {
+    .industry-report-agent-hub-grid {
+        grid-template-columns: 1fr;
+    }
+}
 
 /* 徽章样式 */
 .badge-green {

@@ -2,22 +2,22 @@
 <div id="view-industry-report" class="absolute inset-0 bg-gray-50 hidden overflow-hidden">
     <div class="h-full flex flex-col">
         <div class="bg-white border-b border-gray-200 px-8 py-4 flex flex-col gap-4 flex-shrink-0">
-            <div class="flex items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
+            <div class="grid grid-cols-1 xl:grid-cols-[minmax(420px,1fr)_minmax(620px,auto)] items-center gap-4">
+                <div class="flex items-center gap-3 min-w-0">
                     <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center">
                         <i class="fas fa-file-signature text-lg"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-bold text-gray-800">产业报告生成</h2>
-                        <div id="report-flow-meta" class="text-xs text-gray-500 mt-1">等待输入报告题目</div>
+                        <h2 class="text-xl font-bold text-gray-800 whitespace-nowrap">产业报告生成</h2>
+                        <div id="report-flow-meta" class="text-xs text-gray-500 mt-1 whitespace-nowrap">等待输入报告题目</div>
                     </div>
                 </div>
-                <div class="flex items-center gap-3 flex-wrap justify-end">
-                    <div id="report-flow-stage" class="hidden md:flex items-center gap-2 text-xs text-gray-500">
-                        <span class="w-2 h-2 rounded-full bg-gray-300"></span>
-                        <span>未开始</span>
-                    </div>
-                    <div class="flex items-center gap-2">
+                <div class="flex flex-col items-end gap-3">
+                    <div class="flex items-center gap-3 flex-wrap justify-end">
+                        <div id="report-flow-stage" class="hidden md:flex items-center gap-2 text-xs text-gray-500">
+                            <span class="w-2 h-2 rounded-full bg-gray-300"></span>
+                            <span>未开始</span>
+                        </div>
                         <select id="industry-report-history-select"
                                 onchange="loadSelectedIndustryReportHistory()"
                                 class="w-44 bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-700">
@@ -32,242 +32,264 @@
                             删除
                         </button>
                     </div>
-                    <button onclick="exportIndustryReportMarkdown()" class="bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-300 flex items-center gap-2">
-                        <i class="fas fa-file-arrow-down text-gray-600"></i>
-                        导出 MD
-                    </button>
-                    <button onclick="exportIndustryReportWord()" class="bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-300 flex items-center gap-2">
-                        <i class="fas fa-file-word text-blue-600"></i>
-                        导出 Word
-                    </button>
-                    <button onclick="resetIndustryReportWorkspace()" class="bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-300 flex items-center gap-2">
-                        <i class="fas fa-rotate-left text-gray-500"></i>
-                        重置
-                    </button>
+                    <div class="flex items-center gap-3 flex-wrap justify-end">
+                        <button onclick="exportIndustryReportMarkdown()" class="bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-300 flex items-center gap-2">
+                            <i class="fas fa-file-arrow-down text-gray-600"></i>
+                            导出 MD
+                        </button>
+                        <button onclick="exportIndustryReportWord()" class="bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-300 flex items-center gap-2">
+                            <i class="fas fa-file-word text-blue-600"></i>
+                            导出 Word
+                        </button>
+                        <button onclick="resetIndustryReportWorkspace()" class="bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-lg text-sm border border-gray-300 flex items-center gap-2">
+                            <i class="fas fa-rotate-left text-gray-500"></i>
+                            重置
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="flex-1 min-h-0 overflow-y-auto">
             <div class="p-6 space-y-5">
-                <section class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm space-y-4">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="font-semibold text-gray-800 flex items-center gap-2">
-                            <i class="fas fa-diagram-project text-blue-600"></i>
-                            工作流
-                        </div>
-                        <span class="text-xs text-gray-400">点击节点查看任务明细</span>
-                    </div>
-                    <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-5 items-stretch">
-                        <div id="industry-report-stepper" class="min-w-0"></div>
-                        <aside class="rounded-lg border border-blue-100 bg-blue-50/50 p-4 h-[300px] flex flex-col">
-                            <div class="flex items-center justify-between gap-3 mb-4">
-                                <div class="font-semibold text-gray-800">执行日志</div>
-                                <div class="flex items-center gap-4 text-xs">
-                                    <span class="inline-flex items-center gap-1.5 text-emerald-600">
-                                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                                        实时更新
-                                    </span>
-                                </div>
+                <div class="industry-report-top-workspace grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_650px] gap-5 items-stretch">
+                    <section class="industry-report-top-card industry-report-agent-card bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+                        <div class="flex items-center justify-between gap-3 mb-4">
+                            <div class="font-semibold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-network-wired text-blue-600"></i>
+                                Agent协作看板
                             </div>
-                            <div id="industry-report-execution-log" class="flex-1 min-h-0 overflow-y-auto pr-1"></div>
-                        </aside>
-                    </div>
-                    <div id="industry-report-step-detail"></div>
-                </section>
-
-                <section class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
-                    <div class="flex items-center justify-between mb-4 gap-3">
-                        <div class="font-semibold text-gray-800 flex items-center gap-2">
-                            <i class="fas fa-pen-nib text-blue-600"></i>
-                            报告需求
+                            <span id="industry-report-agent-hub-summary" class="text-xs text-gray-500">暂无状态数据</span>
                         </div>
-                        <span id="report-industry-pill" class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">人工智能</span>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="text-xs text-gray-500 px-1">报告题目 <span class="text-gray-400">必填</span></div>
-                        <input id="industry-report-title"
-                               class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-800 focus:ring-blue-500 focus:border-blue-500"
-                               placeholder="必填：人工智能产业报告"
-                               title="可自行输入报告标题">
-                        <div class="text-xs text-gray-400 px-1 -mt-1">默认使用当前产业报告标题，也可以自行输入标题</div>
-                        <textarea id="industry-report-prompt"
-                                  class="w-full h-24 bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm focus:ring-blue-500 focus:border-blue-500 resize-none"
-                                  placeholder="可选：补充侧重点、研究范围、篇幅、分析对象或禁止扩展的内容..."></textarea>
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
-                            <div id="industry-report-status" class="text-xs text-gray-500">等待输入题目</div>
-                            <button id="report-outline-btn"
-                                    onclick="submitIndustryReportRequirement()"
-                                    class="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
-                                <i class="fas fa-paper-plane"></i>
-                                提交题目与需求
-                            </button>
-                        </div>
-                    </div>
-                </section>
+                        <div id="industry-report-agent-hub"></div>
+                    </section>
 
-                <section id="industry-report-task-card-section" class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm space-y-4">
-                    <div class="flex items-center justify-between gap-3">
-                        <div class="font-semibold text-gray-800 flex items-center gap-2">
-                            <i class="fas fa-clipboard-check text-blue-600"></i>
-                            写作任务卡
-                        </div>
-                        <span id="industry-report-task-card-state" class="text-xs text-gray-500">待生成</span>
-                    </div>
-
-                    <div id="industry-report-task-card-empty" class="text-gray-400 text-sm">生成写作卡后可以编辑</div>
-
-                    <div id="industry-report-task-card-content" class="grid grid-cols-1 lg:grid-cols-2 gap-4 hidden">
-                        <label class="block lg:col-span-2">
-                            <span class="block text-xs font-semibold text-gray-500 mb-1">原始标题</span>
-                            <input id="industry-report-original-title" readonly
-                                   class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-500">
-                        </label>
-                        <label class="block">
-                            <span class="block text-xs font-semibold text-gray-500 mb-1">最终报告标题</span>
-                            <input id="industry-report-task-title"
-                                   class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium focus:ring-blue-500 focus:border-blue-500">
-                        </label>
-                        <div id="industry-report-title-suggestions" class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
-                            <div class="text-xs font-semibold text-gray-500 mb-2">参考标题</div>
-                            <div id="industry-report-title-suggestion-options" class="grid grid-cols-1 xl:grid-cols-2 gap-2"></div>
-                        </div>
-                        <div class="lg:col-span-2 grid grid-cols-1 xl:grid-cols-3 gap-3">
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 min-h-[104px]">
-                                <div class="text-xs font-semibold text-gray-500">模型识别产业</div>
-                                <div id="industry-report-recognized-industry" class="text-sm text-gray-800 mt-2">-</div>
-                            </div>
-                            <label class="block rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 min-h-[104px]">
-                                <span class="flex items-center justify-between gap-2 text-xs font-semibold text-gray-500 mb-2">
-                                    <span>最终产业方向</span>
-                                    <span class="font-normal text-gray-400">请选择最终产业方向</span>
+                    <aside class="industry-report-top-card industry-report-log-card bg-white border border-gray-200 rounded-lg p-5 shadow-sm flex flex-col min-h-[300px] h-full">
+                        <div class="flex items-center justify-between gap-3 mb-4">
+                            <div class="font-semibold text-gray-800">执行日志</div>
+                            <div class="flex items-center gap-4 text-xs">
+                                <span class="inline-flex items-center gap-1.5 text-emerald-600">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                                    实时更新
                                 </span>
-                                <select id="industry-report-selected-industry" onchange="handleIndustryReportSelectedIndustryChange()"
-                                        class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"></select>
-                            </label>
-                            <div class="relative rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 min-h-[104px]">
-                                <div class="flex items-center justify-between gap-2">
-                                    <div class="text-xs font-semibold text-gray-500">资料源选择</div>
-                                    <div class="group relative">
-                                        <span class="cursor-help text-xs text-blue-600 border-b border-dotted border-blue-300">说明</span>
-                                        <div id="industry-report-match-result"
-                                             class="pointer-events-none invisible group-hover:visible absolute right-0 top-5 z-20 w-72 rounded-lg border border-gray-200 bg-white px-3 py-3 text-xs leading-5 text-gray-600 shadow-lg"></div>
+                            </div>
+                        </div>
+                        <div id="industry-report-execution-log" class="flex-1 min-h-0 overflow-y-auto pr-1"></div>
+                    </aside>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-[minmax(320px,0.40fr)_minmax(0,0.60fr)] gap-5 items-stretch">
+                    <section id="industry-report-requirement-panel" class="industry-report-top-card bg-white border border-gray-200 rounded-lg p-5 shadow-sm min-h-[430px] xl:h-[430px]">
+                        <div class="flex items-center justify-between mb-4 gap-3">
+                            <div class="font-semibold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-pen-nib text-blue-600"></i>
+                                报告需求
+                            </div>
+                            <span id="report-industry-pill" class="text-xs px-2 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-100">人工智能</span>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="text-xs text-gray-500 px-1">报告题目 <span class="text-gray-400">必填</span></div>
+                            <input id="industry-report-title"
+                                   class="w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-800 focus:ring-blue-500 focus:border-blue-500"
+                                   placeholder="必填：人工智能产业报告"
+                                   title="可自行输入报告标题">
+                            <div class="text-xs text-gray-400 px-1 -mt-1">默认使用当前产业报告标题，也可以自行输入标题</div>
+                            <textarea id="industry-report-prompt"
+                                      class="w-full h-40 bg-gray-50 border border-gray-300 rounded-lg p-3 text-sm focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                      placeholder="可选：补充侧重点、研究范围、篇幅、分析对象或禁止扩展的内容..."></textarea>
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+                                <div id="industry-report-status" class="text-xs text-gray-500">等待输入题目</div>
+                                <button id="report-outline-btn"
+                                        onclick="submitIndustryReportRequirement()"
+                                        class="w-full sm:w-auto bg-gray-900 hover:bg-black text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
+                                    <i class="fas fa-paper-plane"></i>
+                                    提交题目与需求
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="industry-report-task-card-section" class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm h-full min-h-[430px] xl:h-[430px] flex flex-col">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="font-semibold text-gray-800 flex items-center gap-2">
+                                <i class="fas fa-clipboard-check text-blue-600"></i>
+                                写作任务卡
+                            </div>
+                            <span id="industry-report-task-card-state" class="text-xs text-gray-500">待生成</span>
+                        </div>
+
+                        <div class="mt-4 flex-1 min-h-0 overflow-y-auto pr-1 space-y-4">
+                            <div id="industry-report-task-card-empty" class="text-gray-400 text-sm">生成写作卡后可以编辑</div>
+
+                            <div id="industry-report-task-card-content" class="grid grid-cols-1 gap-4 hidden">
+                                <label class="block">
+                                    <span class="block text-xs font-semibold text-gray-500 mb-1">原始标题</span>
+                                    <input id="industry-report-original-title" readonly
+                                           class="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-500">
+                                </label>
+                                <label class="block">
+                                    <span class="block text-xs font-semibold text-gray-500 mb-1">最终报告标题</span>
+                                    <input id="industry-report-task-title"
+                                           class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium focus:ring-blue-500 focus:border-blue-500">
+                                </label>
+                                <div id="industry-report-title-suggestions" class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3">
+                                    <div class="text-xs font-semibold text-gray-500 mb-2">参考标题</div>
+                                    <div id="industry-report-title-suggestion-options" class="grid grid-cols-1 gap-2"></div>
+                                </div>
+                                <div class="grid grid-cols-1 xl:grid-cols-[minmax(108px,0.7fr)_minmax(230px,1.55fr)_minmax(188px,0.95fr)] gap-3">
+                                    <div class="rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 min-h-[104px]">
+                                        <div class="text-xs font-semibold leading-5 text-gray-500">模型识别产业</div>
+                                        <div id="industry-report-recognized-industry" class="mt-3 truncate text-sm font-semibold leading-6 text-gray-800">-</div>
+                                    </div>
+                                    <label class="block rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 min-h-[104px]">
+                                        <span class="flex items-center justify-between gap-2 text-xs font-semibold leading-5 text-gray-500 mb-3">
+                                            <span>最终产业方向</span>
+                                            <span class="truncate font-normal text-gray-400">请选择最终产业方向</span>
+                                        </span>
+                                        <select id="industry-report-selected-industry" onchange="handleIndustryReportSelectedIndustryChange()"
+                                                class="w-full bg-white border border-gray-300 rounded-lg px-2.5 py-2 text-sm font-semibold leading-5 text-gray-800 focus:ring-blue-500 focus:border-blue-500"></select>
+                                    </label>
+                                    <div class="relative rounded-lg border border-gray-200 bg-gray-50 px-3 py-3 min-h-[104px]">
+                                        <div class="flex items-center justify-between gap-2">
+                                            <div class="text-xs font-semibold leading-5 text-gray-500">资料源选择</div>
+                                            <div class="group relative">
+                                                <span class="inline-flex w-4 h-4 items-center justify-center rounded-full bg-gray-200 text-[10px] font-bold text-gray-500 cursor-help">i</span>
+                                                <div id="industry-report-match-result"
+                                                     class="pointer-events-none invisible group-hover:visible absolute right-0 top-5 z-20 w-72 rounded-lg border border-gray-200 bg-white px-3 py-3 text-xs leading-5 text-gray-600 shadow-lg"></div>
+                                            </div>
+                                        </div>
+                                        <label id="industry-report-use-graph-row" class="mt-3 flex items-center gap-2 text-sm font-semibold leading-5 text-gray-700">
+                                            <input id="industry-report-use-graph" type="checkbox" onchange="handleIndustryReportSourceToggle()"
+                                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="truncate">使用产业图谱</span>
+                                        </label>
+                                        <label id="industry-report-use-external-rag-row" class="mt-2 flex items-center gap-2 text-sm font-semibold leading-5 text-gray-700">
+                                            <input id="industry-report-use-external-rag" type="checkbox" onchange="handleIndustryReportSourceToggle()"
+                                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="truncate">使用外部资料库</span>
+                                        </label>
                                     </div>
                                 </div>
-                                <label id="industry-report-use-graph-row" class="mt-3 flex items-center gap-2 text-sm text-gray-700">
-                                    <input id="industry-report-use-graph" type="checkbox" onchange="handleIndustryReportSourceToggle()"
-                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                    <span>使用产业图谱</span>
-                                </label>
-                                <label id="industry-report-use-external-rag-row" class="mt-2 flex items-center gap-2 text-sm text-gray-700">
-                                    <input id="industry-report-use-external-rag" type="checkbox" onchange="handleIndustryReportSourceToggle()"
-                                           class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                    <span>使用外部资料库</span>
+                                <label class="block">
+                                    <span class="block text-xs font-semibold text-gray-500 mb-1">报告需求</span>
+                                    <div id="industry-report-task-requirement-preview"
+                                         contenteditable="true"
+                                         oninput="handleIndustryReportRequirementPreviewInput()"
+                                         class="min-h-[9rem] rounded-lg border border-blue-100 bg-blue-50 px-3 py-3 text-sm leading-6 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"></div>
+                                    <textarea id="industry-report-task-requirement"
+                                              class="hidden"></textarea>
                                 </label>
                             </div>
+
+                            <div id="industry-report-task-card-actions" class="hidden space-y-4">
+                                <button id="report-task-card-confirm-btn" onclick="generateIndustryReportOutline()"
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
+                                    <i class="fas fa-wand-magic-sparkles"></i>
+                                    确认任务卡并生成大纲
+                                </button>
+                            </div>
                         </div>
-                        <label class="block lg:col-span-2">
-                            <span class="block text-xs font-semibold text-gray-500 mb-1">报告需求</span>
-                            <div id="industry-report-task-requirement-preview"
-                                 contenteditable="true"
-                                 oninput="handleIndustryReportRequirementPreviewInput()"
-                                 class="min-h-[9rem] rounded-lg border border-blue-100 bg-blue-50 px-3 py-3 text-sm leading-6 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"></div>
-                            <textarea id="industry-report-task-requirement"
-                                      class="hidden"></textarea>
-                        </label>
-                    </div>
+                    </section>
+                </div>
 
-                    <div id="industry-report-task-card-actions" class="hidden space-y-4">
-                        <button id="report-task-card-confirm-btn" onclick="generateIndustryReportOutline()"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
-                            <i class="fas fa-wand-magic-sparkles"></i>
-                            确认任务卡并生成大纲
-                        </button>
-                    </div>
-                </section>
-
-                <section class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm space-y-4">
+                <section id="industry-report-outline-panel" class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm h-[430px] flex flex-col gap-4">
                     <div class="flex items-center justify-between gap-3">
                         <div class="font-semibold text-gray-800 flex items-center gap-2">
                             <i class="fas fa-sitemap text-indigo-600"></i>
                             大纲编辑
+                            <span id="industry-report-outline-summary" class="text-xs font-normal text-gray-400">暂无大纲</span>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="addIndustryReportSection()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs border border-gray-300">
-                                <i class="fas fa-plus mr-1"></i>章节
+                        <div class="flex flex-wrap items-center justify-end gap-2">
+                            <button id="report-outline-add-section-btn" onclick="addIndustryReportSection()" class="bg-white hover:bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-xs border border-blue-100 flex items-center gap-1.5">
+                                <i class="fas fa-plus"></i>
+                                新增章节
+                            </button>
+                            <label class="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1.5 text-xs text-gray-600">
+                                <span>检索资料数</span>
+                                <input id="industry-report-top-k" type="number" min="1" max="20" value="10"
+                                       class="w-14 bg-white border border-gray-200 rounded px-2 py-1 text-xs">
+                                <span class="group relative inline-flex w-4 h-4 items-center justify-center rounded-full bg-gray-200 text-[10px] font-bold text-gray-500 cursor-help">
+                                    i
+                                    <span class="pointer-events-none invisible group-hover:visible absolute right-0 top-6 z-30 w-64 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-normal leading-5 text-gray-600 shadow-lg">每个二级标题检索多少条相关资料；越大资料越多，但速度会变慢，也可能引入弱相关信息。</span>
+                                </span>
+                            </label>
+                            <label class="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1.5 text-xs text-gray-600">
+                                <span>统筹并发数</span>
+                                <input id="industry-report-coordinator-workers" type="number" min="1" max="6" value="3"
+                                       oninput="renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || 'idle')"
+                                       class="w-14 bg-white border border-gray-200 rounded px-2 py-1 text-xs">
+                                <span class="group relative inline-flex w-4 h-4 items-center justify-center rounded-full bg-gray-200 text-[10px] font-bold text-gray-500 cursor-help">
+                                    i
+                                    <span class="pointer-events-none invisible group-hover:visible absolute right-0 top-6 z-30 w-64 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-normal leading-5 text-gray-600 shadow-lg">统筹阶段同时处理几个二级标题；数值越大越快，也更容易出现接口压力、超时或失败。</span>
+                                </span>
+                            </label>
+                            <button id="report-outline-confirm-btn" onclick="prepareIndustryReportTasks()" disabled
+                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium opacity-60 cursor-not-allowed flex items-center gap-1.5">
+                                <i class="fas fa-list-check"></i>
+                                确认大纲并统筹写作任务
                             </button>
                         </div>
                     </div>
-                    <div id="industry-report-outline" class="space-y-3">
+                    <div id="industry-report-outline" class="space-y-2 flex-1 min-h-0 overflow-y-auto pr-1">
                         <div class="text-gray-400 text-sm">生成推荐大纲后可编辑</div>
                     </div>
-                    <div class="border-t border-gray-100 pt-4 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-3 items-end">
-                        <label class="block">
-                            <span class="text-xs font-semibold text-gray-500">检索数量</span>
-                            <input id="industry-report-top-k" type="number" min="1" max="20" value="10"
-                                   class="mt-1 w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                            <span class="mt-1 block text-[11px] leading-4 text-gray-500">每个二级标题检索多少条相关资料；越大资料越多，但速度会变慢，也可能引入弱相关信息。</span>
-                        </label>
-                        <label class="block">
-                            <span class="text-xs font-semibold text-gray-500">统筹检索并发数</span>
-                            <input id="industry-report-coordinator-workers" type="number" min="1" max="6" value="3"
-                                   oninput="renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || 'idle')"
-                                   class="mt-1 w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                            <span class="mt-1 block text-[11px] leading-4 text-gray-500">同时检索几个二级标题的资料；写作决策按大纲顺序生成。提高并发数可能增加接口压力。</span>
-                        </label>
-                        <button id="report-outline-confirm-btn" onclick="prepareIndustryReportTasks()" disabled
-                                class="w-full lg:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium opacity-60 cursor-not-allowed flex items-center justify-center gap-2">
-                            <i class="fas fa-list-check"></i>
-                            确认并统筹写作任务
-                        </button>
-                    </div>
                 </section>
 
-                <section class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm space-y-3">
-                    <div class="font-semibold text-gray-800 flex items-center gap-2">
-                        <i class="fas fa-sliders text-emerald-600"></i>
-                        报告生成
-                    </div>
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
-                        <label class="block">
-                            <span class="text-xs font-semibold text-gray-500">正文并发数</span>
-                            <input id="industry-report-workers" type="number" min="1" max="6" value="3"
-                                   oninput="renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || 'idle')"
-                                   class="mt-1 w-full bg-gray-50 border border-gray-300 rounded-lg px-3 py-2 text-sm">
-                            <span class="mt-1 block text-[11px] leading-4 text-gray-500">生成正文时同时写几个一级标题。</span>
-                        </label>
-                        <div class="rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs leading-5 text-emerald-800">
-                            <div class="mt-1"><span class="font-semibold">正文并发数</span>保留给正文阶段调度，默认 3 比较稳。</div>
+                <section id="industry-report-generation-panel" class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm h-[680px] flex flex-col gap-4">
+                    <div class="flex items-center justify-between gap-3">
+                        <div class="font-semibold text-gray-800 flex items-center gap-2">
+                            <i class="fas fa-file-lines text-blue-600"></i>
+                            报告生成
                         </div>
-                    </div>
-                    <button id="report-generate-btn"
-                            onclick="startIndustryReportGeneration()"
-                            disabled
-                            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center justify-center gap-2 opacity-60 cursor-not-allowed">
-                        <i class="fas fa-play"></i>
-                        开始生成正文
-                    </button>
-                </section>
-
-                <section class="min-h-0">
-                    <section class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm min-h-[560px]">
-                        <div class="flex items-center justify-between gap-3 mb-4">
-                            <div class="font-semibold text-gray-800 flex items-center gap-2">
-                                <i class="fas fa-file-lines text-gray-600"></i>
-                                报告正文预览
-                            </div>
-                            <button onclick="renderIndustryReportPreview()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded-lg text-xs border border-gray-300">
-                                <i class="fas fa-rotate mr-1"></i>刷新
+                        <div class="flex flex-wrap items-center justify-end gap-2">
+                            <label class="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1.5 text-xs text-gray-600">
+                                <span>正文并发数</span>
+                                <input id="industry-report-workers" type="number" min="1" max="6" value="3"
+                                       oninput="renderIndustryReportFlowSteps(industryReportWorkspace.currentStage || 'idle')"
+                                       class="w-14 bg-white border border-gray-200 rounded px-2 py-1 text-xs">
+                                <span class="group relative inline-flex w-4 h-4 items-center justify-center rounded-full bg-gray-200 text-[10px] font-bold text-gray-500 cursor-help">
+                                    i
+                                    <span class="pointer-events-none invisible group-hover:visible absolute right-0 top-6 z-30 w-64 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-normal leading-5 text-gray-600 shadow-lg">正文阶段同时生成几个一级标题组；同一一级标题内仍按顺序生成，以保留前文避重和衔接。</span>
+                                </span>
+                            </label>
+                            <button id="report-generate-btn"
+                                    onclick="startIndustryReportGeneration()"
+                                    disabled
+                                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 opacity-60 cursor-not-allowed">
+                                <i class="fas fa-play"></i>
+                                开始生成正文
+                            </button>
+                            <button onclick="renderIndustryReportPreview()" class="bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-lg text-xs border border-gray-200 flex items-center gap-1.5">
+                                <i class="fas fa-rotate"></i>
+                                刷新
+                            </button>
+                            <button onclick="exportIndustryReportMarkdown()" class="bg-white hover:bg-gray-50 text-gray-700 px-3 py-1.5 rounded-lg text-xs border border-gray-200 flex items-center gap-1.5">
+                                <i class="fas fa-file-arrow-down"></i>
+                                导出 MD
+                            </button>
+                            <button onclick="exportIndustryReportWord()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5">
+                                <i class="fas fa-file-word"></i>
+                                导出 Word
                             </button>
                         </div>
-                        <div id="industry-report-preview" class="space-y-4 text-sm text-gray-800">
-                            <div class="border-b border-gray-200 pb-4">
-                                <h1 class="text-2xl font-bold text-gray-900 leading-tight">人工智能产业报告</h1>
+                    </div>
+                    <div class="grid grid-cols-1 xl:grid-cols-[240px_minmax(0,1fr)] gap-4 flex-1 min-h-0">
+                        <aside class="rounded-lg border border-blue-100 bg-blue-50/50 p-3 min-h-0 overflow-y-auto">
+                            <div id="industry-report-preview-nav" class="space-y-2 text-sm">
+                                <div class="text-gray-400 text-sm">生成大纲后显示标题导航</div>
                             </div>
-                            <div class="text-gray-400">暂无正文内容</div>
-                        </div>
-                    </section>
+                        </aside>
+                        <section class="rounded-lg border border-gray-200 bg-white p-5 min-h-0 overflow-y-auto">
+                            <div id="industry-report-preview" class="space-y-4 text-sm text-gray-800">
+                                <div class="border-b border-gray-200 pb-4">
+                                    <h1 class="text-2xl font-bold text-gray-900 leading-tight">人工智能产业报告</h1>
+                                </div>
+                                <div class="text-gray-400">暂无正文内容</div>
+                            </div>
+                        </section>
+                    </div>
                 </section>
+
             </div>
         </div>
     </div>
