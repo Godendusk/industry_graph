@@ -947,6 +947,103 @@ test("workflow execution log includes failures and pending initial state", () =>
     assert.ok(items.some(item => item.title.includes("生成失败") && item.statusState === "failed"));
 });
 
+test("rollback from generated body returns to coordinator and clears body artifacts", () => {
+    const { calls, context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.historyId = "saved-report";
+        industryReportWorkspace.currentStage = "done";
+        industryReportWorkspace.activeStep = "review";
+        industryReportWorkspace.selectedAgentStep = "review";
+        industryReportWorkspace.completedSteps = ["requirement", "outline", "coordinator", "body"];
+        industryReportWorkspace.taskCard = { selected_title: "产业报告", report_requirement: "需求" };
+        industryReportWorkspace.outline = [{
+            level1_id: "S1",
+            level1_title: "产业发展",
+            subsections: [{ outline_id: "S1.1", title: "技术进展" }],
+        }];
+        industryReportWorkspace.writingTasks = [{ outline_id: "S1.1", title: "技术进展" }];
+        industryReportWorkspace.bodySections = [{ outline_id: "S1.1", body_text: "正文" }];
+        industryReportWorkspace.bodyProgressById = { "S1.1": { status: "已生成", statusState: "done" } };
+        industryReportWorkspace.abstractText = "摘要";
+        industryReportWorkspace.exportState = "done";
+        rollbackIndustryReportWorkflow();
+    `, context);
+
+    assert.equal(vm.runInContext("industryReportWorkspace.historyId", context), "");
+    assert.equal(vm.runInContext("industryReportWorkspace.currentStage", context), "coordinator");
+    assert.deepEqual(vm.runInContext("industryReportWorkspace.completedSteps", context), ["requirement", "outline", "coordinator"]);
+    assert.equal(vm.runInContext("industryReportWorkspace.bodySections.length", context), 0);
+    assert.equal(vm.runInContext("industryReportWorkspace.abstractText", context), "");
+    assert.equal(vm.runInContext("industryReportWorkspace.writingTasks.length", context), 1);
+    assert.equal(vm.runInContext("industryReportWorkspace.outlineLocked", context), true);
+    assert.deepEqual(calls.statuses.at(-1), { message: "报告需求已提交", type: "success" });
+});
+
+test("rollback from coordinator returns to editable outline and clears task progress", () => {
+    const { calls, context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "coordinator";
+        industryReportWorkspace.completedSteps = ["requirement", "outline", "coordinator"];
+        industryReportWorkspace.taskCard = { selected_title: "产业报告", report_requirement: "需求" };
+        industryReportWorkspace.outline = [{
+            level1_id: "S1",
+            level1_title: "产业发展",
+            subsections: [{ outline_id: "S1.1", title: "技术进展" }],
+        }];
+        industryReportWorkspace.writingTasks = [{ outline_id: "S1.1", title: "技术进展" }];
+        industryReportWorkspace.references = [{ citation_id: "R1" }];
+        industryReportWorkspace.coordinatorProgressById = { "S1.1": { status: "已统筹", statusState: "done" } };
+        industryReportWorkspace.outlineLocked = true;
+        rollbackIndustryReportWorkflow();
+    `, context);
+
+    assert.equal(vm.runInContext("industryReportWorkspace.currentStage", context), "outline");
+    assert.deepEqual(vm.runInContext("industryReportWorkspace.completedSteps", context), ["requirement", "outline"]);
+    assert.equal(vm.runInContext("industryReportWorkspace.writingTasks.length", context), 0);
+    assert.equal(vm.runInContext("industryReportWorkspace.references.length", context), 0);
+    assert.equal(vm.runInContext("Object.keys(industryReportWorkspace.coordinatorProgressById).length", context), 0);
+    assert.equal(vm.runInContext("industryReportWorkspace.outlineLocked", context), false);
+    assert.deepEqual(calls.statuses.at(-1), { message: "报告需求已提交", type: "success" });
+});
+
+test("rollback from outline returns to editable task card and clears outline", () => {
+    const { calls, context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "outline";
+        industryReportWorkspace.completedSteps = ["requirement", "outline"];
+        industryReportWorkspace.taskCard = { selected_title: "产业报告", report_requirement: "需求" };
+        industryReportWorkspace.outline = [{
+            level1_id: "S1",
+            level1_title: "产业发展",
+            subsections: [{ outline_id: "S1.1", title: "技术进展" }],
+        }];
+        rollbackIndustryReportWorkflow();
+    `, context);
+
+    assert.equal(vm.runInContext("industryReportWorkspace.currentStage", context), "idle");
+    assert.deepEqual(vm.runInContext("industryReportWorkspace.completedSteps", context), ["requirement"]);
+    assert.equal(vm.runInContext("industryReportWorkspace.taskCard.selected_title", context), "产业报告");
+    assert.equal(vm.runInContext("industryReportWorkspace.outline.length", context), 0);
+    assert.equal(vm.runInContext("isIndustryReportTaskCardLocked()", context), false);
+    assert.equal(vm.runInContext("isIndustryReportRequirementLocked()", context), true);
+    assert.deepEqual(calls.statuses.at(-1), { message: "报告需求已提交", type: "success" });
+});
+
+test("rollback from task card returns to requirement status", () => {
+    const { calls, context } = loadReportScript();
+    vm.runInContext(`
+        industryReportWorkspace.currentStage = "idle";
+        industryReportWorkspace.completedSteps = ["requirement"];
+        industryReportWorkspace.taskCard = { selected_title: "产业报告", report_requirement: "需求" };
+        rollbackIndustryReportWorkflow();
+    `, context);
+
+    assert.equal(vm.runInContext("industryReportWorkspace.taskCard", context), null);
+    assert.equal(vm.runInContext("industryReportWorkspace.completedSteps.length", context), 0);
+    assert.equal(vm.runInContext("isIndustryReportRequirementLocked()", context), false);
+    assert.deepEqual(calls.statuses.at(-1), { message: "等待输入题目", type: "info" });
+});
+
 test("workflow execution log only lists coordinator tasks after they finish", () => {
     const { context } = loadReportScript();
     vm.runInContext(`

@@ -16,7 +16,7 @@ from graph_import_script import run_import
 from RAG.build_vector_db import query_vector_db, query_graph
 from report_generation.body_agent import generate_report_bodies, stream_report_bodies
 from report_generation.coordinator_agent import generate_writing_tasks, stream_writing_tasks
-from report_generation.outline_agent import generate_report_outline
+from report_generation.outline_agent import generate_report_outline, import_outline_template
 from report_generation.rewrite_agent import recommend_rewrite_materials, rewrite_body_section
 from report_generation.summary_agent import generate_report_summary
 from report_generation.task_card_agent import generate_writing_task_card, generate_report_requirement
@@ -322,6 +322,22 @@ def report_task_card_rewrite_requirement():
 
 # --- Report generation: outline agent ---
 # 生成报告大纲，供前端展示和修改
+@app.route("/api/report/template/import", methods=["POST"])
+@token_required
+def report_template_import():
+    uploaded = request.files.get("file")
+    if uploaded is None or not uploaded.filename or not uploaded.filename.lower().endswith(".docx"):
+        return jsonify(status="error", message="请上传 .docx 文件；旧版 .doc 请另存为 .docx"), 400
+    content = uploaded.stream.read(10 * 1024 * 1024 + 1)
+    if len(content) > 10 * 1024 * 1024:
+        return jsonify(status="error", message="Word 文件不能超过 10MB"), 400
+    try:
+        titles = import_outline_template(content)
+    except Exception as exc:
+        return jsonify(status="error", message=f"Word 模版识别失败：{exc}"), 400
+    return jsonify(status="success", level1_titles=titles, message=f"已识别 {len(titles)} 个一级标题，请检查后保存")
+
+
 @app.route("/api/report/outline", methods=["POST"])
 @token_required
 def report_outline():
@@ -349,6 +365,7 @@ def report_outline():
         user_requirement=user_requirement,
         industry=industry,
         industry_confirmed=task_card is not None,
+        outline_template=task_card.get("outline_template"),
     )
 
     # 记录直接大纲生成上下文，便于定位任务卡和输出大纲是否一致。

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import io
 import json
 import re
 import zipfile
@@ -25,11 +26,63 @@ BODY_SUBSECTION_MIN = 2
 BODY_SUBSECTION_MAX = 4
 
 
+def validate_outline_template(value: Any) -> List[str]:
+    if not isinstance(value, dict) or not isinstance(value.get("level1_titles"), list):
+        raise ValueError("模版必须包含一级标题列表")
+    titles = value["level1_titles"]
+    if not 1 <= len(titles) <= 30:
+        raise ValueError("模版需要 1～30 个一级标题")
+    if any(not isinstance(title, str) or not title.strip() or len(title.strip()) > 120 for title in titles):
+        raise ValueError("一级标题不能为空，且不能超过 120 字")
+    titles = [title.strip() for title in titles]
+    if len(set(titles)) != len(titles):
+        raise ValueError("一级标题不能重复")
+    return titles
+
+
+def import_outline_template(content: bytes) -> List[str]:
+    ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+    def attr(node, key):
+        return node.get("{" + ns["w"] + "}" + key) if node is not None else None
+    with zipfile.ZipFile(io.BytesIO(content)) as document:
+        if sum(item.file_size for item in document.infolist()) > 50 * 1024 * 1024:
+            raise ValueError("Word 解压后过大，请精简模版")
+        styles = ET.fromstring(document.read("word/styles.xml")) if "word/styles.xml" in document.namelist() else ET.Element("styles")
+        style_map = {attr(style, "styleId"): style for style in styles.findall("w:style", ns)}
+        def style_level(style_id, seen=None):
+            seen = set() if seen is None else seen
+            if style_id in seen or style_id not in style_map:
+                return None
+            seen.add(style_id)
+            style = style_map[style_id]
+            level = attr(style.find("w:pPr/w:outlineLvl", ns), "val")
+            if level is not None:
+                return level
+            name = attr(style.find("w:name", ns), "val") or ""
+            if name.lower().replace(" ", "") in {"heading1", "标题1"}:
+                return "0"
+            return style_level(attr(style.find("w:basedOn", ns), "val"), seen)
+        root = ET.fromstring(document.read("word/document.xml"))
+        titles = []
+        for paragraph in root.findall("w:body/w:p", ns):
+            level = attr(paragraph.find("w:pPr/w:outlineLvl", ns), "val")
+            if level is None:
+                level = style_level(attr(paragraph.find("w:pPr/w:pStyle", ns), "val"))
+            if level == "0":
+                title = "".join(node.text or "" for node in paragraph.findall(".//w:t", ns)).strip()
+                if title:
+                    titles.append(title)
+    if not titles:
+        raise ValueError("未识别到一级标题，请在 Word 中设置标题 1 样式，或手动填写")
+    return validate_outline_template({"level1_titles": titles})
+
+
 def generate_report_outline(
     title: str,
     user_requirement: str = "",
     industry: str = "",
     industry_confirmed: bool = False,
+    outline_template: Optional[dict] = None,
 ) -> dict:
     """Generate a report outline directly from the confirmed task card."""
     report_title = str(title or "").strip()
@@ -45,12 +98,17 @@ def generate_report_outline(
         return _error_response(f"unsupported confirmed industry: {resolved_industry}", resolved_industry, "")
 
     resolved_industry_name = _industry_name(resolved_industry)
+    try:
+        template_titles = validate_outline_template(outline_template) if outline_template is not None else None
+    except ValueError as exc:
+        return _error_response(str(exc), resolved_industry, resolved_industry_name)
     effective_prompt = normalized_requirement or report_title
     direct_result = _generate_direct_outline(
         report_title=report_title,
         user_requirement=effective_prompt,
         industry=resolved_industry,
         industry_name=resolved_industry_name,
+        **({"template_titles": template_titles} if template_titles is not None else {}),
     )
     if direct_result.get("status") != "success":
         return direct_result
@@ -117,6 +175,7 @@ def _generate_direct_outline(
     user_requirement: str,
     industry: str,
     industry_name: str,
+    template_titles: Optional[List[str]] = None,
 ) -> dict:
     system_prompt = f"""你是企业产业洞察报告大纲生成智能体。
 你只根据已经人工确认的任务卡生成报告大纲，不再重新理解任务、改写标题或改换产业方向。
@@ -162,11 +221,20 @@ def _generate_direct_outline(
   ]
 }}
 """
+    if template_titles is not None:
+        system_prompt = system_prompt.replace(
+            f"生成 {BODY_SECTION_MIN} 到 {BODY_SECTION_MAX} 个一级章节",
+            f"严格生成 {len(template_titles)} 个一级章节，标题及顺序必须与用户模版完全一致",
+        )
+        template_sections = [{"level1_id": f"S{index}", "title": title} for index, title in enumerate(template_titles, 1)]
+        system_prompt += "\n一级标题由程序固定。你只按 level1_id 生成章节目标、内容要求和二级标题，不要生成或修改一级标题。每个 ID 必须且只能出现一次。"
+        user_prompt_text = user_prompt_text.replace('"level1_title": "一级章节标题"', '"level1_id": "S1"')
+        user_prompt_text += "\n【已确认章节，按 ID 返回内容】\n" + json.dumps(template_sections, ensure_ascii=False)
     try:
         content = llm.query(
             user_prompt=user_prompt_text,
             system_prompt=system_prompt,
-            max_tokens=8000,
+            max_tokens=max(8000, len(template_titles) * 800) if template_titles else 8000,
             extra_log_info=f"report_generation.outline_agent direct_outline industry={industry or 'none'}",
         )
     except Exception as exc:
@@ -178,6 +246,8 @@ def _generate_direct_outline(
     try:
         data = _parse_json_object(content)
     except ValueError as exc:
+        if template_titles is not None:
+            return _error_response(f"模版大纲解析失败，请重试：{exc}", industry, industry_name)
         repaired_content = _regenerate_concise_outline_json(
             report_title=report_title,
             user_requirement=user_requirement,
@@ -196,7 +266,7 @@ def _generate_direct_outline(
             return result
 
     try:
-        chapters, warnings = _normalize_direct_chapters(data.get("chapters"))
+        chapters, warnings = _normalize_direct_chapters(data.get("chapters"), template_titles)
     except ValueError as exc:
         result = _error_response(str(exc), industry, industry_name)
         result["raw_output"] = content
@@ -248,9 +318,35 @@ def _regenerate_concise_outline_json(
         return ""
 
 
-def _normalize_direct_chapters(value: Any) -> tuple[List[dict], List[dict]]:
+def _normalize_direct_chapters(value: Any, template_titles: Optional[List[str]] = None) -> tuple[List[dict], List[dict]]:
     if not isinstance(value, list):
         raise ValueError("direct outline JSON missing chapters array")
+    if template_titles is not None:
+        expected_ids = [f"S{index}" for index in range(1, len(template_titles) + 1)]
+        by_id = {}
+        for item in value:
+            if not isinstance(item, dict):
+                raise ValueError("模版章节数据格式错误，请重试")
+            section_id = item.get("level1_id")
+            if not isinstance(section_id, str) or section_id not in expected_ids:
+                raise ValueError("生成结果包含未知章节 ID，请重试")
+            if section_id in by_id:
+                raise ValueError("生成结果包含重复章节 ID，请重试")
+            subsections = item.get("subsections")
+            if not isinstance(subsections, list) or not subsections or any(not isinstance(sub, dict) or not isinstance(sub.get("title"), str) or not sub["title"].strip() for sub in subsections):
+                raise ValueError("生成结果缺少有效二级标题，请重试")
+            by_id[section_id] = item
+        if set(by_id) != set(expected_ids):
+            raise ValueError("生成结果缺少模版章节 ID，请重试")
+        return [
+            {
+                "title": template_titles[index],
+                "chapter_goal": str(by_id[section_id].get("chapter_goal") or "").strip(),
+                "content_requirements": _clean_string_list(by_id[section_id].get("content_requirements")),
+                "subsections": by_id[section_id]["subsections"],
+            }
+            for index, section_id in enumerate(expected_ids)
+        ], []
 
     chapters: List[dict] = []
     warnings: List[dict] = []
