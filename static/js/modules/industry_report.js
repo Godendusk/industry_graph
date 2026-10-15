@@ -4122,6 +4122,10 @@ async function generateIndustryReportSummaryForWord(title, bodySections) {
             body_sections: bodySections,
         }),
     });
+    industryReportWorkspace.adjustmentNotes = [
+        ...(industryReportWorkspace.adjustmentNotes || []).filter(note => note.kind !== "summary_review"),
+        ...(Array.isArray(data.adjustment_notes) ? data.adjustment_notes : []),
+    ];
     return (data.abstract_text || "").trim();
 }
 

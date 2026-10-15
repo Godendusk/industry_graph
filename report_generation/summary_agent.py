@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import json
 import zipfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -10,6 +11,7 @@ from typing import Any, List, Optional
 
 from llm_client import llm
 from .industry_config import SUPPORTED_INDUSTRIES
+from .structured_output import parse_json_object
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -155,6 +157,9 @@ def generate_report_summary(
             industry_name,
         )
 
+    summary_review, review_warnings, notes, abstract_text = _review_summary(
+        normalized_title, body_text, abstract_text)
+    warnings.extend(review_warnings)
     return {
         "status": "success",
         "industry": normalized_industry,
@@ -162,7 +167,66 @@ def generate_report_summary(
         "report_title": normalized_title,
         "abstract_text": abstract_text,
         "warnings": warnings,
+        "summary_review": summary_review,
+        "adjustment_notes": notes,
     }
+
+
+def _review_summary(title, body_text, abstract_text):
+    """One final consistency check; failures retain the generated abstract."""
+    prompt = """你是报告成稿审查Agent，只核对摘要与最终正文的一致性。
+检查摘要是否新增无依据结论，是否把建议、待验证条件、计划或预测改写为已发生事实，是否丢失时间、对象、统计口径或必要限定。
+正文有明确资料冲突时，摘要不得挑选其中一条作为无条件现状。只依据正文，不补查或补造事实。
+发现问题直接修正摘要，保留有依据的主要判断及建议，400—600字。没有问题则保留原摘要。
+只返回JSON：{\"issues\":[{\"reason\":\"具体问题\"}],\"corrected_abstract_text\":\"有问题时完整修正摘要，无问题时空字符串\"}。"""
+    warnings, notes = [], []
+    review = {'status': 'failed', 'issue_count': 0, 'changed': False}
+    payload = json.dumps({'report_title': title, 'body_text': body_text, 'abstract_text': abstract_text}, ensure_ascii=False)
+    try:
+        if len(payload) > 70000:
+            raise ValueError('summary_review_budget')
+        query_kwargs = dict(user_prompt=payload, system_prompt=prompt, max_tokens=DEFAULT_MAX_TOKENS,
+                            reasoning_effort='high', extra_body={'thinking': {'type': 'enabled'}},
+                            extra_log_info='report_generation.summary_review')
+        result = llm.query_result(**query_kwargs)
+        # 与摘要生成一样，思考和可见JSON共用预算。仅截断时增加一次预算，
+        # 不重试连接错误，也不把未完成的修正当作核对通过。
+        if not result.error_message and result.finish_reason == 'length':
+            query_kwargs['max_tokens'] = RETRY_MAX_TOKENS
+            result = llm.query_result(**query_kwargs)
+        if result.error_message or result.finish_reason == 'length' or not result.content:
+            raise ValueError('summary_review_unavailable')
+        answer = parse_json_object(result.content)
+        if (not {'issues'} <= set(answer) <= {'issues', 'corrected_abstract_text'}
+                or not isinstance(answer['issues'], list)
+                or any(not isinstance(i, dict) or set(i) != {'reason'} or not isinstance(i['reason'], str)
+                       or not i['reason'].strip() for i in answer['issues'])):
+            raise ValueError('invalid_summary_review')
+        review.update(status='completed', issue_count=len(answer['issues']))
+        corrected = answer.get('corrected_abstract_text', '')
+        if not isinstance(corrected, str):
+            raise ValueError('invalid_corrected_summary')
+        if answer['issues']:
+            if corrected.strip():
+                cleaned, cleanup = _clean_abstract_text(corrected)
+                if not cleaned:
+                    raise ValueError('empty_corrected_summary')
+                abstract_text = cleaned
+                warnings.extend(cleanup)
+                review['changed'] = True
+                notes.append({'kind': 'summary_review', 'outline_ids': [],
+                              'reason': '摘要已按最终正文修正无依据结论及必要限定。'})
+            else:
+                review['status'] = 'partial'
+            for issue in answer['issues']:
+                warnings.append({'stage': 'summary_review', 'message': issue['reason'], 'corrected': review['changed']})
+                if not review['changed']:
+                    notes.append({'kind': 'summary_review', 'outline_ids': [], 'reason': '摘要待核实：' + issue['reason']})
+    except Exception:
+        review['status'] = 'failed'
+        warnings.append({'stage': 'summary_review', 'message': '摘要一致性核对未完成；保留生成摘要'})
+        notes.append({'kind': 'summary_review', 'outline_ids': [], 'reason': '摘要一致性核对未完成，生成摘要已保留。'})
+    return review, warnings, notes, abstract_text
 
 
 def _read_abstract_template(path: Path) -> dict:
@@ -241,7 +305,7 @@ def _build_summary_system_prompt(abstract_template: dict) -> str:
 1. 只输出摘要正文，不要输出“摘要”标题、目录、标题页或 Word 导出说明。
 2. 摘要应基于用户提供的报告标题、大纲和正文，不要补充正文中没有的信息。
 3. 摘要字数严格限制在 400-600 字。
-4. 不得标注 [知识图谱1]、[外部资料1] 等引用编号。
+4. 不得标注 [C1]、[知识图谱1]、[外部资料1] 等引用编号。
 5. 不得输出参考文献、引用列表、资料来源或资料来源说明。
 6. 保持正式产业研究报告文风，逻辑清晰、表述准确。"""
 
@@ -338,7 +402,7 @@ def _clean_abstract_text(content: str) -> tuple[str, List[dict]]:
             }
         )
 
-    cleaned = re.sub(r"\[(?:知识图谱|外部资料)\d+\]", "", text)
+    cleaned = re.sub(r"\[(?:C|知识图谱|外部资料)\d+\]", "", text)
     if cleaned != text:
         text = cleaned
         warnings.append(

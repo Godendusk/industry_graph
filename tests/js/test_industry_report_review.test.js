@@ -88,3 +88,17 @@ test('failed rewrite keeps body and abstract intact', async () => {
   assert.equal(record.abstractText, '现有摘要');
   assert.match(preview.innerHTML, /重写失败/);
 });
+
+test('summary review notes replace prior summary notes and persist for export and history', async () => {
+  const context = load();
+  vm.runInContext(`industryReportWorkspace.adjustmentNotes = [
+    {kind:'body_edit', reason:'正文已压缩'},
+    {kind:'summary_review', reason:'旧摘要提示'}];`, context);
+  context.industryReportApi = async () => ({abstract_text:'修正摘要',
+    adjustment_notes:[{kind:'summary_review', outline_ids:[], reason:'摘要已修正'}]});
+  const text = await context.generateIndustryReportSummaryForWord('报告', []);
+  assert.equal(text, '修正摘要');
+  const record = context.buildIndustryReportHistoryRecord();
+  assert.equal(record.adjustmentNotes.length, 2);
+  assert.equal(record.adjustmentNotes[1].reason, '摘要已修正');
+});

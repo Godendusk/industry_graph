@@ -1,10 +1,18 @@
 import unittest
 from unittest.mock import patch
+from llm_client import LLMQueryResult
 
 from report_generation import rewrite_agent
 
 
 class ReportRewriteCitationsTest(unittest.TestCase):
+    def setUp(self):
+        self.review_model = patch.object(
+            rewrite_agent.llm, 'query_result',
+            return_value=LLMQueryResult(content='{"issues":[]}', finish_reason='stop'))
+        self.review_model.start()
+        self.addCleanup(self.review_model.stop)
+
     def test_rewrite_reviews_only_current_section_and_uses_reviewed_text(self):
         current = {'outline_id': 'S1.1', 'title': '当前', 'body_text': '旧文。'}
         other = {'outline_id': 'S1.2', 'title': '其他', 'status': 'success', 'body_text': '其他正文。'}
@@ -173,7 +181,8 @@ def test_rewrite_cross_source_focus_is_preserved_and_current_excluded():
     selected = [{'library':'news','material_id':'new','vector_id':'vnew',
                  'text':'中国移动牵头成立具身智能产业联盟'}]
     prior = [{'outline_id':'S1.1','title':'布局','body_text':'背景。中国移动牵头成立具身智能产业联盟[C14]。'},current]
-    with patch.object(rewrite_agent.llm,'query',return_value='新分析[C1]。') as query:
+    with patch.object(rewrite_agent.llm,'query',return_value='新分析[C1]。') as query, \
+         patch.object(rewrite_agent.llm, 'query_result', return_value=LLMQueryResult(content='{"issues":[]}', finish_reason='stop')):
         result = rewrite_agent.rewrite_body_section('完善建议','测试',current,{},selected,
                                                     references=[],industry='embodied',previous_body_sections=prior)
     assert '中国移动牵头成立具身智能产业联盟[C14]' in query.call_args.kwargs['user_prompt']
