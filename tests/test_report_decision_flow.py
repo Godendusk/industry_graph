@@ -26,7 +26,7 @@ def test_both_entries_pass_prior_decisions_then_coordinate_before_completion():
             previous.append(copy.deepcopy(previous_tasks))
             assert task['external_rag_retrieval']['evidence_blocks'][0]['citation_id']=='C1'
             return {'decision':decision(), 'status':'generated','warnings':[]}
-        def coordinate(tasks):
+        def coordinate(tasks, **kwargs):
             tasks=copy.deepcopy(tasks)
             tasks[1]['writing_decision']=decision('协调后的资源转化问题')
             tasks[1]['writing_system_prompt']='协调后的指令'
@@ -46,6 +46,7 @@ def test_both_entries_pass_prior_decisions_then_coordinate_before_completion():
         assert previous[0]==[] and previous[1][0]['outline_id']=='S3.1'
         assert result['writing_tasks'][1]['writing_system_prompt']=='协调后的指令'
         assert result['coordination']['status']=='completed'
+        assert result['report_scope']['status']=='incomplete'
         finals.append(result['writing_tasks'])
     assert finals[0]==finals[1]
 
@@ -84,5 +85,6 @@ def test_nineteen_decisions_and_one_coordination_without_extra_calls():
     assert all(c.startswith('report_generation.writing_decisions outline=') for c in contexts[:19])
     assert contexts[-1]=='report_generation.task_coordination'
     assert len(result['writing_tasks'])==19
-    assert result['fallback_count']==0 and result['coordination']['status']=='completed'
+    assert result['fallback_count']==0 and result['coordination']['status']=='incomplete'
+    assert result['report_scope']['status']=='incomplete'
     assert all(t['external_rag_retrieval']['evidence_blocks'][0]['citation_id']=='C1' for t in result['writing_tasks'])

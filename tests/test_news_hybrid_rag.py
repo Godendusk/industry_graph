@@ -155,39 +155,20 @@ class NewsRetrievalTests(unittest.TestCase):
             with self.subTest(industry=industry), patch.dict(os.environ, {}, clear=True), patch(
                 "report_generation.external_rag.retriever._retrieve_hybrid", return_value={"status": "success"}
             ) as ai, patch("report_generation.external_rag.retriever._retrieve_news_hybrid",
-                          return_value={"status": "success"}) as news, patch(
-                "report_generation.external_rag.retriever._retrieve_legacy"
-            ) as legacy:
+                          return_value={"status": "success"}) as news:
                 result = retrieve_external_rag("test", 3, industry)
                 self.assertEqual(result["industry"], industry)
                 (ai if industry == "ai" else news).assert_called_once()
                 (news if industry == "ai" else ai).assert_not_called()
-                legacy.assert_not_called()
 
-    def test_fallback_and_compare_do_not_switch_industry(self):
+    def test_news_failure_is_returned_without_switching_industry_or_stores(self):
         with patch("report_generation.external_rag.retriever._retrieve_news_hybrid",
-                   return_value={"status": "error", "message": "missing index"}), patch(
-            "report_generation.external_rag.retriever._retrieve_legacy",
-            return_value={"status": "success", "retrieval_version": "legacy_news"}
-        ) as legacy, patch.dict(os.environ, {"REPORT_RETRIEVAL_MODE": "hybrid_v2"}):
+                   return_value={"status": "error", "message": "missing index"}):
             result = retrieve_external_rag("test", 3, "sea")
-            legacy.assert_called_once_with("test", 3, industry="sea")
-            self.assertEqual(result["retrieval_fallback"], "legacy")
-            self.assertEqual(result["warnings"][0]["code"], "hybrid_fallback")
-        with patch("report_generation.external_rag.retriever._retrieve_news_hybrid",
-                   return_value={"status": "success", "retrieval_version": "hybrid_v2"}), patch(
-            "report_generation.external_rag.retriever._retrieve_legacy", return_value={"status": "success"}
-        ), patch.dict(os.environ, {"REPORT_RETRIEVAL_MODE": "compare"}):
-            result = retrieve_external_rag("test", 3, "quantum")
-            self.assertEqual(result["hybrid_comparison"]["retrieval_version"], "hybrid_v2")
-            self.assertEqual(result["industry"], "quantum")
-        with patch("report_generation.external_rag.retriever._retrieve_news_hybrid",
-                   return_value={"status": "error", "message": "missing index"}), patch(
-            "report_generation.external_rag.retriever._retrieve_legacy"
-        ) as legacy, patch.dict(os.environ, {"REPORT_RETRIEVAL_ALLOW_LEGACY_FALLBACK": "0",
-                                          "REPORT_RETRIEVAL_MODE": "hybrid_v2"}):
-            self.assertEqual(retrieve_external_rag("test", 3, "brain")["status"], "error")
-            legacy.assert_not_called()
+        self.assertEqual(result["status"], "error")
+        self.assertEqual(result["industry"], "sea")
+        self.assertEqual(result["message"], "missing index")
+        self.assertNotIn("retrieval_fallback", result)
 
     def test_dense_validation_mapping_and_library_isolation(self):
         collection = Mock()
@@ -277,7 +258,7 @@ class NewsRetrievalTests(unittest.TestCase):
                     "evidence_blocks": [block], "rag_context_text": "真实证据正文", "warnings": []
                 }), patch.object(coordinator_agent, "request_decision", side_effect=prompt), patch.object(
                     coordinator_agent, "coordinate_writing_tasks",
-                    side_effect=lambda tasks: (tasks, {"status": "completed", "outline_operations": []}, []),
+                    side_effect=lambda tasks, **kwargs: (tasks, {"status": "completed", "outline_operations": []}, []),
                 ):
                     result = coordinator_agent.generate_writing_tasks(
                         "生成产业报告", config["name"] + "报告", outline, industry=industry,

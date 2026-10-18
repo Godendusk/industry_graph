@@ -1,0 +1,94 @@
+[
+  {
+    "id": "embodied-report",
+    "industry": "embodied",
+    "title": "具身智能产业验收报告",
+    "outline_source": "fixed_acceptance_input",
+    "prompt": "编写具身智能产业报告。严格依据现有资料，每节约250至350字。保留日期、主体、单位及计划或已实现的限定；不得编造数字、政策、排名、供应关系。无法确认时说明缺口，区分事实与分析。",
+    "outline": [
+      {
+        "section_type": "body",
+        "level1_id": "S1",
+        "level1_title": "具身智能产业分析",
+        "subsections": [
+          {
+            "outline_id": "S1.1",
+            "scenario": "overview",
+            "title": "产业概述",
+            "writing_focus": "人形机器人的技术路径、已公开应用与发展阶段；保留事件时间与事实限定。"
+          },
+          {
+            "outline_id": "S1.2",
+            "scenario": "chain",
+            "title": "产业链结构",
+            "writing_focus": "人形机器人上下游主要环节、代表企业和具体产品；不得由产业环节推断供货合作。"
+          },
+          {
+            "outline_id": "S1.3",
+            "scenario": "policy",
+            "title": "政策环境",
+            "writing_focus": "人形机器人政策名称、发布日期、适用对象及条款；无法查实的细节列为待确认。"
+          },
+          {
+            "outline_id": "S1.4",
+            "scenario": "competition",
+            "title": "竞争格局",
+            "writing_focus": "人形机器人企业公开产品、项目及商业进展；有来源才陈述排名或份额，区分计划与实现。"
+          },
+          {
+            "outline_id": "S1.5",
+            "scenario": "insufficient",
+            "title": "资料不足与分析边界",
+            "writing_focus": "核对现有资料是否足以给出2026年全年人形机器人企业销售收入排名、精确市场份额及统计口径。不得把未来全年预测写成已实现事实；资料不足时明确缺口，不补造数字。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "biology-report",
+    "industry": "biology",
+    "title": "生物制造产业验收报告",
+    "outline_source": "fixed_acceptance_input",
+    "prompt": "编写生物制造产业报告。严格依据现有资料，每节约250至350字。保留日期、主体、单位及计划或已实现的限定；不得编造数字、政策、排名、供应关系。无法确认时说明缺口，区分事实与分析。",
+    "outline": [
+      {
+        "section_type": "body",
+        "level1_id": "S1",
+        "level1_title": "生物制造产业分析",
+        "subsections": [
+          {
+            "outline_id": "S1.1",
+            "scenario": "overview",
+            "title": "产业概述",
+            "writing_focus": "生物制造的技术路径、已公开应用与发展阶段；保留事件时间与事实限定。"
+          },
+          {
+            "outline_id": "S1.2",
+            "scenario": "chain",
+            "title": "产业链结构",
+            "writing_focus": "生物制造上下游主要环节、代表企业和具体产品；不得由产业环节推断供货合作。"
+          },
+          {
+            "outline_id": "S1.3",
+            "scenario": "policy",
+            "title": "政策环境",
+            "writing_focus": "生物制造政策名称、发布日期、适用对象及条款；无法查实的细节列为待确认。"
+          },
+          {
+            "outline_id": "S1.4",
+            "scenario": "competition",
+            "title": "竞争格局",
+            "writing_focus": "生物制造企业公开产品、项目及商业进展；有来源才陈述排名或份额，区分计划与实现。"
+          },
+          {
+            "outline_id": "S1.5",
+            "scenario": "insufficient",
+            "title": "资料不足与分析边界",
+            "writing_focus": "核对现有资料是否足以给出2026年全年生物制造企业销售收入排名、精确市场份额及统计口径。不得把未来全年预测写成已实现事实；资料不足时明确缺口，不补造数字。"
+          }
+        ]
+      }
+    ]
+  }
+]

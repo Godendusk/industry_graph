@@ -9,6 +9,7 @@ from typing import Any
 
 
 _CITATION_PATTERN = re.compile(r"\[(C[1-9]\d*)\]")
+_BARE_CITATION = re.compile(r"(?<![A-Za-z0-9_\[])(C[1-9]\d*)(?![A-Za-z0-9_\]])")
 
 
 def register_evidence_blocks(
@@ -56,6 +57,19 @@ def register_evidence_blocks(
     return mapped, registry
 
 
+def bind_report_sources(body_text, evidence_blocks, report_evidence_blocks):
+    """Attach only actually cited original fragments already retrieved for this report."""
+    from .report_facts import source_identity
+    blocks = copy.deepcopy(evidence_blocks or [])
+    used = set(_CITATION_PATTERN.findall(str(body_text))) | set(_BARE_CITATION.findall(str(body_text)))
+    seen = {source_identity(b) for b in blocks}
+    for block in report_evidence_blocks or []:
+        if block.get('citation_id') in used and block.get('text') and source_identity(block) not in seen:
+            blocks.append(copy.deepcopy(block))
+            seen.add(source_identity(block))
+    return blocks
+
+
 def validate_body_citations(
     body_text: Any, evidence_blocks: list
 ) -> tuple[str, list[str], list[dict]]:
@@ -78,6 +92,19 @@ def validate_body_citations(
         for row in evidence_blocks
         if isinstance(row, dict) and _text(row.get("citation_id"))
     }
+    unresolved = []
+    def normalize_bare(match):
+        code = match.group(1)
+        if code in allowed:
+            return f'[{code}]'
+        if code not in unresolved:
+            unresolved.append(code)
+        return match.group(0)
+    text = _BARE_CITATION.sub(normalize_bare, text)
+    if unresolved:
+        warnings.append({'stage': 'citation_validation',
+                         'message': 'source codes lack corresponding section evidence',
+                         'unresolved_citation_ids': unresolved})
     used: list[str] = []
     invalid: list[str] = []
 
@@ -110,7 +137,8 @@ def collect_used_references(body_sections: list, references: list) -> list[dict]
         _text(citation_id)
         for section in body_sections
         if isinstance(section, dict) and section.get("status") == "success"
-        for citation_id in section.get("citation_ids", [])
+        for citation_id in (section.get("citation_ids", [])
+                            + _CITATION_PATTERN.findall(str(section.get('body_text') or '')))
         if _text(citation_id)
     }
     return [

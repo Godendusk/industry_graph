@@ -932,6 +932,16 @@ class EvidenceAdapterTests(unittest.TestCase):
         self.assertIn("段落序号：2", text)
         self.assertIn("内容：政策正文", text)
 
+    def test_context_formatter_includes_graph_curation_note(self):
+        text = build_rag_context_text([{
+            "citation_id": "外部资料1",
+            "title": "展演报道",
+            "review_method": "ai_assisted_source_review",
+            "review_note": "仅支持展演表述",
+            "text": "机器人完成演示",
+        }])
+        self.assertIn("审核备注：仅支持展演表述", text)
+
 
 if __name__ == "__main__":
     unittest.main()

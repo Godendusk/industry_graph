@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from llm_client import LLMClient
+from report_generation.runtime_budget import RuntimeBudget
 
 
 class _FakeCompletions:
@@ -21,6 +22,27 @@ class _FakeCompletions:
 class _FailingCompletions:
     def create(self, **_kwargs):
         raise RuntimeError("provider unavailable")
+
+
+class _ConfigurableFakeSDK:
+    def __init__(self, response, after_request=None):
+        self.options = []
+        self.completions = _FakeCompletions(response)
+        self.chat = SimpleNamespace(completions=self.completions)
+        self.after_request = after_request
+
+    def with_options(self, **options):
+        self.options.append(options)
+        outer = self
+
+        class ConfiguredCompletions:
+            def create(self, **kwargs):
+                response = outer.completions.create(**kwargs)
+                if outer.after_request:
+                    outer.after_request()
+                return response
+
+        return SimpleNamespace(chat=SimpleNamespace(completions=ConfiguredCompletions()))
 
 
 class LLMClientQueryResultTest(unittest.TestCase):
@@ -144,6 +166,64 @@ class LLMClientQueryResultTest(unittest.TestCase):
         client._log_info = lambda *_args, **_kwargs: None
 
         self.assertIsNone(client.query("测试请求"))
+
+    def _client_with_configurable_sdk(self, after_request=None):
+        response = SimpleNamespace(
+            choices=[SimpleNamespace(message=SimpleNamespace(content="正常正文"), finish_reason="stop")],
+            usage=None,
+        )
+        client = self._client_with_response(response)
+        client.client = _ConfigurableFakeSDK(response, after_request=after_request)
+        return client
+
+    def test_report_call_uses_remaining_stage_timeout_without_sdk_retries(self):
+        now = [0.0]
+        budget = RuntimeBudget(consumed_seconds=550, clock=lambda: now[0])
+        client = self._client_with_configurable_sdk()
+        shared_sdk = client.client
+
+        with budget.activate("coordinator"):
+            result = client.query_result("测试请求")
+
+        self.assertEqual(result.content, "正常正文")
+        self.assertIs(client.client, shared_sdk)
+        self.assertEqual(shared_sdk.options, [{"timeout": 10.0, "max_retries": 0}])
+
+    def test_explicit_timeout_is_capped_by_report_and_forwarded_by_query(self):
+        budget = RuntimeBudget(consumed_seconds=790, clock=lambda: 0)
+        client = self._client_with_configurable_sdk()
+        with budget.activate("body"):
+            self.assertEqual(client.query("测试请求", timeout=25), "正常正文")
+        self.assertEqual(client.client.options, [{"timeout": 10.0, "max_retries": 0}])
+
+    def test_explicit_timeout_outside_report_uses_isolated_sdk_configuration(self):
+        client = self._client_with_configurable_sdk()
+        result = client.query_result("测试请求", timeout=12)
+        self.assertEqual(result.content, "正常正文")
+        self.assertEqual(client.client.options, [{"timeout": 12.0, "max_retries": 0}])
+
+    def test_default_call_outside_report_preserves_sdk_configuration(self):
+        client = self._client_with_configurable_sdk()
+        self.assertEqual(client.query_result("测试请求").content, "正常正文")
+        self.assertEqual(client.client.options, [])
+
+    def test_expired_report_returns_clear_error_without_starting_request(self):
+        budget = RuntimeBudget(consumed_seconds=560, clock=lambda: 0)
+        client = self._client_with_configurable_sdk()
+        with budget.activate("coordinator"):
+            result = client.query_result("测试请求")
+        self.assertIn("runtime budget exhausted", result.error_message)
+        self.assertEqual(client.client.completions.calls, [])
+        self.assertEqual(client.client.options, [])
+
+    def test_late_result_after_stage_deadline_is_not_accepted(self):
+        now = [0.0]
+        budget = RuntimeBudget(consumed_seconds=550, clock=lambda: now[0])
+        client = self._client_with_configurable_sdk(after_request=lambda: now.__setitem__(0, 11))
+        with budget.activate("coordinator"):
+            result = client.query_result("测试请求")
+        self.assertEqual(result.content, "")
+        self.assertIn("runtime budget exhausted", result.error_message)
 
 
 class LLMEnvironmentConfigurationTest(unittest.TestCase):

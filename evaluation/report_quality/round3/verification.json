@@ -1,0 +1,17 @@
+{
+  "status": "program_changes_verified_real_model_acceptance_pending",
+  "tests": {
+    "passed": 531,
+    "subtests_passed": 80,
+    "seconds": 7.05,
+    "log": "/tmp/report-quality-round3-final-tests.log",
+    "location": "implementation worktree; identical changed files synchronized to main"
+  },
+  "source_binding_real_output_replay": "passed offline; no model conclusion inferred",
+  "code_review": "four findings fixed with regressions",
+  "real_model_probe": "Connection error, no usable model response",
+  "semantic_prompt_changed": false,
+  "full_report_acceptance": "not completed",
+  "runtime_budget_seconds": 900,
+  "extra_check": "at most one mixed-body factual/preservation batch pass, subject to existing review deadline"
+}

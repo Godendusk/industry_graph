@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 import time
 from datetime import date, datetime
 from pathlib import Path
@@ -25,13 +24,8 @@ from .vector_store import (
 from ..industry_config import get_industry_config, get_vector_db_path
 
 
-def _v2_enabled() -> bool:
-    """Keep v2 dual-write opt-in until the staged index is operationally ready."""
-    return os.environ.get("REPORT_RAG_V2_DUAL_WRITE", "0").strip() == "1"
-
-
 def _upsert_v2_material(library: str, material_id: str, title: str, metadata: Dict[str, Any], raw_content: str) -> List[str]:
-    """Write the same source material to v2; callers record, rather than hide, failures."""
+    """Write source material to the active v2 index; propagate failures to ingestion."""
     from .v2_index import V2IndexWriter
     from retrieval_core.chunker import build_report_chunks
     from retrieval_core.config import RetrievalConfig
@@ -467,10 +461,6 @@ def _ingest_record(
     c_hash = content_hash(paragraphs)
     old_chunk_count = _safe_int((existing_record or {}).get("chunk_count"))
     old_content_hash = (existing_record or {}).get("content_hash")
-    if old_chunk_count and old_content_hash != c_hash:
-        delete_existing_material(library, material_id, old_chunk_count, industry=industry)
-        logger.info("资料库 [%s] 材料内容变更，已删除旧向量: id=%s, 旧段落数=%d", library, material_id, old_chunk_count)
-
     metadatas = [
         {
             "library": library,
@@ -485,6 +475,18 @@ def _ingest_record(
         }
         for index in range(len(paragraphs))
     ]
+    # AI retrieval reads v2 exclusively. Do not report a legacy-only write as success.
+    v2_status, v2_chunk_ids = "not_applicable", []
+    if industry == "ai":
+        v2_chunk_ids = _upsert_v2_material(
+            library, material_id, title, metadatas[0], raw_content
+        )
+        v2_status = "success"
+
+    if old_chunk_count and old_content_hash != c_hash:
+        delete_existing_material(library, material_id, old_chunk_count, industry=industry)
+        logger.info("资料库 [%s] 材料内容变更，已删除旧向量: id=%s, 旧段落数=%d", library, material_id, old_chunk_count)
+
     upsert_paragraphs(
         library=library,
         material_id=material_id,
@@ -492,16 +494,6 @@ def _ingest_record(
         metadatas=metadatas,
         industry=industry,
     )
-
-    v2_status, v2_chunk_ids, v2_error = "disabled", [], None
-    if _v2_enabled():
-        try:
-            v2_chunk_ids = _upsert_v2_material(
-                library, material_id, title, metadatas[0], raw_content
-            )
-            v2_status = "success"
-        except Exception as exc:
-            v2_status, v2_error = "error", str(exc)
 
     now = _now_iso()
     return {
@@ -521,7 +513,7 @@ def _ingest_record(
             "vectorized_at": now,
             "v2_status": v2_status,
             "v2_chunk_ids": v2_chunk_ids,
-            "v2_error": v2_error,
+            "v2_error": None,
             "chunker_version": "v2" if v2_status == "success" else None,
             "embedding_model": "bge-base-zh-v1.5" if v2_status == "success" else None,
         }

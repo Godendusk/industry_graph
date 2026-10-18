@@ -30,6 +30,33 @@ class DynamicGraphRetrieverTests(unittest.TestCase):
             ["一级甲", "二级甲", "三级深分支", "四级分支", "五级叶子"],
         )
 
+    def test_graph_evidence_refs_are_exposed_when_sidecar_contains_them(self):
+        fake_index = type(
+            "EvidenceIndex",
+            (),
+            {
+                "for_node": lambda self, node_id, properties=None: (
+                    {"material_id": "m1", "chunk_id": f"node-{node_id}"},
+                )
+                if node_id == 101
+                else (),
+                "for_relationship": lambda self, rel: (
+                    {"material_id": "m2", "chunk_id": "edge-101-30"},
+                )
+                if rel.get("source") == 101 and rel.get("target") == 30
+                else (),
+            },
+        )()
+        with patch.object(graph_retriever.GraphEvidenceIndex, "from_path", return_value=fake_index):
+            graph = graph_retriever._IndustryGraph(FIXTURE_PATH)
+
+        entities = graph.get_downward_entities(30)
+
+        self.assertEqual(
+            {ref["chunk_id"] for ref in entities[0]["evidence_refs"]},
+            {"node-101", "edge-101-30"},
+        )
+
     def test_retrieval_response_uses_terminal_segment_contract(self):
         llm_response = json.dumps([
             {"id": 30, "name": "四级叶子", "reason": "命中", "score": 0.9},

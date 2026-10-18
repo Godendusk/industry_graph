@@ -1,0 +1,196 @@
+{
+  "status": "implemented_business_acceptance_not_passed_external402_blocks_remaining_run",
+  "python": {
+    "passed": 521,
+    "subtests_passed": 80,
+    "seconds": 8.13,
+    "scope": "main workspace affected report generation, review, scope, runtime, summary and Word tests; not whole repository",
+    "log": "/tmp/report-quality-round2-latest-main-tests.log"
+  },
+  "code_review": "Read-only reviews completed for numbered positions, section answers, paragraph context, constrained entity lists, real source sharing, source identity, approval coverage and cumulative420 budget. No unresolved code finding reported; final content reviewed separately.",
+  "content_acceptance": "not_passed",
+  "real_runs": {
+    "sea_solo": {
+      "production_seconds": 755.14,
+      "sections": 20,
+      "status": "incomplete",
+      "review_status": "partial",
+      "version": "before numbered spans and section answers"
+    },
+    "low_altitude_span_replay": {
+      "original_body_seconds": 448.9162051670719,
+      "replay_seconds": 182.00758420792408,
+      "cumulative_seconds": 630.923789667082,
+      "accepted_repetition_issues": 10,
+      "rejected_repetition_issues": 1,
+      "adopted_sections": 4,
+      "status": "incomplete",
+      "version": "numbered spans on old generated body; not section answer validation; not continuous full run"
+    },
+    "low_altitude_section_answers": {
+      "production_seconds": 27.403244458022527,
+      "calls": 34,
+      "successful_model_calls": 0,
+      "status": "failed_external_connection",
+      "error": "SSL UNEXPECTED_EOF_WHILE_READING",
+      "latest_minimal_probe": "2026-10-17 20:43 Asia/Shanghai, same connection failure"
+    },
+    "low_altitude_context_final": {
+      "status": "running",
+      "directory": "report_generation/outputs/report-quality-round2-context/low_altitude",
+      "timing_mode": "continuous from confirmed saved outline; fresh retrieval, body, review, summary and Word"
+    },
+    "low_altitude_context": {
+      "status": "failed",
+      "stage": "body",
+      "message": "研究范围尚未确认，保留已检索资料，未继续按原大纲扩写",
+      "runtime_budget": {
+        "total_seconds": 900.0,
+        "consumed_seconds": 226.21390166704077,
+        "remaining_seconds": 673.7860983329592
+      }
+    },
+    "low_altitude_scope_share_replay": {
+      "status": "incomplete",
+      "validation_mode": "replayed saved real coordination after deterministic ID mapping fix; no reretrieval",
+      "input_sections": 8,
+      "final_sections": 8,
+      "generated_sections": 8,
+      "original_coordination_seconds": 226.184897750034,
+      "replay_seconds": 180.9527273339918,
+      "cumulative_execution_seconds": 407.13762529194355,
+      "review_status": "partial",
+      "runtime_budget": {
+        "total_seconds": 900.0,
+        "consumed_seconds": 407.13762675004546,
+        "remaining_seconds": 492.86237324995454
+      },
+      "docx_path": "report_generation/outputs/report-quality-round2-scope-share-replay/low_altitude/低空经济代表企业业务与商业化条件比较_20261017_215710.docx"
+    },
+    "biology_context": {
+      "status": "incomplete",
+      "scope_status": "completed",
+      "deliverable_type": "report",
+      "input_sections": 16,
+      "final_sections": 16,
+      "generated_sections": 16,
+      "production_seconds": 679.86,
+      "including_interactive_preparation_seconds": 679.87,
+      "runtime_budget": {
+        "total_seconds": 900.0,
+        "consumed_seconds": 679.8648734580493,
+        "remaining_seconds": 220.13512654195074
+      },
+      "review_status": "partial",
+      "summary_status": "success",
+      "export_status": "success",
+      "docx_path": "report_generation/outputs/report-quality-round2-context/biology/生物制造食品配料与材料路线比较_20261017_234308.docx",
+      "calls": 190
+    },
+    "sea_context": {
+      "status": "incomplete",
+      "scope_status": "completed",
+      "deliverable_type": "report",
+      "input_sections": 20,
+      "final_sections": 17,
+      "generated_sections": 17,
+      "production_seconds": 746.64,
+      "including_interactive_preparation_seconds": 746.64,
+      "runtime_budget": {
+        "total_seconds": 900.0,
+        "consumed_seconds": 746.6389980830718,
+        "remaining_seconds": 153.36100191692822
+      },
+      "review_status": "partial",
+      "summary_status": "success",
+      "export_status": "success",
+      "docx_path": "report_generation/outputs/report-quality-round2-context/sea/海洋经济产业结构与区域变化研究（2020—2025）_20261017_235735.docx",
+      "calls": 216
+    },
+    "holdout_final_coordinator360": {
+      "status": "failed",
+      "stage": "coordination",
+      "message": "Report stage deadline exceeded: coordinator",
+      "runtime_budget": {
+        "total_seconds": 900.0,
+        "consumed_seconds": 360.0150842500152,
+        "remaining_seconds": 539.9849157499848
+      }
+    },
+    "holdout_final": {
+      "status": "incomplete",
+      "scope_status": "completed",
+      "deliverable_type": "report",
+      "input_sections": 14,
+      "final_sections": 14,
+      "generated_sections": 14,
+      "production_seconds": 654.78,
+      "including_interactive_preparation_seconds": 654.78,
+      "runtime_budget": {
+        "total_seconds": 900.0,
+        "consumed_seconds": 654.7793355830945,
+        "remaining_seconds": 245.2206644169055
+      },
+      "review_status": "partial",
+      "summary_status": "success",
+      "export_status": "success",
+      "docx_path": "report_generation/outputs/report-quality-round2-final-validation/holdout_round2_final/具身智能机器人在工业制造与物流场景中的落地条件比较_20261018_002456.docx",
+      "calls": 144
+    },
+    "low_altitude_final": {
+      "status": "incomplete",
+      "scope_status": "completed",
+      "deliverable_type": "report",
+      "input_sections": 8,
+      "final_sections": 8,
+      "generated_sections": 8,
+      "production_seconds": 358.49,
+      "including_interactive_preparation_seconds": 358.49,
+      "runtime_budget": {
+        "total_seconds": 900.0,
+        "consumed_seconds": 358.49178249994293,
+        "remaining_seconds": 541.5082175000571
+      },
+      "review_status": "partial",
+      "summary_status": "error",
+      "export_status": null,
+      "docx_path": null,
+      "calls": 72
+    }
+  },
+  "holdout": "holdout_round2_final continuous654.78s, independent actual content rejected: C30 sustained-work evidence omitted from deployment/abstract conclusion, Figure relative-year contradiction incorrectly supported, repetitive chapters. No semantic tuning after reading; reclassify as development before future tuning.",
+  "remaining": [
+    "Model API must accept calls before final-code low continuous review/summary/Word can be completed",
+    "Cross-section evidence synthesis and semantic verification remain unaccepted; final holdout has concrete content errors",
+    "Biology/sea final-code full content acceptance not established; previous content failures remain"
+  ],
+  "version_boundary": "Final holdout includes paragraph context, answer-source sharing, source-identity deduplication, approval-assertion coverage and coordinator420 cumulative budget. Biology/sea context runs started before the last three changes. Low source-sharing replay is not continuous.",
+  "js": "No frontend changes this round; not rerun.",
+  "connection_recovery": {
+    "at": "2026-10-17 21:49 Asia/Shanghai",
+    "minimal_production_sdk_request": "success; response OK"
+  },
+  "content_findings": {
+    "holdout_final": {
+      "accepted": false,
+      "findings": [
+        "S2.2/S3.3/abstract deny sustained logistics operation while C30 and S4.1 explicitly record five months of optimization and24h work",
+        "S2.2 Figure2025-05 contradicts source2026-08-13 referring to this May; checker received context but supported it",
+        "S1.2/S2.2/S3.2/S3.3 repeat same cases without integrating stronger C30 evidence"
+      ],
+      "classification": "cross-section synthesis and semantic verification, no confirmed new deterministic contract defect"
+    }
+  },
+  "external_blocker": {
+    "http_status": 402,
+    "message": "Payment Required",
+    "first_failed_call": 64,
+    "failed_calls": 9,
+    "stages": [
+      "body_review",
+      "summary"
+    ],
+    "reason_detail": "API response contains no further billing detail; cannot confirm balance versus another billing restriction",
+    "stopped_further_model_requests": true
+  }
+}

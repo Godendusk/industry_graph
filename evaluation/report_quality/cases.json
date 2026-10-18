@@ -1,0 +1,38 @@
+[
+  {
+    "id": "missing-ranked-sample",
+    "failure": "名单缺失仍展开前十比较",
+    "action": "范围与题目同步收窄，保留企业比较核心"
+  },
+  {
+    "id": "missing-time-series",
+    "failure": "近期截面代替五年演变",
+    "action": "统一观察期，改节点比较或明确无法回答"
+  },
+  {
+    "id": "misallocated-financials",
+    "failure": "财务在估值章节，营收章节称无数据",
+    "action": "按研究需求共享既有原文并绑定引用"
+  },
+  {
+    "id": "long-review-truncation",
+    "failure": "全文核对截断导致零修正",
+    "action": "分批检查，保留已完成结果"
+  },
+  {
+    "id": "bare-source-code",
+    "failure": "裸写来源编号未进入参考资料",
+    "action": "有依据则规范化，缺依据则明确问题"
+  },
+  {
+    "id": "partial-export",
+    "failure": "部分稿以完整稿呈现",
+    "action": "交付状态与执行一致"
+  },
+  {
+    "id": "holdout",
+    "industry": "biology",
+    "prompt": "比较生物制造在食品配料与材料领域的技术路线和商业化条件，区分已有产品、中试与计划项目，解释不同路线的适用条件和主要限制，不要求市场份额排名。",
+    "usage": "最终保留验收题，不据此逐次调优提示词"
+  }
+]

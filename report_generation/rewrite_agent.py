@@ -234,6 +234,8 @@ def rewrite_body_section(
         if reviewed_section:
             result["body_text"] = reviewed_section["body_text"]
             result["citation_ids"] = reviewed_section["citation_ids"]
+            if "claim_verification" in reviewed_section:
+                result["claim_verification"] = copy.deepcopy(reviewed_section["claim_verification"])
         result["review"] = review_result["review"]
         result["adjustment_notes"] = review_result["adjustment_notes"]
         result["warnings"].extend(review_result["warnings"])

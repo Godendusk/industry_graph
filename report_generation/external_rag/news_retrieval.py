@@ -1,6 +1,7 @@
 """Industry-isolated adapters for existing 768-dimensional news collections."""
 
-from functools import lru_cache, partial
+from functools import partial
+from threading import Lock
 import math
 
 from ..industry_config import PROJECT_ROOT, get_industry_config
@@ -14,10 +15,18 @@ from retrieval_core.reranker import rerank_candidates
 from retrieval_core.schemas import RetrievalCandidate
 
 
-@lru_cache(maxsize=1)
+_local_models_instance = None
+_local_models_lock = Lock()
+
+
 def local_models() -> ModelManager:
-    config = RetrievalConfig.for_project(PROJECT_ROOT)
-    return ModelManager(config.embedding_model_path, config.reranker_model_path)
+    global _local_models_instance
+    # Cold report workers must share the same inference locks as well as weights.
+    with _local_models_lock:
+        if _local_models_instance is None:
+            config = RetrievalConfig.for_project(PROJECT_ROOT)
+            _local_models_instance = ModelManager(config.embedding_model_path, config.reranker_model_path)
+        return _local_models_instance
 
 
 class NewsDenseStore:
@@ -97,16 +106,3 @@ def retrieve_news_hybrid(query: str, top_k: int, industry: str) -> dict:
     )
     result = pipeline.retrieve(query, (dense.collection_name,), top_k)
     return pipeline_response(industry, query, top_k, result)
-
-
-def retrieve_news_legacy(query: str, top_k: int, industry: str) -> dict:
-    vector = local_models().embed_documents([query])[0]
-    rows = NewsDenseStore(industry).search(vector, top_k)
-    blocks = to_evidence_blocks(rows)
-    for block in blocks:
-        block["retrieval_version"] = "legacy_news"
-        block["industry"] = industry
-    return {"status": "success", "industry": industry, "query": query, "top_k": top_k,
-            "evidence_blocks": blocks, "rag_context_text": build_rag_context_text(blocks),
-            "retrieval_version": "legacy_news", "warnings": [] if blocks else [
-                {"code": "rag_store_empty", "message": "News collection has no usable evidence."}]}

@@ -19,7 +19,11 @@ def parse_json_object(text: str) -> dict:
             raise ValueError("未找到 JSON 对象")
         cleaned = cleaned[start:end + 1]
     try:
-        value = json.loads(cleaned)
+        value, end = json.JSONDecoder().raw_decode(cleaned)
+        # A model may append a sentence after its single JSON object. A second
+        # object is ambiguous and must still fail rather than lose check rows.
+        if cleaned[end:].lstrip().startswith(('{', '[')):
+            raise ValueError("JSON 输出包含多个对象")
     except json.JSONDecodeError as exc:
         raise ValueError(f"JSON 解析失败: {exc.msg}") from exc
     if not isinstance(value, dict):

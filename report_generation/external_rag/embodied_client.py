@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ..runtime_budget import call_remaining
+
 import json
 import os
 import time
@@ -102,7 +104,7 @@ class EmbodiedNewsClient:
                 LIST_URL,
                 headers=self._headers(),
                 json=payload,
-                timeout=self.timeout,
+                timeout=call_remaining(self.timeout),
             )
         except requests.RequestException as exc:
             raise EmbodiedNewsClientError(
@@ -119,7 +121,7 @@ class EmbodiedNewsClient:
                 DETAIL_URL,
                 headers=self._headers(),
                 params={"id": normalized_id, "index": SUBJECT_INDEX},
-                timeout=self.timeout,
+                timeout=call_remaining(self.timeout),
             )
         except requests.RequestException as exc:
             raise EmbodiedNewsClientError(

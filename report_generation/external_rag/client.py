@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ..runtime_budget import call_remaining
+
 from typing import Any, Dict
 
 import requests
@@ -125,7 +127,7 @@ class ExternalMaterialClient:
                 LIST_URL,
                 headers=self._headers(),
                 json=body,
-                timeout=self.timeout,
+                timeout=call_remaining(self.timeout),
             )
             response.raise_for_status()
         except requests.RequestException as exc:
@@ -144,7 +146,7 @@ class ExternalMaterialClient:
                 DETAIL_URL,
                 headers=self._headers(),
                 params={"id": material_id},
-                timeout=self.timeout,
+                timeout=call_remaining(self.timeout),
             )
             response.raise_for_status()
         except requests.RequestException as exc:

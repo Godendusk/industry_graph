@@ -1,12 +1,15 @@
 """Word export agent for finalized industry reports."""
 
 from __future__ import annotations
+from .runtime_budget import budgeted_stage, current_budget, bind_runtime_context, submit_with_context
+
 
 import re
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 from typing import Any, List
 from .citations import validate_body_citations
+from .delivery import delivery_state
 from .industry_config import SUPPORTED_INDUSTRIES
 
 
@@ -15,6 +18,7 @@ DEFAULT_OUTPUT_DIR = "report_generation/outputs"
 EMPTY_BODY_PLACEHOLDER = "可在这里手动修改内容"
 
 
+@budgeted_stage("export")
 def export_report_docx(
     report_title: str,
     abstract_text: str,
@@ -23,9 +27,12 @@ def export_report_docx(
     output_dir: str = DEFAULT_OUTPUT_DIR,
     references: list = None,
     adjustment_notes: list = None,
+    report_scope: dict = None,
+    review: dict = None,
+    summary_review: dict = None,
 ) -> dict:
     """Export the final report as a formatted DOCX file."""
-    normalized_title = _safe_text(report_title)
+    normalized_title = _safe_text((report_scope or {}).get("effective_title") or report_title)
     normalized_abstract = _safe_text(abstract_text)
     normalized_industry = _safe_text(industry)
     if references is not None and not isinstance(references, list):
@@ -79,8 +86,17 @@ def export_report_docx(
             industry_name,
         )
 
+    state = delivery_state(body_sections, review, summary_review or {'status': 'unknown'}, report_scope)
+    # These entries describe the last export snapshot, not immutable history.
+    notes = [note for note in (adjustment_notes or []) if isinstance(note, dict)
+             and note.get('kind') not in ('agentic_pending', 'research_limit', 'delivery')]
+    if report_scope:
+        for gap in report_scope.get('remaining_gaps', []):
+            notes.append({'kind': 'research_limit', 'reason': str(gap)})
     output_path = _resolve_output_path(output_dir, normalized_title)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    used_references = _collect_used_references(normalized_sections, references)
+    method_notes = build_report_method_notes(report_scope, used_references)
 
     try:
         _write_docx(
@@ -88,8 +104,8 @@ def export_report_docx(
             report_title=normalized_title,
             abstract_text=cleaned_abstract,
             body_sections=normalized_sections,
-            references=_collect_used_references(normalized_sections, references),
-            adjustment_notes=adjustment_notes or [],
+            references=used_references,
+            method_notes=method_notes,
         )
     except ImportError as exc:
         return _error_response(
@@ -104,8 +120,69 @@ def export_report_docx(
         "industry_name": industry_name,
         "report_title": normalized_title,
         "docx_path": _display_path(output_path),
+        **state,
+        "adjustment_notes": _agentic_adjustment_notes(body_sections, notes),
+        "method_notes": method_notes,
         "warnings": warnings,
     }
+
+
+def build_report_method_notes(report_scope, references):
+    """Reader-facing scope and source dates; internal checks stay in the API."""
+    notes = []
+    boundary = (report_scope or {}).get('boundary', {}) if (report_scope or {}).get('status') == 'completed' else {}
+    subjects = [_safe_text(s) for s in boundary.get('subjects', []) if _safe_text(s)]
+    if subjects:
+        notes.append('研究范围：' + '；'.join(subjects) + '。')
+    period = _safe_text(boundary.get('period'))
+    if period:
+        notes.append('观察时期：' + period + '。')
+    dates = []
+    for reference in references:
+        try:
+            dates.append(date.fromisoformat(str(reference.get('retrieved_at', ''))[:10]))
+        except ValueError:
+            continue
+    if dates:
+        notes.append('资料检索截止日期：' + max(dates).isoformat() + '。各来源的发布日期与检索时间见参考资料。')
+    else:
+        notes.append('资料来源：依据本报告所引公开资料开展分析，来源信息见参考资料及对应正文。')
+    notes.append('统计与判断口径：数据的统计对象、期间及测算条件以对应正文和引文为准；预测、计划与已实现情况分别标注，企业案例不直接代表行业整体。')
+    return notes
+
+
+def _agentic_adjustment_notes(sections, existing):
+    """Carry unresolved evidence and claim checks into the existing export notes."""
+    notes = list(existing)
+    def add(section, reason):
+        text = '《' + str(section.get('title') or section.get('outline_id') or '相关小节') + '》' + reason
+        if not any(isinstance(n, dict) and n.get('reason') == text for n in notes):
+            notes.append({'kind': 'agentic_pending', 'outline_ids': [section.get('outline_id')], 'reason': text})
+    for section in sections:
+        if not isinstance(section, dict):
+            continue
+        packs = ([section['evidence_pack']] if isinstance(section.get('evidence_pack'), dict) else []) + (section.get('merged_evidence_packs') or [])
+        for pack in packs:
+            for requirement in pack.get('requirements', []):
+                if requirement.get('status') != 'supported':
+                    add(section, '证据待确认：' + str(requirement.get('requirement') or '') + '；' + str(requirement.get('reason') or '尚无充分依据'))
+        check = section.get('claim_verification')
+        if not isinstance(check, dict):
+            if packs:
+                add(section, '事实核对尚无结果，不能视为已通过。')
+            continue
+        if check.get('invalidated') or check.get('body_text') != section.get('body_text'):
+            add(section, '正文已修改，原核对结果失效，需重新核对。')
+            continue
+        pending = [c for c in check.get('claims', []) if c.get('status') not in ('supported', 'not_factual')]
+        for claim in pending:
+            add(section, '事实待确认：' + str(claim.get('quote') or '') + '；' + str(claim.get('reason') or '核对未完成'))
+        omitted = check.get('omitted_claim_count', 0)
+        if omitted:
+            add(section, f'另有{omitted}项关键声明未覆盖，仍需确认。')
+        if check.get('status') == 'needs_confirmation' and not pending and not omitted:
+            add(section, '事实核对仍需确认，不能视为已通过。')
+    return notes
 
 
 def _normalize_body_sections(body_sections: list, warnings: List[dict], references: list) -> List[dict]:
@@ -180,7 +257,7 @@ def _normalize_body_sections(body_sections: list, warnings: List[dict], referenc
     return normalized
 
 
-def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections: List[dict], references: List[dict], adjustment_notes: list = None) -> None:
+def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections: List[dict], references: List[dict], method_notes: list = None) -> None:
     docx = _import_docx_modules()
     document = docx.Document()
     _configure_section(document, docx)
@@ -217,14 +294,12 @@ def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections
             paragraph = document.add_paragraph(style="ReportBody")
             _add_body_runs(paragraph, paragraph_text)
 
-    if adjustment_notes:
+    if method_notes:
         heading = document.add_paragraph(style="ReportHeading1")
-        _add_single_run(heading, "报告调整说明", "黑体", "SimHei", 16)
-        for note in adjustment_notes:
-            reason = _safe_text(note.get("reason")) if isinstance(note, dict) else ""
-            if reason:
-                paragraph = document.add_paragraph(style="ReportBody")
-                _add_body_runs(paragraph, reason)
+        _add_single_run(heading, "资料与方法说明", "黑体", "SimHei", 16)
+        for note in method_notes:
+            paragraph = document.add_paragraph(style="ReportBody")
+            _add_body_runs(paragraph, note)
 
     if references:
         heading = document.add_paragraph(style="ReportHeading1")
@@ -244,10 +319,7 @@ def _write_docx(path: Path, report_title: str, abstract_text: str, body_sections
                 details += f"，{source_address}"
             paragraph = document.add_paragraph(style="ReportBody")
             _add_body_runs(paragraph, details)
-            excerpt = _safe_text(reference.get("evidence_excerpt"))
-            if excerpt:
-                paragraph = document.add_paragraph(style="ReportBody")
-                _add_body_runs(paragraph, f"命中片段：{excerpt}")
+
 
     document.save(path)
 

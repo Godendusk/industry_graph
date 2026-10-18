@@ -1,5 +1,8 @@
 # Eight Industries: Hybrid Retrieval Acceptance
 
+> 2026-10-15 更新：本文保留早期实现/验收记录。当前报告检索已统一为 hybrid_v2，legacy、compare 与旧库自动回退已移除；AI 摄取必须写入 v2。当前操作说明见 docs/industry-hybrid-retrieval.md。
+
+
 Completed on 2026-10-14 in the existing `kunlun` environment. The AI rebuild
 paused during the earlier seven-industry delivery has now been resumed and
 published. All eight industries have passed actual `hybrid_v2` retrieval and

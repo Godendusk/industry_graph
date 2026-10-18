@@ -416,6 +416,7 @@ def report_coordinator():
         return jsonify({"status": "error", "message": "outline must be an array"}), 400
 
     result = generate_writing_tasks(
+        runtime_budget=data.get("runtime_budget", {}),
         user_prompt=user_prompt,
         report_title=report_title,
         outline=outline,
@@ -452,6 +453,7 @@ def report_coordinator_stream():
 
     def generate_events():
         for event in stream_writing_tasks(
+        runtime_budget=data.get("runtime_budget", {}),
             user_prompt=user_prompt,
             report_title=report_title,
             outline=outline,
@@ -509,6 +511,7 @@ def report_body():
         return jsonify({"status": "error", "message": "references must be an array"}), 400
 
     result = generate_report_bodies(
+        runtime_budget=data.get("runtime_budget", {}),
         user_prompt=user_prompt,
         report_title=report_title,
         writing_tasks=writing_tasks,
@@ -543,6 +546,7 @@ def report_body_stream():
 
     def generate_events():
         for event in stream_report_bodies(
+        runtime_budget=data.get("runtime_budget", {}),
             user_prompt=user_prompt,
             report_title=report_title,
             writing_tasks=writing_tasks,
@@ -651,6 +655,8 @@ def report_summary():
         return jsonify({"status": "error", "message": "body_sections must be an array"}), 400
 
     result = generate_report_summary(
+        runtime_budget=data.get("runtime_budget", {}),
+        report_scope=data.get("report_scope"),
         report_title=report_title,
         outline=outline,
         body_sections=body_sections,
@@ -685,6 +691,9 @@ def report_export_word():
         return jsonify({"status": "error", "message": "adjustment_notes must be an array"}), 400
 
     result = export_report_docx(
+        runtime_budget=data.get("runtime_budget", {}),
+        report_scope=data.get("report_scope"), review=data.get("review"),
+        summary_review=data.get("summary_review"),
         report_title=report_title,
         abstract_text=abstract_text,
         body_sections=body_sections,

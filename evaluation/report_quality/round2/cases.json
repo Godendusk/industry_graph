@@ -1,0 +1,22 @@
+{
+  "frozen_at": "2026-10-17 before round2 semantic changes",
+  "holdout_round2": {
+    "title": "低空经济运营场景的商业化条件比较",
+    "prompt": "比较载人出行、物流运输与巡检服务的商业化条件，区分试点、获批、实际运营和规模化。基于现有资料形成有依据的场景对照，资料不足时保留实质分析并明确边界，不能把试点或获批当作规模化运营。",
+    "industry": "low_altitude",
+    "validation_role": "exposed_development_regression"
+  },
+  "development_cases": [
+    "low_altitude",
+    "biology",
+    "sea",
+    "holdout_round2"
+  ],
+  "holdout_round2_final": {
+    "frozen_at": "2026-10-17 after numbered-span and section-answer implementation, before any run or content inspection for this topic",
+    "title": "具身智能机器人在工业制造与物流场景中的落地条件比较",
+    "prompt": "比较具身智能机器人在工业制造与物流场景中的落地条件，围绕实际任务、部署状态、客户验证与工程约束形成具体场景对照。区分展示、测试、试点、采购及持续运行；明确区分机器人本体厂商与零部件或系统供应商。依据现有材料提供有条件的分析，不要求完整企业排名或市场份额，不把计划订单或展示当作规模化使用。",
+    "industry": "embodied",
+    "validation_role": "unexposed_holdout"
+  }
+}

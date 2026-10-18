@@ -42,6 +42,17 @@ def test_coordination_uses_shared_configured_client():
     assert tc.llm is wd.llm
 
 
+def test_scope_payload_does_not_repeat_full_support_passages():
+    tasks = [task()]
+    tasks[0]['evidence_pack'] = {'status': 'assessed', 'requirements': [
+        {'id': 'r1', 'requirement': '经营比较', 'status': 'supported', 'reason': '原文支持',
+         'support': [{'citation_id': 'C14', 'quote': '完整原文' * 2000}]}]}
+    payload = tc.build_coordination_payload(tasks, '经营比较', '报告', [])
+    quote = payload['sections'][0]['evidence']['requirements'][0]['support'][0]['quote']
+    assert len(quote) <= 160
+    assert tasks[0]['evidence_pack']['requirements'][0]['support'][0]['quote'] == '完整原文' * 2000
+
+
 def test_payload_has_only_outline_decision_and_allowed_ids():
     payload = tc.build_coordination_payload([task()])
     assert payload['outline'] == [{'outline_id': 'S3.2', 'parent_title': '布局', 'title': '资源禀赋'}]
@@ -184,3 +195,38 @@ def test_model_exception_preserves_tasks_without_retry():
         final, meta, warnings = tc.coordinate_writing_tasks(tasks)
     assert call.call_count == 1 and final == tasks and warnings
     assert meta['status'] == 'failed'
+
+
+def test_production_payload_contains_actual_support_and_retrieval_state():
+    candidate = task()
+    candidate['evidence_pack'] = {'status': 'unavailable', 'requirements': [
+        {'id': 'r1', 'requirement': '企业收入比较', 'status': 'unknown',
+         'reason': '服务失败，不能判断资料存在', 'support': []}]}
+    payload = tc.build_coordination_payload([candidate], user_prompt='比较收入', report_title='企业比较', outline=[])
+    assert payload['user_prompt'] == '比较收入'
+    assert payload['sections'][0]['evidence']['requirements'][0]['requirement'] == '企业收入比较'
+    assert payload['sections'][0]['evidence']['assessment_status'] == 'unavailable'
+    assert '原始材料全文' in payload['sections'][0]['evidence']['snippets'][0]['text']
+
+
+def test_missing_production_scope_is_explicitly_incomplete():
+    with patch.object(tc.llm, 'query_result', return_value=respond({'changes': []})):
+        _, meta, warnings = tc.coordinate_writing_tasks([task()], user_prompt='比较收入', report_title='企业比较')
+    assert meta['status'] == 'incomplete' and warnings
+
+
+def test_production_coordination_adopts_source_bound_report_facts_in_same_call():
+    tasks = [task()]
+    tasks[0]['external_rag_retrieval']['evidence_blocks'][0]['text'] = '甲公司产品A已取得证书。'
+    def model(**kw):
+        payload = json.loads(kw['user_prompt'])
+        source = payload['fact_sources'][0]
+        return respond({'changes': [], 'outline_operations': [], 'report_scope': {}, 'effective_outline': [],
+            'report_facts': [{'subject': '甲公司产品A', 'attribute': '证书', 'value': '已取得',
+                'event_time': '', 'published_at': '', 'modality': 'actual', 'applicability': '仅产品A',
+                'supports': [{'evidence_id': source['evidence_id'], 'citation_id': 'C14', 'quote': '甲公司产品A已取得证书。'}]}]})
+    with patch.object(tc.llm, 'query_result', side_effect=model) as call:
+        final, meta, warnings = tc.coordinate_writing_tasks(tasks, user_prompt='研究产品A', report_title='报告', outline=[])
+    assert call.call_count == 1
+    assert meta['report_facts'][0]['value'] == '已取得'
+    assert not warnings

@@ -11,11 +11,13 @@
 
 ## 产业报告 Hybrid RAG（v2）
 
-默认仍使用 `legacy`。可通过 `REPORT_RETRIEVAL_MODE=compare` 影子比较，或在 v2 READY 已验证后使用 `hybrid_v2`；回滚只需恢复 `legacy`。模型下载必须显式执行 `scripts/provision_retrieval_models.py`，索引先运行 `scripts/build_report_hybrid_index.py --source legacy-chroma --dry-run`。旧 Chroma 无法恢复 v1 未提取的 HTML 表格文本。详细评测与人工审核要求见 `evaluation/report_retrieval/README.md`。
+八产业报告外部资料检索统一使用 `hybrid_v2`：向量召回、BM25、RRF 融合和本地重排。`legacy`、`compare` 及跨库自动回退已移除；混合检索失败返回明确错误，内部召回/重排降级仍保留。人工智能使用独立 768 维 v2 索引；旧 384 维库保留供离线导入，不参与在线报告检索。AI 资料摄取必须成功写入 v2，旧库写入暂保留作为离线源。当前操作说明见 `docs/industry-hybrid-retrieval.md`，评测说明见 `evaluation/report_retrieval/README.md`。
 
 ---
 
 ## 产业报告文章溯源
+
+确认大纲后的报告生成流程默认总预算为 20 分钟（1200 秒），覆盖检索统筹、正文、审查、摘要与 Word 导出；用户在步骤之间等待和确认的时间不计入。各阶段累计截止点依次为 560、800、1080、1200、1200 秒，较早阶段节省的时间可供后续阶段使用。接口保留显式指定的较短预算，最高不超过 1200 秒。
 
 产业报告正文中的外部资料使用报告级 `[C1]`、`[C2]` 编号。编号只会绑定当前报告实际检索到的资料，同一资料跨章节复用同一个编号，局部重写新增资料时从当前最大编号继续递增。
 

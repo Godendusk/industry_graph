@@ -337,6 +337,10 @@ def to_evidence_blocks(
             "text": candidate.text,
             "retrieval_version": RETRIEVAL_VERSION,
         }
+        for field_name in ("review_method", "review_note", "evidence_scope"):
+            value = metadata.get(field_name)
+            if value not in (None, ""):
+                block[field_name] = _safe_text(value)
         if include_diagnostics:
             for field_name in (
                 "dense_rank", "dense_score", "bm25_rank", "bm25_score", "rrf_rank",
@@ -374,6 +378,10 @@ def build_rag_context_text(evidence_blocks: Collection[Mapping[str, Any]]) -> st
                 f"发布日期：{_display_value(block.get('publish_date'))}",
                 f"来源：{_display_value(block.get('source_address'))}",
                 f"段落序号：{paragraph_index if paragraph_index is not None else '未提供'}",
+                *([f"证据使用范围：{_display_value(block.get('evidence_scope'))}"]
+                  if block.get('evidence_scope') else []),
+                *([f"审核备注：{_display_value(block.get('review_note'))}"]
+                  if block.get('review_note') else []),
                 f"内容：{_display_value(block.get('text'))}",
             ]
         )

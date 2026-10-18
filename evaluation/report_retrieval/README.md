@@ -4,4 +4,4 @@
 
 生成候选集：`python scripts/build_report_retrieval_label_set.py --manifest-dir RAG/vector_db --output evaluation/report_retrieval/labeling_set.jsonl --total 60`。
 
-评测工具默认拒绝未审核数据；仅诊断时可显式加 `--allow-unreviewed`。默认线上模式始终是 `legacy`，回滚只需设置 `REPORT_RETRIEVAL_MODE=legacy`。
+评测工具默认拒绝未审核数据；仅诊断时可显式加 `--allow-unreviewed`。线上报告检索统一使用 `hybrid_v2`，不再支持 legacy、compare 或自动回退旧库。混合索引故障需修复索引或恢复已验证的 v2 备份。

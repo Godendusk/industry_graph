@@ -1,0 +1,53 @@
+{
+  "date": "2026-10-17",
+  "workspace": "/Users/livictor/Desktop/industry/industry_graph",
+  "python": {
+    "passed": 468,
+    "subtests_passed": 80,
+    "seconds": 10.26,
+    "command": "LLM_API_KEY='' /opt/miniconda3/envs/kunlun/bin/python -m pytest tests/test_agentic_report*.py tests/test_report*.py tests/test_coordinator_stability.py tests/test_body_agent.py tests/test_summary_agent.py tests/test_word_export*.py tests/test_llm_client_configuration.py tests/test_direct_outline_json_recovery.py tests/test_outline_template.py -q",
+    "scope": "受影响集合，非全仓"
+  },
+  "javascript": {
+    "passed": 81,
+    "failed": 0,
+    "command": "node --test tests/js/test_industry_report*.test.js"
+  },
+  "word_layout": {
+    "source": "report_generation/outputs/report-quality-final-20261017/low_altitude/低空经济代表企业业务与商业化条件比较_20261017_155849.docx",
+    "rendered_pages": 24,
+    "observed": "中文、首页未完成标记、分页与参考资料可显示；未把该验证稿判为内容合格",
+    "qa_fontconfig": "/tmp/report-quality-fonts.conf，仅渲染进程使用"
+  },
+  "content_acceptance": "not_passed",
+  "not_claimed": [
+    "任意报告零错误",
+    "三份报告内容验收全部通过",
+    "海洋最终版本19节连续链路通过",
+    "原始外部事实独立真实性核验"
+  ],
+  "latest_real_runs": [
+    {
+      "case": "low_altitude",
+      "production_seconds": 424.07,
+      "input_sections": 9,
+      "final_sections": 9,
+      "adopted_section_edits": 0,
+      "review_status": "partial",
+      "delivery_status": "incomplete",
+      "calls": 102,
+      "truncated_calls": 0
+    },
+    {
+      "case": "biology",
+      "production_seconds": 518.05,
+      "input_sections": 15,
+      "final_sections": 15,
+      "adopted_section_edits": 7,
+      "review_status": "partial",
+      "delivery_status": "incomplete",
+      "calls": 144
+    }
+  ],
+  "version_boundary": "Latest full runs include section synthesis citation context, consistency source previews and scope mapping; final assessment prompt clarification has targeted tests only."
+}

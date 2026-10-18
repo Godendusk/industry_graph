@@ -1,6 +1,8 @@
 """Summary generation agent for industry reports."""
 
 from __future__ import annotations
+from .runtime_budget import budgeted_stage, current_budget, bind_runtime_context, submit_with_context
+
 
 import re
 import json
@@ -22,15 +24,17 @@ DEFAULT_MAX_TOKENS = 12000
 RETRY_MAX_TOKENS = 16000
 
 
+@budgeted_stage("summary")
 def generate_report_summary(
     report_title: str,
     outline: list,
     body_sections: list,
     industry: str = "ai",
     template_path: Optional[str] = None,
+    report_scope: dict = None,
 ) -> dict:
     """Generate report abstract from the final outline and body sections."""
-    normalized_title = _safe_text(report_title)
+    normalized_title = _safe_text((report_scope or {}).get("effective_title") or report_title)
     normalized_industry = _safe_text(industry)
 
     if not normalized_title:
@@ -77,6 +81,8 @@ def generate_report_summary(
         outline_text=outline_text,
         body_text=body_text,
     )
+    if report_scope:
+        summary_user_prompt += '\n【有效研究范围】\n' + json.dumps(report_scope, ensure_ascii=False)
     summary_system_prompt = _build_summary_system_prompt(abstract_template)
 
     try:
@@ -88,6 +94,9 @@ def generate_report_summary(
             "extra_body": {"thinking": {"type": "enabled"}},
             "extra_log_info": "report_generation.summary_agent",
         }
+        if current_budget():
+            query_kwargs.update(max_tokens=2400, reasoning_effort=None,
+                                extra_body={'thinking': {'type': 'disabled'}})
         query_result = llm.query_result(**query_kwargs)
     except Exception as exc:
         return _error_response(
@@ -158,7 +167,7 @@ def generate_report_summary(
         )
 
     summary_review, review_warnings, notes, abstract_text = _review_summary(
-        normalized_title, body_text, abstract_text)
+        normalized_title, body_text, abstract_text, report_scope=report_scope)
     warnings.extend(review_warnings)
     return {
         "status": "success",
@@ -168,26 +177,32 @@ def generate_report_summary(
         "abstract_text": abstract_text,
         "warnings": warnings,
         "summary_review": summary_review,
+        "delivery_status": "incomplete",
         "adjustment_notes": notes,
     }
 
 
-def _review_summary(title, body_text, abstract_text):
+def _review_summary(title, body_text, abstract_text, report_scope=None):
     """One final consistency check; failures retain the generated abstract."""
     prompt = """你是报告成稿审查Agent，只核对摘要与最终正文的一致性。
 检查摘要是否新增无依据结论，是否把建议、待验证条件、计划或预测改写为已发生事实，是否丢失时间、对象、统计口径或必要限定。
 正文有明确资料冲突时，摘要不得挑选其中一条作为无条件现状。只依据正文，不补查或补造事实。
+有效研究范围优先于模板通用要求；正文没有形成国资央企专题判断或建议时，摘要不得因模板要求自行添加该视角、问题或建议。只概括当前报告已经回答的研究问题和已有结论，不能把资料缺口改写为行业或企业能力不足。
 发现问题直接修正摘要，保留有依据的主要判断及建议，400—600字。没有问题则保留原摘要。
 只返回JSON：{\"issues\":[{\"reason\":\"具体问题\"}],\"corrected_abstract_text\":\"有问题时完整修正摘要，无问题时空字符串\"}。"""
     warnings, notes = [], []
     review = {'status': 'failed', 'issue_count': 0, 'changed': False}
-    payload = json.dumps({'report_title': title, 'body_text': body_text, 'abstract_text': abstract_text}, ensure_ascii=False)
+    payload = json.dumps({'report_title': title, 'body_text': body_text, 'abstract_text': abstract_text,
+                          'report_scope': report_scope or {}}, ensure_ascii=False)
     try:
         if len(payload) > 70000:
             raise ValueError('summary_review_budget')
         query_kwargs = dict(user_prompt=payload, system_prompt=prompt, max_tokens=DEFAULT_MAX_TOKENS,
                             reasoning_effort='high', extra_body={'thinking': {'type': 'enabled'}},
                             extra_log_info='report_generation.summary_review')
+        if current_budget():
+            query_kwargs.update(max_tokens=2400, reasoning_effort=None,
+                                extra_body={'thinking': {'type': 'disabled'}})
         result = llm.query_result(**query_kwargs)
         # 与摘要生成一样，思考和可见JSON共用预算。仅截断时增加一次预算，
         # 不重试连接错误，也不把未完成的修正当作核对通过。
@@ -307,7 +322,8 @@ def _build_summary_system_prompt(abstract_template: dict) -> str:
 3. 摘要字数严格限制在 400-600 字。
 4. 不得标注 [C1]、[知识图谱1]、[外部资料1] 等引用编号。
 5. 不得输出参考文献、引用列表、资料来源或资料来源说明。
-6. 保持正式产业研究报告文风，逻辑清晰、表述准确。"""
+6. 保持正式产业研究报告文风，逻辑清晰、表述准确。
+7. 有效研究范围和最终正文优先于模板通用要求。模板只约束组织方式；正文未形成国资央企专题判断或建议时，不得自行添加该视角或凑写建议。概括本报告实际回答的问题、有据差异和必要边界，不把资料缺口写成企业能力不足。"""
 
 
 def _build_summary_user_prompt(report_title: str, outline_text: str, body_text: str) -> str:

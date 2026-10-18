@@ -99,7 +99,6 @@ class RetrievalConfigTests(unittest.TestCase):
 
             resolved_root = project_root.resolve()
             self.assertEqual(config.project_root, resolved_root)
-            self.assertEqual(config.mode, "hybrid_v2")
             self.assertEqual(config.index_root, resolved_root / "RAG/indexes/report_v2")
             self.assertEqual(
                 config.embedding_model_path,
@@ -114,37 +113,19 @@ class RetrievalConfigTests(unittest.TestCase):
             self.assertEqual(config.rerank_limit, 24)
             self.assertEqual(config.final_limit, 10)
             self.assertEqual(config.rrf_k, 60)
-            self.assertTrue(config.allow_legacy_fallback)
             self.assertFalse(config.index_root.exists())
 
-    def test_for_project_accepts_each_supported_mode(self):
+    def test_retired_environment_modes_do_not_change_config(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
-            for mode in ("legacy", "compare", "hybrid_v2"):
-                with self.subTest(mode=mode):
-                    with patch.dict(
-                        os.environ, {"REPORT_RETRIEVAL_MODE": mode}, clear=True
-                    ):
-                        config = RetrievalConfig.for_project(Path(temporary_directory))
-                    self.assertEqual(config.mode, mode)
-
-    def test_for_project_strips_supported_mode_from_environment(self):
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            with patch.dict(
-                os.environ,
-                {"REPORT_RETRIEVAL_MODE": "  hybrid_v2\t"},
-                clear=True,
-            ):
-                config = RetrievalConfig.for_project(Path(temporary_directory))
-
-        self.assertEqual(config.mode, "hybrid_v2")
-
-    def test_for_project_rejects_invalid_mode(self):
-        with tempfile.TemporaryDirectory() as temporary_directory:
-            with patch.dict(
-                os.environ, {"REPORT_RETRIEVAL_MODE": "experimental"}, clear=True
-            ):
-                with self.assertRaisesRegex(ValueError, "experimental"):
-                    RetrievalConfig.for_project(Path(temporary_directory))
+            expected = RetrievalConfig.for_project(Path(temporary_directory))
+            for mode in ("legacy", "compare", "experimental"):
+                with self.subTest(mode=mode), patch.dict(os.environ, {
+                    "REPORT_RETRIEVAL_MODE": mode,
+                    "REPORT_RETRIEVAL_ALLOW_LEGACY_FALLBACK": "1",
+                }):
+                    self.assertEqual(RetrievalConfig.for_project(Path(temporary_directory)), expected)
+        self.assertFalse(hasattr(expected, "mode"))
+        self.assertFalse(hasattr(expected, "allow_legacy_fallback"))
 
 
 class ChunkRecordTests(unittest.TestCase):

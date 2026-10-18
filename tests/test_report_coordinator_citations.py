@@ -133,72 +133,28 @@ class ReportCoordinatorCitationsTest(unittest.TestCase):
         self.assertIn("丙", prompt_contexts[1])
         self.assertNotIn("乙", prompt_contexts[1])
 
-    def test_focused_retry_backend_warning_is_emitted_once(self):
-        subsection = {
-            "outline_id": "S1.1",
-            "parent_level1_title": "现状",
-            "title": "政策",
-        }
-        retrieval = {
-            "status": "success",
-            "evidence_blocks": [
-                {"library": "policy", "material_id": "m1", "vector_id": "v1", "text": "甲"},
-            ],
-        }
-        warnings = []
-        task_warnings = []
-        backend_warning = {"outline_id": "S1.1", "stage": "external_rag_retrieval", "code": "x", "message": "backend warning"}
+    def test_backend_warning_is_emitted_once_without_source_count_retry(self):
+        subsection = {"outline_id":"S1.1", "parent_level1_id":"S1", "parent_level1_title":"现状", "title":"政策"}
+        with patch.object(coordinator_agent, "retrieve_external_rag", return_value={
+            "status":"success", "evidence_blocks":[{"library":"policy", "material_id":"m1", "vector_id":"v1", "text":"甲"}],
+            "warnings":[{"code":"x", "message":"backend warning"}],
+        }) as retrieve:
+            row, warnings = coordinator_agent._retrieve_candidates_once(
+                subsection, "需求", "报告", 10, industry="embodied", use_graph=False)
+        self.assertEqual(retrieve.call_count, 1)
+        self.assertEqual([w["message"] for w in warnings], ["backend warning"])
+        self.assertEqual(row["external_rag_retrieval"]["status"], "success")
 
-        def retry(*, warnings, task_warnings, **_kwargs):
-            warnings.append(backend_warning)
-            task_warnings.append(backend_warning)
-            return {
-                "status": "success",
-                "evidence_blocks": [
-                    {"library": "policy", "material_id": "m2", "vector_id": "v2", "text": "乙"},
-                ],
-                "warnings": [backend_warning],
-            }
-
-        with patch.object(coordinator_agent, "_retrieve_external_rag_for_subsection", side_effect=retry):
-            coordinator_agent._expand_external_candidates_if_needed(
-                external_rag_retrieval=retrieval,
-                query="q",
-                subsection=subsection,
-                industry="embodied",
-                candidate_top_k=20,
-                warnings=warnings,
-                task_warnings=task_warnings,
-            )
-
-        self.assertEqual([item["message"] for item in warnings], ["backend warning"])
-        self.assertEqual([item["message"] for item in task_warnings], ["backend warning"])
-
-    def test_focused_retry_success_clears_initial_error_status(self):
-        subsection = {"outline_id": "S1.1", "parent_level1_title": "现状", "title": "政策"}
-        retrieval = {"status": "error", "message": "initial unavailable", "evidence_blocks": []}
-        with patch.object(
-            coordinator_agent,
-            "_retrieve_external_rag_for_subsection",
-            return_value={
-                "status": "success",
-                "retrieval_version": "retry-v1",
-                "evidence_blocks": [{"library": "policy", "material_id": "m2", "vector_id": "v2", "text": "乙"}],
-                "warnings": [],
-            },
-        ):
-            coordinator_agent._expand_external_candidates_if_needed(
-                external_rag_retrieval=retrieval,
-                query="q",
-                subsection=subsection,
-                industry="embodied",
-                candidate_top_k=20,
-                warnings=[],
-                task_warnings=[],
-            )
-        self.assertEqual(retrieval["status"], "success")
-        self.assertEqual(retrieval["retrieval_version"], "retry-v1")
-        self.assertEqual(retrieval["evidence_blocks"][0]["material_id"], "m2")
+    def test_failed_initial_retrieval_is_not_retried_by_source_count(self):
+        subsection = {"outline_id":"S1.1", "parent_level1_id":"S1", "parent_level1_title":"现状", "title":"政策"}
+        with patch.object(coordinator_agent, "retrieve_external_rag", return_value={
+            "status":"error", "message":"index unavailable", "evidence_blocks":[],
+        }) as retrieve:
+            row, warnings = coordinator_agent._retrieve_candidates_once(
+                subsection, "需求", "报告", 10, industry="embodied", use_graph=False)
+        self.assertEqual(retrieve.call_count, 1)
+        self.assertEqual(row["external_rag_retrieval"]["status"], "error")
+        self.assertTrue(any("index unavailable" in w["message"] for w in warnings))
 
     def test_stream_completion_uses_same_allocated_tasks_and_references(self):
         outline = [{

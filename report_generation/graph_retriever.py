@@ -17,6 +17,8 @@ from typing import Any, Dict, List, Optional, Tuple
 from graph_hierarchy import GraphHierarchy
 from llm_client import llm
 from .industry_config import get_industry_config
+from .graph_evidence import GraphEvidenceIndex
+from .external_rag.graph_query_expansion import build_graph_query_terms
 
 REL_PARTICIPATES_IN = "参与环节"
 
@@ -97,11 +99,28 @@ def retrieve_industry_graph(query: str, industry: str = "ai") -> dict:
                 "upward_path": upward_path,
                 "downward_entities": entities,
                 "downward_total_count": len(entities),
+                "graph_evidence_refs": _dedupe_evidence_refs(
+                    [
+                        ref
+                        for item in entities
+                        for ref in item.get("evidence_refs", ())
+                    ]
+                    + [
+                        ref
+                        for item in segment_path
+                        for ref in item.get("evidence_refs", ())
+                    ]
+                    + [
+                        ref
+                        for item in upward_path
+                        for ref in item.get("evidence_refs", ())
+                    ]
+                ),
                 "context_text": _build_context_text(chain_path, graph.node_name(segment_id), entities),
             }
         )
 
-    return {
+    result = {
         "status": "success",
         "industry": normalized_industry,
         "industry_name": industry_name,
@@ -111,6 +130,8 @@ def retrieve_industry_graph(query: str, industry: str = "ai") -> dict:
         "evidence_blocks": evidence_blocks,
         "selection_diagnostics": llm_result.get("diagnostics", {}),
     }
+    result["graph_query_terms"] = build_graph_query_terms(result)
+    return result
 
 
 def retrieve_graph(query: str, industry: str = "ai") -> dict:
@@ -130,6 +151,7 @@ class _IndustryGraph:
         self.in_edges_by_target: Dict[Any, List[dict]] = defaultdict(list)
         self.hierarchy: GraphHierarchy
         self.terminal_segments: Dict[Any, dict] = {}
+        self.evidence_index = GraphEvidenceIndex()
         self._load()
 
     def _load(self) -> None:
@@ -137,6 +159,9 @@ class _IndustryGraph:
             raise FileNotFoundError(str(self.graph_path))
 
         data = json.loads(self.graph_path.read_text(encoding="utf-8"))
+        self.evidence_index = GraphEvidenceIndex.from_path(
+            self.graph_path.with_name("graph_evidence_links.json")
+        )
         self.hierarchy = GraphHierarchy.from_data(data)
         for node in data.get("nodes", []):
             node_id = node.get("id")
@@ -169,6 +194,9 @@ class _IndustryGraph:
             "name": _node_name(node),
             "level": self.node_level(node),
             "labels": node.get("labels") or [],
+            "evidence_refs": self.evidence_index.for_node(
+                node_id, node.get("properties") or {}
+            ),
         }
 
     def relationship_summary(self, rel: dict) -> dict:
@@ -180,6 +208,7 @@ class _IndustryGraph:
             "type": rel.get("type", ""),
             "target": target,
             "target_name": self.node_name(target),
+            "evidence_refs": self.evidence_index.for_relationship(rel),
         }
 
     def get_segment_path(self, segment_id: Any) -> List[dict]:
@@ -198,6 +227,14 @@ class _IndustryGraph:
                     "type": "从属于",
                     "target": parent,
                     "target_name": self.node_name(parent),
+                    "evidence_refs": self.evidence_index.for_relationship(
+                        next((rel for rel in self.in_edges_by_target.get(parent, [])
+                              if rel.get("source") == child and rel.get("type") == "从属于"), {
+                            "source": child,
+                            "target": parent,
+                            "type": "从属于",
+                        })
+                    ),
                 }
             )
         return upward_path
@@ -221,6 +258,12 @@ class _IndustryGraph:
                     "name": _node_name(node),
                     "labels": node.get("labels") or [],
                     "edge_type": REL_PARTICIPATES_IN,
+                    "node_evidence_refs": self.evidence_index.for_node(source, node.get("properties") or {}),
+                    "relationship_evidence_refs": self.evidence_index.for_relationship(rel),
+                    "evidence_refs": _dedupe_evidence_refs(
+                        list(self.evidence_index.for_relationship(rel))
+                        + list(self.evidence_index.for_node(source, node.get("properties") or {}))
+                    ),
                 }
             )
         entities.sort(key=lambda item: str(item.get("name") or ""))
@@ -455,6 +498,10 @@ def _coerce_score(raw_score: Any) -> Optional[float]:
 def _node_name(node: dict) -> str:
     props = node.get("properties") or {}
     return str(props.get("name", "")).strip()
+
+
+def _dedupe_evidence_refs(refs: List[dict]) -> List[dict]:
+    return list(GraphEvidenceIndex._merge(ref for ref in refs if isinstance(ref, dict)))
 
 
 def _build_context_text(chain_path: str, segment_name: str, entities: List[dict]) -> str:

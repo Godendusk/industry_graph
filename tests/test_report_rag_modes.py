@@ -5,44 +5,29 @@ from report_generation.external_rag.retriever import retrieve_external_rag
 
 
 class ReportRagModesTest(unittest.TestCase):
-    def test_default_dispatches_to_hybrid_v2(self):
-        with patch.dict("os.environ", {}, clear=True), patch(
-            "report_generation.external_rag.retriever._retrieve_hybrid",
-            return_value={"status": "success", "retrieval_version": "hybrid_v2", "evidence_blocks": []},
-        ) as hybrid, patch(
-            "report_generation.external_rag.retriever._retrieve_legacy"
-        ) as legacy:
-            result = retrieve_external_rag("查询", top_k=10)
+    def test_ai_always_uses_hybrid_despite_retired_environment_settings(self):
+        for mode in (None, "legacy", "compare", "hybrid_v2", "invalid"):
+            with self.subTest(mode=mode), patch.dict("os.environ", {} if mode is None else {
+                "REPORT_RETRIEVAL_MODE": mode,
+                "REPORT_RETRIEVAL_ALLOW_LEGACY_FALLBACK": "1",
+            }, clear=True), patch(
+                "report_generation.external_rag.retriever._retrieve_hybrid",
+                return_value={"status": "success", "retrieval_version": "hybrid_v2", "evidence_blocks": []},
+            ) as hybrid:
+                result = retrieve_external_rag(" 查询 ", top_k=10)
+            self.assertEqual(result["retrieval_version"], "hybrid_v2")
+            self.assertEqual(result["industry"], "ai")
+            hybrid.assert_called_once_with("查询", 10)
 
-        self.assertEqual(result["retrieval_version"], "hybrid_v2")
-        hybrid.assert_called_once_with("查询", 10)
-        legacy.assert_not_called()
-
-    def test_legacy_returns_existing_result(self):
-        with patch("report_generation.external_rag.retriever._mode", return_value="legacy"), patch(
-            "report_generation.external_rag.retriever._retrieve_legacy",
-            return_value={"status": "success", "evidence_blocks": [{"citation_id": "外部资料1"}]},
-        ) as legacy:
+    def test_hybrid_failure_is_returned_without_switching_stores(self):
+        failure = {"status": "error", "message": "report v2 index is not ready",
+                   "evidence_blocks": [], "retrieval_version": "unavailable"}
+        with patch("report_generation.external_rag.retriever._retrieve_hybrid", return_value=failure):
             result = retrieve_external_rag("查询", top_k=10)
-        self.assertEqual(result["status"], "success")
-        legacy.assert_called_once()
-
-    def test_compare_returns_legacy_and_logs_v2_difference(self):
-        with patch("report_generation.external_rag.retriever._mode", return_value="compare"), patch(
-            "report_generation.external_rag.retriever._retrieve_legacy", return_value={"status": "success", "evidence_blocks": []}
-        ), patch("report_generation.external_rag.retriever._retrieve_hybrid", return_value={"status": "success", "evidence_blocks": [{"material_id": "m1"}]}), patch(
-            "report_generation.external_rag.retriever._log_comparison"
-        ) as log:
-            result = retrieve_external_rag("查询", top_k=10)
+        self.assertEqual(result["status"], "error")
+        self.assertEqual(result["message"], failure["message"])
         self.assertEqual(result["evidence_blocks"], [])
-        log.assert_called_once()
-
-    def test_hybrid_failure_can_fallback_to_legacy(self):
-        with patch("report_generation.external_rag.retriever._mode", return_value="hybrid_v2"), patch(
-            "report_generation.external_rag.retriever._retrieve_hybrid", return_value={"status": "error", "message": "not ready"}
-        ), patch("report_generation.external_rag.retriever._retrieve_legacy", return_value={"status": "success", "evidence_blocks": []}):
-            result = retrieve_external_rag("查询", top_k=10)
-        self.assertEqual(result["retrieval_fallback"], "legacy")
+        self.assertNotIn("retrieval_fallback", result)
 
     def test_empty_embodied_collection_is_reported_as_unavailable(self):
         empty = {"status": "success", "evidence_blocks": [],
@@ -61,7 +46,7 @@ class ReportRagModesTest(unittest.TestCase):
             "distances": [[0.1]],
         }
         from report_generation.external_rag.news_retrieval import NewsDenseStore
-        with patch.dict("os.environ", {"REPORT_RETRIEVAL_MODE": "hybrid_v2"}), patch(
+        with patch(
             "report_generation.external_rag.news_retrieval.check_news_index", return_value={"status": "ready"}
         ), patch("report_generation.external_rag.news_retrieval.local_models") as models, patch(
             "report_generation.external_rag.news_retrieval.NewsLexicalStore.search", return_value=[]

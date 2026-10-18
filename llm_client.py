@@ -10,6 +10,7 @@ import socket
 from dataclasses import dataclass
 from typing import Optional
 from dotenv import load_dotenv
+from report_generation.runtime_budget import BudgetExceeded, call_remaining
 
 load_dotenv(Path(__file__).with_name(".env"))
 
@@ -86,7 +87,8 @@ class LLMClient:
                      max_tokens: int = DEFAULT_MAX_TOKENS,
                      reasoning_effort="high",
                      extra_body=None,
-                     extra_log_info: str = None) -> LLMQueryResult:
+                     extra_log_info: str = None,
+                     timeout: Optional[float] = None) -> LLMQueryResult:
         """
         通用的 LLM 调用函数
 
@@ -96,6 +98,7 @@ class LLMClient:
         :param temperature: 温度参数
         :param max_tokens: 最大 token 数
         :param extra_log_info: (可选) 用户需要记录的额外日志信息
+        :param timeout: (可选) 本次调用超时秒数；报告内还受剩余阶段时间约束
         :return: 模型返回的正文、结束原因、token 用量及错误信息
         """
         start_time = time.time()
@@ -115,6 +118,7 @@ class LLMClient:
             extra_body = {"thinking": {"type": "enabled"}}
 
         try:
+            request_timeout = call_remaining(timeout)
             print(f"[启动] 正在调用模型: {self.model} ...")
             self._log_info(f"[启动] 正在调用模型: {self.model}，temperature={temperature}，max_tokens={max_tokens}，extra_log={extra_log_info or '无'}")
             messages = []
@@ -134,7 +138,15 @@ class LLMClient:
             if reasoning_effort is not None:
                 create_kwargs["reasoning_effort"] = reasoning_effort
 
-            response = self.client.chat.completions.create(**create_kwargs)
+            # with_options returns a separate SDK client: concurrent calls must
+            # not change a shared client's timeout or retry configuration.
+            request_client = self.client
+            if request_timeout is not None:
+                request_client = self.client.with_options(timeout=request_timeout, max_retries=0)
+            response = request_client.chat.completions.create(**create_kwargs)
+            # A provider can return late despite a transport timeout. Do not
+            # accept or save a report result after its stage has expired.
+            call_remaining()
 
             choice = response.choices[0]
             content = choice.message.content or ""
@@ -166,6 +178,9 @@ class LLMClient:
                 completion_tokens=completion_tokens,
             )
 
+        except BudgetExceeded as e:
+            error_msg = str(e)
+            self._log_info(f"[错误] {error_msg}")
         except APIConnectionError as e:
             error_msg = f"连接服务器失败: {str(e)}"
             print(f"[错误] {error_msg}")
@@ -196,7 +211,8 @@ class LLMClient:
               max_tokens: int = DEFAULT_MAX_TOKENS,
               reasoning_effort="high",
               extra_body=None,
-              extra_log_info: str = None) -> Optional[str]:
+              extra_log_info: str = None,
+              timeout: Optional[float] = None) -> Optional[str]:
         """兼容既有调用：仅在模型返回非空正文时返回字符串。"""
         result = self.query_result(
             user_prompt=user_prompt,
@@ -207,6 +223,7 @@ class LLMClient:
             reasoning_effort=reasoning_effort,
             extra_body=extra_body,
             extra_log_info=extra_log_info,
+            timeout=timeout,
         )
         return result.content or None
 

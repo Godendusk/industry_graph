@@ -1,0 +1,168 @@
+{
+  "run": "runs/low_altitude_final",
+  "failures": [
+    {
+      "call_id": 64,
+      "stage": "body_review",
+      "model": "deepseek-v4-flash",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "finish_reason": "",
+      "elapsed_seconds": 0.381,
+      "trace_file": "call-0064.json",
+      "response": {
+        "content": "",
+        "error_message": "API 状态错误: 402 - <Response [402 Payment Required]>",
+        "finish_reason": "",
+        "prompt_tokens": null,
+        "completion_tokens": null
+      }
+    },
+    {
+      "call_id": 65,
+      "stage": "body_review",
+      "model": "deepseek-v4-flash",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "finish_reason": "",
+      "elapsed_seconds": 0.379,
+      "trace_file": "call-0065.json",
+      "response": {
+        "content": "",
+        "error_message": "API 状态错误: 402 - <Response [402 Payment Required]>",
+        "finish_reason": "",
+        "prompt_tokens": null,
+        "completion_tokens": null
+      }
+    },
+    {
+      "call_id": 66,
+      "stage": "body_review",
+      "model": "deepseek-v4-flash",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "finish_reason": "",
+      "elapsed_seconds": 0.419,
+      "trace_file": "call-0066.json",
+      "response": {
+        "content": "",
+        "error_message": "API 状态错误: 402 - <Response [402 Payment Required]>",
+        "finish_reason": "",
+        "prompt_tokens": null,
+        "completion_tokens": null
+      }
+    },
+    {
+      "call_id": 67,
+      "stage": "body_review",
+      "model": "deepseek-v4-flash",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "finish_reason": "",
+      "elapsed_seconds": 0.386,
+      "trace_file": "call-0067.json",
+      "response": {
+        "content": "",
+        "error_message": "API 状态错误: 402 - <Response [402 Payment Required]>",
+        "finish_reason": "",
+        "prompt_tokens": null,
+        "completion_tokens": null
+      }
+    },
+    {
+      "call_id": 68,
+      "stage": "body_review",
+      "model": "deepseek-v4-flash",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "finish_reason": "",
+      "elapsed_seconds": 0.386,
+      "trace_file": "call-0068.json",
+      "response": {
+        "content": "",
+        "error_message": "API 状态错误: 402 - <Response [402 Payment Required]>",
+        "finish_reason": "",
+        "prompt_tokens": null,
+        "completion_tokens": null
+      }
+    },
+    {
+      "call_id": 69,
+      "stage": "body_review",
+      "model": "deepseek-v4-flash",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "finish_reason": "",
+      "elapsed_seconds": 0.381,
+      "trace_file": "call-0069.json",
+      "response": {
+        "content": "",
+        "error_message": "API 状态错误: 402 - <Response [402 Payment Required]>",
+        "finish_reason": "",
+        "prompt_tokens": null,
+        "completion_tokens": null
+      }
+    },
+    {
+      "call_id": 70,
+      "stage": "body_review",
+      "model": "deepseek-v4-flash",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "finish_reason": "",
+      "elapsed_seconds": 0.587,
+      "trace_file": "call-0070.json",
+      "response": {
+        "content": "",
+        "error_message": "API 状态错误: 402 - <Response [402 Payment Required]>",
+        "finish_reason": "",
+        "prompt_tokens": null,
+        "completion_tokens": null
+      }
+    },
+    {
+      "call_id": 71,
+      "stage": "body_review",
+      "model": "deepseek-v4-flash",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "finish_reason": "",
+      "elapsed_seconds": 0.392,
+      "trace_file": "call-0071.json",
+      "response": {
+        "content": "",
+        "error_message": "API 状态错误: 402 - <Response [402 Payment Required]>",
+        "finish_reason": "",
+        "prompt_tokens": null,
+        "completion_tokens": null
+      }
+    },
+    {
+      "call_id": 72,
+      "stage": "summary",
+      "model": "deepseek-v4-flash",
+      "status": "failed",
+      "prompt_tokens": null,
+      "completion_tokens": null,
+      "finish_reason": "",
+      "elapsed_seconds": 0.379,
+      "trace_file": "call-0072.json",
+      "response": {
+        "content": "",
+        "error_message": "API 状态错误: 402 - <Response [402 Payment Required]>",
+        "finish_reason": "",
+        "prompt_tokens": null,
+        "completion_tokens": null
+      }
+    }
+  ],
+  "no_retry_after_run": true
+}

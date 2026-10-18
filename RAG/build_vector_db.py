@@ -246,21 +246,17 @@ def build_vector_db(industry: str = None):
 
 # ===== 查询 =====
 def query_vector_db(query: str, top_k=TOP_K, industry: str = None) -> str:
-    model = SentenceTransformer(str(MODEL_PATH), device=DEVICE)
-    client = chromadb.PersistentClient(path=str(DB_DIR))
-    
-    # 根据产业选择集合名称
-    collection_name = "knowledge_base"
-    # 目前只有一个集合，所以直接使用默认集合
-    # if industry:
-    #     collection_name = f"knowledge_base_{industry}"
-    
-    try:
-        collection = client.get_collection(collection_name)
-    except Exception:
-        # 如果产业特定的集合不存在，使用默认集合
-        print(f"⚠️ 产业 {industry} 的向量数据库集合不存在，使用默认集合")
+    from RAG import topic_news
+
+    is_topic_news = industry in topic_news.TOPIC_NEWS_COLLECTIONS
+    if is_topic_news:
+        results = topic_news.query_topic_news(query, industry, top_k * 5)
+    else:
+        model = SentenceTransformer(str(MODEL_PATH), device=DEVICE)
+        client = chromadb.PersistentClient(path=str(DB_DIR))
         collection = client.get_collection("knowledge_base")
+        q_emb = model.encode([query], device=DEVICE)[0]
+        results = collection.query(query_embeddings=[q_emb], n_results=top_k * 5)
 
     # 根据产业选择图谱文件
     if industry == "ai":
@@ -285,9 +281,6 @@ def query_vector_db(query: str, top_k=TOP_K, industry: str = None) -> str:
     kg_handler = KnowledgeGraphHandler(graph_file)
     graph_context = kg_handler.search_relevant_subgraph(query)
 
-    q_emb = model.encode([query], device=DEVICE)[0]
-    results = collection.query(query_embeddings=[q_emb], n_results=top_k * 5)
-
     unique_results = []
     seen_ids = set()
     if results.get("documents"):
@@ -296,8 +289,9 @@ def query_vector_db(query: str, top_k=TOP_K, industry: str = None) -> str:
                 results["metadatas"][0],
                 results["distances"][0],
                 results["ids"][0]):
-            if idx not in seen_ids:
-                seen_ids.add(idx)
+            unique_id = (meta or {}).get("source_id", idx) if is_topic_news else idx
+            if unique_id not in seen_ids:
+                seen_ids.add(unique_id)
                 unique_results.append({"document": doc, "metadata": meta, "score": score, "id": idx})
             if len(unique_results) >= top_k:
                 break
@@ -305,6 +299,13 @@ def query_vector_db(query: str, top_k=TOP_K, industry: str = None) -> str:
     context_list = []
     for i, result in enumerate(unique_results, 1):
         meta = result["metadata"]
+        if is_topic_news:
+            context_list.append(
+                f"【专题资料{i}】标题：{meta.get('title', '')}；"
+                f"发布日期：{meta.get('publish_date', '')}；"
+                f"来源：{meta.get('source_url', '')}\n{result['document']}\n"
+            )
+            continue
         file_path = KNOWLEDGE_DIR / meta["file_name"]
         sent_idx = meta["sentence_index"]
         full_text = get_full_file_text(file_path)
@@ -328,6 +329,8 @@ def query_vector_db(query: str, top_k=TOP_K, industry: str = None) -> str:
 2. 使用文档片段补充事实与细节。
 3. 若二者冲突，请在回答中指出。
 4. 结构化输出，条理清晰。"""
+    if is_topic_news:
+        system_prompt += "\n5. 引用专题资料中的事实时，注明对应标题和来源；资料不足时明确说明。"
 
     final_context = (
         f"{graph_context}\n"

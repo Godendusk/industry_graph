@@ -22,7 +22,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_TEMPLATE_PATH = PROJECT_ROOT / "产业链报告模板.docx"
 BODY_SECTION_MIN = 3
 BODY_SECTION_MAX = 6
-BODY_SUBSECTION_MIN = 2
+BODY_SUBSECTION_MIN = 1
 BODY_SUBSECTION_MAX = 4
 
 
@@ -181,6 +181,8 @@ def _generate_direct_outline(
 你只根据已经人工确认的任务卡生成报告大纲，不再重新理解任务、改写标题或改换产业方向。
 必须严格继承任务卡中的研究边界；用户明确排除、不得、不包含、不分析的方向，不得进入一级或二级标题。
 生成 {BODY_SECTION_MIN} 到 {BODY_SECTION_MAX} 个一级章节，每个一级章节生成 {BODY_SUBSECTION_MIN} 到 {BODY_SUBSECTION_MAX} 个二级标题。
+上述范围是允许值，不必写满。集中比较类问题通常使用3个一级章节，每章1至2个有独立问题的小节；用户明确要求更大范围时再增加。
+研究口径用开篇短段交代，不单独铺成多个方法论小节。章节围绕实际比较和分析，不把相同对象拆成大量近义标题。
 不要生成正文，不要输出 Markdown 或解释说明。
 只输出一个 JSON 对象。"""
 

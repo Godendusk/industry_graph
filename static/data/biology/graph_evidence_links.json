@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "industry": "biology",
+  "pilot_terminal_segment_id": 47,
+  "links": [
+    {
+      "element_type": "node",
+      "id": 266,
+      "name": "凯赛生物",
+      "evidence_kind": "entity_mention",
+      "verification_status": "approved",
+      "pilot_terminal_segment_id": 47,
+      "review_method": "ai_assisted_source_review",
+      "review_note": "已阅读完整chunk，确认凯赛生物及所述产品/场景；实体提及证据不证明图谱全部属性或参与环节关系。",
+      "evidence_scope": "仅支持凯赛生物的生物基聚酰胺工程塑料、复合材料及汽车轻量化展示方案；展会预告不等同于商业订单或全部应用已量产。",
+      "evidence_refs": [
+        {
+          "chunk_id": "2069959956532637698343112002283180071:4",
+          "document_id": "2069959956532637698343112002283180071",
+          "material_id": "2069959956532637698343112002283180071",
+          "library": "biology_news"
+        }
+      ]
+    },
+    {
+      "element_type": "node",
+      "id": 266,
+      "name": "凯赛生物",
+      "evidence_kind": "entity_mention",
+      "verification_status": "approved",
+      "pilot_terminal_segment_id": 47,
+      "review_method": "ai_assisted_source_review",
+      "review_note": "已阅读完整chunk，确认凯赛生物及所述产品/场景；实体提及证据不证明图谱全部属性或参与环节关系。",
+      "evidence_scope": "仅支持原文所述凯赛生物基聚酰胺研发生产及HG/T 6364-2025行业标准发布时间和实施日期；来源为企业自述，未独立核验政策原件。",
+      "evidence_refs": [
+        {
+          "chunk_id": "2069959956532637698518026635565142108:0",
+          "document_id": "2069959956532637698518026635565142108",
+          "material_id": "2069959956532637698518026635565142108",
+          "library": "biology_news"
+        }
+      ]
+    },
+    {
+      "element_type": "node",
+      "id": 266,
+      "name": "凯赛生物",
+      "evidence_kind": "entity_mention",
+      "verification_status": "approved",
+      "pilot_terminal_segment_id": 47,
+      "review_method": "ai_assisted_source_review",
+      "review_note": "已阅读完整chunk，确认凯赛生物及所述产品/场景；实体提及证据不证明图谱全部属性或参与环节关系。",
+      "evidence_scope": "仅支持2025 Chinaplas展会展示的企业产品和应用方向，不证明各场景已商业落地。",
+      "evidence_refs": [
+        {
+          "chunk_id": "2069959956532637698436083382373126178:0",
+          "document_id": "2069959956532637698436083382373126178",
+          "material_id": "2069959956532637698436083382373126178",
+          "library": "biology_news"
+        }
+      ]
+    },
+    {
+      "element_type": "relationship",
+      "source": 266,
+      "target": 47,
+      "type": "参与环节",
+      "evidence_kind": "relationship_support",
+      "verification_status": "pending",
+      "review_method": "ai_assisted_source_review",
+      "review_note": "原文支持生物基聚酰胺工程塑料业务，但没有明确讨论不可降解分类，暂不把企业提及提升为该分类关系的证明。",
+      "evidence_scope": "待补充明确支持该终端分类的原文；不加载。",
+      "evidence_refs": [
+        {
+          "chunk_id": "2069959956532637698343112002283180071:4",
+          "document_id": "2069959956532637698343112002283180071",
+          "material_id": "2069959956532637698343112002283180071",
+          "library": "biology_news"
+        }
+      ]
+    }
+  ]
+}

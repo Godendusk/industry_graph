@@ -177,7 +177,13 @@ class CoordinatorStabilityTest(unittest.TestCase):
         def local_llm_query(**kwargs):
             with calls_lock:
                 llm_calls.append(kwargs)
-            content = '{"changes":[]}' if kwargs.get('extra_log_info') == 'report_generation.task_coordination' else json.dumps(fallback_decision({'title':'本节问题'}),ensure_ascii=False)
+            if 'agentic_planner' in kwargs.get('extra_log_info', ''):
+                context = json.loads(kwargs['user_prompt'])
+                content = json.dumps({'industry':context['industry'], 'sub_queries':[{
+                    'question':context['chapter_title'], 'strategy':'graph_hybrid',
+                    'evidence_requirements':['本节原文'], 'reason':'章节需要'}]}, ensure_ascii=False)
+            else:
+                content = '{"changes":[]}' if kwargs.get('extra_log_info') == 'report_generation.task_coordination' else json.dumps(fallback_decision({'title':'本节问题'}),ensure_ascii=False)
             return LLMQueryResult(content=content, finish_reason='stop')
 
         outline = _twenty_subsection_outline()
@@ -203,7 +209,8 @@ class CoordinatorStabilityTest(unittest.TestCase):
             )
 
         self.assertEqual(result["status"], "success")
-        self.assertEqual(result["warnings"], [])
+        self.assertEqual(result["report_scope"]["status"], "incomplete")
+        self.assertTrue(all(w["reason"] == "incomplete_scope" for w in result["warnings"]))
         self.assertEqual(
             [task["outline_id"] for task in result["writing_tasks"]], expected_ids
         )
@@ -213,13 +220,14 @@ class CoordinatorStabilityTest(unittest.TestCase):
         self.assertTrue(
             all(industry == "embodied" and top_k == 20 for _, industry, top_k in rag_calls)
         )
-        self.assertEqual(len(llm_calls), 21)
+        self.assertEqual(len(llm_calls), 41)
+        self.assertEqual(sum("agentic_planner" in c["extra_log_info"] for c in llm_calls), 20)
         self.assertTrue(
             all(
                 call["extra_log_info"].startswith(
                     "report_generation.writing_decisions outline="
                 )
-                for call in llm_calls[:-1]
+                for call in llm_calls[:-1] if "agentic_planner" not in call["extra_log_info"]
             )
         )
 
@@ -479,7 +487,8 @@ class CoordinatorStabilityTest(unittest.TestCase):
             for subsection_index in range(1, 6)
         ]
         self.assertEqual([task["outline_id"] for task in result["writing_tasks"]], expected_ids)
-        self.assertEqual(len(result["warnings"]), 20)
+        self.assertEqual(len([w for w in result["warnings"] if w["stage"] == "coordinator_task_generation"]), 20)
+        self.assertEqual(result["report_scope"]["status"], "incomplete")
         for task, warning in zip(result["writing_tasks"], result["warnings"]):
             self.assertEqual(task["warnings"], [warning])
             self.assertEqual(warning["stage"], "coordinator_task_generation")
